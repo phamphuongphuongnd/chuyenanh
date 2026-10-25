@@ -1,0 +1,15 @@
+name: image_ops
+description: Pure-Dart image editing and PDF page layout helpers for PDF Office.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  collection: ^1.18.0
+  image: ^4.2.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

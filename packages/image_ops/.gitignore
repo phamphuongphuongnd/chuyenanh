@@ -1,0 +1,5 @@
+.dart_tool/
+build/
+# Library package: the consuming app owns the lock file.
+pubspec.lock
+*.exe
