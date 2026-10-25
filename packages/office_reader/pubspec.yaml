@@ -1,0 +1,14 @@
+name: office_reader
+description: Pure Dart reader for .docx and .xlsx files into a simple data model.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+dependencies:
+  archive: ^4.5.2
+  collection: ^1.19.1
+  xml: ^7.1.0
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.33.0
