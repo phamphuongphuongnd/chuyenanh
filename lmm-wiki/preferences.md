@@ -29,6 +29,12 @@ sources: []
   luật an toàn vào ngay prompt (kiểm tra danh tính, cấm ghi lên bản ghi thật, cấm tự sửa mã nguồn). Subagent bị
   chặn một lệnh thì dừng lại, không chạy hộ lệnh đó qua đường khác.
 
+- Khi **cần gấp**, người dùng muốn *"tách ra nhiều agent nhất có thể"* — tìm cả việc làm được trước khi có móng
+  (thư viện thuần, nghiên cứu) để không agent nào ngồi chờ. Cách làm: [[build-song-song-agent]].
+- Người dùng muốn **lưu wiki liên tục** trong phiên dài để mở chat mới/hết token không phải làm lại: ghi checkpoint
+  tiến độ vào `planhistory/` sau mỗi mốc; kiến thức đã qua test thì lưu vào wiki, ghi rõ phần chưa kiểm trên máy thật.
+- Muốn **xem lý do + ưu/nhược điểm** trước khi chọn (nền tảng, thư viện, cách build) — trình bày bảng so sánh rồi mới hỏi.
+
 ## Người dùng sở hữu server, tôi không tự chạy
 - Người dùng tự chạy ứng dụng / dev server ở terminal của họ. **Không tự chạy lệnh build, lệnh chạy app hay preview
   server** khi họ đang chạy — build ghi đè thư mục output (`dist/`, `bin/`, `target/`…) làm chết tiến trình đang chạy;

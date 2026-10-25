@@ -24,14 +24,22 @@ updated: 2026-10-22
 - [[log]] — nhật ký phiên (append-only).
 - [[preferences]] — cách làm việc người dùng muốn tôi tuân theo.
 
+## Đang làm dở — đọc trước khi tiếp tục
+- `planhistory/2026-10-25-pdf-office-khoi-tao.md` — **checkpoint tiến độ** build song song (nhánh nào xong, nhánh nào
+  chưa merge, cách làm tiếp nếu phiên bị ngắt).
+- `docs/superpowers/plans/2026-10-25-parallel-build-contract.md` — hợp đồng chia việc cho agent.
+
 ## Modules
-*(chưa có)*
+- [[thu-vien-dart-thuan]] — 4 thư viện Dart thuần trong `packages/` (office_reader, pptx_reader, pdf_layout, image_ops).
 
 ## Entities
-*(chưa có)*
+*(chưa có — bảng drift `documents/favorites/recents/bookmarks` sẽ thêm khi MÓNG được kiểm)*
 
 ## Concepts (pattern dùng lại được)
-*(chưa có)*
+- [[build-song-song-agent]] — chia việc cho nhiều agent song song bằng hợp đồng + worktree, không dẫm chân nhau.
 
 ## Decisions (ADR)
-*(chưa có)*
+- [[0001-flutter-android-truoc]] — Flutter, Android trước, dùng cá nhân, test trên Samsung A13.
+- [[0002-syncfusion-community]] — Syncfusion cho PDF + các gotcha đã kiểm.
+- [[0003-kien-truc-riverpod]] — feature-first + Riverpod + drift + engine interface.
+- [[0004-pham-vi-bam-app-goc]] — phạm vi: toàn bộ chức năng, chỉ theo app gốc.
