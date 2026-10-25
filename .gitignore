@@ -1,0 +1,80 @@
+# .gitignore khung — phần trên luôn đúng với mọi dự án.
+# Phần "Theo stack" để comment sẵn: khi khởi tạo, bỏ comment đúng nhóm của stack đã chốt
+# (thư mục như bin/, build/ có dự án dùng làm mã nguồn nên không bật sẵn).
+
+# Bí mật — không bao giờ commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.secret.*
+testrun.config.yaml
+auth*.json
+.claude/settings.local.json
+
+# Thư viện tải về & cache (an toàn với mọi dự án)
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.gradle/
+
+# Kết quả test & đo
+coverage/
+.coverage
+htmlcov/
+test-output/
+.testrun/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.auth/
+
+# IDE, hệ điều hành, tạm
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+*.log
+.superpowers/
+
+# ===== Theo stack — bỏ comment nhóm cần dùng =====
+# --- Node / TypeScript / web ---
+# dist/
+# build/
+# .next/
+# .nuxt/
+# out/
+# --- Python ---
+# *.egg-info/
+# dist/
+# build/
+# --- Java / Kotlin ---
+# target/
+# build/
+# *.class
+# --- .NET / C# ---
+# bin/
+# obj/
+# *.user
+# --- Go ---
+# /bin/
+# *.exe
+# --- Rust ---
+# target/
+# --- PHP ---
+# vendor/
+# --- Flutter / Dart ---
+# .dart_tool/
+# build/
+# --- Android / iOS ---
+# *.apk
+# *.aab
+# Pods/
+# DerivedData/

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Báo cáo kiểm thử</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161a22; --border: #262b36; --text: #e6e8ee;
+    --muted: #8a90a2; --pass: #2fae66; --fail: #e6534f; --flaky: #d9a441;
+    --blocked: #6b7280; --skip: #4b5563; --accent: #5b8def;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+  }
+  header {
+    padding: 24px 32px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px;
+  }
+  header h1 { margin: 0; font-size: 20px; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  .wrap { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; min-width: 110px;
+  }
+  .stat .n { font-size: 26px; font-weight: 700; }
+  .stat .l { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px;
+    font-weight: 600; color: #0b0d11;
+  }
+  .badge.passed, .badge.fixed { background: var(--pass); }
+  .badge.failed { background: var(--fail); color: #fff; }
+  .badge.flaky { background: var(--flaky); }
+  .badge.blocked { background: var(--blocked); color: #fff; }
+  .badge.skipped { background: var(--skip); color: #fff; }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .toolbar button {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  }
+  .toolbar button.active { border-color: var(--accent); color: var(--accent); }
+  .case {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  .case summary {
+    padding: 12px 16px; cursor: pointer; display: flex; gap: 12px; align-items: center;
+    list-style: none;
+  }
+  .case summary::-webkit-details-marker { display: none; }
+  .case summary .id { color: var(--muted); font-family: monospace; font-size: 12px; min-width: 70px; }
+  .case summary .title { flex: 1; font-weight: 500; }
+  .case summary .prio { color: var(--muted); font-size: 12px; }
+  .case .body { padding: 4px 16px 16px; border-top: 1px solid var(--border); font-size: 13px; }
+  .case .body h4 { margin: 12px 0 4px; font-size: 12px; color: var(--muted); text-transform: uppercase; }
+  .case .body ul { margin: 4px 0; padding-left: 20px; }
+  .case .body .assert-fail { color: var(--fail); }
+  .case .body .assert-pass { color: var(--pass); }
+  .case .body pre {
+    background: #0b0d11; border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px; overflow-x: auto; font-size: 12px;
+  }
+  code { font-family: ui-monospace, monospace; }
+  .empty { color: var(--muted); padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Báo cáo kiểm thử</h1>
+  <div class="meta" id="run-meta"></div>
+</header>
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+  <div class="toolbar" id="toolbar"></div>
+  <div id="cases"></div>
+</div>
+
+<script>
+const DATA = __RESULTS_JSON__;
+
+const STATUS_LABEL = {
+  passed: "Passed", fixed: "Đã sửa", flaky: "Flaky", failed: "Failed",
+  blocked: "Blocked", skipped: "Bỏ qua",
+};
+
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+function renderMeta() {
+  const run = DATA.run || {};
+  const parts = [];
+  if (run.base_url) parts.push(run.base_url);
+  if (run.env) parts.push(`env: ${run.env}`);
+  if (run.engine) parts.push(`engine: ${run.engine}`);
+  if (run.fix_level) parts.push(`fix level: ${run.fix_level}`);
+  if (run.started_at) parts.push(run.started_at);
+  document.getElementById("run-meta").textContent = parts.join(" · ");
+}
+
+function renderStats() {
+  const cases = DATA.cases || [];
+  const counts = {};
+  cases.forEach(c => { counts[c.status] = (counts[c.status] || 0) + 1; });
+  const total = cases.length;
+  const passed = (counts.passed || 0) + (counts.fixed || 0) + (counts.flaky || 0);
+  const rate = total ? Math.round((passed / total) * 100) : 0;
+
+  const box = document.getElementById("stats");
+  box.appendChild(statCard(total, "Tổng số case"));
+  box.appendChild(statCard(rate + "%", "Tỉ lệ pass"));
+  ["passed", "fixed", "flaky", "failed", "blocked", "skipped"].forEach(s => {
+    if (counts[s]) box.appendChild(statCard(counts[s], STATUS_LABEL[s]));
+  });
+}
+
+function statCard(n, label) {
+  const c = el("div", "stat");
+  c.appendChild(el("div", "n", n));
+  c.appendChild(el("div", "l", label));
+  return c;
+}
+
+function renderToolbar(onFilter) {
+  const bar = document.getElementById("toolbar");
+  const options = [["all", "Tất cả"], ["failed", "Failed"], ["blocked", "Blocked"],
+                   ["flaky", "Flaky"], ["fixed", "Đã sửa"], ["passed", "Passed"],
+                   ["skipped", "Bỏ qua"]];
+  options.forEach(([key, label]) => {
+    const b = el("button", key === "all" ? "active" : "", label);
+    b.addEventListener("click", () => {
+      [...bar.children].forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      onFilter(key);
+    });
+    bar.appendChild(b);
+  });
+}
+
+function renderAssertions(assertions) {
+  if (!assertions || !assertions.length) return "";
+  const items = assertions.map(a => {
+    const cls = a.result === "fail" ? "assert-fail" : "assert-pass";
+    const mark = a.result === "fail" ? "✗" : a.result === "skip" ? "–" : "✓";
+    return `<li class="${cls}">${mark} ${escapeHtml(a.description || a.clause || "")}</li>`;
+  }).join("");
+  return `<h4>Assertions</h4><ul>${items}</ul>`;
+}
+
+function renderRootCause(rc) {
+  if (!rc || (!rc.category && !rc.summary)) return "";
+  return `<h4>Nguyên nhân</h4><div>[${escapeHtml(rc.category || "")}] ${escapeHtml(rc.summary || "")}</div>`;
+}
+
+function renderFix(fix) {
+  if (!fix || (!fix.applied && !fix.proposed)) return "";
+  const state = fix.applied ? "Đã áp dụng" : "Đề xuất (chờ duyệt)";
+  let html = `<h4>Fix — ${state}${fix.level ? " · " + fix.level : ""}</h4>`;
+  html += `<div>${escapeHtml(fix.description || "")}</div>`;
+  if (fix.diff) html += `<pre>${escapeHtml(fix.diff)}</pre>`;
+  return html;
+}
+
+function renderCase(c) {
+  const details = el("details", "case");
+  const summary = el("summary");
+  summary.innerHTML =
+    `<span class="badge ${c.status}">${STATUS_LABEL[c.status] || c.status}</span>` +
+    `<span class="id">${escapeHtml(c.id || "")}</span>` +
+    `<span class="title">${escapeHtml(c.title || "")}</span>` +
+    `<span class="prio">${escapeHtml(c.priority || "")}</span>`;
+  details.appendChild(summary);
+
+  const body = el("div", "body");
+  if (c.expected) body.appendChild(el("div", "", `<h4>Kỳ vọng</h4><div>${escapeHtml(c.expected)}</div>`));
+  if (c.actual) body.appendChild(el("div", "", `<h4>Thực tế</h4><div>${escapeHtml(c.actual)}</div>`));
+  body.appendChild(el("div", "", renderAssertions(c.assertions)));
+  body.appendChild(el("div", "", renderRootCause(c.root_cause)));
+  body.appendChild(el("div", "", renderFix(c.fix)));
+  if (c.blocked_by) body.appendChild(el("div", "", `<h4>Blocked bởi</h4><div>${escapeHtml(c.blocked_by)}</div>`));
+  details.appendChild(body);
+  return details;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[m]));
+}
+
+function main() {
+  renderMeta();
+  renderStats();
+  const cases = DATA.cases || [];
+  const container = document.getElementById("cases");
+
+  function draw(filter) {
+    container.innerHTML = "";
+    const list = filter === "all" ? cases : cases.filter(c => c.status === filter);
+    if (!list.length) {
+      container.appendChild(el("div", "empty", "Không có case nào."));
+      return;
+    }
+    list.forEach(c => container.appendChild(renderCase(c)));
+  }
+
+  renderToolbar(draw);
+  draw("all");
+}
+
+main();
+</script>
+</body>
+</html>

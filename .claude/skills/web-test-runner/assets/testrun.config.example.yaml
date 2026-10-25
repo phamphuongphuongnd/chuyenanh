@@ -1,0 +1,90 @@
+# testrun.config.yaml
+#
+# Đặt file này ở PROJECT ROOT (không phải trong thư mục skill). Nếu không có
+# file này, skill dùng giá trị mặc định và tự hỏi user những gì còn thiếu
+# (URL, phiên đăng nhập nếu cần...).
+
+# URL của ứng dụng cần test.
+base_url: "https://staging.example.com"
+
+# Môi trường — chỉ để ghi vào report/results.json, không ảnh hưởng logic.
+env: "staging"
+
+# Thư mục ghi output (results.json, report.html, artifacts/).
+# Mặc định: ./test-output nếu không set.
+output_dir: "./test-output"
+
+# Engine ưu tiên: "auto" (mặc định, theo Engine Selection trong SKILL.md),
+# "playwright", hoặc "chrome-devtools".
+engine: "auto"
+
+# Hiện cửa sổ trình duyệt khi chạy hay không.
+#   true  = --headed, nhìn thấy trình duyệt tự thao tác (chậm hơn)
+#   false = headless, chạy ngầm, nhanh hơn, không có gì để xem
+# BỎ TRỐNG / không khai báo key này => agent BẮT BUỘC phải hỏi user trước khi
+# chạy case đầu tiên, không được tự quyết.
+# headed: true
+
+# Làm chậm mỗi thao tác (ms) để người xem theo kịp. Chỉ có ý nghĩa khi
+# headed: true. 0 = không làm chậm. Khuyến nghị 400-700 khi trình diễn.
+slow_mo: 0
+
+# Ép dùng trình duyệt đã cài sẵn trên máy thay vì Chromium bundled của
+# Playwright: "chrome" hoặc "msedge". Để trống = dùng Chromium bundled.
+# HỮU ÍCH KHI: chế độ headed báo "spawn UNKNOWN" / "side-by-side configuration
+# is incorrect" — đó là do máy thiếu Visual C++ Redistributable, bản
+# chromium_headless_shell không cần nên headless vẫn chạy được. Trỏ sang
+# Chrome/Edge có sẵn là xong, không phải cài thêm runtime hệ thống.
+browser_channel: ""
+
+# Đường dẫn tuyệt đối tới file thực thi browser, khi máy CÓ browser sẵn nhưng
+# khác build number với bản @playwright/test vừa cài (lỗi "Executable doesn't
+# exist at .../chromium_headless_shell-XXXX/..." ngay sau khi cài thành công).
+# Trỏ thẳng vào đây thay vì tải lại nguyên bộ browser ~150MB.
+# VD Linux/sandbox: "/opt/pw-browsers/chromium"
+browser_path: ""
+
+# Thư mục cài Playwright khi phải dùng CLI fallback (không có MCP browser).
+# BỎ TRỐNG / không khai báo key này => agent BẮT BUỘC phải hỏi user muốn cài
+# vào đâu, gợi ý mặc định là ./playwright-tests, không được tự quyết.
+# CẤM: tự đi quét ổ đĩa tìm thư mục nào có sẵn node_modules rồi cài đè vào đó
+# — làm vậy là sửa package.json/lockfile của project không liên quan.
+# Nên để riêng 1 thư mục con: xoá đúng thư mục đó là sạch, project không đụng gì.
+# playwright_dir: "./playwright-tests"
+
+# Fix level cho phép agent tự sửa (xem SKILL.md §6).
+# L0 = không sửa gì, chỉ report | L1 = env/config/test data/restart server
+# L2 = L1 + selector/wait/data-testid/sửa test steps sai (MẶC ĐỊNH)
+# L3 = cả source code (LUÔN cần user duyệt riêng từng case, set L3 ở đây
+#      KHÔNG tự động cho phép áp dụng — nó chỉ cho phép agent ĐỀ XUẤT
+#      diagnosis + diff ở mức đó).
+fix_level: "L2"
+
+# Phiên đăng nhập cho Auth Gate (references/auth-gate.md).
+# File này KHÔNG chứa mật khẩu. Agent không bao giờ tự đăng nhập hay gõ mật khẩu:
+# người dùng TỰ đăng nhập một lần và lưu phiên thành file, agent chỉ trỏ đường dẫn
+# cho Playwright (storageState), không mở / không in nội dung file phiên.
+#
+# Tạo phiên (người dùng tự chạy, đăng nhập trong cửa sổ hiện ra rồi đóng lại):
+#   npx playwright codegen <base_url> --save-storage=.auth/user.json
+# Thư mục .auth/ phải nằm trong .gitignore.
+auth_states:
+  primary: ".auth/user.json"
+  # Tài khoản thứ 2 — cho case phân quyền (admin vs non-admin…). Ghi rõ quyền
+  # của account ở note để khỏi phải dò lại mỗi phiên.
+  secondary: ".auth/user2.json"
+  # secondary_note: "user thường, không phải admin"
+
+# Case cụ thể muốn bỏ qua (id trong testcases.json), lý do ghi rõ để vào
+# report với status "skipped".
+skip:
+  # - id: "TC-014"
+  #   reason: "tính năng chưa deploy lên staging"
+
+# Giới hạn số attempt fix tối đa mỗi case trước khi chuyển "needs_human".
+# Mặc định: 3 (xem references/triage-and-autofix.md).
+max_fix_attempts: 3
+
+# Batch mode: chạy qua npx playwright test thay vì step-by-step qua MCP.
+# Nên bật cho suite lớn (>~20 case) để tiết kiệm token.
+batch_mode: false
