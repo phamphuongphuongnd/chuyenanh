@@ -1,0 +1,7 @@
+# Chỉ MÓNG chạy build_runner (drift). Giới hạn builder vào lib/data/db cho nhanh.
+targets:
+  $default:
+    builders:
+      drift_dev:
+        generate_for:
+          - lib/data/db/**

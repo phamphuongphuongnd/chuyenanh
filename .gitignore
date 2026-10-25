@@ -78,3 +78,9 @@ build/
 *.aab
 Pods/
 DerivedData/
+
+# Flutter app: chuoi da ngon ngu sinh tu dong (tool/merge_arb.dart + flutter gen-l10n)
+app/lib/l10n/
+
+# Worktree tam cua cac agent song song
+.claude/worktrees/

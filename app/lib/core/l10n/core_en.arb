@@ -1,0 +1,76 @@
+{
+  "@@locale": "en",
+  "core_appName": "PDF Office",
+  "core_ok": "OK",
+  "core_cancel": "Cancel",
+  "core_delete": "Delete",
+  "core_rename": "Rename",
+  "core_share": "Share",
+  "core_open": "Open",
+  "core_save": "Save",
+  "core_close": "Close",
+  "core_retry": "Retry",
+  "core_done": "Done",
+  "core_yes": "Yes",
+  "core_no": "No",
+  "core_info": "Info",
+  "core_favorite": "Add to favorites",
+  "core_removeFavorite": "Remove from favorites",
+  "core_selectFile": "Select file",
+  "core_fileName": "File name",
+  "core_password": "Password",
+  "core_passwordDialogTitle": "Enter password",
+  "core_passwordDialogMessage": "\"{name}\" is password protected.",
+  "@core_passwordDialogMessage": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "core_confirmDeleteTitle": "Delete file?",
+  "core_confirmDeleteMessage": "\"{name}\" will be permanently deleted.",
+  "@core_confirmDeleteMessage": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "core_processing": "Processing…",
+  "core_progressPercent": "{percent}%",
+  "@core_progressPercent": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "core_comingSoon": "Coming soon",
+  "core_emptyTitle": "No files yet",
+  "core_errorWrongPassword": "Incorrect password.",
+  "core_errorPasswordRequired": "This file is password protected.",
+  "core_errorCorruptFile": "The file is damaged or cannot be read.",
+  "core_errorUnsupportedFormat": "This file format is not supported.",
+  "core_errorNoSpace": "Not enough storage space.",
+  "core_errorPermissionDenied": "Permission denied. Please grant access and try again.",
+  "core_errorCancelled": "Cancelled.",
+  "core_errorUnknown": "Something went wrong. Please try again.",
+  "core_groupCreate": "Create PDF",
+  "core_groupConvert": "Convert",
+  "core_groupPdfTools": "PDF tools",
+  "core_groupEdit": "Edit PDF",
+  "core_toolImageToPdf": "Image to PDF",
+  "core_toolScanner": "Scan document",
+  "core_toolTextToPdf": "Text to PDF",
+  "core_toolCreateBlank": "Create blank PDF",
+  "core_toolWordToPdf": "Word to PDF",
+  "core_toolExcelToPdf": "Excel to PDF",
+  "core_toolPdfToImage": "PDF to image",
+  "core_toolPdfToText": "PDF to text",
+  "core_toolPdfToWord": "PDF to Word",
+  "core_toolPdfToExcel": "PDF to Excel",
+  "core_toolMerge": "Merge PDF",
+  "core_toolSplit": "Split PDF",
+  "core_toolOrganize": "Organize pages",
+  "core_toolLock": "Lock PDF",
+  "core_toolUnlock": "Unlock PDF",
+  "core_toolWatermark": "Add watermark",
+  "core_toolAnnotate": "Annotate",
+  "core_toolSign": "Sign PDF",
+  "core_toolFillForm": "Fill form"
+}
