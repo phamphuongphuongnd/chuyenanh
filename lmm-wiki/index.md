@@ -10,13 +10,14 @@ updated: 2026-10-22
 > Wiki vận hành theo phương pháp Karpathy "LLM Wiki". Quy tắc đầy đủ ở [[SCHEMA]].
 
 ## Tổng quan dự án
-*(chưa khởi tạo — điền khi chốt ý tưởng)*
-- **Tên:** …
-- **Mục đích:** …
-- **Loại dự án:** …
-- **Ngôn ngữ & stack:** …
-- **Thư mục chính:** …
-- **Lệnh:** chạy … · test … · kiểm tra biên dịch …
+- **Tên:** PDF Office (`com.phuong.pdfoffice`)
+- **Mục đích:** app dùng cá nhân, giống app mẫu Google Play "Image to PDF: PDF Converter" (TrustedOffice,
+  `com.readpdf.pdfreader.pdfviewer`): ảnh↔PDF, đọc PDF/Office, công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR.
+  Offline, không quảng cáo, không lên store. Thiết kế: `docs/superpowers/specs/2026-10-25-pdf-office-design.md`.
+- **Loại dự án:** app di động (Android trước, iOS sau)
+- **Ngôn ngữ & stack:** Dart · Flutter · Riverpod · go_router · drift · Syncfusion Flutter PDF (Community) · pdfx
+- **Thư mục chính:** `app/` (dự án Flutter), `docs/superpowers/specs/`, `docs/superpowers/plans/`
+- **Lệnh** (chạy trong `app/`): chạy `flutter run` · test `flutter test` · kiểm tra biên dịch `flutter analyze`
 
 ## Bộ luật & nhật ký
 - [[SCHEMA]] — quy ước trang + 3 thao tác Ingest / Query / Lint.

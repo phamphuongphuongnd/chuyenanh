@@ -71,10 +71,10 @@ Thumbs.db
 # --- PHP ---
 # vendor/
 # --- Flutter / Dart ---
-# .dart_tool/
-# build/
+.dart_tool/
+build/
 # --- Android / iOS ---
-# *.apk
-# *.aab
-# Pods/
-# DerivedData/
+*.apk
+*.aab
+Pods/
+DerivedData/
