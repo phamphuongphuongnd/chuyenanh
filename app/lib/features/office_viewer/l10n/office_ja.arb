@@ -1,4 +1,19 @@
 {
   "@@locale": "ja",
-  "office_title": "Office ビューアー"
+  "office_title": "Office ビューア",
+  "office_search": "検索",
+  "office_searchHint": "ドキュメント内を検索",
+  "office_noResults": "結果なし",
+  "office_matchCount": "{current}/{total}",
+  "office_prevMatch": "前へ",
+  "office_nextMatch": "次へ",
+  "office_convertToPdf": "PDF に変換",
+  "office_zoomIn": "拡大",
+  "office_zoomOut": "縮小",
+  "office_emptySheet": "このシートは空です",
+  "office_emptyDocument": "ドキュメントは空です",
+  "office_encodingLabel": "エンコード: {name}",
+  "office_truncated": "ファイルが大きいため先頭部分のみ表示します。",
+  "office_imageUnsupported": "画像を表示できません",
+  "office_linkCopied": "リンクをコピーしました"
 }

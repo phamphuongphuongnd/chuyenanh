@@ -1,4 +1,30 @@
 {
   "@@locale": "en",
-  "office_title": "Office viewer"
+  "office_title": "Office viewer",
+  "office_search": "Search",
+  "office_searchHint": "Find in document",
+  "office_noResults": "No results",
+  "office_matchCount": "{current}/{total}",
+  "@office_matchCount": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "office_prevMatch": "Previous",
+  "office_nextMatch": "Next",
+  "office_convertToPdf": "Convert to PDF",
+  "office_zoomIn": "Zoom in",
+  "office_zoomOut": "Zoom out",
+  "office_emptySheet": "This sheet is empty",
+  "office_emptyDocument": "This document is empty",
+  "office_encodingLabel": "Encoding: {name}",
+  "@office_encodingLabel": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "office_truncated": "File is large; only the first part is shown.",
+  "office_imageUnsupported": "Image can't be displayed",
+  "office_linkCopied": "Link copied"
 }
