@@ -1,4 +1,13 @@
 {
   "@@locale": "id",
-  "pptx_title": "Presentasi"
+  "pptx_title": "Presentasi",
+  "pptx_unsupportedObject": "Tidak didukung",
+  "pptx_slideOf": "{current} / {total}",
+  "pptx_notes": "Catatan",
+  "pptx_noNotes": "Slide ini tidak punya catatan",
+  "pptx_showHidden": "Tampilkan slide tersembunyi",
+  "pptx_hideHidden": "Sembunyikan slide tersembunyi",
+  "pptx_emptyDeck": "Presentasi ini tidak memiliki slide",
+  "pptx_hiddenBadge": "Tersembunyi",
+  "pptx_slideN": "Slide {n}"
 }

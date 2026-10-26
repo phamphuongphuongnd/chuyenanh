@@ -1,4 +1,13 @@
 {
   "@@locale": "zh",
-  "pptx_title": "演示文稿"
+  "pptx_title": "演示文稿",
+  "pptx_unsupportedObject": "不支持",
+  "pptx_slideOf": "{current} / {total}",
+  "pptx_notes": "备注",
+  "pptx_noNotes": "此幻灯片没有备注",
+  "pptx_showHidden": "显示隐藏的幻灯片",
+  "pptx_hideHidden": "不显示隐藏的幻灯片",
+  "pptx_emptyDeck": "此演示文稿没有幻灯片",
+  "pptx_hiddenBadge": "已隐藏",
+  "pptx_slideN": "幻灯片 {n}"
 }

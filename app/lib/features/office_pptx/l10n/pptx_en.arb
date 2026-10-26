@@ -1,4 +1,15 @@
 {
   "@@locale": "en",
-  "pptx_title": "Presentation"
+  "pptx_title": "Presentation",
+  "pptx_unsupportedObject": "Not supported",
+  "pptx_slideOf": "{current} / {total}",
+  "@pptx_slideOf": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "pptx_notes": "Notes",
+  "pptx_noNotes": "No notes for this slide",
+  "pptx_showHidden": "Show hidden slides",
+  "pptx_hideHidden": "Hide hidden slides",
+  "pptx_emptyDeck": "This presentation has no slides",
+  "pptx_hiddenBadge": "Hidden",
+  "pptx_slideN": "Slide {n}",
+  "@pptx_slideN": {"placeholders": {"n": {"type": "int"}}}
 }
