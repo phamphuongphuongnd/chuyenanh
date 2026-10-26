@@ -132,7 +132,7 @@
      (`detectSheets` → xlsio).
   3. Màn chọn file + tuỳ chọn (khổ, cỡ chữ, lề) + tiến độ + kết quả; ghi rõ "không giữ nguyên bố cục" với PDF→Word/Excel.
 - **Test:** chuyển đổi TextLine→LayoutLine, đủ số trang khi paginate, PDF→DOCX ra zip hợp lệ, PDF→XLSX đúng số ô.
-- **Lưu ý:** chờ kết quả spike chữ Việt (dấu chồng) trong Syncfusion (xem planhistory) trước khi chốt cách vẽ chữ.
+- **Lưu ý (spike đã xong — đọc `lmm-wiki/concepts/xuat-chu-ra-pdf.md`):** (1) **chuẩn hoá NFC trước khi vẽ** — chữ NFD bị lệch dấu; dùng/đưa `composeVietnamese()` từ `app/test/spikes/vi_nfc.dart` vào `app/lib/core/utils/` kèm test; (2) **không có font nào đủ Việt + CJK** → fallback theo script (Latin/Việt → Noto Sans, Hán/kana → Noto Sans SC/JP, Hangul → Noto Sans KR), cộng bề rộng dấu cách cuối đoạn vì `measureString` cắt nó; (3) font tự subset nên PDF nhỏ.
 - **Ước lượng:** L (2–3 ngày).
 
 ## T7 — Xem DOCX / XLSX / TXT

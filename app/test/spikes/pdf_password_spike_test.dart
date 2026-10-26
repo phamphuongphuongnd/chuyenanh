@@ -7,7 +7,10 @@ import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/engines/pdf/syncfusion_pdf_security.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
-final _outDir = Directory('../spikes/pdf_text/out');
+// Mặc định ghi vào thư mục tạm (không làm bẩn git). Muốn cập nhật kết quả mẫu trong repo:
+//   SPIKE_OUT=../spikes/pdf_text/out flutter test test/spikes
+final _outDir = Directory(Platform.environment['SPIKE_OUT'] ??
+    Directory.systemTemp.createTempSync('pdf_spike_').path);
 
 Uint8List _plain() {
   final d = sf.PdfDocument();

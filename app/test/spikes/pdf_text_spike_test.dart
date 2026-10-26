@@ -8,7 +8,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 const _fontDir = r'C:\Windows\Fonts\';
-final _outDir = Directory('../spikes/pdf_text/out');
+// Spike cần font Windows (không commit). Máy khác (Mac/Linux/CI) → tự bỏ qua, không làm đỏ bộ test.
+final _hasFonts = Directory(_fontDir).existsSync();
+final _skipNoFonts = _hasFonts ? null : r'cần font ở C:\Windows\Fonts (chỉ có trên Windows)';
+// Mặc định ghi vào thư mục tạm (không làm bẩn git). Muốn cập nhật kết quả mẫu trong repo:
+//   SPIKE_OUT=../spikes/pdf_text/out flutter test test/spikes
+final _outDir = Directory(Platform.environment['SPIKE_OUT'] ??
+    Directory.systemTemp.createTempSync('pdf_spike_').path);
 
 // NFC: ky tu da dung san.
 const viNfc = <String>[
@@ -58,12 +64,17 @@ Uint8List _makePdf(Uint8List fontBytes, List<String> lines) {
 }
 
 void main() {
-  setUpAll(() => _outDir.createSync(recursive: true));
+  setUpAll(() {
+    if (_hasFonts) _outDir.createSync(recursive: true);
+  });
   final report = StringBuffer();
-  tearDownAll(() =>
-      File('${_outDir.path}/report.txt').writeAsStringSync(report.toString()));
+  tearDownAll(() {
+    if (_hasFonts && report.isNotEmpty) {
+      File('${_outDir.path}/report.txt').writeAsStringSync(report.toString());
+    }
+  });
 
-  test('Viet NFC+NFD bang Arial', () {
+  test('Viet NFC+NFD bang Arial', skip: _skipNoFonts, () {
     final arial = _read('arial.ttf');
     final bytes = _makePdf(arial, [
       '--- NFC ---',
@@ -86,7 +97,7 @@ void main() {
     'SimsunExtG.ttf',
     'segoeui.ttf',
   ]) {
-    test('CJK/Viet voi $name', () {
+    test('CJK/Viet voi $name', skip: _skipNoFonts, () {
       final fb = _read(name);
       try {
         final bytes = _makePdf(fb, [

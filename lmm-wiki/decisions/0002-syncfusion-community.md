@@ -19,7 +19,7 @@ interface trong `app/lib/engines/` để đổi thư viện được.
 - `PdfBitmap` chỉ nhận **JPEG/PNG** → WebP/HEIC phải đổi trước.
 - Không có `isEncrypted` → mở không mật khẩu rồi bắt exception.
 - `PdfTrueTypeFont` tự subset font → nhúng Noto không làm PDF to.
-- Có thể đặt sai dấu chồng tiếng Việt → phải spike sớm (tiếng Thái đã bỏ khỏi app).
+- Dấu chồng tiếng Việt: **NFC đúng, NFD sai** → chuẩn hoá NFC trước khi vẽ; CJK phải fallback font theo script — xem [[xuat-chu-ra-pdf]] (spike đã xong).
 - `pdfx` (render trang ra ảnh) trên Android dùng `PdfRenderer` gốc, **không mở được PDF có mật khẩu** → giải mã bằng Syncfusion trước.
 
 Liên quan: [[0001-flutter-android-truoc]], [[0003-kien-truc-riverpod]].

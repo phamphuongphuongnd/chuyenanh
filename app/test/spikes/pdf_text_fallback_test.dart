@@ -9,7 +9,13 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'vi_nfc.dart';
 
 const _fontDir = r'C:\Windows\Fonts\';
-final _outDir = Directory('../spikes/pdf_text/out');
+// Spike cần font Windows (không commit). Máy khác (Mac/Linux/CI) → tự bỏ qua, không làm đỏ bộ test.
+final _hasFonts = Directory(_fontDir).existsSync();
+final _skipNoFonts = _hasFonts ? null : r'cần font ở C:\Windows\Fonts (chỉ có trên Windows)';
+// Mặc định ghi vào thư mục tạm (không làm bẩn git). Muốn cập nhật kết quả mẫu trong repo:
+//   SPIKE_OUT=../spikes/pdf_text/out flutter test test/spikes
+final _outDir = Directory(Platform.environment['SPIKE_OUT'] ??
+    Directory.systemTemp.createTempSync('pdf_spike_').path);
 
 enum _Face { latin, han, hangul }
 
@@ -55,7 +61,7 @@ void main() {
     expect(composeVietnamese('Hello 中文 abc'), 'Hello 中文 abc');
   });
 
-  test('vi_cjk.pdf: NFD->NFC + fallback font', () {
+  test('vi_cjk.pdf: NFD->NFC + fallback font', skip: _skipNoFonts, () {
     _outDir.createSync(recursive: true);
     final fonts = {
       _Face.latin: PdfTrueTypeFont(

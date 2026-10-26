@@ -54,6 +54,7 @@ Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go
 | 26/10 | Dọn: 7 worktree + 7 nhánh agent (đã gộp hết), zip SDK, cache gói không dùng | ✅ | — |
 | 26/10 | **Push** `feat/pdf-office` lên `origin` (github.com/phamphuongphuongnd/chuyenanh) | ✅ `3452e68` | `origin/feat/pdf-office` |
 | 26/10 10:3x | Làm lại 3 việc kiểm chứng bị ngắt (lần này commit từng bước): H1 `office_reader` với Word/Excel thật · H2 `pptx_reader` với PowerPoint thật · S1 chữ Việt/CJK + mật khẩu trong Syncfusion PDF | ⏳ đang chạy, mỗi agent 1 worktree mới | nhánh `worktree-agent-*` — **khi xong: merge vào `feat/pdf-office`, chạy lại test, push** |
+| 26/10 10:4x | **S1 xong** (spike chữ Việt/CJK + mật khẩu PDF): NFC đúng, **NFD sai** → chuẩn hoá NFC; **không font nào đủ Việt+CJK** → fallback theo script; font tự subset; mật khẩu OK. Đã xem ảnh render xác nhận. Merge fast-forward vào `feat/pdf-office` (`a939da8`) | ✅ → `lmm-wiki/concepts/xuat-chu-ra-pdf.md` | chờ chạy lại test rồi commit + push |
 | 26/10 | **Đổi kế hoạch (người dùng):** 10 tính năng **không** tung agent nữa — viết thành bản giao việc để người khác làm | ✅ `docs/superpowers/plans/2026-10-26-feature-tasks.md` | chưa commit |
 
 **Ghi chú:** 5 agent song song làm hết lượt dùng trong ~40 phút → agent nên **commit sau từng phần nhỏ** để bị ngắt
