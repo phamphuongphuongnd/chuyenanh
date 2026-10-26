@@ -59,11 +59,10 @@ typedef PdfxOpenData = Future<pdfx.PdfDocument> Function(Uint8List data);
 /// [PdfSecurityEngine] ra bytes rồi `openData`.
 class PdfxRenderEngine implements PdfRenderEngine {
   PdfxRenderEngine({
-    required PdfSecurityEngine security,
+    required this._security,
     PdfxOpenFile? openFile,
     PdfxOpenData? openData,
-  }) : _security = security,
-       _openFile = openFile ?? pdfx.PdfDocument.openFile,
+  }) : _openFile = openFile ?? pdfx.PdfDocument.openFile,
        _openData = openData ?? ((d) => pdfx.PdfDocument.openData(d));
 
   final PdfSecurityEngine _security;
