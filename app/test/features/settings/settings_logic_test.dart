@@ -8,7 +8,8 @@ import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
 import 'package:pdf_office/core/utils/page_size.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
-import 'package:pdf_office/features/settings/settings_logic.dart';import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pdf_office/features/settings/settings_logic.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _container() async {
   SharedPreferences.setMockInitialValues({});
@@ -146,31 +147,33 @@ void main() {
       final tmp = Directory.systemTemp.createTempSync('settings_pick_');
       addTearDown(() => tmp.deleteSync(recursive: true));
       String? askedTitle;
-      final r = await chooseOutputDirectory(
-        c.read(settingsProvider.notifier),
-        (title) async {
-          askedTitle = title;
-          return tmp.path;
-        },
-        'Chọn thư mục',
-      );
+      final r = await chooseOutputDirectory(c.read(settingsProvider.notifier), (
+        title,
+      ) async {
+        askedTitle = title;
+        return tmp.path;
+      }, 'Chọn thư mục');
       expect(r, OutputDirResult.applied);
       expect(askedTitle, 'Chọn thư mục');
       expect(c.read(settingsProvider).outputDir, tmp.path);
     });
 
-    test('chọn thư mục không ghi được -> notWritable, giữ cài đặt cũ', () async {
-      final c = await _container();
-      final n = c.read(settingsProvider.notifier);
-      await n.setOutputDir('/cu');
-      final r = await chooseOutputDirectory(
-        n,
-        (_) async => p.join(Directory.systemTemp.path, 'settings_khong_co_abc'),
-        'Chọn',
-      );
-      expect(r, OutputDirResult.notWritable);
-      expect(c.read(settingsProvider).outputDir, '/cu');
-    });
+    test(
+      'chọn thư mục không ghi được -> notWritable, giữ cài đặt cũ',
+      () async {
+        final c = await _container();
+        final n = c.read(settingsProvider.notifier);
+        await n.setOutputDir('/cu');
+        final r = await chooseOutputDirectory(
+          n,
+          (_) async =>
+              p.join(Directory.systemTemp.path, 'settings_khong_co_abc'),
+          'Chọn',
+        );
+        expect(r, OutputDirResult.notWritable);
+        expect(c.read(settingsProvider).outputDir, '/cu');
+      },
+    );
   });
 
   group('kAppVersion', () {

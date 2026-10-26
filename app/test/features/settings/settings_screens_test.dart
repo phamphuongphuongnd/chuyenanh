@@ -187,7 +187,9 @@ void main() {
       expect(c.read(settingsProvider).outputDir, isNull);
     });
 
-    testWidgets('người dùng huỷ chọn: không đổi, không báo lỗi', (tester) async {
+    testWidgets('người dùng huỷ chọn: không đổi, không báo lỗi', (
+      tester,
+    ) async {
       final c = await _pump(tester);
       await tester.tap(_key('settings_outputDir'));
       await tester.pumpAndSettle();
@@ -198,23 +200,24 @@ void main() {
       expect(find.byType(SnackBar), findsNothing);
     });
 
-    testWidgets('nút mặc định: tắt khi đang dùng mặc định, bật rồi về mặc định', (
-      tester,
-    ) async {
-      final c = await _pump(
-        tester,
-        prefsValues: {SettingsRepository.kOutputDir: tmp.path},
-      );
-      await tester.tap(_key('settings_outputDir'));
-      await tester.pumpAndSettle();
-      expect(find.text(tmp.path), findsOneWidget);
-      await tester.tap(_key('output_dir_reset'));
-      await tester.pumpAndSettle();
-      expect(c.read(settingsProvider).outputDir, isNull);
-      expect(find.text(defaultAndroidOutputDir), findsOneWidget);
-      final reset = tester.widget<OutlinedButton>(_key('output_dir_reset'));
-      expect(reset.onPressed, isNull);
-    });
+    testWidgets(
+      'nút mặc định: tắt khi đang dùng mặc định, bật rồi về mặc định',
+      (tester) async {
+        final c = await _pump(
+          tester,
+          prefsValues: {SettingsRepository.kOutputDir: tmp.path},
+        );
+        await tester.tap(_key('settings_outputDir'));
+        await tester.pumpAndSettle();
+        expect(find.text(tmp.path), findsOneWidget);
+        await tester.tap(_key('output_dir_reset'));
+        await tester.pumpAndSettle();
+        expect(c.read(settingsProvider).outputDir, isNull);
+        expect(find.text(defaultAndroidOutputDir), findsOneWidget);
+        final reset = tester.widget<OutlinedButton>(_key('output_dir_reset'));
+        expect(reset.onPressed, isNull);
+      },
+    );
   });
 
   group('Giới thiệu', () {

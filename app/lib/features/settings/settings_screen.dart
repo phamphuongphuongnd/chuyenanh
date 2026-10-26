@@ -20,9 +20,9 @@ class SettingsScreen extends ConsumerWidget {
     final l = context.l10n;
     final s = ref.watch(settingsProvider);
 
-    void open(Widget screen) => Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => screen));
+    void open(Widget screen) =>
+        Navigator.of(context)
+            .push(MaterialPageRoute<void>(builder: (_) => screen));
 
     return Scaffold(
       appBar: AppBar(title: Text(l.settings_title)),

@@ -17,8 +17,5 @@ final List<RouteBase> settingsRoutes = [
     path: Routes.language,
     builder: (context, state) => const LanguageScreen(),
   ),
-  GoRoute(
-    path: Routes.about,
-    builder: (context, state) => const AboutScreen(),
-  ),
+  GoRoute(path: Routes.about, builder: (context, state) => const AboutScreen()),
 ];

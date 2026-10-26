@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ban don sac cho "themed icon" Android 13+: trang giay, mui ten khoet rong. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M35,28 L59,28 L73,42 L73,80 L35,80 Z M51,48 L57,48 L57,60 L65,60 L54,73 L43,60 L51,60 Z" />
+</vector>
