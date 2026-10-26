@@ -9,5 +9,8 @@
   "pptx_hideHidden": "Sembunyikan slide tersembunyi",
   "pptx_emptyDeck": "Presentasi ini tidak memiliki slide",
   "pptx_hiddenBadge": "Tersembunyi",
-  "pptx_slideN": "Slide {n}"
+  "pptx_slideN": "Slide {n}",
+  "pptx_linkOpenFailed": "Tidak dapat membuka tautan",
+  "pptx_linkOpening": "Membuka: {url}",
+  "@pptx_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

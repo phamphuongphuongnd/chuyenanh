@@ -1,8 +1,10 @@
 // Vẽ một slide PPTX bằng widget: canvas theo pt (EMU/12700) co lại bằng FittedBox.
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pptx_reader/pptx_reader.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../core/utils/link_opener.dart';
 import 'pptx_layout.dart';
 
 Color _argb(int v) => Color(v);
@@ -253,7 +255,7 @@ class ParagraphsView extends StatelessWidget {
   }
 }
 
-class ParagraphWidget extends StatelessWidget {
+class ParagraphWidget extends StatefulWidget {
   const ParagraphWidget({
     super.key,
     required this.paragraph,
@@ -267,7 +269,50 @@ class ParagraphWidget extends StatelessWidget {
   final bool wrap;
   final Color defaultColor;
 
+  @override
+  State<ParagraphWidget> createState() => _ParagraphWidgetState();
+}
+
+class _ParagraphWidgetState extends State<ParagraphWidget> {
   static const double _defaultSize = 18;
+  final List<TapGestureRecognizer> _recognizers = [];
+
+  PptxParagraph get paragraph => widget.paragraph;
+  String? get bullet => widget.bullet;
+  bool get wrap => widget.wrap;
+  Color get defaultColor => widget.defaultColor;
+
+  @override
+  void dispose() {
+    for (final r in _recognizers) {
+      r.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _openLink(String url) async {
+    final launcher = linkLauncherOf(context);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final l10n = context.l10n;
+    final res = await openLink(launcher, url);
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(
+          res.opened
+              ? l10n.pptx_linkOpening(res.uri.toString())
+              : l10n.pptx_linkOpenFailed,
+        ),
+      ),
+    );
+  }
+
+  TapGestureRecognizer? _recognizerFor(PptxRun r) {
+    final url = r.hyperlink;
+    if (url == null) return null;
+    final rec = TapGestureRecognizer()..onTap = () => _openLink(url);
+    _recognizers.add(rec);
+    return rec;
+  }
 
   double get _firstSize {
     for (final r in paragraph.runs) {
@@ -282,6 +327,10 @@ class ParagraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    for (final r in _recognizers) {
+      r.dispose();
+    }
+    _recognizers.clear();
     final p = paragraph;
     final height = lineHeightFactor(p, _firstSize);
     final spans = <InlineSpan>[
@@ -289,6 +338,7 @@ class ParagraphWidget extends StatelessWidget {
         TextSpan(
           text: r.text,
           style: runStyle(r, defaultColor, _firstSize, height),
+          recognizer: _recognizerFor(r),
         ),
     ];
     if (spans.isEmpty) {

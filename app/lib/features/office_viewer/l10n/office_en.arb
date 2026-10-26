@@ -26,5 +26,8 @@
   },
   "office_truncated": "File is large; only the first part is shown.",
   "office_imageUnsupported": "Image can't be displayed",
-  "office_linkCopied": "Link copied"
+  "office_linkCopied": "Link copied",
+  "office_linkOpenFailed": "Could not open the link",
+  "office_linkOpening": "Opening: {url}",
+  "@office_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

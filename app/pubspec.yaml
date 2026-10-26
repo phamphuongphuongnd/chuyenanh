@@ -75,6 +75,7 @@ dependencies:
     path: ../packages/pdf_layout
   image_ops:
     path: ../packages/image_ops
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

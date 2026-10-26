@@ -9,5 +9,8 @@
   "pptx_hideHidden": "Ẩn các slide ẩn",
   "pptx_emptyDeck": "Bản trình chiếu không có slide nào",
   "pptx_hiddenBadge": "Ẩn",
-  "pptx_slideN": "Slide {n}"
+  "pptx_slideN": "Slide {n}",
+  "pptx_linkOpenFailed": "Không mở được liên kết",
+  "pptx_linkOpening": "Đang mở: {url}",
+  "@pptx_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

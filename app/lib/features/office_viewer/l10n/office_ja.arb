@@ -15,5 +15,8 @@
   "office_encodingLabel": "エンコード: {name}",
   "office_truncated": "ファイルが大きいため先頭部分のみ表示します。",
   "office_imageUnsupported": "画像を表示できません",
-  "office_linkCopied": "リンクをコピーしました"
+  "office_linkCopied": "リンクをコピーしました",
+  "office_linkOpenFailed": "リンクを開けませんでした",
+  "office_linkOpening": "開いています: {url}",
+  "@office_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }
