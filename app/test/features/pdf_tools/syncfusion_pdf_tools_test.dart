@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/engines/pdf/pdf_tools_engine.dart';
 import 'package:pdf_office/features/pdf_tools/engine/syncfusion_pdf_tools.dart';
+import 'package:pdf_office/features/pdf_tools/engine/watermark_layout.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 /// Tạo PDF mẫu: trang i có chữ `<tag> page <i+1>`, khổ lấy từ [sizes] (xoay vòng).
@@ -300,6 +301,21 @@ void main() {
         final t = textOf(d, i);
         expect(t, contains('CONFIDENTIAL'), reason: 'trang ${i + 1}');
         expect(t, contains('Doc page ${i + 1}'));
+      }
+      d.dispose();
+    });
+
+    test('watermark có vị trí (góc trên trái): chữ vẫn trên mọi trang', () async {
+      final src = await makePdf(tmp.path, 'src.pdf', 2);
+      final out = p.join(tmp.path, 'wm.pdf');
+      await engine.watermark(
+        src,
+        const PlacedWatermarkSpec.text('TOPLEFT', alignX: -1, alignY: -1, angle: 0),
+        out,
+      );
+      final d = open(out);
+      for (var i = 0; i < 2; i++) {
+        expect(textOf(d, i), contains('TOPLEFT'));
       }
       d.dispose();
     });

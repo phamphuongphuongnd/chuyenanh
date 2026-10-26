@@ -12,6 +12,7 @@ import '../../../core/utils/file_paths.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
 import 'isolate_job.dart';
 import 'page_ranges.dart';
+import 'watermark_layout.dart';
 
 /// Mở PDF từ file, đổi lỗi thư viện thành [AppError].
 Future<sf.PdfDocument> openPdfFile(String path, {String? password}) async {
@@ -187,21 +188,32 @@ Future<Object?> watermarkJob(Map<String, Object?> args, JobPort port) async {
       final g = page.graphics;
       g.save();
       g.setTransparency(opacity);
-      g.translateTransform(size.width / 2, size.height / 2);
-      g.rotateTransform(spec.angle);
+      double itemW;
+      double itemH;
       if (font != null) {
         final m = font.measureString(spec.text!);
-        g.drawString(
-          spec.text!,
-          font,
-          brush: brush,
-          bounds: Rect.fromLTWH(-m.width / 2, -m.height / 2, m.width + 2, m.height),
-        );
+        itemW = m.width + 2;
+        itemH = m.height;
       } else {
-        final w = size.width * spec.imageScale.clamp(0.05, 1.0);
-        final ratio = bitmap!.height / math.max(1, bitmap.width);
-        final h = w * ratio;
-        g.drawImage(bitmap, Rect.fromLTWH(-w / 2, -h / 2, w, h));
+        itemW = size.width * spec.imageScale.clamp(0.05, 1.0);
+        itemH = itemW * bitmap!.height / math.max(1, bitmap.width);
+      }
+      final c = watermarkCenter(
+        pageW: size.width,
+        pageH: size.height,
+        itemW: itemW,
+        itemH: itemH,
+        angleDeg: spec.angle,
+        alignX: spec is PlacedWatermarkSpec ? spec.alignX : 0,
+        alignY: spec is PlacedWatermarkSpec ? spec.alignY : 0,
+      );
+      g.translateTransform(c.dx, c.dy);
+      g.rotateTransform(spec.angle);
+      final box = Rect.fromLTWH(-itemW / 2, -itemH / 2, itemW, itemH);
+      if (font != null) {
+        g.drawString(spec.text!, font, brush: brush, bounds: box);
+      } else {
+        g.drawImage(bitmap!, box);
       }
       g.restore();
       port.progress((i + 1) / count * 0.9);
