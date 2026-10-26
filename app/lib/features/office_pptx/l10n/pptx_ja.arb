@@ -1,4 +1,13 @@
 {
   "@@locale": "ja",
-  "pptx_title": "プレゼンテーション"
+  "pptx_title": "プレゼンテーション",
+  "pptx_unsupportedObject": "非対応",
+  "pptx_slideOf": "{current} / {total}",
+  "pptx_notes": "ノート",
+  "pptx_noNotes": "このスライドにはノートがありません",
+  "pptx_showHidden": "非表示スライドを表示",
+  "pptx_hideHidden": "非表示スライドを隠す",
+  "pptx_emptyDeck": "このプレゼンテーションにはスライドがありません",
+  "pptx_hiddenBadge": "非表示",
+  "pptx_slideN": "スライド {n}"
 }
