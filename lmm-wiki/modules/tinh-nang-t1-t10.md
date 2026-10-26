@@ -19,7 +19,7 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 - Người dùng chốt: **Claude làm tiếp T1…T10** (không còn "giao người khác"). Chia **đợt 5 agent**, mỗi agent 1 worktree, commit từng bước,
   không push/merge. Đợt 1 = T2, T3, T4, T5, T10; đợt 2 = T6, T7, T8, T9. T1 do chính Claude làm.
 - **Đã push 26/10 ~15:20** (fast-forward, không force) 7 nhánh: `feat/pdf-office`, `feat/t1-documents`, `feat/t2-image-to-pdf`, `feat/t3-reader`,
-  `feat/t4-pdf-tools`, `feat/t5-editor`, `feat/t10-settings`. T3 là ảnh chụp giữa chừng (agent chưa báo cáo cuối). T6–T9 chưa có gì mới.
+  `feat/t4-pdf-tools`, `feat/t5-editor`, `feat/t10-settings`. T6–T9 chưa có gì mới.
 - "Tự kiểm" = Claude tự chạy lại `flutter analyze` + `flutter test`; "agent báo" = mới đọc báo cáo của agent. **Chưa việc nào
   chạy trên điện thoại thật.**
 
@@ -27,7 +27,7 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 |---|---|---|
 | T1 Trang chủ Tài liệu | `feat/t1-documents` @ `1159b7b` (local) | **Xong UI, tự kiểm** (analyze sạch, 102 test pass) → [[documents]] |
 | T2 Ảnh → PDF | `feat/t2-image-to-pdf` @ `abc7253` | **Tự kiểm 26/10: analyze sạch, 172 test pass**; chưa thử plugin thật (camera, photo_manager, cropper) |
-| T3 Trình đọc PDF | `feat/t3-reader` @ `8d4a30c` | Agent **chưa báo cáo cuối**; đã commit: chuỗi `reader_*`, lối tắt Kotlin `ShortcutChannel`, màn đọc (tìm, nhảy trang, bookmark, mục lục, tối, in, mật khẩu) + PDF→ảnh; **chưa tự kiểm** |
+| T3 Trình đọc PDF | `feat/t3-reader` @ `2184e98` | **Tự kiểm 26/10: analyze sạch, 144 test pass.** Viewer (tìm, mục lục, tối, in, mật khẩu, bookmark), PDF→ảnh, lối tắt. **Kotlin (`MainActivity`/`ShortcutChannel`) chưa biên dịch**; viewer thật chỉ test bằng viewer giả |
 | T4 Công cụ PDF | `feat/t4-pdf-tools` @ `4bc8261` | **Tự kiểm 26/10: analyze sạch, 148 pass / 1 fail** (`app_smoke_test` — bước `push(Routes.merge)` đòi `PlaceholderScreen`); 7 màn + engine; watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica) |
 | T5 Chỉnh sửa PDF | `feat/t5-editor` @ `10d0489` | **Tự kiểm 26/10: analyze sạch, 145 test pass**; `SfPdfViewer` chỉ test bằng viewer giả; màn Ký cần `pdfRenderEngineProvider` của T3 |
 | T6 Chuyển đổi | `feat/t6-convert` | Chưa giao (đợt 2) |
@@ -40,7 +40,8 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 - `test/app_smoke_test.dart` (MÓNG): test thứ 3 `push(Routes.merge, extra: '/x/a.pdf')` rồi đòi `find.text('/x/a.pdf')` (màn giữ chỗ) → vỡ khi T4
   thay màn thật; cách sửa: chỉ kiểm route đã đăng ký, bỏ bước push (hoặc đổi sang route còn giữ chỗ). Cùng file, test 1–2 từng khẳng định trang chủ là `PlaceholderScreen` → đã sửa ở nhánh T1 (override DB + `documentsProvider`
   cố định). Mọi nhánh feature thay route trang chủ/placeholder đều có thể vỡ test này khi ghép.
-- Màn Ký (T5) cần `pdfRenderEngineProvider` thật từ T3; nhánh T5 chưa có nên màn hiện lỗi "Thử lại" cho tới khi ghép T3.
+- Màn Ký (T5) cần `pdfRenderEngineProvider` thật từ T3 (T3 đã nối `pdfxRenderEngine`); nhánh T5 riêng chưa có nên màn hiện lỗi "Thử lại" cho tới khi ghép T3.
+- **MÓNG phải làm cho T3:** thêm `ref.watch(shortcutLaunchProvider);` vào `PdfOfficeApp.build` (`lib/app.dart`, import `features/reader/shortcut/shortcut_launcher.dart`) thì lối tắt mới chạy; tuỳ chọn thêm `SfGlobalLocalizations.delegate`.
 - Font Noto (`NotoSans-Regular`, `NotoSansSC/JP/KR-Regular`) vào `app/assets/fonts/` — chưa tải; T4 và T6 cần. `composeVietnamese` đang bị nhân đôi (T4 `pdf_tools/logic/vi_nfc.dart`, T6 sẽ có bản riêng) → gom vào `core/utils`.
 - Gợi ý cho MÓNG (chưa làm): `device_info_plus` (biết SDK để xin quyền đúng, xem [[documents]]), `package_info_plus` (T10 đang hằng `kAppVersion`),
   thêm `Routes.theme/outputDir/pageSize` nếu muốn drawer mở thẳng.

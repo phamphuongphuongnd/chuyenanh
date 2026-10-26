@@ -73,7 +73,7 @@ không mất việc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng
 
 ### Dừng phiên 26/10 ~15:10 — làm tiếp thế nào
 1. `git worktree list` + `git log --oneline` từng nhánh để xem agent nào còn chạy/đã commit thêm. **T3** chưa có báo cáo cuối.
-2. **Tự kiểm** T2, T3, T4, T5, T10: vào từng `.claude/worktrees/agent-*/app`, chạy `flutter analyze` + `flutter test`
+2. (Đã làm xong 26/10: T1–T5, T10 đều tự kiểm, analyze sạch; chỉ T4 còn 1 test smoke đỏ.) Tự kiểm lại nếu có commit mới ở T2, T3, T4, T5, T10: vào từng `.claude/worktrees/agent-*/app`, chạy `flutter analyze` + `flutter test`
    (lệnh trong `lmm-wiki/concepts/kiem-thu-flutter.md`). Mới có số liệu của agent; riêng T1 là tự kiểm.
 3. **Đợt 2** (5 agent/đợt, commit từng bước): T6, T7, T8, T9 (cần font Noto cho T6 — chưa tải, hỏi người dùng).
 4. **Ghép:** merge các nhánh vào `feat/pdf-office`, sửa `app_smoke_test` (bước `push(Routes.merge)`), `merge_arb` + `gen-l10n`,
