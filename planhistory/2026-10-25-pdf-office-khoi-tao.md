@@ -62,7 +62,7 @@ Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go
 | 26/10 13:55 | Người dùng quyết định **bàn giao phần còn lại cho người khác**: commit `WIP(Tn)` trong từng worktree (bỏ file probe/exp), **push 10 nhánh** `feat/t1-documents … feat/t10-settings` lên origin; ghi mục E vào `feature-tasks.md`, wiki `modules/tinh-nang-t1-t10.md` | ✅ | `origin/feat/t*` |
 | 26/10 | **Đổi kế hoạch (người dùng):** 10 tính năng **không** tung agent nữa — viết thành bản giao việc để người khác làm | ✅ `docs/superpowers/plans/2026-10-26-feature-tasks.md` | chưa commit |
 
-| 26/10 14:5x | **Đổi lại (người dùng): Claude làm tiếp T1…T10.** Máy dev mới chưa có Flutter → cài `git clone -b 3.47.8` vào `C:\srclutter` (không Android SDK). Baseline nhánh T1: analyze sạch, 82 test pass | ✅ | — |
+| 26/10 14:5x | **Đổi lại (người dùng): Claude làm tiếp T1…T10.** Máy dev mới chưa có Flutter → cài `git clone -b 3.47.8` vào `C:/src/flutter` (không Android SDK). Baseline nhánh T1: analyze sạch, 82 test pass | ✅ | — |
 | 26/10 15:0x | **T1 xong UI** (tự làm): trang chủ, tab, quét + quyền, tìm, Gần đây, Yêu thích, drawer, công cụ; sửa `app_smoke_test`; analyze sạch, **102 test pass** | ✅ → `lmm-wiki/modules/documents.md` | `feat/t1-documents` @ `1159b7b` (local, chưa push) |
 | 26/10 15:0x | Giao **đợt 1** cho 5 agent (worktree riêng, commit từng bước, không push/merge): T2, T3, T4, T5, T10 | ⏳ | `.claude/worktrees/agent-*` |
 | 26/10 15:0x | T2 / T4 / T5 / T10 **agent báo xong** (T4: 148 pass + 1 fail ở `app_smoke_test`); T3 chưa báo (đã có commit màn đọc, PDF→ảnh, lối tắt Kotlin) | ⏳ chưa tự kiểm hết | T2 `abc7253`, T4 `4bc8261`, T5 `10d0489`, T10 `66fead3`, T3 `8d4a30c` |
