@@ -55,26 +55,15 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   }
 
   Future<void> _rename() async {
-    final l = context.l10n;
-    final controller = TextEditingController(
-      text: baseNameWithoutExtension(_path),
-    );
     final newName = await showDialog<String>(
       context: context,
-      builder: (ctx) => AppDialog(
-        title: l.img2pdf_renameTitle,
-        content: AppTextField(
-          controller: controller,
-          autofocus: true,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (v) => Navigator.of(ctx).pop(v),
-        ),
-        onConfirm: () => Navigator.of(ctx).pop(controller.text),
-      ),
+      builder: (_) => _RenameDialog(initialName: baseNameWithoutExtension(_path)),
     );
-    controller.dispose();
     if (newName == null || !mounted) return;
-    final name = normalizePdfName(newName, fallback: baseNameWithoutExtension(_path));
+    final name = normalizePdfName(
+      newName,
+      fallback: baseNameWithoutExtension(_path),
+    );
     try {
       final target = await renameOutputDocument(
         ref.read(appDatabaseProvider),
@@ -195,6 +184,42 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Hộp thoại đổi tên: tự giữ và huỷ ô nhập (huỷ sớm sẽ lỗi khi hộp thoại còn đang đóng dần).
+class _RenameDialog extends StatefulWidget {
+  const _RenameDialog({required this.initialName});
+
+  final String initialName;
+
+  @override
+  State<_RenameDialog> createState() => _RenameDialogState();
+}
+
+class _RenameDialogState extends State<_RenameDialog> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialName,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppDialog(
+      title: context.l10n.img2pdf_renameTitle,
+      content: AppTextField(
+        controller: _controller,
+        autofocus: true,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (v) => Navigator.of(context).pop(v),
+      ),
+      onConfirm: () => Navigator.of(context).pop(_controller.text),
     );
   }
 }

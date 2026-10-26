@@ -388,7 +388,6 @@ class _EditScreenState extends ConsumerState<EditScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _ToolButton(
               key: const ValueKey('tool_rotate'),
@@ -573,23 +572,29 @@ class _ToolButton extends StatelessWidget {
     final color = enabled
         ? Theme.of(context).colorScheme.onSurface
         : Theme.of(context).disabledColor;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: Theme.of(
-                context,
-              ).textTheme.labelSmall?.copyWith(color: color),
-            ),
-          ],
+    // Expanded: 5 nút chia đều bề rộng, vừa cả màn 320dp.
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: color),
+              ),
+            ],
+          ),
         ),
       ),
     );
