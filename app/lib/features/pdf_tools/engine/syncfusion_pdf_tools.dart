@@ -7,19 +7,19 @@ import 'package:path/path.dart' as p;
 
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
+import '../logic/text_fonts.dart';
+import '../logic/vi_nfc.dart';
 import 'isolate_job.dart';
 import 'page_ranges.dart';
 import 'pdf_ops.dart';
 
-/// Trả về bytes font TTF Unicode (Noto) để vẽ chữ ngoài Latin-1; `null` = không có.
-typedef PdfFontLoader = FutureOr<Uint8List?> Function();
+/// Trả về bytes font TTF Unicode (Noto) để vẽ [text] (chữ ngoài Latin-1); `null` = không có.
+typedef PdfFontLoader = FutureOr<Uint8List?> Function(String text);
 
-/// Font Noto Sans nằm ở `assets/fonts/` (chưa có trong repo → trả `null`, rơi về Helvetica).
-Future<Uint8List?> loadBundledFont() async {
-  for (final name in const [
-    'assets/fonts/NotoSans-Regular.ttf',
-    'assets/fonts/NotoSans-Regular.otf',
-  ]) {
+/// Font Noto theo hệ chữ của [text] nằm ở `assets/fonts/` (chưa có trong repo → trả `null`,
+/// rơi về Helvetica; ký tự lạ có thể hiện sai).
+Future<Uint8List?> loadBundledFont(String text) async {
+  for (final name in fontAssetCandidates(text)) {
     try {
       final data = await rootBundle.load(name);
       return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
@@ -149,8 +149,10 @@ class SyncfusionPdfTools implements PdfToolsEngine {
       throw ArgumentError('watermark text must not be empty');
     }
     _ensureOutputIsNotInput(outputPath, [inputPath]);
-    final fontBytes = (text != null && !isLatin1(text))
-        ? await fontLoader?.call()
+    // Chữ Việt NFD → NFC trước khi vẽ; engine nạp font theo chữ đã chuẩn hoá.
+    final normalized = text == null ? null : composeVietnamese(text);
+    final fontBytes = (normalized != null && !isLatin1(normalized))
+        ? await fontLoader?.call(normalized)
         : null;
     final r = await runIsolateJob(
       watermarkJob,
@@ -175,7 +177,8 @@ class SyncfusionPdfTools implements PdfToolsEngine {
     ProgressCallback? onProgress,
     CancelToken? cancelToken,
   }) async {
-    final fontBytes = !isLatin1(spec.title) ? await fontLoader?.call() : null;
+    final title = composeVietnamese(spec.title);
+    final fontBytes = !isLatin1(title) ? await fontLoader?.call(title) : null;
     final r = await runIsolateJob(
       blankJob,
       {'spec': spec, 'fontBytes': fontBytes, 'output': outputPath},

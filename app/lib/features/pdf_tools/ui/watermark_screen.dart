@@ -10,6 +10,7 @@ import '../../../core/widgets/widgets.dart';
 import '../engine/pdf_ops.dart' show isLatin1;
 import '../engine/watermark_layout.dart';
 import '../logic/tool_rules.dart';
+import '../logic/vi_nfc.dart';
 import '../pdf_tools_providers.dart';
 import 'pdf_file_picker.dart';
 import 'single_pdf_state.dart';
@@ -158,7 +159,8 @@ class _WatermarkScreenState extends ConsumerState<WatermarkScreen>
             : PickPdfPrompt(onPick: pickNew),
       );
     }
-    final nonLatin = _isText && !isLatin1(_textCtl.text);
+    final nonLatin =
+        _isText && !isLatin1(composeVietnamese(_textCtl.text));
     return ToolScaffold(
       title: title,
       body: ListView(

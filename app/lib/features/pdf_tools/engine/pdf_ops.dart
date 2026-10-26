@@ -11,6 +11,7 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
 import 'isolate_job.dart';
+import '../logic/vi_nfc.dart';
 import 'page_ranges.dart';
 import 'watermark_layout.dart';
 
@@ -175,8 +176,9 @@ Future<Object?> watermarkJob(Map<String, Object?> args, JobPort port) async {
     sf.PdfFont? font;
     sf.PdfBrush? brush;
     sf.PdfBitmap? bitmap;
-    if (spec.text != null) {
-      font = makeFont(spec.text!, spec.fontSize, fontBytes);
+    final text = spec.text == null ? null : composeVietnamese(spec.text!);
+    if (text != null) {
+      font = makeFont(text, spec.fontSize, fontBytes);
       brush = sf.PdfSolidBrush(_color(spec.colorArgb));
     } else {
       bitmap = sf.PdfBitmap(spec.imageBytes!);
@@ -191,7 +193,7 @@ Future<Object?> watermarkJob(Map<String, Object?> args, JobPort port) async {
       double itemW;
       double itemH;
       if (font != null) {
-        final m = font.measureString(spec.text!);
+        final m = font.measureString(text!);
         itemW = m.width + 2;
         itemH = m.height;
       } else {
@@ -211,7 +213,7 @@ Future<Object?> watermarkJob(Map<String, Object?> args, JobPort port) async {
       g.rotateTransform(spec.angle);
       final box = Rect.fromLTWH(-itemW / 2, -itemH / 2, itemW, itemH);
       if (font != null) {
-        g.drawString(spec.text!, font, brush: brush, bounds: box);
+        g.drawString(text!, font, brush: brush, bounds: box);
       } else {
         g.drawImage(bitmap!, box);
       }
@@ -242,7 +244,8 @@ Future<Object?> blankJob(Map<String, Object?> args, JobPort port) async {
         ? sf.PdfPageOrientation.landscape
         : sf.PdfPageOrientation.portrait;
     doc.pageSettings.size = Size(w, h);
-    doc.documentInformation.title = spec.title;
+    final title = composeVietnamese(spec.title);
+    doc.documentInformation.title = title;
     if (spec.category != null) doc.documentInformation.subject = spec.category!;
 
     const margin = 36.0;
@@ -250,9 +253,9 @@ Future<Object?> blankJob(Map<String, Object?> args, JobPort port) async {
     final paintBg = bg != 0xFFFFFFFF;
     final bgBrush = sf.PdfSolidBrush(_color(bg));
     final linePen = sf.PdfPen(_color(0xFFB0BEC5), width: 0.5);
-    final titleFont = spec.title.isEmpty
+    final titleFont = title.isEmpty
         ? null
-        : makeFont(spec.title, 22, fontBytes, bold: true);
+        : makeFont(title, 22, fontBytes, bold: true);
     final titleHeight = titleFont == null ? 0.0 : 44.0;
 
     for (var i = 0; i < spec.pageCount; i++) {
@@ -262,7 +265,7 @@ Future<Object?> blankJob(Map<String, Object?> args, JobPort port) async {
       final top = margin + (i == 0 ? titleHeight : 0);
       if (i == 0 && titleFont != null) {
         g.drawString(
-          spec.title,
+          title,
           titleFont,
           brush: sf.PdfBrushes.black,
           bounds: Rect.fromLTWH(margin, margin, w - 2 * margin, 30),

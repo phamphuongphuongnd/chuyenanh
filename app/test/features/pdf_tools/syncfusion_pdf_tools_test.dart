@@ -305,6 +305,15 @@ void main() {
       d.dispose();
     });
 
+    test('chữ NFD được chuẩn hoá NFC trước khi vẽ', () async {
+      final src = await makePdf(tmp.path, 'src.pdf', 1);
+      final out = p.join(tmp.path, 'wm.pdf');
+      await engine.watermark(src, const WatermarkSpec.text('Cafe\u0301'), out);
+      final d = open(out);
+      expect(textOf(d, 0), contains('Café'));
+      d.dispose();
+    });
+
     test('watermark có vị trí (góc trên trái): chữ vẫn trên mọi trang', () async {
       final src = await makePdf(tmp.path, 'src.pdf', 2);
       final out = p.join(tmp.path, 'wm.pdf');
