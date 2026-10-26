@@ -1,8 +1,8 @@
-vi_arial.pdf: 33426 bytes (arial.ttf 1045720 bytes) subset=true
-msyh.ttc: OK pdf=52632 font=19704352 subset=true
-simsun.ttc: OK pdf=41170 font=18316748 subset=true
-YuGothR.ttc: OK pdf=54062 font=13835976 subset=true
-msgothic.ttc: OK pdf=32294 font=8990160 subset=true
+vi_arial.pdf: 33428 bytes (arial.ttf 1045720 bytes) subset=true
+msyh.ttc: OK pdf=52631 font=19704352 subset=true
+simsun.ttc: OK pdf=41169 font=18316748 subset=true
+YuGothR.ttc: OK pdf=54061 font=13835976 subset=true
+msgothic.ttc: OK pdf=32293 font=8990160 subset=true
 malgun.ttf: OK pdf=41390 font=13459196 subset=true
 SimsunExtG.ttf: OK pdf=12342 font=3549508 subset=true
-segoeui.ttf: OK pdf=24737 font=959752 subset=true
+segoeui.ttf: OK pdf=24736 font=959752 subset=true
