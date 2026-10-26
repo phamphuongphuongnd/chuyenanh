@@ -13,7 +13,7 @@ sources:
 Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm, test, ước lượng) ở
 `docs/superpowers/plans/2026-10-26-feature-tasks.md` — **mục E là bảng trạng thái bàn giao**. Trang này tóm tắt.
 
-## Tóm tắt (cập nhật 26/10 ~15:15)
+## Tóm tắt (cập nhật 26/10 ~15:10)
 - **Nền đã xong và đã kiểm:** [[0003-kien-truc-riverpod]] + [[thu-vien-dart-thuan]] (4 thư viện, đã thử file thật 2/4) + build Android
   ([[build-android]]) + spike chữ ([[xuat-chu-ra-pdf]]).
 - Người dùng chốt: **Claude làm tiếp T1…T10** (không còn "giao người khác"). Chia **đợt 5 agent**, mỗi agent 1 worktree, commit từng bước,
@@ -26,7 +26,7 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 |---|---|---|
 | T1 Trang chủ Tài liệu | `feat/t1-documents` @ `1159b7b` (local) | **Xong UI, tự kiểm** (analyze sạch, 102 test pass) → [[documents]] |
 | T2 Ảnh → PDF | `feat/t2-image-to-pdf` @ `abc7253` (worktree) | Agent báo xong (172 test pass), **chưa tự kiểm**; chưa thử plugin thật (camera, photo_manager, cropper) |
-| T3 Trình đọc PDF | `feat/t3-reader` | Agent đang chạy |
+| T3 Trình đọc PDF | `feat/t3-reader` @ `8d4a30c` (worktree) | Agent **chưa báo cáo cuối**; đã commit: chuỗi `reader_*`, lối tắt Kotlin `ShortcutChannel`, màn đọc (tìm, nhảy trang, bookmark, mục lục, tối, in, mật khẩu) + PDF→ảnh; **chưa tự kiểm** |
 | T4 Công cụ PDF | `feat/t4-pdf-tools` @ `4bc8261` (worktree) | Agent báo xong: analyze sạch, 148 pass / **1 fail** (`app_smoke_test` — bước `push(Routes.merge)` đòi `PlaceholderScreen`), **chưa tự kiểm**; 7 màn + engine; watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica) |
 | T5 Chỉnh sửa PDF | `feat/t5-editor` @ `10d0489` (worktree) | Agent báo xong (145 test pass), **chưa tự kiểm**; `SfPdfViewer` chỉ test bằng viewer giả; màn Ký cần `pdfRenderEngineProvider` của T3 |
 | T6 Chuyển đổi | `feat/t6-convert` | Chưa giao (đợt 2) |
@@ -44,6 +44,10 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 - Gợi ý cho MÓNG (chưa làm): `device_info_plus` (biết SDK để xin quyền đúng, xem [[documents]]), `package_info_plus` (T10 đang hằng `kAppVersion`),
   thêm `Routes.theme/outputDir/pageSize` nếu muốn drawer mở thẳng.
 - Nhánh T1 xuất phát từ `4a33139` nên **không có** wiki/doc bàn giao mới (commit `2f5a762`); wiki và README luôn ghi trên `feat/pdf-office`.
+
+## Làm tiếp khi mở phiên mới
+Xem mục "Dừng phiên 26/10" trong `planhistory/2026-10-25-pdf-office-khoi-tao.md`: tự kiểm T2–T5/T10 trong từng worktree
+(`.claude/worktrees/agent-*`, đã gitignore) → đợt 2 (T6–T9) → ghép nhánh → build APK → hỏi người dùng rồi mới push.
 
 ## Gotcha khi nhận việc
 - **Chưa chạy lại `flutter analyze`/`test` sau khi agent bị ngắt** — chạy trước khi làm tiếp. Mỗi nhánh có commit `WIP(Tn)`
