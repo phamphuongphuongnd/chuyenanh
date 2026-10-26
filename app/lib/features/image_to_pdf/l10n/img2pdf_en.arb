@@ -1,4 +1,101 @@
 {
   "@@locale": "en",
-  "img2pdf_title": "Image to PDF"
+  "img2pdf_title": "Image to PDF",
+  "img2pdf_pickTitle": "Select images",
+  "img2pdf_permissionTitle": "Photo access needed",
+  "img2pdf_permissionMessage": "Allow PDF Office to read your photos so you can choose images to convert.",
+  "img2pdf_allowAccess": "Allow access",
+  "img2pdf_openSettings": "Open settings",
+  "img2pdf_limitedAccess": "Only some of your photos are accessible.",
+  "img2pdf_noImages": "No images in this album",
+  "img2pdf_camera": "Camera",
+  "img2pdf_selectedCount": "{count} selected",
+  "@img2pdf_selectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "img2pdf_next": "Next",
+  "img2pdf_maxImages": "You can add up to {max} images.",
+  "@img2pdf_maxImages": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "img2pdf_preparing": "Preparing images…",
+  "img2pdf_skippedImages": "{count} image(s) could not be read and were skipped.",
+  "@img2pdf_skippedImages": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "img2pdf_editTitle": "Edit images",
+  "img2pdf_pageOf": "{current} / {total}",
+  "@img2pdf_pageOf": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "img2pdf_add": "Add",
+  "img2pdf_rotate": "Rotate",
+  "img2pdf_crop": "Crop",
+  "img2pdf_cropTitle": "Crop image",
+  "img2pdf_filter": "Filter",
+  "img2pdf_reset": "Reset",
+  "img2pdf_imageRemoved": "Image removed",
+  "img2pdf_undo": "Undo",
+  "img2pdf_filterOriginal": "Original",
+  "img2pdf_filterGrayscale": "Grayscale",
+  "img2pdf_filterBlackWhite": "Black & white",
+  "img2pdf_filterEnhance": "Enhance",
+  "img2pdf_filterBrighten": "Brighten",
+  "img2pdf_filterMagic": "Magic color",
+  "img2pdf_discardTitle": "Discard changes?",
+  "img2pdf_discardMessage": "Your edits and the order of the images will be lost.",
+  "img2pdf_createPdf": "Create PDF",
+  "img2pdf_optionsTitle": "PDF options",
+  "img2pdf_pageSize": "Page size",
+  "img2pdf_sizeA4": "A4",
+  "img2pdf_sizeLetter": "Letter",
+  "img2pdf_sizeFit": "Fit image",
+  "img2pdf_orientation": "Orientation",
+  "img2pdf_orientationAuto": "Auto",
+  "img2pdf_orientationPortrait": "Portrait",
+  "img2pdf_orientationLandscape": "Landscape",
+  "img2pdf_margin": "Margin",
+  "img2pdf_marginNone": "None",
+  "img2pdf_marginSmall": "Small",
+  "img2pdf_marginLarge": "Large",
+  "img2pdf_quality": "Quality",
+  "img2pdf_qualityValue": "{percent}%",
+  "@img2pdf_qualityValue": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "img2pdf_estimatedSize": "Estimated size: {size} · {count} page(s)",
+  "@img2pdf_estimatedSize": {
+    "placeholders": {
+      "size": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "img2pdf_creating": "Creating PDF…",
+  "img2pdf_exportFailed": "Couldn't create the PDF",
+  "img2pdf_resultTitle": "PDF created",
+  "img2pdf_resultSavedIn": "Saved in \"{folder}\"",
+  "@img2pdf_resultSavedIn": {
+    "placeholders": {
+      "folder": {"type": "String"}
+    }
+  },
+  "img2pdf_resultInfo": "{count} page(s) • {size}",
+  "@img2pdf_resultInfo": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "size": {"type": "String"}
+    }
+  },
+  "img2pdf_renameTitle": "Rename file"
 }
