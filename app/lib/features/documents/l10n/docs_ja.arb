@@ -1,4 +1,57 @@
 {
   "@@locale": "ja",
-  "docs_title": "ドキュメント"
+  "docs_title": "ドキュメント",
+  "docs_tabAll": "すべて",
+  "docs_searchHint": "ドキュメントを検索",
+  "docs_sort": "並べ替え",
+  "docs_sortNameAsc": "名前 (A–Z)",
+  "docs_sortNameDesc": "名前 (Z–A)",
+  "docs_sortDateDesc": "新しい順",
+  "docs_sortDateAsc": "古い順",
+  "docs_sortSizeDesc": "サイズの大きい順",
+  "docs_sortSizeAsc": "サイズの小さい順",
+  "docs_recents": "最近",
+  "docs_favorites": "お気に入り",
+  "docs_emptyAll": "ドキュメントが見つかりません",
+  "docs_emptyRecents": "最近開いたファイルはありません",
+  "docs_emptyFavorites": "お気に入りはまだありません",
+  "docs_emptyFavoritesHint": "ファイルの星をタップするとここに追加されます",
+  "docs_emptySearch": "一致するファイルがありません",
+  "docs_permissionTitle": "ファイルへのアクセスを許可",
+  "docs_permissionMessage": "PDF Office は端末内のドキュメントを探すため、すべてのファイルへのアクセスが必要です。",
+  "docs_grantPermission": "アクセスを許可",
+  "docs_pickFileInstead": "代わりにファイルを選択",
+  "docs_permissionBanner": "すべてのドキュメントを探すにはファイルへのアクセスを許可してください",
+  "docs_scanning": "スキャン中… {count} 件のファイルを検出",
+  "@docs_scanning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "docs_toolsTitle": "ツール",
+  "docs_categoryMore": "その他",
+  "docs_drawerLanguage": "言語",
+  "docs_drawerTheme": "外観",
+  "docs_drawerOutputFolder": "保存フォルダ",
+  "docs_drawerAbout": "このアプリについて",
+  "docs_infoName": "名前",
+  "docs_infoPath": "パス",
+  "docs_infoSize": "サイズ",
+  "docs_infoModified": "更新日時",
+  "docs_renameTitle": "ファイル名を変更",
+  "docs_renameExists": "同じ名前のファイルが既にあります",
+  "docs_renameEmpty": "名前を空にはできません",
+  "docs_renameFailed": "ファイル名を変更できませんでした",
+  "docs_deleted": "「{name}」を削除しました",
+  "@docs_deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docs_fileMissing": "ファイルはもう存在しません",
+  "docs_lockedPdf": "パスワード付き PDF"
 }

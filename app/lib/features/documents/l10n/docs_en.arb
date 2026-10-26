@@ -1,4 +1,57 @@
 {
   "@@locale": "en",
-  "docs_title": "Documents"
+  "docs_title": "Documents",
+  "docs_tabAll": "All",
+  "docs_searchHint": "Search documents",
+  "docs_sort": "Sort",
+  "docs_sortNameAsc": "Name (A–Z)",
+  "docs_sortNameDesc": "Name (Z–A)",
+  "docs_sortDateDesc": "Newest first",
+  "docs_sortDateAsc": "Oldest first",
+  "docs_sortSizeDesc": "Largest first",
+  "docs_sortSizeAsc": "Smallest first",
+  "docs_recents": "Recent",
+  "docs_favorites": "Favorites",
+  "docs_emptyAll": "No documents found",
+  "docs_emptyRecents": "No recently opened files",
+  "docs_emptyFavorites": "No favorites yet",
+  "docs_emptyFavoritesHint": "Tap the star on a file to add it here",
+  "docs_emptySearch": "No matching files",
+  "docs_permissionTitle": "Allow access to your files",
+  "docs_permissionMessage": "PDF Office needs access to all files to find the documents on this device.",
+  "docs_grantPermission": "Grant access",
+  "docs_pickFileInstead": "Choose a file instead",
+  "docs_permissionBanner": "Grant file access to find all your documents",
+  "docs_scanning": "Scanning… {count} files found",
+  "@docs_scanning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "docs_toolsTitle": "Tools",
+  "docs_categoryMore": "More",
+  "docs_drawerLanguage": "Language",
+  "docs_drawerTheme": "Appearance",
+  "docs_drawerOutputFolder": "Save folder",
+  "docs_drawerAbout": "About",
+  "docs_infoName": "Name",
+  "docs_infoPath": "Path",
+  "docs_infoSize": "Size",
+  "docs_infoModified": "Modified",
+  "docs_renameTitle": "Rename file",
+  "docs_renameExists": "A file with this name already exists",
+  "docs_renameEmpty": "Name cannot be empty",
+  "docs_renameFailed": "Could not rename the file",
+  "docs_deleted": "Deleted \"{name}\"",
+  "@docs_deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docs_fileMissing": "This file no longer exists",
+  "docs_lockedPdf": "Password-protected PDF"
 }

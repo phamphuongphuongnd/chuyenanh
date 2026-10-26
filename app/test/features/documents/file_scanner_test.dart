@@ -47,22 +47,25 @@ void main() {
     expect(shouldSkipDirectory(r'C:\x\Android\data'), isTrue);
   });
 
-  test('scanRoots: chỉ lấy đuôi tài liệu, bỏ ẩn / Android/data / obb', () async {
-    final progress = <int>[];
-    final result = await scanRoots([root.path], onProgress: progress.add);
-    final names = result.files.map((f) => f.name).toSet();
-    expect(names, {'a.pdf', 'b.DOCX', 'h.pdf', 'i.txt'});
-    expect(result.allRootsReadable, isTrue);
+  test(
+    'scanRoots: chỉ lấy đuôi tài liệu, bỏ ẩn / Android/data / obb',
+    () async {
+      final progress = <int>[];
+      final result = await scanRoots([root.path], onProgress: progress.add);
+      final names = result.files.map((f) => f.name).toSet();
+      expect(names, {'a.pdf', 'b.DOCX', 'h.pdf', 'i.txt'});
+      expect(result.allRootsReadable, isTrue);
 
-    final a = result.files.firstWhere((f) => f.name == 'a.pdf');
-    expect(a.ext, 'pdf');
-    expect(a.size, 10);
-    expect(a.folder, p.basename(root.path));
-    expect(a.path, p.join(root.path, 'a.pdf'));
-    final b = result.files.firstWhere((f) => f.name == 'b.DOCX');
-    expect(b.ext, 'docx');
-    expect(progress.last, 4);
-  });
+      final a = result.files.firstWhere((f) => f.name == 'a.pdf');
+      expect(a.ext, 'pdf');
+      expect(a.size, 10);
+      expect(a.folder, p.basename(root.path));
+      expect(a.path, p.join(root.path, 'a.pdf'));
+      final b = result.files.firstWhere((f) => f.name == 'b.DOCX');
+      expect(b.ext, 'docx');
+      expect(progress.last, 4);
+    },
+  );
 
   test('scanRoots: thư mục gốc không tồn tại → unreadableRoots', () async {
     final missing = p.join(root.path, 'khong_co');

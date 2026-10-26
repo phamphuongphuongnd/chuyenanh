@@ -123,10 +123,7 @@ void main() {
         p.normalize(renameTarget('/a/b/x.pdf', 'moi')),
         p.normalize('/a/b/moi.pdf'),
       );
-      expect(
-        p.basename(renameTarget('/a/b/x.docx', 'a/b:c')),
-        'a_b_c.docx',
-      );
+      expect(p.basename(renameTarget('/a/b/x.docx', 'a/b:c')), 'a_b_c.docx');
     });
     test('validateRename', () {
       expect(
@@ -176,14 +173,20 @@ void main() {
     }
 
     test('thấy / không thấy', () async {
-      expect(await check('%PDF-1.4 trailer << /Encrypt 5 0 R >>'.codeUnits), isTrue);
+      expect(
+        await check('%PDF-1.4 trailer << /Encrypt 5 0 R >>'.codeUnits),
+        isTrue,
+      );
       expect(await check('%PDF-1.4 trailer << /Size 5 >>'.codeUnits), isFalse);
       expect(await check(const []), isFalse);
     });
 
     test('marker nằm vắt qua ranh giới khối đọc', () async {
       const chunk = 256 * 1024;
-      final bytes = [...List<int>.filled(chunk - 3, 0x20), ...'/Encrypt'.codeUnits];
+      final bytes = [
+        ...List<int>.filled(chunk - 3, 0x20),
+        ...'/Encrypt'.codeUnits,
+      ];
       expect(await check(bytes), isTrue);
     });
 

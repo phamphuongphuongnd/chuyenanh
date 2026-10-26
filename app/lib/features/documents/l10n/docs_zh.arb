@@ -1,4 +1,57 @@
 {
   "@@locale": "zh",
-  "docs_title": "文档"
+  "docs_title": "文档",
+  "docs_tabAll": "全部",
+  "docs_searchHint": "搜索文档",
+  "docs_sort": "排序",
+  "docs_sortNameAsc": "名称 (A–Z)",
+  "docs_sortNameDesc": "名称 (Z–A)",
+  "docs_sortDateDesc": "最新优先",
+  "docs_sortDateAsc": "最旧优先",
+  "docs_sortSizeDesc": "最大优先",
+  "docs_sortSizeAsc": "最小优先",
+  "docs_recents": "最近",
+  "docs_favorites": "收藏",
+  "docs_emptyAll": "未找到文档",
+  "docs_emptyRecents": "最近没有打开过文件",
+  "docs_emptyFavorites": "暂无收藏",
+  "docs_emptyFavoritesHint": "点按文件上的星标即可添加到这里",
+  "docs_emptySearch": "没有匹配的文件",
+  "docs_permissionTitle": "允许访问文件",
+  "docs_permissionMessage": "PDF Office 需要访问所有文件才能找到设备上的文档。",
+  "docs_grantPermission": "授予权限",
+  "docs_pickFileInstead": "改为选择文件",
+  "docs_permissionBanner": "授予文件访问权限以查找所有文档",
+  "docs_scanning": "正在扫描… 已找到 {count} 个文件",
+  "@docs_scanning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "docs_toolsTitle": "工具",
+  "docs_categoryMore": "更多",
+  "docs_drawerLanguage": "语言",
+  "docs_drawerTheme": "外观",
+  "docs_drawerOutputFolder": "保存文件夹",
+  "docs_drawerAbout": "关于",
+  "docs_infoName": "名称",
+  "docs_infoPath": "路径",
+  "docs_infoSize": "大小",
+  "docs_infoModified": "修改时间",
+  "docs_renameTitle": "重命名文件",
+  "docs_renameExists": "已存在同名文件",
+  "docs_renameEmpty": "名称不能为空",
+  "docs_renameFailed": "无法重命名文件",
+  "docs_deleted": "已删除“{name}”",
+  "@docs_deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docs_fileMissing": "文件已不存在",
+  "docs_lockedPdf": "受密码保护的 PDF"
 }
