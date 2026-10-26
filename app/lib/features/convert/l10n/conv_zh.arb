@@ -1,4 +1,27 @@
 {
   "@@locale": "zh",
-  "conv_title": "转换"
+  "conv_title": "转换",
+  "conv_textToPdf": "文本转 PDF",
+  "conv_wordToPdf": "Word 转 PDF",
+  "conv_excelToPdf": "Excel 转 PDF",
+  "conv_pdfToText": "PDF 转文本",
+  "conv_pdfToWord": "PDF 转 Word",
+  "conv_pdfToExcel": "PDF 转 Excel",
+  "conv_textHint": "在此输入或粘贴文本",
+  "conv_loadTxt": "打开 TXT 文件",
+  "conv_chooseFile": "选择文件",
+  "conv_chosenFile": "已选择：{name}",
+  "conv_options": "选项",
+  "conv_pageSize": "纸张大小",
+  "conv_orientation": "方向",
+  "conv_portrait": "纵向",
+  "conv_landscape": "横向",
+  "conv_fontSize": "字号",
+  "conv_margin": "页边距",
+  "conv_convert": "转换",
+  "conv_layoutNotice": "不保留原有版式。标题、段落和表格由文字近似重建。",
+  "conv_noTextFound": "未找到文字。扫描版 PDF 需要先进行 OCR。",
+  "conv_emptyText": "请先输入文本。",
+  "conv_doneTitle": "转换完成",
+  "conv_savedAs": "已保存到：{path}"
 }
