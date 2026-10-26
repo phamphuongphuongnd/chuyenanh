@@ -13,11 +13,12 @@ máy quét + OCR. **Chạy offline, không quảng cáo, không lên store.** An
 |---|---|
 | Móng `app/` (theme, router, l10n, DB, interface engine, widget dùng chung) | Xong, có test |
 | 4 thư viện Dart thuần trong `packages/` | Xong; `office_reader`, `pptx_reader` đã thử file thật |
-| Build APK debug | Đã build được (xem [mục 6](#6-build-apk)) |
-| 10 tính năng T1…T10 | **Mới có logic/engine + test, UI hầu như chưa có** — mỗi việc nằm trên nhánh `feat/t1-documents` … `feat/t10-settings` |
+| 10 tính năng T1…T10 | **Đã có code + UI và đã ghép vào nhánh `feat/pdf-office`** (kèm OCR cho PDF quét ảnh, mở hyperlink DOCX/PPTX) |
+| Kiểm bằng máy | `flutter analyze` sạch · `flutter test` **692/692** · `flutter build apk --debug` thành công |
+| **Chạy trên điện thoại thật** | **Chưa.** Mọi tính năng mới chỉ qua test tự động → cài thử trên Samsung Galaxy A13 và sửa lỗi lộ ra |
 
-Chi tiết từng tính năng, file sở hữu và việc còn lại: [`docs/superpowers/plans/2026-10-26-feature-tasks.md`](docs/superpowers/plans/2026-10-26-feature-tasks.md)
-(mục E là bảng bàn giao) và [`lmm-wiki/modules/tinh-nang-t1-t10.md`](lmm-wiki/modules/tinh-nang-t1-t10.md).
+Chi tiết từng tính năng, hạn chế và việc còn lại: [`lmm-wiki/modules/tinh-nang-t1-t10.md`](lmm-wiki/modules/tinh-nang-t1-t10.md);
+mô tả việc ban đầu: [`docs/superpowers/plans/2026-10-26-feature-tasks.md`](docs/superpowers/plans/2026-10-26-feature-tasks.md).
 
 ## 2. Chức năng (theo spec)
 
@@ -82,12 +83,14 @@ Cần (Windows):
 2. **Chỉ khi build APK:** JDK 21 và Android SDK dạng dòng lệnh (platform 36, build-tools 36). Bạn phải tự chấp nhận
    license Android (`flutter doctor --android-licenses`) và trỏ `flutter config --android-sdk <thư mục SDK>`.
 
-Lấy mã và thư viện:
+Lấy mã và thư viện (**code nằm ở nhánh `feat/pdf-office`, không phải `master`** — xem [mục 7](#7-git-nhánh-và-quy-trình)):
 
 ```bash
-git clone https://github.com/phamphuongphuongnd/chuyenanh.git
+git clone -b feat/pdf-office https://github.com/phamphuongphuongnd/chuyenanh.git
 cd chuyenanh/app
 flutter pub get
+bash tool/fetch_fonts.sh                               # font Noto ~39 MB, KHÔNG nằm trong git (cần cho chữ Việt/CJK khi xuất PDF)
+dart run tool/merge_arb.dart && flutter gen-l10n       # lib/l10n/ bị gitignore, phải sinh trên máy mới
 ```
 
 ## 6. Lệnh hằng ngày
@@ -114,26 +117,41 @@ dart run build_runner build --delete-conflicting-outputs
 flutter build apk --debug > build.log 2>&1   # ghi ra file để đọc lỗi đầy đủ
 ```
 
-APK ra ở `build/app/outputs/flutter-apk/app-debug.apk` (~212 MB). Lần build đầu rất lâu (20–30 phút) vì Gradle tải NDK
+APK ra ở `build/app/outputs/flutter-apk/app-debug.apk` (~261 MB, đã gồm font Noto). Lần build đầu rất lâu (20–30 phút) vì Gradle tải NDK
 và các platform còn thiếu. Thêm plugin mới thì **build thử APK ngay** — lỗi Gradle không lộ ra khi chỉ chạy analyze / test.
 Các lỗi Gradle đã gặp và cách sửa: `lmm-wiki/concepts/build-android.md`.
 
-## 7. Làm một tính năng (T1…T10)
+## 7. Git: nhánh và quy trình
+
+| Nhánh | Ý nghĩa |
+|---|---|
+| `feat/pdf-office` | **Nhánh làm việc chính.** Chứa toàn bộ code hiện tại (móng + 4 thư viện + 10 tính năng), luôn phải `analyze` sạch và test xanh. |
+| `master` | **Chưa gộp**, hiện chỉ có bộ khung ban đầu (skill, wiki). Chỉ gộp `feat/pdf-office` vào đây khi app đã chạy ổn trên máy thật. GitHub hiển thị README của nhánh mặc định nên **README này chỉ thấy khi mở nhánh `feat/pdf-office`**. |
+| `feat/t1-documents` … `feat/t10-settings` | **Lịch sử** từng tính năng (agent làm riêng rồi đã ghép vào `feat/pdf-office`). Không làm tiếp trên các nhánh này; có thể xoá khi không cần lịch sử. |
+
+Quy trình sửa / thêm:
 
 ```bash
 git fetch origin
-git checkout -b feat/t1-documents origin/feat/t1-documents   # đổi tên nhánh theo bảng bàn giao
-cd app
-flutter pub get
-dart run tool/merge_arb.dart && flutter gen-l10n
-flutter analyze && flutter test        # phải sạch TRƯỚC khi làm tiếp (phần agent làm dở chưa kiểm lại)
+git checkout feat/pdf-office && git pull
+git checkout -b fix/<mo-ta-ngan>            # hoặc feat/<tên>, tách từ feat/pdf-office
+# ... sửa code, viết test trước (TDD) ...
+cd app && dart run tool/merge_arb.dart && flutter gen-l10n
+flutter analyze && flutter test            # phải sạch
+flutter build apk --debug                  # bắt buộc nếu đổi plugin / Manifest / Gradle
+git add -A && git commit                   # message tiếng Việt không dấu, commit thường xuyên
+git push -u origin fix/<mo-ta-ngan>        # rồi mở Pull Request vào feat/pdf-office
 ```
 
-1. Đọc spec, hợp đồng chia việc (`docs/superpowers/plans/2026-10-25-parallel-build-contract.md`, mục 1, 2, 3, 7) và
-   mô tả việc của bạn trong `feature-tasks.md`.
-2. Viết test trước cho logic thuần (TDD), widget test cho màn chính.
-3. Commit thường xuyên, message tiếng Việt không dấu.
-4. Xong: `flutter analyze`, `flutter test`, `flutter build apk --debug` đều sạch → mở Pull Request vào `feat/pdf-office`.
+Quy ước:
+
+- **Không push thẳng `master`.** Chỉ gộp `master` khi chủ dự án quyết định; không force-push các nhánh dùng chung.
+- Mỗi người chỉ sửa thư mục `features/<f>` của mình + test tương ứng. Muốn đổi `pubspec.yaml`, `core/**`, `data/db/**`, Manifest hay
+  interface `*_engine.dart` thì nêu rõ trong Pull Request để người giữ móng duyệt (đụng nhiều nhánh một lúc dễ xung đột).
+- **Không commit** file sinh ra / nặng: `app/lib/l10n/`, `app/build/`, `app/assets/fonts/*.ttf`, `*.apk`, `.claude/worktrees/` (đã có trong `.gitignore`).
+  File sinh bắt buộc có: `app/lib/data/db/app_database.g.dart` (drift) **được commit**.
+- Gộp nhiều nhánh: merge vào một nhánh tạm, chạy `analyze` + `test` **một lần** cho bản ghép rồi mới đưa vào `feat/pdf-office`.
+- Đọc `lmm-wiki/index.md` trước khi làm; cuối phiên cập nhật wiki (`/luu-wiki`) để người sau không phải làm lại.
 
 ## 8. Quyền Android
 
@@ -143,14 +161,22 @@ Ngoài ra: máy ảnh (máy quét), ảnh / media (chọn ảnh).
 
 ## 9. Kiểm thử trên máy thật
 
-Máy thử mục tiêu: Samsung Galaxy A13. Cần Samsung USB Driver và bật Gỡ lỗi USB, sau đó `flutter run` hoặc cài APK
-debug. Checklist kiểm từng tính năng nằm trong báo cáo của mỗi việc T1…T10.
+Máy thử mục tiêu: Samsung Galaxy A13. Hai cách:
+
+- **Cắm cáp** (khuyên dùng — đọc được log lỗi): cài Samsung USB Driver, bật Gỡ lỗi USB, chọn Truyền tệp, bấm Cho phép; kiểm `adb devices`, rồi `flutter run`.
+- **Không cáp:** chép `app/build/app/outputs/flutter-apk/app-debug.apk` (~261 MB, **không nằm trong git**) sang điện thoại, cho phép cài từ nguồn
+  không rõ, rồi bật "Truy cập tất cả tệp" cho PDF Office.
+
+Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đặc biệt cần đo trên máy thật: quyền đọc file, camera, máy quét tự nhận viền,
+**OCR tiếng Việt dấu chồng (ặ ỗ ữ ẫ ậ ề ở)**, lối tắt màn hình chính, tốc độ với file lớn.
 
 ## 10. Giới hạn đã biết
 
-- 10 tính năng chủ yếu chưa có UI (xem [mục 1](#1-trạng-thái-hiện-tại)).
-- Font Noto cho CJK / tiếng Việt khi xuất PDF (`assets/fonts/`) chưa được tải vào repo.
-- `pptx_reader`: hình preset (mũi tên…) chưa có đường vẽ, gradient chỉ lấy stop đầu, SmartArt / media / WordArt chưa thử.
-- `office_reader`: định dạng ngày kiểu Mỹ bị đảo, rich text trong ô Excel và `vAlign` bảng Word chưa xử lý.
-- OCR dùng Google ML Kit (không còn tiếng Thái; `flutter_tesseract_ocr` đã gỡ vì không chạy với AGP 9).
-- Tài liệu cũ: ghi chú build Android thay đổi theo bản AGP / plugin — đọc `build-android.md` trước khi nâng cấp.
+- **Chưa chạy trên điện thoại thật** (xem [mục 1](#1-trạng-thái-hiện-tại)); nhiều test dùng camera / viewer / ổ đĩa giả.
+- Font Noto **không nằm trong git** — chạy `bash app/tool/fetch_fonts.sh`; thiếu font thì PDF xuất ra lỗi chữ Việt có dấu và CJK. Ba font CJK là bản biến thiên nên nét hơi mảnh.
+- Gộp / tách PDF mất annotation, form, link ở file kết quả (Syncfusion không có API gộp). PDF → Word / Excel không giữ nguyên bố cục.
+- `pptx_reader`: hình preset (mũi tên…) chưa vẽ đúng, gradient chỉ lấy màu đầu, SmartArt / media / WordArt chưa thử.
+- `office_reader`: định dạng ngày kiểu Mỹ bị đảo, rich text trong ô Excel và `vAlign` bảng Word chưa xử lý; chữ Excel chưa tràn sang ô bên cạnh.
+- OCR dùng Google ML Kit (**không có tiếng Thái** — đã bỏ hẳn cả giao diện lẫn OCR); độ chính xác tiếng Việt dấu chồng chưa đo.
+- PDF từ máy quét có lớp chữ trong suốt để tìm kiếm / bôi chọn — chưa thử trên trình đọc ngoài.
+- Ghi chú build Android thay đổi theo bản AGP / plugin — đọc `lmm-wiki/concepts/build-android.md` trước khi nâng cấp hoặc thêm plugin.
