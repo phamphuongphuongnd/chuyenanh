@@ -33,6 +33,8 @@ sources: []
   (thư viện thuần, nghiên cứu) để không agent nào ngồi chờ. Cách làm: [[build-song-song-agent]].
 - Người dùng muốn **lưu wiki liên tục** trong phiên dài để mở chat mới/hết token không phải làm lại: ghi checkpoint
   tiến độ vào `planhistory/` sau mỗi mốc; kiến thức đã qua test thì lưu vào wiki, ghi rõ phần chưa kiểm trên máy thật.
+- Khi gặp giới hạn lượt dùng/thiếu thời gian, người dùng **bàn giao phần còn lại cho người khác qua git** (không muốn mình tiếp tục
+  tung agent): lưu wiki + checkpoint, đẩy nhánh lên git, viết bản giao việc tự đủ — xem [[tinh-nang-t1-t10]].
 - Muốn **xem lý do + ưu/nhược điểm** trước khi chọn (nền tảng, thư viện, cách build) — trình bày bảng so sánh rồi mới hỏi.
 
 ## Người dùng sở hữu server, tôi không tự chạy

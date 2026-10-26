@@ -186,3 +186,43 @@
 
 ## D. Asset còn thiếu (cần người dùng đồng ý tải)
 - Font Noto (OFL 1.1): `NotoSans-Regular/Bold.ttf`, `NotoSansSC/JP/KR-Regular.ttf` → `app/assets/fonts/`.
+
+---
+
+## E. TRẠNG THÁI BÀN GIAO (26/10/2026 ~13:55) — đọc trước khi nhận việc
+
+10 agent đã làm một phần rồi bị **dừng do hết lượt dùng**. Phần đã làm được commit vào **nhánh riêng trên git** (xuất phát từ
+`feat/pdf-office` @ `4a33139`). **Chưa chạy lại `flutter analyze`/`flutter test` sau khi bị ngắt** → người nhận việc chạy
+trước khi làm tiếp. Mỗi nhánh đều có commit `WIP(Tn)` chứa các file đang làm dở.
+
+| Việc | Nhánh trên git | Đã có (logic/engine + test) | Còn phải làm |
+|---|---|---|---|
+| **T1** Trang chủ Tài liệu | `feat/t1-documents` | Quét file trong isolate, đồng bộ bảng `documents`, logic lọc/sắp xếp/đổi tên + test | Màn xin quyền, trang chủ (AppBar, tab, danh sách, ⋮, ⭐, ＋), tìm, Gần đây, Yêu thích, drawer, chuỗi `docs_*` 6 ngôn ngữ |
+| **T2** Ảnh → PDF | `feat/t2-image-to-pdf` | `syncfusion_image_to_pdf_engine.dart` + test engine (viết dở, chưa chạy lại) | **Toàn bộ UI** (chọn ảnh, sửa, tuỳ chọn khổ giấy, kết quả), nối provider, chuỗi `img2pdf_*` |
+| **T3** Trình đọc PDF | `feat/t3-reader` | Engine `pdfx` (render trang, mật khẩu qua giải mã), parse khoảng trang + test | Viewer (tìm, cuộn, nhảy trang, mật khẩu), bookmark, chế độ tối, in, màn PDF→ảnh, **lối tắt màn hình chính (Kotlin `ShortcutChannel`)**, chuỗi `reader_*` |
+| **T4** Công cụ PDF | `feat/t4-pdf-tools` | Hàm thuần parse/validate khoảng trang + kế hoạch tách; engine `pdf_ops`/`syncfusion_pdf_tools` + test (viết dở) | Kiểm engine đã phủ gộp/tách/sắp xếp/watermark/blank chưa; **toàn bộ UI** 7 màn; chuỗi `tools_*` |
+| **T5** Chỉnh sửa PDF | `feat/t5-editor` | `signature_math.dart` (`viewRectToPdfRect`) + test, `syncfusion_pdf_sign_engine.dart` (dở) | Màn annotation, màn chữ ký (lưu/đặt), điền form; chuỗi `edit_*` |
+| **T6** Chuyển đổi | `feat/t6-convert` | Hàm thuần: `vietnamese_nfc`, `script_runs` (fallback font theo hệ chữ), `line_wrap`, `text_decoder` + test | `ConvertEngine` (text/TXT/DOCX/XLSX→PDF; PDF→TXT/DOCX/XLSX), font Noto (chưa tải), UI, chuỗi `conv_*` |
+| **T7** Xem DOCX/XLSX/TXT | `feat/t7-office-viewer` | `DocxEngine`/`XlsxEngine` bọc `office_reader` + test; `text_decoder`, `text_search` + test | Widget vẽ DOCX, lưới XLSX (ô gộp), màn TXT, nút chuyển PDF, chuỗi `office_*` |
+| **T8** Xem PPTX | `feat/t8-pptx` | Logic bố cục thuần (EMU, bullet, bảng, crop, đường vẽ) + test; `pptx_engine_impl` + provider (dở) | Widget vẽ slide (text/ảnh/bảng/group/hình), màn xem + thumbnail, chuỗi `pptx_*` |
+| **T9** Máy quét + OCR | `feat/t9-scanner` | `OcrEngine` ML Kit, ghép block OCR → `DocBlock`/TXT, model `ScanPage`/`ScanSession` + test | Màn chụp (`cunning_document_scanner`), kéo viền tay (`image_ops`), danh sách trang, xuất PDF/TXT/DOCX, chuỗi `scan_*` |
+| **T10** Cài đặt + thương hiệu | `feat/t10-settings` | Màn Ngôn ngữ + `settings_logic` + test, `settings_providers/routes`, chuỗi 6 ngôn ngữ (một phần) | Màn Giao diện, Thư mục lưu (`file_picker`), Giới thiệu, logo + icon launcher (adaptive icon vector) |
+
+**Gần như chắc chắn cần MÓNG (mình/người giữ nhánh `feat/pdf-office`) bổ sung khi ghép:** quyền/khai báo Manifest cho T3
+(lối tắt) và T1; font Noto vào `app/assets/fonts/` (T6, cần tải); nếu cần gói mới thì sửa `app/pubspec.yaml` rồi build thử APK.
+
+### Cách nhận việc tiếp
+```bash
+git fetch origin
+git checkout -b feat/t1-documents origin/feat/t1-documents      # đổi tên nhánh theo bảng
+cd app
+/c/src/flutter/bin/flutter pub get          # đường dẫn Flutter theo máy bạn
+dart run tool/merge_arb.dart && flutter gen-l10n
+flutter analyze && flutter test             # phải sạch TRƯỚC khi làm tiếp (phần agent làm dở chưa kiểm lại)
+```
+Khi xong: mở Pull Request vào `feat/pdf-office`; **chạy `flutter build apk --debug`** (xem `lmm-wiki/concepts/build-android.md`) trước khi
+đề nghị gộp. Hai người không nên cùng sửa một thư mục `features/<f>` — mỗi việc chỉ sửa file mình sở hữu (mục B).
+
+### Bài học khi chia việc cho agent (đã gặp, xem `lmm-wiki/concepts/build-song-song-agent.md`)
+- 10 agent chạy cùng lúc **cùng chạm giới hạn lượt dùng** sau ~1 commit/agent. Chia **đợt 5 agent**, bắt commit từng bước.
+- Worktree của agent có thể bắt đầu từ commit cũ → bước đầu luôn `git merge --ff-only feat/pdf-office`.

@@ -30,13 +30,15 @@ updated: 2026-10-22
 - `docs/superpowers/plans/2026-10-25-parallel-build-contract.md` — hợp đồng chia việc (sở hữu file, route, DB, engine,
   đa ngôn ngữ; **mục 7 = ghi chú khớp code thật**).
 - `docs/superpowers/plans/2026-10-26-feature-tasks.md` — **giao việc 10 tính năng T1…T10** cho người khác làm
-  (mỗi việc tự đủ: sở hữu file, thư viện dùng, việc cần làm, test, ước lượng).
+  (mỗi việc tự đủ: sở hữu file, thư viện dùng, việc cần làm, test, ước lượng). **Mục E = bảng bàn giao + cách nhận việc.**
+- 10 nhánh làm dở trên git: `feat/t1-documents` … `feat/t10-settings` (xem [[tinh-nang-t1-t10]]).
 
 ## Modules
 - [[thu-vien-dart-thuan]] — 4 thư viện Dart thuần trong `packages/` (office_reader, pptx_reader, pdf_layout, image_ops).
+- [[tinh-nang-t1-t10]] — **trạng thái bàn giao 10 tính năng**: nhánh git nào, đã có gì, còn gì (UI hầu như chưa có).
 
 ## Entities
-*(chưa có — bảng drift `documents/favorites/recents/bookmarks` sẽ thêm khi MÓNG được kiểm)*
+- [[co-so-du-lieu]] — 4 bảng drift (`documents`, `favorites`, `recents`, `bookmarks`) + DAO + quy ước (page 0-based, -1 = cả tài liệu).
 
 ## Concepts (pattern dùng lại được)
 - [[build-song-song-agent]] — chia việc cho nhiều agent song song bằng hợp đồng + worktree, không dẫm chân nhau.

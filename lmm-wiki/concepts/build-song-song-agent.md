@@ -28,4 +28,14 @@ Pattern đã dùng khi người dùng muốn "tách nhiều agent nhất có th�
 - **Tự chạy lại test của agent** trước khi tin báo cáo (agent có thể báo sai).
 - Ghi checkpoint vào `planhistory/` sau mỗi mốc để phiên mới làm tiếp được.
 
-Liên quan: [[0003-kien-truc-riverpod]], [[thu-vien-dart-thuan]].
+**Bài học 26/10 (đắt giá):**
+- **10 agent cùng lúc → cả 10 cùng chạm giới hạn lượt dùng** khi mỗi agent mới được ~1 commit (logic + engine, chưa có UI). Tổng
+  khối lượng không đổi dù chạy song song; chạy song song chỉ làm cạn lượt nhanh hơn. **Chia đợt ~5 agent**, ưu tiên luồng chính
+  (T1 trang chủ, T3 đọc PDF, T2 ảnh→PDF…) để có app xem được sớm, đừng để 10 thứ dở dang.
+- Agent bị cắt vẫn **giữ được việc** nếu đã commit; file chưa commit nằm ở worktree (`.claude/worktrees/agent-<id>`) → commit WIP
+  thủ công rồi `git push origin <nhánh-worktree>:refs/heads/feat/...` (đã làm cho T1…T10).
+- `SendMessage` tới agent đã dừng để chạy tiếp cần người dùng đồng ý; người dùng có thể từ chối và chọn bàn giao cho người khác.
+- Worktree của agent **có thể bắt đầu từ commit cũ** (đã gặp 4 lần) → bước 0 của mọi prompt: `git merge --ff-only feat/pdf-office`.
+- Agent tạo file thử nghiệm tạm (`probe_*`, `exp_test`) — đừng commit lên nhánh bàn giao.
+
+Liên quan: [[0003-kien-truc-riverpod]], [[thu-vien-dart-thuan]], [[tinh-nang-t1-t10]].

@@ -14,3 +14,4 @@ type: log
 - 2026-10-26 10:28 — da push feat/pdf-office len origin; chay lai H1/H2/S1 (kiem chung thu vien voi file that, chu Viet/CJK trong PDF) → [[thu-vien-dart-thuan]] [[build-song-song-agent]]
 - 2026-10-26 10:45 — H2 xong: pptx_reader thu voi PowerPoint that, sua 4 loi (tint/shade linear RGB, bgRef/fillRef theme, custGeom, bullet font); S1 xong → [[thu-vien-dart-thuan]] [[xuat-chu-ra-pdf]]
 - 2026-10-26 10:53 — H1 xong: office_reader thu voi Word/Excel that, sua 3 loi (formula shared, CRLF, caps); da thu file that cho 2/4 thu vien → [[thu-vien-dart-thuan]]
+- 2026-10-26 13:50 — 10 agent T1..T10 bi dung do het luot dung; commit WIP + push 10 nhanh feat/t1..t10 len origin de ban giao; ghi muc E feature-tasks + trang tinh-nang-t1-t10 + bai hoc chia dot agent → [[tinh-nang-t1-t10]] [[build-song-song-agent]] [[preferences]]
