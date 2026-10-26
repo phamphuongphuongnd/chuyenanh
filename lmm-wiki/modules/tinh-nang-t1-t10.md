@@ -18,22 +18,23 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
   ([[build-android]]) + spike chữ ([[xuat-chu-ra-pdf]]).
 - Người dùng chốt: **Claude làm tiếp T1…T10** (không còn "giao người khác"). Chia **đợt 5 agent**, mỗi agent 1 worktree, commit từng bước,
   không push/merge. Đợt 1 = T2, T3, T4, T5, T10; đợt 2 = T6, T7, T8, T9. T1 do chính Claude làm.
-- Nhánh trên `origin` vẫn là bản WIP cũ; phần mới nằm ở **nhánh local/worktree, chưa push**.
+- **Đã push 26/10 ~15:20** (fast-forward, không force) 7 nhánh: `feat/pdf-office`, `feat/t1-documents`, `feat/t2-image-to-pdf`, `feat/t3-reader`,
+  `feat/t4-pdf-tools`, `feat/t5-editor`, `feat/t10-settings`. T3 là ảnh chụp giữa chừng (agent chưa báo cáo cuối). T6–T9 chưa có gì mới.
 - "Tự kiểm" = Claude tự chạy lại `flutter analyze` + `flutter test`; "agent báo" = mới đọc báo cáo của agent. **Chưa việc nào
   chạy trên điện thoại thật.**
 
 | Việc | Nhánh | Mức |
 |---|---|---|
 | T1 Trang chủ Tài liệu | `feat/t1-documents` @ `1159b7b` (local) | **Xong UI, tự kiểm** (analyze sạch, 102 test pass) → [[documents]] |
-| T2 Ảnh → PDF | `feat/t2-image-to-pdf` @ `abc7253` (worktree) | Agent báo xong (172 test pass), **chưa tự kiểm**; chưa thử plugin thật (camera, photo_manager, cropper) |
-| T3 Trình đọc PDF | `feat/t3-reader` @ `8d4a30c` (worktree) | Agent **chưa báo cáo cuối**; đã commit: chuỗi `reader_*`, lối tắt Kotlin `ShortcutChannel`, màn đọc (tìm, nhảy trang, bookmark, mục lục, tối, in, mật khẩu) + PDF→ảnh; **chưa tự kiểm** |
-| T4 Công cụ PDF | `feat/t4-pdf-tools` @ `4bc8261` (worktree) | Agent báo xong: analyze sạch, 148 pass / **1 fail** (`app_smoke_test` — bước `push(Routes.merge)` đòi `PlaceholderScreen`), **chưa tự kiểm**; 7 màn + engine; watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica) |
-| T5 Chỉnh sửa PDF | `feat/t5-editor` @ `10d0489` (worktree) | Agent báo xong (145 test pass), **chưa tự kiểm**; `SfPdfViewer` chỉ test bằng viewer giả; màn Ký cần `pdfRenderEngineProvider` của T3 |
+| T2 Ảnh → PDF | `feat/t2-image-to-pdf` @ `abc7253` | Agent báo xong (172 test pass), **chưa tự kiểm**; chưa thử plugin thật (camera, photo_manager, cropper) |
+| T3 Trình đọc PDF | `feat/t3-reader` @ `8d4a30c` | Agent **chưa báo cáo cuối**; đã commit: chuỗi `reader_*`, lối tắt Kotlin `ShortcutChannel`, màn đọc (tìm, nhảy trang, bookmark, mục lục, tối, in, mật khẩu) + PDF→ảnh; **chưa tự kiểm** |
+| T4 Công cụ PDF | `feat/t4-pdf-tools` @ `4bc8261` | Agent báo xong: analyze sạch, 148 pass / **1 fail** (`app_smoke_test` — bước `push(Routes.merge)` đòi `PlaceholderScreen`), **chưa tự kiểm**; 7 màn + engine; watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica) |
+| T5 Chỉnh sửa PDF | `feat/t5-editor` @ `10d0489` | Agent báo xong (145 test pass), **chưa tự kiểm**; `SfPdfViewer` chỉ test bằng viewer giả; màn Ký cần `pdfRenderEngineProvider` của T3 |
 | T6 Chuyển đổi | `feat/t6-convert` | Chưa giao (đợt 2) |
 | T7 Xem DOCX/XLSX/TXT | `feat/t7-office-viewer` | Chưa giao (đợt 2) |
 | T8 Xem PPTX | `feat/t8-pptx` | Chưa giao (đợt 2) |
 | T9 Máy quét + OCR | `feat/t9-scanner` | Chưa giao (đợt 2) |
-| T10 Cài đặt + thương hiệu | `feat/t10-settings` @ `66fead3` (worktree) | Agent báo xong (100 test pass), **chưa tự kiểm**; Giao diện/Thư mục lưu/Khổ giấy là màn con `Navigator.push` (không có route riêng); icon launcher vector chưa thử build APK |
+| T10 Cài đặt + thương hiệu | `feat/t10-settings` @ `66fead3` | Agent báo xong (100 test pass), **chưa tự kiểm**; Giao diện/Thư mục lưu/Khổ giấy là màn con `Navigator.push` (không có route riêng); icon launcher vector chưa thử build APK |
 
 ## Việc phải làm khi ghép (đã biết)
 - `test/app_smoke_test.dart` (MÓNG): test thứ 3 `push(Routes.merge, extra: '/x/a.pdf')` rồi đòi `find.text('/x/a.pdf')` (màn giữ chỗ) → vỡ khi T4

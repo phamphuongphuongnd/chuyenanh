@@ -63,10 +63,10 @@ Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go
 | 26/10 | **Đổi kế hoạch (người dùng):** 10 tính năng **không** tung agent nữa — viết thành bản giao việc để người khác làm | ✅ `docs/superpowers/plans/2026-10-26-feature-tasks.md` | chưa commit |
 
 | 26/10 14:5x | **Đổi lại (người dùng): Claude làm tiếp T1…T10.** Máy dev mới chưa có Flutter → cài `git clone -b 3.47.8` vào `C:/src/flutter` (không Android SDK). Baseline nhánh T1: analyze sạch, 82 test pass | ✅ | — |
-| 26/10 15:0x | **T1 xong UI** (tự làm): trang chủ, tab, quét + quyền, tìm, Gần đây, Yêu thích, drawer, công cụ; sửa `app_smoke_test`; analyze sạch, **102 test pass** | ✅ → `lmm-wiki/modules/documents.md` | `feat/t1-documents` @ `1159b7b` (local, chưa push) |
+| 26/10 15:0x | **T1 xong UI** (tự làm): trang chủ, tab, quét + quyền, tìm, Gần đây, Yêu thích, drawer, công cụ; sửa `app_smoke_test`; analyze sạch, **102 test pass** | ✅ → `lmm-wiki/modules/documents.md` | `feat/t1-documents` @ `1159b7b` |
 | 26/10 15:0x | Giao **đợt 1** cho 5 agent (worktree riêng, commit từng bước, không push/merge): T2, T3, T4, T5, T10 | ⏳ | `.claude/worktrees/agent-*` |
 | 26/10 15:0x | T2 / T4 / T5 / T10 **agent báo xong** (T4: 148 pass + 1 fail ở `app_smoke_test`); T3 chưa báo (đã có commit màn đọc, PDF→ảnh, lối tắt Kotlin) | ⏳ chưa tự kiểm hết | T2 `abc7253`, T4 `4bc8261`, T5 `10d0489`, T10 `66fead3`, T3 `8d4a30c` |
-| 26/10 15:0x | Viết `README.md` gốc repo (+ `app/README.md` trỏ về); wiki cập nhật | ✅ | `feat/pdf-office` @ `40fcd36` (local, chưa push) |
+| 26/10 15:0x | Viết `README.md` gốc repo (+ `app/README.md` trỏ về); wiki cập nhật | ✅ | `feat/pdf-office` @ `40fcd36` |
 
 **Ghi chú:** 5 agent song song làm hết lượt dùng trong ~40 phút → agent nên **commit sau từng phần nhỏ** để bị ngắt
 không mất việc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng — gọi lại là được.
@@ -78,7 +78,7 @@ không mất việc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng
 3. **Đợt 2** (5 agent/đợt, commit từng bước): T6, T7, T8, T9 (cần font Noto cho T6 — chưa tải, hỏi người dùng).
 4. **Ghép:** merge các nhánh vào `feat/pdf-office`, sửa `app_smoke_test` (bước `push(Routes.merge)`), `merge_arb` + `gen-l10n`,
    analyze/test sạch, rồi `flutter build apk --debug` (cần Android SDK — người dùng tự chấp nhận license).
-5. **Push** lên `origin`: chưa có nhánh nào được push sau 14:00 — hỏi người dùng trước khi push.
+5. **Push**: đã push 7 nhánh (pdf-office, t1, t2, t3, t4, t5, t10) lúc ~15:20 theo lệnh người dùng; mọi lần push sau đều hỏi lại.
 6. Muốn README hiện trên GitHub: phải đưa vào nhánh mặc định `master` (hiện chỉ ở `feat/pdf-office`).
 
 ### Nếu phiên bị ngắt — làm tiếp thế nào
