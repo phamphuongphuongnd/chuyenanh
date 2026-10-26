@@ -95,6 +95,46 @@ sealed class PptxShape {
 
 enum PptxGeometry { rect, roundRect, ellipse, triangle, line, other }
 
+/// Path verbs of a freeform (`a:custGeom`) shape.
+enum PptxPathOp { moveTo, lineTo, cubicTo, quadTo, arcTo, close }
+
+/// One path command. [args] by kind (all in the path's own coordinate space,
+/// i.e. 0..[PptxCustomPath.widthEmu] x 0..[PptxCustomPath.heightEmu]):
+/// - moveTo / lineTo: x, y
+/// - cubicTo: x1, y1, x2, y2, x, y
+/// - quadTo: x1, y1, x, y
+/// - arcTo: wR, hR, stAngDeg, swAngDeg (relative to the current point, like
+///   `a:arcTo`; angles in degrees, clockwise)
+/// - close: no args
+class PptxPathCommand {
+  const PptxPathCommand(this.kind, [this.args = const []]);
+
+  final PptxPathOp kind;
+  final List<double> args;
+}
+
+/// One `a:path` of a freeform shape. To draw it, scale the path space
+/// ([widthEmu] x [heightEmu]) onto the shape frame.
+class PptxCustomPath {
+  const PptxCustomPath({
+    required this.widthEmu,
+    required this.heightEmu,
+    required this.commands,
+    this.filled = true,
+    this.stroked = true,
+  });
+
+  final int widthEmu;
+  final int heightEmu;
+  final List<PptxPathCommand> commands;
+
+  /// False when `a:path fill="none"`.
+  final bool filled;
+
+  /// False when `a:path stroke="0"`.
+  final bool stroked;
+}
+
 enum PptxAnchor { top, middle, bottom }
 
 enum PptxAlign { left, center, right, justify }
@@ -177,9 +217,15 @@ class PptxTextShape extends PptxShape {
     this.wrap = true,
     this.verticalText = false,
     this.unsupportedKind,
+    this.customPaths = const [],
   });
 
   final PptxGeometry geometry;
+
+  /// Paths of an `a:custGeom` freeform (then [geometry] is `other` and
+  /// [presetGeometry] null). Empty when the freeform uses guide formulas that
+  /// are not evaluated.
+  final List<PptxCustomPath> customPaths;
 
   /// Raw `a:prstGeom/@prst` (e.g. 'rightArrow') when available.
   final String? presetGeometry;
@@ -302,6 +348,9 @@ class PptxParagraph {
     this.bulletChar,
     this.numbered = false,
     this.numberingScheme,
+    this.bulletFontFamily,
+    this.bulletColorArgb,
+    this.bulletSizePct,
     this.runs = const [],
     this.spaceBeforePt,
     this.spaceAfterPt,
@@ -325,6 +374,17 @@ class PptxParagraph {
 
   /// `a:buAutoNum/@type`, e.g. 'arabicPeriod'.
   final String? numberingScheme;
+
+  /// `a:buFont/@typeface` (e.g. 'Wingdings 3', 'Arial'). Symbol fonts store
+  /// private-use code points in [bulletChar]: the app should map or replace
+  /// them when that font is not available.
+  final String? bulletFontFamily;
+
+  /// `a:buClr`; null = same colour as the first run.
+  final int? bulletColorArgb;
+
+  /// `a:buSzPct` as percent of the text size (100 = same size), null = 100.
+  final double? bulletSizePct;
   final List<PptxRun> runs;
   final double? spaceBeforePt;
   final double? spaceAfterPt;

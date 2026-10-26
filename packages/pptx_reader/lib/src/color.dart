@@ -101,14 +101,16 @@ class ColorContext {
           a *= val;
         case 'alphaOff':
           a += val;
+        // PowerPoint applies tint/shade in linear RGB (not on the sRGB bytes):
+        // accent1 4472C4 + shade 50% is 2F528F there, not 223962.
         case 'tint':
-          r = 1 - (1 - r) * val;
-          g = 1 - (1 - g) * val;
-          b = 1 - (1 - b) * val;
+          r = _toSrgb(1 - (1 - _toLinear(r)) * val);
+          g = _toSrgb(1 - (1 - _toLinear(g)) * val);
+          b = _toSrgb(1 - (1 - _toLinear(b)) * val);
         case 'shade':
-          r *= val;
-          g *= val;
-          b *= val;
+          r = _toSrgb(_toLinear(r) * val);
+          g = _toSrgb(_toLinear(g) * val);
+          b = _toSrgb(_toLinear(b) * val);
         case 'inv':
           r = 1 - r;
           g = 1 - g;
@@ -149,6 +151,16 @@ class ColorContext {
     }
     int c(double v) => (v * 255).round();
     return c(a) << 24 | c(r) << 16 | c(g) << 8 | c(b);
+  }
+
+  static double _toLinear(double c) =>
+      c <= 0.04045 ? c / 12.92 : math.pow((c + 0.055) / 1.055, 2.4).toDouble();
+
+  static double _toSrgb(double c) {
+    final v = c.clamp(0.0, 1.0);
+    return v <= 0.0031308
+        ? 12.92 * v
+        : 1.055 * math.pow(v, 1 / 2.4).toDouble() - 0.055;
   }
 
   static (double, double, double) _rgbToHsl(double r, double g, double b) {

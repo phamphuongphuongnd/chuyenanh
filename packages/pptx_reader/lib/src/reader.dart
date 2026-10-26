@@ -551,6 +551,7 @@ class _Reader {
     // Geometry.
     var geometry = PptxGeometry.rect;
     String? preset;
+    var customPaths = const <PptxCustomPath>[];
     for (final s in chain) {
       final spPr = s.el.child('spPr');
       final pg = spPr?.child('prstGeom');
@@ -559,8 +560,10 @@ class _Reader {
         geometry = _geometry(preset);
         break;
       }
-      if (spPr?.child('custGeom') != null) {
+      final cg = spPr?.child('custGeom');
+      if (cg != null) {
         geometry = PptxGeometry.other;
+        customPaths = _customPaths(cg, g);
         break;
       }
     }
@@ -661,6 +664,7 @@ class _Reader {
       name: g.name,
       geometry: geometry,
       presetGeometry: preset,
+      customPaths: customPaths,
       fill: fill,
       line: line,
       paragraphs: paragraphs,
@@ -674,6 +678,66 @@ class _Reader {
       wrap: bodyAttrs['wrap'] != 'none',
       verticalText: vert != null && vert != 'horz',
     );
+  }
+
+  /// Reads `a:custGeom/a:pathLst`. Coordinates that are guide names (formulas
+  /// in `a:gdLst`) are not evaluated: such a path is skipped.
+  static List<PptxCustomPath> _customPaths(XmlElement cg, _Geom g) {
+    final paths = <PptxCustomPath>[];
+    for (final path in cg.child('pathLst')?.kids('path') ?? <XmlElement>[]) {
+      var w = path.intAttr('w') ?? 0;
+      var h = path.intAttr('h') ?? 0;
+      if (w <= 0) w = g.frame.cx;
+      if (h <= 0) h = g.frame.cy;
+      var ok = true;
+      double? num(String? v) {
+        final d = v == null ? null : double.tryParse(v);
+        if (d == null) ok = false;
+        return d;
+      }
+
+      List<double> pts(XmlElement c) => [
+        for (final p in c.kids('pt')) ...[
+          num(p.attr('x')) ?? 0,
+          num(p.attr('y')) ?? 0,
+        ],
+      ];
+      final cmds = <PptxPathCommand>[];
+      for (final c in path.childElements) {
+        switch (c.name.local) {
+          case 'moveTo':
+            cmds.add(PptxPathCommand(PptxPathOp.moveTo, pts(c)));
+          case 'lnTo':
+            cmds.add(PptxPathCommand(PptxPathOp.lineTo, pts(c)));
+          case 'cubicBezTo':
+            cmds.add(PptxPathCommand(PptxPathOp.cubicTo, pts(c)));
+          case 'quadBezTo':
+            cmds.add(PptxPathCommand(PptxPathOp.quadTo, pts(c)));
+          case 'arcTo':
+            cmds.add(
+              PptxPathCommand(PptxPathOp.arcTo, [
+                num(c.attr('wR')) ?? 0,
+                num(c.attr('hR')) ?? 0,
+                (num(c.attr('stAng')) ?? 0) / 60000.0,
+                (num(c.attr('swAng')) ?? 0) / 60000.0,
+              ]),
+            );
+          case 'close':
+            cmds.add(const PptxPathCommand(PptxPathOp.close));
+        }
+      }
+      if (!ok || cmds.isEmpty) continue;
+      paths.add(
+        PptxCustomPath(
+          widthEmu: w,
+          heightEmu: h,
+          commands: cmds,
+          filled: path.attr('fill') != 'none',
+          stroked: path.boolAttr('stroke') ?? true,
+        ),
+      );
+    }
+    return paths;
   }
 
   static PptxGeometry _geometry(String? prst) => switch (prst) {
