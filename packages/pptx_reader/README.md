@@ -43,14 +43,29 @@ Units: positions/sizes in EMU (`deck.slideWidthEmu`, 914400 EMU = 1 inch,
 - Speaker notes (`notesSlide` body placeholder).
 - Images are decompressed only when referenced (shared images decoded once).
 
+## Tests with real files
+
+`test/real_files_test.dart` reads decks written by desktop PowerPoint
+(`test/fixtures/real/`). Regenerate them with
+`powershell -ExecutionPolicy Bypass -File tool/make_real_fixtures.ps1` (needs PowerPoint; uses COM and
+always quits it; re-run if it exits with -1 at start-up). `dart run tool/dump.dart file.pptx` prints
+what the reader sees. `deck_organic.pptx` (1 MB) is git-ignored and its tests skip when absent.
+
 ## Known limitations
 
 - Gradient fills -> first stop colour; pattern fills -> foreground colour; no effects (shadow, glow, 3D).
 - Preset geometries other than rect/roundRect/ellipse/triangle/line map to `other`
-  (raw name in `presetGeometry`); `custGeom` paths are not exported; adjust values ignored.
+  (raw name in `presetGeometry`; adjust values ignored). Freeforms (`custGeom`) export their
+  `customPaths` (moveTo/lineTo/cubic/quad/arcTo/close in path space) when all coordinates are
+  literal numbers; paths that use guide formulas (`gdLst`) are skipped.
 - Charts, SmartArt, OLE, media, ink: empty `PptxTextShape` with `unsupportedKind` set
   (no fallback image extracted except when `mc:Fallback` provides a `p:pic`).
-- `bgRef`/`fillRef` use the reference colour as a solid fill (theme gradient/image fills not expanded).
+- `bgRef`/`fillRef` look up the theme `fillStyleLst`/`bgFillStyleLst` (picture textures are extracted,
+  gradients become their first stop with `phClr` substituted); without a matching style the
+  reference colour is a solid fill.
+- `tint`/`shade` are computed in linear RGB like PowerPoint (default outline of a new shape = `172C51`).
+- Bullets expose `bulletFontFamily` / `bulletColorArgb` / `bulletSizePct` (symbol fonts such as
+  Wingdings keep private-use code points in `bulletChar`).
 - Group rotation/flip is not baked into children (rotate the group as a whole).
 - Text: no column layout, tab stops, kerning, character spacing, highlight, `vert` details
   (only a `verticalText` flag), right-to-left; `spcPct` before/after is approximated from the first run size.

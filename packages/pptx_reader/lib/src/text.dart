@@ -71,9 +71,12 @@ class _ParaProps {
   String? bulletKind; // none | char | num
   String? bulletChar;
   String? bulletScheme;
+  String? buFont;
+  int? buColor;
+  double? buSizePct;
   double? spcBefPt, spcBefPct, spcAftPt, spcAftPct, lnPct, lnPt;
 
-  void apply(XmlElement? pPr) {
+  void apply(XmlElement? pPr, [ColorContext? colors]) {
     if (pPr == null) return;
     final a = pPr.attr('algn');
     if (a != null) align = _alignOf(a);
@@ -89,6 +92,15 @@ class _ParaProps {
         case 'buAutoNum':
           bulletKind = 'num';
           bulletScheme = c.attr('type');
+        case 'buFont':
+          final f = c.attr('typeface');
+          buFont = (f == null || f.startsWith('+')) ? null : f;
+        case 'buClrTx':
+          buColor = null;
+        case 'buClr':
+          buColor = colors?.colorIn(c);
+        case 'buSzPct':
+          buSizePct = (c.intAttr('val') ?? 100000) / 1000.0;
         case 'spcBef':
           final (pt, pct) = _spacing(c, spcBefPt, spcBefPct);
           spcBefPt = pt;
@@ -201,7 +213,7 @@ class TextContext {
       for (final tag in ['defPPr', 'lvl${level + 1}pPr']) {
         final lvl = list.child(tag);
         if (lvl == null) continue;
-        para.apply(lvl);
+        para.apply(lvl, colors);
         base.merge(runProps(lvl.child('defRPr')));
       }
     }
@@ -209,7 +221,7 @@ class TextContext {
     levels.forEach(applyList);
     if (styleRun != null) base.merge(styleRun!);
     applyList(own);
-    para.apply(pPr);
+    para.apply(pPr, colors);
 
     final runs = <PptxRun>[];
     for (final c in p.childElements) {
@@ -247,6 +259,12 @@ class TextContext {
           : null,
       numbered: hasBullet && para.bulletKind == 'num',
       numberingScheme: para.bulletKind == 'num' ? para.bulletScheme : null,
+      bulletFontFamily:
+          (para.bulletKind == 'char' || para.bulletKind == 'num')
+          ? para.buFont
+          : null,
+      bulletColorArgb: para.buColor,
+      bulletSizePct: para.buSizePct,
       runs: runs,
       spaceBeforePt: spacing(para.spcBefPt, para.spcBefPct),
       spaceAfterPt: spacing(para.spcAftPt, para.spcAftPct),

@@ -35,8 +35,21 @@ class _Part {
 }
 
 class _Theme {
-  _Theme(this.colors, this.majorFont, this.minorFont, this.lineWidths);
+  _Theme(
+    this.colors,
+    this.majorFont,
+    this.minorFont,
+    this.lineWidths, {
+    this.fillStyles = const [],
+    this.bgFillStyles = const [],
+    this.part,
+  });
 
+  /// `fmtScheme/fillStyleLst` and `bgFillStyleLst` children (fillRef idx 1..,
+  /// bgRef idx 1001..), and the theme part (for image rels).
+  final List<XmlElement> fillStyles;
+  final List<XmlElement> bgFillStyles;
+  final _Part? part;
   final Map<String, int> colors;
   final String? majorFont;
   final String? minorFont;
@@ -224,7 +237,7 @@ class _Reader {
           (path == null ? null : _part(path)) ??
           _Part('', XmlElement.tag('sldMaster'), const {});
       final themeRel = part.relOfType('/theme');
-      final theme = _theme(themeRel == null ? null : pkg.xml(themeRel.target));
+      final theme = _theme(themeRel == null ? null : _part(themeRel.target));
       final clrMap = <String, String>{
         for (final a
             in part.root.child('clrMap')?.attributes ?? <XmlAttribute>[])
@@ -240,8 +253,8 @@ class _Reader {
     });
   }
 
-  _Theme _theme(XmlElement? root) {
-    final els = root?.child('themeElements');
+  _Theme _theme(_Part? themePart) {
+    final els = themePart?.root.child('themeElements');
     final colors = Map<String, int>.of(_officeColors);
     for (final c in els?.child('clrScheme')?.childElements ?? <XmlElement>[]) {
       final v = c.childElements.firstOrNull;
@@ -260,7 +273,11 @@ class _Reader {
       for (final ln
           in els?.at(['fmtScheme', 'lnStyleLst'])?.kids('ln') ?? <XmlElement>[])
         ln.intAttr('w') ?? 9525,
-    ]);
+    ], fillStyles: [
+      ...?els?.at(['fmtScheme', 'fillStyleLst'])?.childElements,
+    ], bgFillStyles: [
+      ...?els?.at(['fmtScheme', 'bgFillStyleLst'])?.childElements,
+    ], part: themePart);
   }
 
   _Layout _layout(String? path) {
@@ -344,7 +361,11 @@ class _Reader {
 
     return PptxSlide(
       index: index,
-      background: _background([part, layout.part, master.part], colors),
+      background: _background(
+        [part, layout.part, master.part],
+        colors,
+        master.theme,
+      ),
       shapes: shapes,
       notesText: _notes(part),
       hidden: part.root.boolAttr('show') == false,
@@ -365,7 +386,11 @@ class _Reader {
     }
   }
 
-  PptxFill? _background(List<_Part> parts, ColorContext colors) {
+  PptxFill? _background(
+    List<_Part> parts,
+    ColorContext colors,
+    _Theme theme,
+  ) {
     for (final p in parts) {
       final bg = p.root.at(['cSld', 'bg']);
       if (bg == null) continue;
@@ -375,11 +400,7 @@ class _Reader {
         if (specified) return fill;
       }
       final ref = bg.child('bgRef');
-      if (ref != null) {
-        if ((ref.intAttr('idx') ?? 0) == 0) return null;
-        final c = colors.colorIn(ref);
-        return c == null ? null : PptxFill.solid(c);
-      }
+      if (ref != null) return _refFill(ref, colors, theme);
     }
     return null;
   }
@@ -551,6 +572,7 @@ class _Reader {
     // Geometry.
     var geometry = PptxGeometry.rect;
     String? preset;
+    var customPaths = const <PptxCustomPath>[];
     for (final s in chain) {
       final spPr = s.el.child('spPr');
       final pg = spPr?.child('prstGeom');
@@ -559,8 +581,10 @@ class _Reader {
         geometry = _geometry(preset);
         break;
       }
-      if (spPr?.child('custGeom') != null) {
+      final cg = spPr?.child('custGeom');
+      if (cg != null) {
         geometry = PptxGeometry.other;
+        customPaths = _customPaths(cg, g);
         break;
       }
     }
@@ -581,10 +605,7 @@ class _Reader {
     }
     if (!fillSpecified && !connector) {
       final ref = style?.child('fillRef');
-      if (ref != null && (ref.intAttr('idx') ?? 0) > 0) {
-        final c = ctx.colors.colorIn(ref);
-        if (c != null) fill = PptxFill.solid(c);
-      }
+      if (ref != null) fill = _refFill(ref, ctx.colors, ctx.master.theme);
     }
     if (connector) fill = null;
 
@@ -661,6 +682,7 @@ class _Reader {
       name: g.name,
       geometry: geometry,
       presetGeometry: preset,
+      customPaths: customPaths,
       fill: fill,
       line: line,
       paragraphs: paragraphs,
@@ -674,6 +696,66 @@ class _Reader {
       wrap: bodyAttrs['wrap'] != 'none',
       verticalText: vert != null && vert != 'horz',
     );
+  }
+
+  /// Reads `a:custGeom/a:pathLst`. Coordinates that are guide names (formulas
+  /// in `a:gdLst`) are not evaluated: such a path is skipped.
+  static List<PptxCustomPath> _customPaths(XmlElement cg, _Geom g) {
+    final paths = <PptxCustomPath>[];
+    for (final path in cg.child('pathLst')?.kids('path') ?? <XmlElement>[]) {
+      var w = path.intAttr('w') ?? 0;
+      var h = path.intAttr('h') ?? 0;
+      if (w <= 0) w = g.frame.cx;
+      if (h <= 0) h = g.frame.cy;
+      var ok = true;
+      double? num(String? v) {
+        final d = v == null ? null : double.tryParse(v);
+        if (d == null) ok = false;
+        return d;
+      }
+
+      List<double> pts(XmlElement c) => [
+        for (final p in c.kids('pt')) ...[
+          num(p.attr('x')) ?? 0,
+          num(p.attr('y')) ?? 0,
+        ],
+      ];
+      final cmds = <PptxPathCommand>[];
+      for (final c in path.childElements) {
+        switch (c.name.local) {
+          case 'moveTo':
+            cmds.add(PptxPathCommand(PptxPathOp.moveTo, pts(c)));
+          case 'lnTo':
+            cmds.add(PptxPathCommand(PptxPathOp.lineTo, pts(c)));
+          case 'cubicBezTo':
+            cmds.add(PptxPathCommand(PptxPathOp.cubicTo, pts(c)));
+          case 'quadBezTo':
+            cmds.add(PptxPathCommand(PptxPathOp.quadTo, pts(c)));
+          case 'arcTo':
+            cmds.add(
+              PptxPathCommand(PptxPathOp.arcTo, [
+                num(c.attr('wR')) ?? 0,
+                num(c.attr('hR')) ?? 0,
+                (num(c.attr('stAng')) ?? 0) / 60000.0,
+                (num(c.attr('swAng')) ?? 0) / 60000.0,
+              ]),
+            );
+          case 'close':
+            cmds.add(const PptxPathCommand(PptxPathOp.close));
+        }
+      }
+      if (!ok || cmds.isEmpty) continue;
+      paths.add(
+        PptxCustomPath(
+          widthEmu: w,
+          heightEmu: h,
+          commands: cmds,
+          filled: path.attr('fill') != 'none',
+          stroked: path.boolAttr('stroke') ?? true,
+        ),
+      );
+    }
+    return paths;
   }
 
   static PptxGeometry _geometry(String? prst) => switch (prst) {
@@ -730,26 +812,62 @@ class _Reader {
     PptxFill? groupFill,
   ) {
     for (final f in container.childElements) {
-      switch (f.name.local) {
-        case 'noFill':
-          return (true, null);
-        case 'solidFill':
-          final c = cc.colorIn(f);
-          return (true, c == null ? null : PptxFill.solid(c));
-        case 'gradFill':
-          final c = _firstStop(f, cc);
-          return (true, c == null ? null : PptxFill.solid(c));
-        case 'pattFill':
-          final c = cc.colorIn(f.child('fgClr'));
-          return (true, c == null ? null : PptxFill.solid(c));
-        case 'grpFill':
-          return (true, groupFill);
-        case 'blipFill':
-          final img = _image(f.child('blip'), part);
-          return (true, img == null ? null : PptxFill.picture(img.$1, img.$2));
-      }
+      final r = _fillOf(f, part, cc, groupFill);
+      if (r.$1) return r;
     }
     return (false, null);
+  }
+
+  /// One fill element (`a:solidFill`, `a:gradFill`, ...). `specified` is false
+  /// when [f] is not a fill element.
+  (bool, PptxFill?) _fillOf(
+    XmlElement f,
+    _Part part,
+    ColorContext cc,
+    PptxFill? groupFill,
+  ) {
+    switch (f.name.local) {
+      case 'noFill':
+        return (true, null);
+      case 'solidFill':
+        final c = cc.colorIn(f);
+        return (true, c == null ? null : PptxFill.solid(c));
+      case 'gradFill':
+        final c = _firstStop(f, cc);
+        return (true, c == null ? null : PptxFill.solid(c));
+      case 'pattFill':
+        final c = cc.colorIn(f.child('fgClr'));
+        return (true, c == null ? null : PptxFill.solid(c));
+      case 'grpFill':
+        return (true, groupFill);
+      case 'blipFill':
+        final img = _image(f.child('blip'), part);
+        return (true, img == null ? null : PptxFill.picture(img.$1, img.$2));
+    }
+    return (false, null);
+  }
+
+  /// Fill of a `fillRef` / `bgRef` (idx 1.. = theme fillStyleLst, 1001.. =
+  /// bgFillStyleLst, 0 = none). The theme style is applied with the reference
+  /// colour as `phClr`; without a matching theme style the colour is used as a
+  /// solid fill.
+  PptxFill? _refFill(XmlElement ref, ColorContext cc, _Theme theme) {
+    final idx = ref.intAttr('idx') ?? 0;
+    if (idx == 0) return null;
+    final c = cc.colorIn(ref);
+    final bg = idx >= 1001;
+    final styles = bg ? theme.bgFillStyles : theme.fillStyles;
+    final i = bg ? idx - 1001 : idx - 1;
+    if (i >= 0 && i < styles.length) {
+      final (spec, f) = _fillOf(
+        styles[i],
+        theme.part ?? _Part('', XmlElement.tag('theme'), const {}),
+        cc.withPhClr(c),
+        null,
+      );
+      if (spec && (f != null || styles[i].name.local == 'noFill')) return f;
+    }
+    return c == null ? null : PptxFill.solid(c);
   }
 
   (Uint8List, String)? _image(XmlElement? blip, _Part part) {
