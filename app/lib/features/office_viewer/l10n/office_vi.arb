@@ -15,5 +15,8 @@
   "office_encodingLabel": "Bảng mã: {name}",
   "office_truncated": "File lớn, chỉ hiển thị phần đầu.",
   "office_imageUnsupported": "Không hiển thị được ảnh",
-  "office_linkCopied": "Đã chép liên kết"
+  "office_linkCopied": "Đã chép liên kết",
+  "office_linkOpenFailed": "Không mở được liên kết",
+  "office_linkOpening": "Đang mở: {url}",
+  "@office_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

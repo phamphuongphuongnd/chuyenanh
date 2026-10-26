@@ -15,5 +15,8 @@
   "office_encodingLabel": "Encoding: {name}",
   "office_truncated": "File besar, hanya bagian awal yang ditampilkan.",
   "office_imageUnsupported": "Gambar tidak dapat ditampilkan",
-  "office_linkCopied": "Tautan disalin"
+  "office_linkCopied": "Tautan disalin",
+  "office_linkOpenFailed": "Tidak dapat membuka tautan",
+  "office_linkOpening": "Membuka: {url}",
+  "@office_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

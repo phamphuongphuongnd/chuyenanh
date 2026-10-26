@@ -1,11 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:office_reader/office_reader.dart' as rd;
 import 'package:path/path.dart' as p;
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/utils/link_opener.dart';
 import '../../../core/router/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../logic/docx_table_grid.dart';
@@ -251,10 +251,19 @@ class _DocxParagraphViewState extends State<DocxParagraphView> {
     super.dispose();
   }
 
-  void _copyLink(String url) {
-    Clipboard.setData(ClipboardData(text: url));
-    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-      SnackBar(content: Text(context.l10n.office_linkCopied)),
+  Future<void> _openLink(String url) async {
+    final launcher = linkLauncherOf(context);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final l10n = context.l10n;
+    final res = await openLink(launcher, url);
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(
+          res.opened
+              ? l10n.office_linkOpening(res.uri.toString())
+              : l10n.office_linkOpenFailed,
+        ),
+      ),
     );
   }
 
@@ -323,7 +332,7 @@ class _DocxParagraphViewState extends State<DocxParagraphView> {
           TapGestureRecognizer? rec;
           if (r.hyperlink != null) {
             final url = r.hyperlink!;
-            rec = TapGestureRecognizer()..onTap = () => _copyLink(url);
+            rec = TapGestureRecognizer()..onTap = () => _openLink(url);
             _recognizers.add(rec);
           }
           for (final seg in highlightSegments(r.text, ctx.query)) {

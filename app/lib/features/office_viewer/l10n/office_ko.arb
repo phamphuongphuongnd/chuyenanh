@@ -15,5 +15,8 @@
   "office_encodingLabel": "인코딩: {name}",
   "office_truncated": "파일이 커서 앞부분만 표시합니다.",
   "office_imageUnsupported": "이미지를 표시할 수 없습니다",
-  "office_linkCopied": "링크를 복사했습니다"
+  "office_linkCopied": "링크를 복사했습니다",
+  "office_linkOpenFailed": "링크를 열 수 없습니다",
+  "office_linkOpening": "여는 중: {url}",
+  "@office_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

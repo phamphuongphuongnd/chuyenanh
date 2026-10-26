@@ -9,5 +9,8 @@
   "pptx_hideHidden": "非表示スライドを隠す",
   "pptx_emptyDeck": "このプレゼンテーションにはスライドがありません",
   "pptx_hiddenBadge": "非表示",
-  "pptx_slideN": "スライド {n}"
+  "pptx_slideN": "スライド {n}",
+  "pptx_linkOpenFailed": "リンクを開けませんでした",
+  "pptx_linkOpening": "開いています: {url}",
+  "@pptx_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

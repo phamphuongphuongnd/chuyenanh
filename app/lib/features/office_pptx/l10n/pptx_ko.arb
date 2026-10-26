@@ -9,5 +9,8 @@
   "pptx_hideHidden": "숨긴 슬라이드 감추기",
   "pptx_emptyDeck": "이 프레젠테이션에는 슬라이드가 없습니다",
   "pptx_hiddenBadge": "숨김",
-  "pptx_slideN": "슬라이드 {n}"
+  "pptx_slideN": "슬라이드 {n}",
+  "pptx_linkOpenFailed": "링크를 열 수 없습니다",
+  "pptx_linkOpening": "여는 중: {url}",
+  "@pptx_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

@@ -9,5 +9,8 @@
   "pptx_hideHidden": "不显示隐藏的幻灯片",
   "pptx_emptyDeck": "此演示文稿没有幻灯片",
   "pptx_hiddenBadge": "已隐藏",
-  "pptx_slideN": "幻灯片 {n}"
+  "pptx_slideN": "幻灯片 {n}",
+  "pptx_linkOpenFailed": "无法打开链接",
+  "pptx_linkOpening": "正在打开: {url}",
+  "@pptx_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }

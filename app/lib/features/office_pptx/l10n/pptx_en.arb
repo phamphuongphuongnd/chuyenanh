@@ -11,5 +11,8 @@
   "pptx_emptyDeck": "This presentation has no slides",
   "pptx_hiddenBadge": "Hidden",
   "pptx_slideN": "Slide {n}",
-  "@pptx_slideN": {"placeholders": {"n": {"type": "int"}}}
+  "@pptx_slideN": {"placeholders": {"n": {"type": "int"}}},
+  "pptx_linkOpenFailed": "Could not open the link",
+  "pptx_linkOpening": "Opening: {url}",
+  "@pptx_linkOpening": {"placeholders": {"url": {"type": "String"}}}
 }
