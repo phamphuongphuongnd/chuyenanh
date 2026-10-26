@@ -42,9 +42,9 @@ void main() {
   });
 
   group('reorder', () {
-    test('kéo ảnh 0 xuống cuối (newIndex tính theo ReorderableListView)', () {
+    test('kéo ảnh 0 xuống cuối (newIndex = vị trí cuối cùng)', () {
       final s = _session(4);
-      s.reorder(0, 4);
+      s.reorder(0, 3);
       expect(_ids(s), [1, 2, 3, 0]);
     });
 
@@ -56,24 +56,23 @@ void main() {
 
     test('đổi chỗ liền kề', () {
       final s = _session(3);
-      s.reorder(0, 2);
+      s.reorder(0, 1);
       expect(_ids(s), [1, 0, 2]);
     });
 
     test('ảnh đang xem đi theo vị trí mới', () {
       final s = _session(4)..select(1);
-      s.reorder(1, 4);
+      s.reorder(1, 3);
       expect(s.current!.id, 1);
       expect(s.currentIndex, 3);
-      s.reorder(0, 2); // ảnh khác di chuyển ngang qua
+      s.reorder(0, 1); // ảnh khác di chuyển ngang qua
       expect(s.current!.id, 1);
     });
 
-    test('chỉ số lạ không làm gì', () {
+    test('chỉ số lạ hoặc không đổi chỗ thì không làm gì', () {
       final s = _session(3);
       s.reorder(5, 0);
       s.reorder(1, 1);
-      s.reorder(1, 2);
       expect(_ids(s), [0, 1, 2]);
     });
   });
@@ -173,7 +172,7 @@ void main() {
     s.addListener(() => n++);
     s.rotateCurrent();
     s.select(1);
-    s.reorder(0, 2);
+    s.reorder(0, 1);
     expect(n, 3);
   });
 }

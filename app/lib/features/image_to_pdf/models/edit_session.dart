@@ -52,13 +52,11 @@ class EditSession extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Đổi chỗ như `ReorderableListView.onReorder` ([newIndex] tính trước khi gỡ phần tử cũ).
-  /// Ảnh đang xem đi theo vị trí mới của nó.
+  /// Đổi chỗ như `ReorderableListView.onReorderItem`: [newIndex] là vị trí cuối cùng của
+  /// ảnh sau khi di chuyển (đã trừ phần tử cũ). Ảnh đang xem đi theo vị trí mới của nó.
   void reorder(int oldIndex, int newIndex) {
     if (oldIndex < 0 || oldIndex >= _items.length) return;
-    var target = newIndex;
-    if (target > oldIndex) target -= 1;
-    target = target.clamp(0, _items.length - 1);
+    final target = newIndex.clamp(0, _items.length - 1);
     if (target == oldIndex) return;
     final currentId = _items[_current].id;
     final moved = _items.removeAt(oldIndex);

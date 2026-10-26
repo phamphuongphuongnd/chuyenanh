@@ -138,7 +138,7 @@ class SyncfusionImageToPdfEngine implements ImageToPdfEngine {
           options: options,
         );
         // Syncfusion chỉ cho đổi khổ trước khi thêm trang → mỗi trang một section riêng.
-        final section = doc.sections!.add()!;
+        final section = doc.sections!.add();
         section.pageSettings.margins.all = 0;
         section.pageSettings.orientation = pl.pageWidth > pl.pageHeight
             ? sf.PdfPageOrientation.landscape

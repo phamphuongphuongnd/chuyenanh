@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:image_ops/image_ops.dart' as ops;
 
 import '../../../core/errors/app_error.dart';
-import '../../../core/utils/cancel_token.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/pdf/image_to_pdf_engine.dart';
 import '../models/image_item.dart';
