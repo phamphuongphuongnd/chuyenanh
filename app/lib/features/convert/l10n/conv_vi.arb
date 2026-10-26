@@ -1,4 +1,27 @@
 {
   "@@locale": "vi",
-  "conv_title": "Chuyển đổi"
+  "conv_title": "Chuyển đổi",
+  "conv_textToPdf": "Văn bản sang PDF",
+  "conv_wordToPdf": "Word sang PDF",
+  "conv_excelToPdf": "Excel sang PDF",
+  "conv_pdfToText": "PDF sang văn bản",
+  "conv_pdfToWord": "PDF sang Word",
+  "conv_pdfToExcel": "PDF sang Excel",
+  "conv_textHint": "Gõ hoặc dán văn bản vào đây",
+  "conv_loadTxt": "Mở file TXT",
+  "conv_chooseFile": "Chọn file",
+  "conv_chosenFile": "Đã chọn: {name}",
+  "conv_options": "Tuỳ chọn",
+  "conv_pageSize": "Khổ giấy",
+  "conv_orientation": "Hướng giấy",
+  "conv_portrait": "Dọc",
+  "conv_landscape": "Ngang",
+  "conv_fontSize": "Cỡ chữ",
+  "conv_margin": "Lề",
+  "conv_convert": "Chuyển đổi",
+  "conv_layoutNotice": "Không giữ nguyên bố cục gốc. Tiêu đề, đoạn văn và bảng được dựng lại gần đúng từ chữ trong PDF.",
+  "conv_noTextFound": "Không tìm thấy chữ. PDF dạng ảnh quét cần nhận dạng chữ (OCR) trước.",
+  "conv_emptyText": "Hãy nhập văn bản trước.",
+  "conv_doneTitle": "Đã chuyển đổi xong",
+  "conv_savedAs": "Đã lưu tại: {path}"
 }

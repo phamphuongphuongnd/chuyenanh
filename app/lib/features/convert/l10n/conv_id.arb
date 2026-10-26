@@ -1,4 +1,27 @@
 {
   "@@locale": "id",
-  "conv_title": "Konversi"
+  "conv_title": "Konversi",
+  "conv_textToPdf": "Teks ke PDF",
+  "conv_wordToPdf": "Word ke PDF",
+  "conv_excelToPdf": "Excel ke PDF",
+  "conv_pdfToText": "PDF ke teks",
+  "conv_pdfToWord": "PDF ke Word",
+  "conv_pdfToExcel": "PDF ke Excel",
+  "conv_textHint": "Ketik atau tempel teks di sini",
+  "conv_loadTxt": "Buka file TXT",
+  "conv_chooseFile": "Pilih file",
+  "conv_chosenFile": "Dipilih: {name}",
+  "conv_options": "Opsi",
+  "conv_pageSize": "Ukuran halaman",
+  "conv_orientation": "Orientasi",
+  "conv_portrait": "Potret",
+  "conv_landscape": "Lanskap",
+  "conv_fontSize": "Ukuran huruf",
+  "conv_margin": "Margin",
+  "conv_convert": "Konversi",
+  "conv_layoutNotice": "Tata letak asli tidak dipertahankan. Judul, paragraf, dan tabel disusun ulang secara perkiraan dari teks.",
+  "conv_noTextFound": "Teks tidak ditemukan. PDF hasil pindaian perlu OCR terlebih dahulu.",
+  "conv_emptyText": "Masukkan teks terlebih dahulu.",
+  "conv_doneTitle": "Konversi selesai",
+  "conv_savedAs": "Disimpan di: {path}"
 }

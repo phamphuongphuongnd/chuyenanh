@@ -1,4 +1,27 @@
 {
   "@@locale": "ja",
-  "conv_title": "変換"
+  "conv_title": "変換",
+  "conv_textToPdf": "テキストをPDFに",
+  "conv_wordToPdf": "WordをPDFに",
+  "conv_excelToPdf": "ExcelをPDFに",
+  "conv_pdfToText": "PDFをテキストに",
+  "conv_pdfToWord": "PDFをWordに",
+  "conv_pdfToExcel": "PDFをExcelに",
+  "conv_textHint": "ここにテキストを入力または貼り付け",
+  "conv_loadTxt": "TXTファイルを開く",
+  "conv_chooseFile": "ファイルを選択",
+  "conv_chosenFile": "選択中: {name}",
+  "conv_options": "オプション",
+  "conv_pageSize": "用紙サイズ",
+  "conv_orientation": "向き",
+  "conv_portrait": "縦",
+  "conv_landscape": "横",
+  "conv_fontSize": "文字サイズ",
+  "conv_margin": "余白",
+  "conv_convert": "変換",
+  "conv_layoutNotice": "元のレイアウトは保持されません。見出し・段落・表は文字から概算で再構成されます。",
+  "conv_noTextFound": "文字が見つかりません。スキャンしたPDFは先にOCRが必要です。",
+  "conv_emptyText": "先にテキストを入力してください。",
+  "conv_doneTitle": "変換が完了しました",
+  "conv_savedAs": "保存先: {path}"
 }
