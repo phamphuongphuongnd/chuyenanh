@@ -18,3 +18,4 @@ type: log
 - 2026-10-26 15:03 — cai Flutter 3.47.8 bang git clone; T1 xong UI (analyze sach, 102 test pass, commit 1159b7b tren feat/t1-documents); giao dot 1 (T2,T3,T4,T5,T10) cho 5 agent, T2/T5/T10 bao xong (chua tu kiem); viet README goc → [[documents]] [[tinh-nang-t1-t10]] [[kiem-thu-flutter]]
 - 2026-10-26 15:10 — dung phien: checkpoint planhistory (bang tien do + cach lam tiep), T3 da co commit nhung chua bao cao, T2/T4/T5/T10 dang tu kiem lai → [[tinh-nang-t1-t10]] [[documents]]
 - 2026-10-26 15:20 — push 7 nhanh len origin (pdf-office, t1, t2, t3, t4, t5, t10; fast-forward, khong force) theo lenh nguoi dung → [[tinh-nang-t1-t10]]
+- 2026-10-26 15:30 — tu kiem lai T2 (172 pass), T4 (148 pass + 1 fail smoke), T5 (145 pass), T10 (100 pass): bao cao agent khop → [[tinh-nang-t1-t10]]

@@ -26,15 +26,15 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 | Việc | Nhánh | Mức |
 |---|---|---|
 | T1 Trang chủ Tài liệu | `feat/t1-documents` @ `1159b7b` (local) | **Xong UI, tự kiểm** (analyze sạch, 102 test pass) → [[documents]] |
-| T2 Ảnh → PDF | `feat/t2-image-to-pdf` @ `abc7253` | Agent báo xong (172 test pass), **chưa tự kiểm**; chưa thử plugin thật (camera, photo_manager, cropper) |
+| T2 Ảnh → PDF | `feat/t2-image-to-pdf` @ `abc7253` | **Tự kiểm 26/10: analyze sạch, 172 test pass**; chưa thử plugin thật (camera, photo_manager, cropper) |
 | T3 Trình đọc PDF | `feat/t3-reader` @ `8d4a30c` | Agent **chưa báo cáo cuối**; đã commit: chuỗi `reader_*`, lối tắt Kotlin `ShortcutChannel`, màn đọc (tìm, nhảy trang, bookmark, mục lục, tối, in, mật khẩu) + PDF→ảnh; **chưa tự kiểm** |
-| T4 Công cụ PDF | `feat/t4-pdf-tools` @ `4bc8261` | Agent báo xong: analyze sạch, 148 pass / **1 fail** (`app_smoke_test` — bước `push(Routes.merge)` đòi `PlaceholderScreen`), **chưa tự kiểm**; 7 màn + engine; watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica) |
-| T5 Chỉnh sửa PDF | `feat/t5-editor` @ `10d0489` | Agent báo xong (145 test pass), **chưa tự kiểm**; `SfPdfViewer` chỉ test bằng viewer giả; màn Ký cần `pdfRenderEngineProvider` của T3 |
+| T4 Công cụ PDF | `feat/t4-pdf-tools` @ `4bc8261` | **Tự kiểm 26/10: analyze sạch, 148 pass / 1 fail** (`app_smoke_test` — bước `push(Routes.merge)` đòi `PlaceholderScreen`); 7 màn + engine; watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica) |
+| T5 Chỉnh sửa PDF | `feat/t5-editor` @ `10d0489` | **Tự kiểm 26/10: analyze sạch, 145 test pass**; `SfPdfViewer` chỉ test bằng viewer giả; màn Ký cần `pdfRenderEngineProvider` của T3 |
 | T6 Chuyển đổi | `feat/t6-convert` | Chưa giao (đợt 2) |
 | T7 Xem DOCX/XLSX/TXT | `feat/t7-office-viewer` | Chưa giao (đợt 2) |
 | T8 Xem PPTX | `feat/t8-pptx` | Chưa giao (đợt 2) |
 | T9 Máy quét + OCR | `feat/t9-scanner` | Chưa giao (đợt 2) |
-| T10 Cài đặt + thương hiệu | `feat/t10-settings` @ `66fead3` | Agent báo xong (100 test pass), **chưa tự kiểm**; Giao diện/Thư mục lưu/Khổ giấy là màn con `Navigator.push` (không có route riêng); icon launcher vector chưa thử build APK |
+| T10 Cài đặt + thương hiệu | `feat/t10-settings` @ `66fead3` | **Tự kiểm 26/10: analyze sạch, 100 test pass**; Giao diện/Thư mục lưu/Khổ giấy là màn con `Navigator.push` (không có route riêng); icon launcher vector chưa thử build APK |
 
 ## Việc phải làm khi ghép (đã biết)
 - `test/app_smoke_test.dart` (MÓNG): test thứ 3 `push(Routes.merge, extra: '/x/a.pdf')` rồi đòi `find.text('/x/a.pdf')` (màn giữ chỗ) → vỡ khi T4
