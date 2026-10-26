@@ -26,10 +26,27 @@ const double kSignPreviewDpi = 110;
 
 /// Danh sách chữ ký đã lưu (mới nhất trước). `invalidate` sau khi lưu / xoá.
 final savedSignaturesProvider =
-    FutureProvider.autoDispose<List<SavedSignature>>((ref) async {
+    FutureProvider.autoDispose<List<SignatureEntry>>((ref) async {
       final store = await ref.watch(signatureStoreProvider.future);
-      return store.list();
+      final result = <SignatureEntry>[];
+      for (final s in await store.list()) {
+        try {
+          result.add(SignatureEntry(s, await store.read(s)));
+        } on FileSystemException {
+          // File vừa bị xoá / hỏng: bỏ qua, không làm hỏng cả danh sách.
+        }
+      }
+      return result;
     });
+
+/// Chữ ký đã lưu kèm nội dung PNG (nhỏ, tối đa [kMaxSavedSignatures] cái) — vẽ thumbnail từ bộ nhớ,
+/// không giữ file mở.
+class SignatureEntry {
+  const SignatureEntry(this.saved, this.png);
+
+  final SavedSignature saved;
+  final Uint8List png;
+}
 
 class _PageData {
   const _PageData(this.image, this.size);
@@ -173,14 +190,7 @@ class _SignScreenState extends ConsumerState<SignScreen> {
     }
   }
 
-  Future<void> _addSaved(SavedSignature s) async {
-    try {
-      final store = await ref.read(signatureStoreProvider.future);
-      await _addFromBytes(await store.read(s));
-    } catch (e) {
-      if (mounted) showEditorError(context, e);
-    }
-  }
+  Future<void> _addSaved(SignatureEntry s) => _addFromBytes(s.png);
 
   Future<void> _drawNew() async {
     final png = await showSignaturePadSheet(context);
@@ -196,7 +206,7 @@ class _SignScreenState extends ConsumerState<SignScreen> {
     if (mounted) await _addFromBytes(png);
   }
 
-  Future<void> _deleteSaved(SavedSignature s) async {
+  Future<void> _deleteSaved(SignatureEntry s) async {
     final l = context.l10n;
     final ok = await showConfirmDialog(
       context,
@@ -207,7 +217,7 @@ class _SignScreenState extends ConsumerState<SignScreen> {
     if (!ok || !mounted) return;
     try {
       final store = await ref.read(signatureStoreProvider.future);
-      await store.delete(s);
+      await store.delete(s.saved);
       ref.invalidate(savedSignaturesProvider);
     } catch (e) {
       if (mounted) showEditorError(context, e);
@@ -457,15 +467,15 @@ class _SignatureBar extends ConsumerWidget {
   });
 
   final VoidCallback onNew;
-  final ValueChanged<SavedSignature> onPick;
-  final ValueChanged<SavedSignature> onDelete;
+  final ValueChanged<SignatureEntry> onPick;
+  final ValueChanged<SignatureEntry> onDelete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final saved = ref.watch(savedSignaturesProvider);
-    final list = saved.value ?? const <SavedSignature>[];
+    final list = saved.value ?? const <SignatureEntry>[];
     return Material(
       elevation: 8,
       color: theme.colorScheme.surface,
@@ -509,12 +519,12 @@ class _SignatureBar extends ConsumerWidget {
                 ),
               for (final s in list)
                 _Tile(
-                  key: Key('saved_${s.fileName}'),
+                  key: Key('saved_${s.saved.fileName}'),
                   onTap: () => onPick(s),
                   onLongPress: () => onDelete(s),
                   background: Colors.white,
                   badge: GestureDetector(
-                    key: Key('delete_${s.fileName}'),
+                    key: Key('delete_${s.saved.fileName}'),
                     onTap: () => onDelete(s),
                     child: const Icon(
                       Icons.cancel,
@@ -524,8 +534,8 @@ class _SignatureBar extends ConsumerWidget {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(6),
-                    child: Image.file(
-                      File(s.path),
+                    child: Image.memory(
+                      s.png,
                       fit: BoxFit.contain,
                       errorBuilder: (_, _, _) =>
                           const Icon(Icons.broken_image_outlined),
