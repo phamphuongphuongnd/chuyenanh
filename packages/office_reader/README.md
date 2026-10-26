@@ -19,7 +19,8 @@ final wb  = await Isolate.run(() => readXlsx(bytes));   // XlsxWorkbook
   thụt lề lấy từ level nếu đoạn không tự đặt.
 - Bảng: `columnWidthsTwips`, `gridSpan`, `vMergeContinue` + `rowSpan` (đã tính sẵn), `shadingArgb`,
   `bordered`, bảng lồng nhau.
-- Inline: `DocxRun` (bold/italic/underline/strike/super/sub, cỡ, màu, highlight, font, hyperlink),
+- Inline: `DocxRun` (bold/italic/underline/strike/super/sub, cỡ, màu, highlight, font, hyperlink;
+  `w:caps`/`w:smallCaps` -> text in HOA, `smallCaps` = true; `w:vanish` bị bỏ),
   `DocxImage` (inline + anchor, bytes thật), `DocxBreak`. `w:tab` -> `\t`.
 - `w:br type="page"` được tách thành block `DocxPageBreak` (đoạn bị chia đôi).
 - Field code bị ẩn, giữ kết quả hiển thị; bỏ qua header/footer, footnote, textbox, text đã xoá (`w:del`).
@@ -30,7 +31,7 @@ final wb  = await Isolate.run(() => readXlsx(bytes));   // XlsxWorkbook
 - Toạ độ **0-based**: `cells[(row, col)]`, `A1 = (0, 0)`; `maxRow`/`maxCol` là số hàng/cột dùng
   (biên loại trừ, tính cả vùng merge).
 - Chuỗi shared/rich/inline (bỏ phiên âm `rPh`), số, bool, lỗi, ngày (`t="d"`), công thức (lấy giá trị
-  cache `<v>`, text công thức ở `formula`).
+  cache `<v>`, text công thức ở `formula`; công thức shared được bung ra từ ô gốc, tham chiếu tương đối dịch theo vị trí).
 - `display` đã định dạng theo numFmt: General, `0.00`, `#,##0`, `%`, `E+`, phân số, nhiều section,
   màu/locale `[Red]`/`[$₫-42A]`, ngày/giờ (`d/m/yyyy`, `yyyy-mm-dd`, `h:mm AM/PM`, `[h]:mm:ss`...).
   Serial 1900 có lỗi năm nhuận 1900; hỗ trợ `date1904`.
@@ -50,4 +51,6 @@ final wb  = await Isolate.run(() => readXlsx(bytes));   // XlsxWorkbook
 ```
 dart pub get && dart analyze && dart test
 ```
-Fixture được dựng bằng code trong `test/helpers/ooxml.dart` (không dùng file mẫu).
+Fixture dựng bằng code trong `test/helpers/ooxml.dart`; ngoài ra `test/fixtures/real/*` là file do
+Microsoft Word/Excel thật tạo (`tool/make_real_fixtures.ps1`, `tool/make_real_fixtures_extra.ps1`, cần Office
+cài sẵn; chạy lại bằng `powershell -File tool\make_real_fixtures.ps1`). `dart run tool/dump.dart <file>` in model để soi.

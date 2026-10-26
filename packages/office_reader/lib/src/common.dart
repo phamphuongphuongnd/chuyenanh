@@ -61,7 +61,11 @@ class OoxmlPackage {
   XmlDocument? xml(String path) {
     final b = bytes(path);
     if (b == null) return null;
-    return XmlDocument.parse(_decodeText(b));
+    // XML 1.0 section 2.11: CRLF / lone CR in the source are line breaks that
+    // parsers normalise to LF (Excel writes cell line breaks as CRLF).
+    return XmlDocument.parse(
+      _decodeText(b).replaceAll('\r\n', '\n').replaceAll('\r', '\n'),
+    );
   }
 
   /// Relationships of [partPath] (e.g. `word/document.xml`), keyed by Id.
