@@ -23,3 +23,4 @@ type: log
 - 2026-10-26 15:50 — GHEP DU 10 TINH NANG vao feat/pdf-office (77a9828, da push): analyze sach, 660 test pass, build APK debug OK; noi shortcutLaunchProvider vao app.dart; don worktree/nhanh agent; con: font Noto, cai thu A13 → [[tinh-nang-t1-t10]] [[build-song-song-agent]]
 - 2026-10-26 16:02 — tai font Noto (5 file, 39MB) + app/tool/fetch_fonts.sh, khong commit font; kiem bang anh render: Viet/Trung/Nhat/Han/Indo dung; test 660/660 → [[xuat-chu-ra-pdf]] [[tinh-nang-t1-t10]]
 - 2026-10-26 17:00 — L1 hyperlink url_launcher + L2 OCR PDF quet/lop chu tim kiem da ghep (692 test, build APK OK); dung theo gioi han luot dung, chua push → [[tinh-nang-t1-t10]] [[xuat-chu-ra-pdf]]
+- 2026-10-26 17:02 — /luu: sua muc luc loi thoi (da ghep du 10 tinh nang), them bai hoc cai APK/build khong can master, ngan sach luot dung, cach ghep nhanh → [[build-android]] [[preferences]] [[build-song-song-agent]]

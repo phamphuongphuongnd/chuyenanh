@@ -37,6 +37,11 @@ sources: []
   tiến độ vào `planhistory/` sau mỗi mốc; kiến thức đã qua test thì lưu vào wiki, ghi rõ phần chưa kiểm trên máy thật.
 - Khi gặp giới hạn lượt dùng/thiếu thời gian, người dùng **bàn giao phần còn lại cho người khác qua git** (không muốn mình tiếp tục
   tung agent): lưu wiki + checkpoint, đẩy nhánh lên git, viết bản giao việc tự đủ — xem [[tinh-nang-t1-t10]].
+- Người dùng **đặt ngân sách lượt dùng** (vd "dùng đến 75% thì dừng"). Mình **không thấy %** lượt dùng của tài khoản (chỉ thấy bộ đếm token phiên) →
+  nói thẳng điều đó, bảo họ xem `/usage`, và dừng bằng cách: không tung thêm agent mới, ghép + kiểm + lưu wiki rồi dừng; "dừng" từ họ → dừng agent, commit WIP.
+- Hay hỏi "xong chưa / còn bao lâu / đúng không": trả lời **ngắn, thẳng**, tách rõ *đã kiểm bằng máy* và *chưa chạy máy thật*; không nói "xong" khi
+  chưa test trên điện thoại. Hỏi nhiều câu "có cần X không" (master, cáp, CSDL) → giải thích đơn giản kèm cách làm cụ thể.
+- **Push luôn hỏi lại** mỗi lần (không tự push); `master` chỉ gộp khi họ nói.
 - Muốn **xem lý do + ưu/nhược điểm** trước khi chọn (nền tảng, thư viện, cách build) — trình bày bảng so sánh rồi mới hỏi.
 
 ## Người dùng sở hữu server, tôi không tự chạy

@@ -34,7 +34,12 @@ Pattern đã dùng khi người dùng muốn "tách nhiều agent nhất có th�
   (T1 trang chủ, T3 đọc PDF, T2 ảnh→PDF…) để có app xem được sớm, đừng để 10 thứ dở dang.
 - Agent bị cắt vẫn **giữ được việc** nếu đã commit; file chưa commit nằm ở worktree (`.claude/worktrees/agent-<id>`) → commit WIP
   thủ công rồi `git push origin <nhánh-worktree>:refs/heads/feat/...` (đã làm cho T1…T10).
-- `SendMessage` tới agent đã dừng để chạy tiếp cần người dùng đồng ý; người dùng có thể từ chối và chọn bàn giao cho người khác.
+- `SendMessage` tới agent đã dừng để chạy tiếp cần người dùng đồng ý; người dùng có thể từ chối và chọn bàn giao cho người khác. Khi được phép,
+  agent **giữ nguyên ngữ cảnh** và chạy tiếp từ worktree cũ (đợt 2 T6–T9 làm theo cách này, xong trong ~15 phút/agent).
+- **Ghép nhiều nhánh**: tạo nhánh tạm `integrate` trong worktree riêng, merge lần lượt, chạy `analyze` + `test` MỘT lần cho cả bản ghép, sửa lỗi xuyên
+  nhánh (tên trùng như `PdfFilePicker`, test cũ đòi màn giữ chỗ), rồi mới merge vào nhánh chính. Thư mục worktree có `build/` dài làm `git worktree remove`
+  lỗi "Filename too long" → làm rỗng bằng `robocopy <thư-mục-rỗng> <đích> /MIR` rồi xoá.
+- Không gộp tới khi cả hai agent xong và kiểm một lần → tiết kiệm lượt dùng so với kiểm riêng từng nhánh.
 - Worktree của agent **có thể bắt đầu từ commit cũ** (đã gặp 4 lần) → bước 0 của mọi prompt: `git merge --ff-only feat/pdf-office`.
 - Agent tạo file thử nghiệm tạm (`probe_*`, `exp_test`) — đừng commit lên nhánh bàn giao.
 

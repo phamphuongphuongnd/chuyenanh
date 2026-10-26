@@ -31,12 +31,12 @@ updated: 2026-10-26
   đa ngôn ngữ; **mục 7 = ghi chú khớp code thật**).
 - `docs/superpowers/plans/2026-10-26-feature-tasks.md` — **giao việc 10 tính năng T1…T10** cho người khác làm
   (mỗi việc tự đủ: sở hữu file, thư viện dùng, việc cần làm, test, ước lượng). **Mục E = bảng bàn giao + cách nhận việc.**
-- 10 nhánh `feat/t1-documents` … `feat/t10-settings` (xem [[tinh-nang-t1-t10]]); phần mới nằm ở nhánh local/worktree chưa push.
+- **Đủ 10 tính năng đã ghép vào `feat/pdf-office`** (692 test, build APK debug OK, chưa chạy máy thật) — xem [[tinh-nang-t1-t10]]. Các nhánh `feat/t1-…` … `feat/t10-…` trên origin chỉ còn là lịch sử.
 - `README.md` ở thư mục gốc = hướng dẫn dự án (GitHub chỉ hiện README của nhánh mặc định `master`).
 
 ## Modules
 - [[thu-vien-dart-thuan]] — 4 thư viện Dart thuần trong `packages/` (office_reader, pptx_reader, pdf_layout, image_ops).
-- [[tinh-nang-t1-t10]] — **trạng thái 10 tính năng**: nhánh git nào, việc nào đã tự kiểm / chỉ agent báo / chưa làm.
+- [[tinh-nang-t1-t10]] — **trạng thái 10 tính năng (đã ghép)**: từng tính năng làm được gì, hạn chế, việc còn lại (font, thử máy thật).
 - [[documents]] — T1 Trang chủ Tài liệu: màn, provider quét + quyền, quyết định thiết kế, phần chưa kiểm trên máy thật.
 
 ## Entities

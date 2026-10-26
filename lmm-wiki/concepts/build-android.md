@@ -40,3 +40,15 @@ AGP **9.1.0**, Kotlin 2.4.0, Gradle 9.3.1, `android.newDsl=false`, `android.buil
 **Quy tắc:** thêm plugin mới → build thử APK debug ngay, vì lỗi Gradle chỉ lộ ra khi build Android (analyze/test không bắt được).
 
 Liên quan: [[0001-flutter-android-truoc]], [[build-song-song-agent]].
+
+## Cài APK lên điện thoại & phát hành (hỏi nhiều ở phiên 26/10)
+- File build: `app/build/app/outputs/flutter-apk/app-debug.apk` (~261 MB, đã gồm font Noto). **Không nằm trong git** — chép sang điện thoại bằng
+  cáp USB (Truyền tệp), Drive hoặc Telegram. Mở file → cho phép "Cài ứng dụng không rõ nguồn gốc" → Play Protect "Cài đặt vẫn tiếp tục" →
+  bật "Truy cập tất cả tệp" trong Cài đặt app.
+- **Không cần cáp để chạy thử**, nhưng cắm cáp (Gỡ lỗi USB) mới đọc được log lỗi → sửa nhanh hơn nhiều.
+- **Build không cần gộp vào `master`**: build chỉ đọc thư mục `app/` đang checkout; tên nhánh không liên quan. Repo chưa có CI. Chỉ gộp `master`
+  khi muốn người khác clone thấy code (nhánh mặc định) — nên đợi test máy thật ổn.
+- Bản **debug** to và chậm; bản chính thức: `flutter build apk --release` (làm sau khi ổn). App không có máy chủ/DB ngoài: chỉ SQLite trong máy
+  ([[co-so-du-lieu]]) + `shared_preferences`; hoàn toàn offline.
+- Thêm plugin → build lại: `url_launcher` (L1) build sạch lần đầu (438 s), không cần vá Gradle.
+- Font Noto **không commit**: `bash app/tool/fetch_fonts.sh` ([[xuat-chu-ra-pdf]]).
