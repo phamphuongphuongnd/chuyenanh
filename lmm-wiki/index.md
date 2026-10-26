@@ -1,7 +1,7 @@
 ---
 title: Index — Mục lục wiki
 type: index
-updated: 2026-10-22
+updated: 2026-10-26
 ---
 
 # Index — Mục lục LLM Wiki
@@ -31,11 +31,13 @@ updated: 2026-10-22
   đa ngôn ngữ; **mục 7 = ghi chú khớp code thật**).
 - `docs/superpowers/plans/2026-10-26-feature-tasks.md` — **giao việc 10 tính năng T1…T10** cho người khác làm
   (mỗi việc tự đủ: sở hữu file, thư viện dùng, việc cần làm, test, ước lượng). **Mục E = bảng bàn giao + cách nhận việc.**
-- 10 nhánh làm dở trên git: `feat/t1-documents` … `feat/t10-settings` (xem [[tinh-nang-t1-t10]]).
+- 10 nhánh `feat/t1-documents` … `feat/t10-settings` (xem [[tinh-nang-t1-t10]]); phần mới nằm ở nhánh local/worktree chưa push.
+- `README.md` ở thư mục gốc = hướng dẫn dự án (GitHub chỉ hiện README của nhánh mặc định `master`).
 
 ## Modules
 - [[thu-vien-dart-thuan]] — 4 thư viện Dart thuần trong `packages/` (office_reader, pptx_reader, pdf_layout, image_ops).
-- [[tinh-nang-t1-t10]] — **trạng thái bàn giao 10 tính năng**: nhánh git nào, đã có gì, còn gì (UI hầu như chưa có).
+- [[tinh-nang-t1-t10]] — **trạng thái 10 tính năng**: nhánh git nào, việc nào đã tự kiểm / chỉ agent báo / chưa làm.
+- [[documents]] — T1 Trang chủ Tài liệu: màn, provider quét + quyền, quyết định thiết kế, phần chưa kiểm trên máy thật.
 
 ## Entities
 - [[co-so-du-lieu]] — 4 bảng drift (`documents`, `favorites`, `recents`, `bookmarks`) + DAO + quy ước (page 0-based, -1 = cả tài liệu).
@@ -43,6 +45,7 @@ updated: 2026-10-22
 ## Concepts (pattern dùng lại được)
 - [[build-song-song-agent]] — chia việc cho nhiều agent song song bằng hợp đồng + worktree, không dẫm chân nhau.
 - [[xuat-chu-ra-pdf]] — kết quả spike: chữ Việt phải chuẩn hoá NFC, CJK phải fallback font theo script, lỗi mật khẩu PDF.
+- [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
 
 ## Decisions (ADR)

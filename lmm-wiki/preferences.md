@@ -31,6 +31,8 @@ sources: []
 
 - Khi **cần gấp**, người dùng muốn *"tách ra nhiều agent nhất có thể"* — tìm cả việc làm được trước khi có móng
   (thư viện thuần, nghiên cứu) để không agent nào ngồi chờ. Cách làm: [[build-song-song-agent]].
+- Người dùng nhắc lại (26/10): *"làm đến đâu lưu wiki đến đó"* — xác nhận để Ingest dần theo từng mốc, không chờ cuối phiên;
+  chỉ ghi "đã kiểm" cho thứ Claude tự chạy lại, còn lại ghi "agent báo".
 - Người dùng muốn **lưu wiki liên tục** trong phiên dài để mở chat mới/hết token không phải làm lại: ghi checkpoint
   tiến độ vào `planhistory/` sau mỗi mốc; kiến thức đã qua test thì lưu vào wiki, ghi rõ phần chưa kiểm trên máy thật.
 - Khi gặp giới hạn lượt dùng/thiếu thời gian, người dùng **bàn giao phần còn lại cho người khác qua git** (không muốn mình tiếp tục
