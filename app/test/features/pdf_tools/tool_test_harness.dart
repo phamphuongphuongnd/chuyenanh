@@ -15,7 +15,8 @@ import 'package:pdf_office/engines/pdf/pdf_security.dart';
 import 'package:pdf_office/engines/pdf/pdf_tools_engine.dart';
 import 'package:pdf_office/features/pdf_tools/pdf_tools_providers.dart';
 import 'package:pdf_office/features/pdf_tools/ui/pdf_file_picker.dart';
-import 'package:pdf_office/features/reader/reader_providers.dart';
+import 'package:pdf_office/features/reader/reader_providers.dart'
+    hide PdfFilePicker, pdfFilePickerProvider;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Engine giả: ghi lại lời gọi, trả kết quả ngay, không đụng Syncfusion / isolate.
