@@ -1,4 +1,25 @@
 {
   "@@locale": "vi",
-  "settings_title": "Cài đặt"
+  "settings_title": "Cài đặt",
+  "settings_language": "Ngôn ngữ",
+  "settings_languageSystem": "Theo máy",
+  "settings_theme": "Giao diện",
+  "settings_themeSystem": "Theo máy",
+  "settings_themeLight": "Sáng",
+  "settings_themeDark": "Tối",
+  "settings_outputDir": "Thư mục lưu",
+  "settings_outputDirDefault": "Mặc định (Documents/PDF Office)",
+  "settings_outputDirChoose": "Chọn thư mục",
+  "settings_outputDirReset": "Dùng thư mục mặc định",
+  "settings_outputDirNotWritable": "Không ghi được vào thư mục này. Hãy chọn thư mục khác.",
+  "settings_pageSize": "Khổ giấy mặc định",
+  "settings_pageSizeA4": "A4",
+  "settings_pageSizeLetter": "Letter",
+  "settings_pageSizeFit": "Vừa khít ảnh",
+  "settings_about": "Giới thiệu",
+  "settings_version": "Phiên bản {version}",
+  "settings_tagline": "Đọc, tạo và chuyển đổi PDF, Office và ảnh.",
+  "settings_licenses": "Giấy phép mã nguồn mở",
+  "settings_aboutOffline": "PDF Office hoạt động hoàn toàn ngoại tuyến. Ứng dụng không thu thập dữ liệu và không dùng mạng.",
+  "settings_aboutSyncfusion": "Tính năng PDF dùng thành phần Syncfusion Flutter theo Giấy phép Syncfusion Community."
 }

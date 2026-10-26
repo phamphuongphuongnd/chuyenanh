@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Logo PDF Office (tu ve). Cung hinh hoc voi adaptive icon Android va AppLogo trong Flutter. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
+  <rect width="108" height="108" rx="24" fill="#E5393B"/>
+  <path d="M35,28 L59,28 L73,42 L73,80 L35,80 Z" fill="#FFFFFF"/>
+  <path d="M59,28 L59,42 L73,42 Z" fill="#F6C4C5"/>
+  <path d="M51,48 L57,48 L57,60 L65,60 L54,73 L43,60 L51,60 Z" fill="#E5393B"/>
+</svg>
