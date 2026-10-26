@@ -75,6 +75,27 @@ void main() {
     });
   });
 
+  group('resizeWidthDeltaPx', () {
+    test('keo ngang: gan nhu dx khi khung rat det', () {
+      final d = resizeWidthDeltaPx(const Offset(10, 0), const Size(100, 1));
+      expect(d, closeTo(10, 0.01));
+    });
+
+    test('keo theo duong cheo dung ti le: rong tang tuong ung', () {
+      // Khung 100x50, kéo (20,10) cùng hướng đường chéo → rộng +20.
+      final d = resizeWidthDeltaPx(const Offset(20, 10), const Size(100, 50));
+      expect(d, closeTo(20, 1e-9));
+    });
+
+    test('keo vao trong thi am; khung rong = 0', () {
+      expect(
+        resizeWidthDeltaPx(const Offset(-8, -4), const Size(100, 50)),
+        lessThan(0),
+      );
+      expect(resizeWidthDeltaPx(const Offset(5, 5), Size.zero), 0);
+    });
+  });
+
   group('normToPdfRect / pdfRectToNorm', () {
     test('quy doi sang point', () {
       final r = normToPdfRect(const Rect.fromLTWH(0.5, 0.25, 0.2, 0.1), a4);

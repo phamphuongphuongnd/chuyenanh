@@ -1,4 +1,65 @@
 {
   "@@locale": "en",
-  "edit_title": "Edit PDF"
+  "edit_title": "Edit PDF",
+  "edit_annotateTitle": "Annotate PDF",
+  "edit_signTitle": "Sign PDF",
+  "edit_fillFormTitle": "Fill in form",
+  "edit_highlight": "Highlight",
+  "edit_underline": "Underline",
+  "edit_strikethrough": "Strikethrough",
+  "edit_squiggly": "Squiggly",
+  "edit_stickyNote": "Note",
+  "edit_color": "Color",
+  "edit_undo": "Undo",
+  "edit_redo": "Redo",
+  "edit_deleteAnnotation": "Delete selected annotation",
+  "edit_saveAsNew": "Save as new file",
+  "edit_savedTitle": "Saved",
+  "edit_savedMessage": "A new file was saved: {name}\nThe original file was not changed.",
+  "@edit_savedMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "edit_noChanges": "There are no changes to save yet.",
+  "edit_unsavedTitle": "Discard changes?",
+  "edit_unsavedMessage": "You have changes that are not saved. Leave without saving?",
+  "edit_discard": "Discard",
+  "edit_annotateHint": "Pick a tool, then select text on the page.",
+  "edit_stickyHint": "Tap on the page to add a note.",
+  "edit_formHint": "Tap a field on the page to fill it in.",
+  "edit_noFormFields": "This PDF has no fillable form fields.",
+  "edit_flattenSave": "Save flattened (fields cannot be edited again)",
+  "edit_loadFailed": "Cannot open this PDF.",
+  "edit_drawSignature": "Draw your signature",
+  "edit_newSignature": "New signature",
+  "edit_savedSignatures": "Saved signatures",
+  "edit_noSavedSignatures": "No saved signatures yet. Draw one to start.",
+  "edit_signatureEmpty": "Please draw your signature first.",
+  "edit_clear": "Clear",
+  "edit_penColor": "Pen color",
+  "edit_penWidth": "Pen width",
+  "edit_useSignature": "Use signature",
+  "edit_removeSignature": "Remove from page",
+  "edit_signHint": "Pick a signature, drag it to the right place and drag the corner to resize.",
+  "edit_noPlacements": "Add at least one signature to the page first.",
+  "edit_pageOf": "Page {page} of {total}",
+  "@edit_pageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "edit_previousPage": "Previous page",
+  "edit_nextPage": "Next page",
+  "edit_applySignatures": "Sign and save",
+  "edit_deleteSignatureTitle": "Delete this signature?",
+  "edit_deleteSignatureMessage": "The saved signature will be removed from this device.",
+  "edit_signHere": "Sign here"
 }

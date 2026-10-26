@@ -90,3 +90,14 @@ Rect normToPdfRect(Rect norm, Size pageSize) =>
 /// Khung PDF → tỷ lệ trang (ngược của [normToPdfRect]).
 Rect pdfRectToNorm(Rect pdf, Size pageSize) =>
     viewRectToPdfRect(pdf, pageSize, const Size(1, 1));
+
+/// Khi kéo tay cầm góc dưới-phải một đoạn [dragPx] (pixel màn hình) trên khung chữ ký đang rộng/cao
+/// [itemPx], trả về độ đổi chiều rộng (pixel): chiếu cú kéo lên đường chéo của khung nên kéo
+/// ngang, dọc hay chéo đều có tác dụng như nhau theo hướng "to ra / nhỏ lại".
+double resizeWidthDeltaPx(Offset dragPx, Size itemPx) {
+  final w = itemPx.width;
+  final h = itemPx.height;
+  final denom = w * w + h * h;
+  if (denom <= 0) return 0;
+  return (dragPx.dx * w + dragPx.dy * h) * w / denom;
+}
