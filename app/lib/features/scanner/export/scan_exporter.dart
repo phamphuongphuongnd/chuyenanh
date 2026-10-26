@@ -8,7 +8,6 @@ import 'package:path/path.dart' as p;
 import 'package:pdf_layout/pdf_layout.dart';
 
 import '../../../core/errors/app_error.dart';
-import '../../../core/utils/cancel_token.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/ocr/ocr_engine.dart';
 import '../../../engines/pdf/image_to_pdf_engine.dart';
@@ -16,8 +15,10 @@ import '../model/scan_page.dart';
 import '../ocr/ocr_blocks.dart';
 
 /// Áp chỉnh sửa lên ảnh, trả bytes đã mã hoá. Mặc định chạy `image_ops` trong isolate.
-typedef PageRenderer =
-    Future<Uint8List> Function(String path, ops.ImageEdit edit);
+typedef PageRenderer = Future<Uint8List> Function(
+  String path,
+  ops.ImageEdit edit,
+);
 
 Future<Uint8List> renderPageInIsolate(String path, ops.ImageEdit edit) {
   // Đen trắng: PNG tránh vệt nhiễu của JPEG.
@@ -87,9 +88,7 @@ class ScanExporter {
       final paths = <String>[];
       for (var i = 0; i < pages.length; i++) {
         cancelToken?.throwIfCancelled();
-        paths.add(
-          await _pathFor(pages[i], work, 'pdf$i', pages[i].toEdit()),
-        );
+        paths.add(await _pathFor(pages[i], work, 'pdf$i', pages[i].toEdit()));
         onProgress?.call(0.4 * (i + 1) / pages.length);
       }
       await Directory(outputDir).create(recursive: true);
@@ -101,7 +100,9 @@ class ScanExporter {
       final result = await pdfEngine.createPdf(
         imagePaths: paths,
         outputPath: out,
-        onProgress: onProgress == null ? null : (v) => onProgress(0.4 + 0.6 * v),
+        onProgress: onProgress == null
+            ? null
+            : (v) => onProgress(0.4 + 0.6 * v),
         cancelToken: cancelToken,
       );
       return ScanExportResult(

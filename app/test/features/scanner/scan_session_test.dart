@@ -96,18 +96,18 @@ void main() {
       final ids = c.read(scanSessionProvider).map((p) => p.id).toSet();
       expect(ids, hasLength(3));
       expect(
-        c.read(scanSessionProvider).every(
-          (p) => p.filter == ImageFilter.original,
-        ),
+        c
+            .read(scanSessionProvider)
+            .every((p) => p.filter == ImageFilter.original),
         isTrue,
       );
     });
 
     test('trang thêm sau dùng bộ lọc truyền vào', () {
       final c = _container();
-      c
-          .read(scanSessionProvider.notifier)
-          .addPaths(['1.jpg'], filter: ImageFilter.enhance);
+      c.read(scanSessionProvider.notifier).addPaths([
+        '1.jpg',
+      ], filter: ImageFilter.enhance);
       expect(c.read(scanSessionProvider).single.filter, ImageFilter.enhance);
     });
 

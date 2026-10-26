@@ -24,10 +24,7 @@ void main() {
     });
 
     test('giữ dấu tiếng Việt chồng nguyên vẹn', () {
-      expect(
-        joinOcrLines(['Nguyễn Thị', 'Hoàng Ngữ']),
-        'Nguyễn Thị Hoàng Ngữ',
-      );
+      expect(joinOcrLines(['Nguyễn Thị', 'Hoàng Ngữ']), 'Nguyễn Thị Hoàng Ngữ');
     });
 
     test('Trung/Nhật nối liền không dấu cách', () {

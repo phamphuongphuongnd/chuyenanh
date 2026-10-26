@@ -34,7 +34,10 @@ OcrResult ocrResultFromMlKit(
   // Toàn văn: các block cách nhau bằng dòng trống (ML Kit nối bằng '\n').
   final text = blocks.isEmpty
       ? recognized.text.trim()
-      : blocks.map((b) => b.text.trim()).where((t) => t.isNotEmpty).join('\n\n');
+      : blocks
+            .map((b) => b.text.trim())
+            .where((t) => t.isNotEmpty)
+            .join('\n\n');
   return OcrResult(
     text: text,
     blocks: blocks,
@@ -44,11 +47,10 @@ OcrResult ocrResultFromMlKit(
 }
 
 /// Hàm chạy ML Kit cho một ảnh (tách ra để test bằng fake).
-typedef MlKitRecognizeFn =
-    Future<mlkit.RecognizedText> Function(
-      String imagePath,
-      mlkit.TextRecognitionScript script,
-    );
+typedef MlKitRecognizeFn = Future<mlkit.RecognizedText> Function(
+  String imagePath,
+  mlkit.TextRecognitionScript script,
+);
 
 /// OCR offline bằng ML Kit (model đóng sẵn trong APK). Mỗi hệ chữ giữ một
 /// `TextRecognizer` để lần sau không phải khởi tạo lại; [dispose] đóng hết.
@@ -72,9 +74,7 @@ class MlKitOcrEngine implements OcrEngine {
       script,
       () => mlkit.TextRecognizer(script: script),
     );
-    return recognizer.processImage(
-      mlkit.InputImage.fromFilePath(imagePath),
-    );
+    return recognizer.processImage(mlkit.InputImage.fromFilePath(imagePath));
   }
 
   @override

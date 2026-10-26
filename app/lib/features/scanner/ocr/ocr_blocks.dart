@@ -6,9 +6,7 @@ import 'package:pdf_layout/pdf_layout.dart';
 import '../../../engines/ocr/ocr_engine.dart';
 
 // Hán + kana + dấu câu CJK + dạng toàn chiều. KHÔNG gồm Hangul (tiếng Hàn có dấu cách giữa từ).
-final RegExp _noSpaceScript = RegExp(
-  r'[　-〿぀-ヿ㐀-䶿一-鿿＀-￯]',
-);
+final RegExp _noSpaceScript = RegExp(r'[　-〿぀-ヿ㐀-䶿一-鿿＀-￯]');
 
 /// Nối các dòng của một block thành một đoạn: dấu cách ở giữa, trừ khi chỗ nối
 /// là chữ Trung/Nhật (không dùng dấu cách).
@@ -31,10 +29,8 @@ String joinOcrLines(Iterable<String> lines) {
 }
 
 /// Toàn văn nhiều trang: bỏ trang rỗng, nối bằng dòng trống.
-String ocrPagesToText(List<OcrResult> pages) => pages
-    .map((p) => p.text.trim())
-    .where((t) => t.isNotEmpty)
-    .join('\n\n');
+String ocrPagesToText(List<OcrResult> pages) =>
+    pages.map((p) => p.text.trim()).where((t) => t.isNotEmpty).join('\n\n');
 
 /// Mỗi trang → các đoạn (block chữ lớn hơn hẳn mặt bằng → tiêu đề), giữa các trang
 /// có [DocPageBreak] (kể cả trang không nhận ra chữ, để số trang DOCX khớp số trang quét).

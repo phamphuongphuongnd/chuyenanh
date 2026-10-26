@@ -136,14 +136,12 @@ void main() {
 
     test('lỗi từ plugin được đổi thành AppError', () async {
       final path = '${dir.path}/p.jpg';
-      File(path).writeAsBytesSync(img.encodeJpg(img.Image(width: 8, height: 8)));
+      File(path)
+          .writeAsBytesSync(img.encodeJpg(img.Image(width: 8, height: 8)));
       final engine = MlKitOcrEngine(
         recognizeFn: (p, s) async => throw StateError('boom'),
       );
-      expect(
-        engine.recognize(path, OcrScript.latin),
-        throwsA(isA<Unknown>()),
-      );
+      expect(engine.recognize(path, OcrScript.latin), throwsA(isA<Unknown>()));
     });
   });
 }

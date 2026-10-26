@@ -1,4 +1,54 @@
 {
   "@@locale": "en",
-  "scan_title": "Scan document"
+  "scan_title": "Scan document",
+  "scan_scanButton": "Scan pages",
+  "scan_emptyTitle": "No pages yet",
+  "scan_emptyMessage": "Scan a document with the camera. Edges are detected automatically.",
+  "scan_addMore": "Add page",
+  "scan_pageNumber": "Page {n}",
+  "@scan_pageNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "scan_retake": "Retake",
+  "scan_rotate": "Rotate",
+  "scan_filter": "Filter",
+  "scan_deletePage": "Delete page",
+  "scan_applyToAll": "Apply to all pages",
+  "scan_filterOriginal": "Original",
+  "scan_filterGrayscale": "Grayscale",
+  "scan_filterBlackWhite": "Black & white",
+  "scan_filterEnhance": "Enhance",
+  "scan_filterBrighten": "Brighten",
+  "scan_filterMagic": "Magic color",
+  "scan_export": "Export",
+  "scan_exportPdf": "PDF",
+  "scan_exportTxt": "Text (TXT, with OCR)",
+  "scan_exportDocx": "Word (DOCX, with OCR)",
+  "scan_ocrLanguage": "Text language for recognition",
+  "scan_scriptLatin": "Latin (English, Vietnamese, Indonesian)",
+  "scan_scriptChinese": "Chinese",
+  "scan_scriptJapanese": "Japanese",
+  "scan_scriptKorean": "Korean",
+  "scan_exporting": "Exporting…",
+  "scan_recognizing": "Recognizing text…",
+  "scan_exported": "Saved: {name}",
+  "@scan_exported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scan_noText": "No text was recognized. Check the text language and the photo quality.",
+  "scan_manualTitle": "Adjust corners",
+  "scan_manualHint": "Drag the corners to the edges of the document.",
+  "scan_manualDone": "Crop",
+  "scan_autoUnavailable": "The automatic scanner is not available on this device. Take a photo and adjust the corners yourself.",
+  "scan_discardTitle": "Discard scan?",
+  "scan_discardMessage": "The scanned pages will be lost.",
+  "scan_discard": "Discard"
 }

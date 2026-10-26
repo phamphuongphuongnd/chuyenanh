@@ -7,7 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_ops/image_ops.dart' as ops;
 import 'package:pdf_office/core/errors/app_error.dart';
-import 'package:pdf_office/core/utils/cancel_token.dart';
 import 'package:pdf_office/engines/ocr/ocr_engine.dart';
 import 'package:pdf_office/engines/pdf/image_to_pdf_engine.dart';
 import 'package:pdf_office/features/scanner/export/scan_exporter.dart';
@@ -98,18 +97,21 @@ void main() {
     expect(make().defaultBaseName(), 'Scan_20261026_090507');
   });
 
-  test('PDF: trang chưa sửa dùng file gốc, trang đã sửa render; xoá tạm', () async {
-    final r = await make().exportPdf(pages());
-    expect(r.pageCount, 3);
-    expect(r.outputPath, endsWith('Scan_20261026_090507.pdf'));
-    expect(pdf.paths![0], src);
-    expect(pdf.paths![1], isNot(src));
-    expect(renderedEdits, hasLength(2));
-    expect(renderedEdits[0].rotationQuarterTurns, 1);
-    expect(renderedEdits[1].filter, ops.ImageFilter.grayscale);
-    // thư mục tạm con đã dọn
-    expect(Directory(tmp).listSync(), isEmpty);
-  });
+  test(
+    'PDF: trang chưa sửa dùng file gốc, trang đã sửa render; xoá tạm',
+    () async {
+      final r = await make().exportPdf(pages());
+      expect(r.pageCount, 3);
+      expect(r.outputPath, endsWith('Scan_20261026_090507.pdf'));
+      expect(pdf.paths![0], src);
+      expect(pdf.paths![1], isNot(src));
+      expect(renderedEdits, hasLength(2));
+      expect(renderedEdits[0].rotationQuarterTurns, 1);
+      expect(renderedEdits[1].filter, ops.ImageFilter.grayscale);
+      // thư mục tạm con đã dọn
+      expect(Directory(tmp).listSync(), isEmpty);
+    },
+  );
 
   test('không ghi đè: lần hai thành "(1)"', () async {
     final e = make();
@@ -135,10 +137,16 @@ void main() {
     final r = await make().exportTxt(pages(), OcrScript.latin);
     expect(r.outputPath, endsWith('.txt'));
     final text = File(r.outputPath).readAsStringSync();
-    expect(text, 'Trang 1 Nguyễn Ngữ\n\nTrang 2 Nguyễn Ngữ\n\nTrang 3 Nguyễn Ngữ');
+    expect(
+      text,
+      'Trang 1 Nguyễn Ngữ\n\nTrang 2 Nguyễn Ngữ\n\nTrang 3 Nguyễn Ngữ',
+    );
     expect(ocr.seen, hasLength(3));
     // OCR luôn qua ảnh đã xoay, không áp lọc màu
-    expect(renderedEdits.every((e) => e.filter == ops.ImageFilter.original), isTrue);
+    expect(
+      renderedEdits.every((e) => e.filter == ops.ImageFilter.original),
+      isTrue,
+    );
     expect(renderedEdits[1].rotationQuarterTurns, 1);
     expect(renderedEdits.first.maxLongSide, ScanExporter.ocrLongSide);
   });

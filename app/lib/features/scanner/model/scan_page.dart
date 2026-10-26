@@ -17,15 +17,19 @@ class ScanPage {
   final int quarterTurns;
   final ops.ImageFilter filter;
 
-  bool get isUnedited => quarterTurns == 0 && filter == ops.ImageFilter.original;
+  bool get isUnedited =>
+      quarterTurns == 0 && filter == ops.ImageFilter.original;
 
-  ScanPage copyWith({String? path, int? quarterTurns, ops.ImageFilter? filter}) =>
-      ScanPage(
-        id: id,
-        path: path ?? this.path,
-        quarterTurns: quarterTurns == null ? this.quarterTurns : quarterTurns % 4,
-        filter: filter ?? this.filter,
-      );
+  ScanPage copyWith({
+    String? path,
+    int? quarterTurns,
+    ops.ImageFilter? filter,
+  }) => ScanPage(
+    id: id,
+    path: path ?? this.path,
+    quarterTurns: quarterTurns == null ? this.quarterTurns : quarterTurns % 4,
+    filter: filter ?? this.filter,
+  );
 
   ScanPage rotatedRight() => copyWith(quarterTurns: quarterTurns + 1);
 
