@@ -101,3 +101,10 @@ không mất việc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng
 - MÓNG đã nối `shortcutLaunchProvider` vào `lib/app.dart` (lối tắt T3).
 - Đã dọn worktree + nhánh `worktree-agent-*` và `integrate`. Còn lại: font Noto (cần đồng ý tải), cài thử Samsung A13, gom `composeVietnamese`.
 - **Chưa chạy trên điện thoại thật.** Chi tiết từng tính năng/hạn chế: `lmm-wiki/modules/tinh-nang-t1-t10.md`.
+
+### Cập nhật 26/10 ~17:00 — Sửa thêm 3 hạn chế đã biết (2 agent L1, L2)
+- Font Noto đã tải (`app/tool/fetch_fonts.sh`, không commit font); APK debug đã build lại có font.
+- **L1:** hyperlink DOCX/PPTX mở bằng `url_launcher`. **L2:** OCR cho PDF quét ảnh (T6) + lớp chữ tìm kiếm cho PDF máy quét (T9).
+  Đã ghép vào `feat/pdf-office` (merge `cbd3d36`, `e4a762a`): `analyze` sạch, **692/692 test**, build APK debug OK (261 MB).
+- Giới hạn lượt dùng: người dùng dặn dừng ở ~75%; đã **dừng sau khi ghép + lưu wiki**, không tung thêm agent.
+- **Chưa push** các commit sau `e2f4dd4` (hỏi lại người dùng). Chưa chạy trên điện thoại thật; mai cắm Samsung A13 test.

@@ -30,19 +30,26 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 | T3 Trình đọc PDF | viewer (tìm, mục lục, tối, in, mật khẩu, bookmark), PDF→ảnh, lối tắt (đã nối `shortcutLaunchProvider` vào `app.dart`) | **Kotlin `MainActivity`/`ShortcutChannel` mới được biên dịch trong build APK, chưa chạy**; viewer thật chỉ test bằng viewer giả |
 | T4 Công cụ PDF | 7 màn + engine (gộp, tách, sắp xếp, khoá/mở khoá, watermark, trang trắng) | watermark/tiêu đề cần font Noto (chưa tải, rơi về Helvetica); gộp/tách mất annotation/form/link |
 | T5 Chỉnh sửa PDF | annotation, chữ ký, điền form | `SfPdfViewer` chỉ test bằng viewer giả |
-| T6 Chuyển đổi | text/TXT/DOCX/XLSX→PDF; PDF→TXT/DOCX/XLSX (không giữ bố cục, UI có cảnh báo) | **cần font Noto** cho chữ Việt có dấu + CJK; PDF quét ảnh không OCR; DOCX→PDF gần đúng (bỏ ảnh không phải PNG/JPEG, chưa header/footer) |
-| T7 Xem DOCX/XLSX/TXT | vẽ DOCX, lưới XLSX (ô gộp, freeze, nhiều sheet), TXT (tự nhận mã hoá) | hyperlink DOCX chỉ chép URL (chưa `url_launcher`); chữ Excel chưa tràn sang ô bên cạnh |
-| T8 Xem PPTX | vuốt từng slide, zoom, thumbnail, ghi chú, slide ẩn | chỉ số trên/dưới chỉ thu nhỏ; flip group chưa áp; picture fill chưa vẽ ảnh; hyperlink chưa bấm; chưa thấy chữ thật trong golden (font test) |
-| T9 Máy quét + OCR | chụp nhiều trang, tự nhận viền, kéo 4 góc thủ công, danh sách trang, xuất PDF/TXT/DOCX, OCR ML Kit | PDF xuất chỉ là ảnh (chưa lớp chữ tìm kiếm — cần Noto); **OCR tiếng Việt dấu chồng chưa từng đo**; chưa gọi `cleanCache()` |
+| T6 Chuyển đổi | text/TXT/DOCX/XLSX→PDF; PDF→TXT/DOCX/XLSX (không giữ bố cục, UI có cảnh báo) | **cần font Noto** cho chữ Việt có dấu + CJK; PDF quét ảnh đã OCR được (chưa thử máy thật); DOCX→PDF gần đúng (bỏ ảnh không phải PNG/JPEG, chưa header/footer) |
+| T7 Xem DOCX/XLSX/TXT | vẽ DOCX, lưới XLSX (ô gộp, freeze, nhiều sheet), TXT (tự nhận mã hoá), mở hyperlink DOCX | chữ Excel chưa tràn sang ô bên cạnh |
+| T8 Xem PPTX | vuốt từng slide, zoom, thumbnail, ghi chú, slide ẩn | chỉ số trên/dưới chỉ thu nhỏ; flip group chưa áp; picture fill chưa vẽ ảnh; hyperlink bấm mở được (chưa thử máy thật); chưa thấy chữ thật trong golden (font test) |
+| T9 Máy quét + OCR | chụp nhiều trang, tự nhận viền, kéo 4 góc thủ công, danh sách trang, xuất PDF/TXT/DOCX, OCR ML Kit | PDF xuất có lớp chữ tìm kiếm (chưa thử máy thật); **OCR tiếng Việt dấu chồng chưa từng đo**; chưa gọi `cleanCache()` |
 | T10 Cài đặt + thương hiệu | Ngôn ngữ, Giao diện, Thư mục lưu, Khổ giấy, Giới thiệu, icon vector | màn con dùng `Navigator.push` (không có route riêng); icon chưa nhìn trên máy |
+
+## Đã sửa thêm sau khi ghép (26/10 ~17:00, 692 test, build APK OK)
+- **L1 — hyperlink:** DOCX và PPTX mở link bằng `url_launcher` (thêm gói + `<queries>` Manifest). Chỉ cho http/https/mailto/tel (`core/utils/url_safety.dart`,
+  `link_opener.dart`); chạm link hiện SnackBar URL đích. Chưa thử link thật trên máy; hyperlink trong bảng PPTX/shape đặc biệt chưa kiểm.
+- **L2 — OCR PDF quét ảnh (T6):** trang PDF không có chữ → render 200 dpi (cạnh dài ≤ 2560px) → ML Kit → `LayoutPage`; có chọn "Ngôn ngữ nhận dạng".
+  **Lớp chữ tìm kiếm được (T9):** chữ trong suốt (`setTransparency(0)`, Syncfusion không có render mode 3) bằng font Noto + NFC; công tắc mặc định BẬT.
+  Giả định ảnh nằm giữa trang, không lề (nếu đổi khổ/lề của `ImageToPdfOptions` phải sửa `searchable_pdf.dart`). Chưa thử ML Kit/pdfx thật.
+- **Chưa làm được bằng code:** đo OCR tiếng Việt dấu chồng — cần máy thật (checklist ở báo cáo L2: chuyển ảnh quét có `ặ ỗ ữ ẫ ậ ề ở`, xem TXT/DOCX giữ dấu không).
 
 ## Việc còn lại (theo thứ tự nên làm)
 1. ~~Tải font Noto~~ **Xong 26/10**: `bash tool/fetch_fonts.sh` trong `app/` (font không nằm trong git) — xem [[xuat-chu-ra-pdf]]. T4/T6/T9 giờ có font thật; test 660/660 vẫn pass.
 2. **Cài lên Samsung Galaxy A13** (cáp USB + Gỡ lỗi USB) và đi qua checklist từng tính năng trong báo cáo của agent; ghi lỗi → sửa.
    Đặc biệt: quyền "tất cả file", camera, máy quét, lối tắt, OCR tiếng Việt.
 3. `composeVietnamese` bị nhân đôi (T4 `pdf_tools/logic/vi_nfc.dart`, T6 `convert/text/vietnamese_nfc.dart`) → gom vào `core/utils`.
-4. Tuỳ chọn: `url_launcher` (mở hyperlink), `device_info_plus` (biết SDK để xin quyền đúng), `package_info_plus` (T10 đang hằng `kAppVersion`),
-   OCR cho PDF quét ảnh ở T6, lớp chữ tìm kiếm cho PDF quét ở T9.
+4. Tuỳ chọn: `device_info_plus` (biết SDK để xin quyền đúng), `package_info_plus` (T10 đang hằng `kAppVersion`),
 5. Gỡ các nhánh `feat/t*` trên origin khi không cần lịch sử nữa; quyết định có gộp `feat/pdf-office` → `master` không.
 
 ## Gotcha khi nhận việc
