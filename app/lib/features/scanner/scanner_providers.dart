@@ -1,10 +1,11 @@
-// Provider engine của feature `scanner`.
-// Agent viết impl thật trong thư mục mình, rồi sửa ĐÚNG MỘT DÒNG: thay
-// `throw UnimplementedError(...)` bằng `const MyImpl()` / `MyImpl(...)`.
+// Provider của feature `scanner`.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../engines/ocr/ocr_engine.dart';
+import 'ocr/ml_kit_ocr_engine.dart';
 
-final ocrEngineProvider = Provider<OcrEngine>(
-  (ref) => throw UnimplementedError('OcrEngine: chưa có impl (scanner)'),
-);
+final ocrEngineProvider = Provider<OcrEngine>((ref) {
+  final engine = MlKitOcrEngine();
+  ref.onDispose(engine.dispose);
+  return engine;
+});
