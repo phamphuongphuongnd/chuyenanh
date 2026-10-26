@@ -5,6 +5,7 @@ import '../common.dart';
 /// Run-level formatting; null fields mean "inherit".
 class RunProps {
   final bool? bold, italic, underline, strike, superscript, subscript, hidden;
+  final bool? caps, smallCaps;
   final double? sizePt;
   final int? color, highlight;
   final bool clearHighlight;
@@ -19,6 +20,8 @@ class RunProps {
     this.superscript,
     this.subscript,
     this.hidden,
+    this.caps,
+    this.smallCaps,
     this.sizePt,
     this.color,
     this.highlight,
@@ -38,6 +41,8 @@ class RunProps {
     superscript: o.superscript ?? superscript,
     subscript: o.subscript ?? subscript,
     hidden: o.hidden ?? hidden,
+    caps: o.caps ?? caps,
+    smallCaps: o.smallCaps ?? smallCaps,
     sizePt: o.sizePt ?? sizePt,
     color: o.color ?? color,
     highlight: o.clearHighlight ? null : (o.highlight ?? highlight),
@@ -80,6 +85,8 @@ class RunProps {
       superscript: va == null ? null : va == 'superscript',
       subscript: va == null ? null : va == 'subscript',
       hidden: toggle('vanish'),
+      caps: toggle('caps'),
+      smallCaps: toggle('smallCaps'),
       sizePt: sz == null ? null : sz / 2,
       color: colorVal == null || colorVal == 'auto'
           ? null

@@ -266,7 +266,10 @@ class _DocxReader {
   }
 
   DocxRun _makeRun(String text, RunProps p, String? link) => DocxRun(
-    text: text,
+    text: (p.caps ?? false) || (p.smallCaps ?? false)
+        ? text.toUpperCase()
+        : text,
+    smallCaps: p.smallCaps ?? false,
     bold: p.bold ?? false,
     italic: p.italic ?? false,
     underline: p.underline ?? false,

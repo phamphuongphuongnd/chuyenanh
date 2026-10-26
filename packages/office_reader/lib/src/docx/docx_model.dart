@@ -175,6 +175,10 @@ class DocxRun extends DocxInline {
   final String text;
   final bool bold, italic, underline, strike;
   final bool superscript, subscript;
+
+  /// `w:smallCaps`: [text] is already upper-cased (also for `w:caps`); a
+  /// renderer may draw the originally lower-case letters smaller.
+  final bool smallCaps;
   final double? fontSizePt;
   final int? colorArgb, highlightArgb;
   final String? fontFamily;
@@ -190,6 +194,7 @@ class DocxRun extends DocxInline {
     this.strike = false,
     this.superscript = false,
     this.subscript = false,
+    this.smallCaps = false,
     this.fontSizePt,
     this.colorArgb,
     this.highlightArgb,
