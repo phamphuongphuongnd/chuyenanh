@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart' as p;
 
-import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
 import 'isolate_job.dart';

@@ -125,7 +125,7 @@ Future<Object?> runIsolateJob(
     }
   });
   errorPort.listen((Object? msg) {
-    if (!done.isCompleted) done.completeError(Unknown(msg));
+    if (!done.isCompleted) done.completeError(Unknown(msg ?? 'error'));
   });
   exitPort.listen((_) {
     if (!done.isCompleted) done.completeError(const Unknown('isolate exited'));

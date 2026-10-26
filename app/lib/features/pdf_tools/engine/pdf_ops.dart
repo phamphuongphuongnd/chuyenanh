@@ -9,7 +9,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
-import '../../../core/utils/page_size.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
 import 'isolate_job.dart';
 import 'page_ranges.dart';
@@ -63,16 +62,19 @@ sf.PdfPageRotateAngle _angleFromDegrees(int deg) =>
 /// và hướng xoay của trang gốc, cộng thêm [extraRotation] độ.
 void copyPage(sf.PdfDocument out, sf.PdfPage src, {int extraRotation = 0}) {
   final size = src.size;
-  final section = out.sections!.add()!;
-  section.pageSettings.margins.all = 0;
-  section.pageSettings.size = Size(size.width, size.height);
+  final section = out.sections!.add();
+  final settings = section.pageSettings;
+  settings.margins.all = 0;
+  // Syncfusion chuẩn hoá kích thước theo orientation → đặt orientation trước khi đặt size,
+  // và mọi cài đặt phải xong trước khi thêm trang (sau đó bị bỏ qua).
+  settings.orientation = size.width > size.height
+      ? sf.PdfPageOrientation.landscape
+      : sf.PdfPageOrientation.portrait;
+  settings.size = Size(size.width, size.height);
+  final total = _rotationDegrees(src.rotation) + extraRotation;
+  if (total % 360 != 0) settings.rotate = _angleFromDegrees(total);
   final page = section.pages.add();
   page.graphics.drawPdfTemplate(src.createTemplate(), Offset.zero);
-  final total = _rotationDegrees(src.rotation) + extraRotation;
-  if (total % 360 != 0) {
-    // Trang mới là trang "tạo mới" nên đặt qua pageSettings.rotate của section.
-    section.pageSettings.rotate = _angleFromDegrees(total);
-  }
 }
 
 Future<void> _save(sf.PdfDocument doc, String path, JobPort port) async {
@@ -224,6 +226,9 @@ Future<Object?> blankJob(Map<String, Object?> args, JobPort port) async {
   final doc = sf.PdfDocument();
   try {
     doc.pageSettings.margins.all = 0;
+    doc.pageSettings.orientation = w > h
+        ? sf.PdfPageOrientation.landscape
+        : sf.PdfPageOrientation.portrait;
     doc.pageSettings.size = Size(w, h);
     doc.documentInformation.title = spec.title;
     if (spec.category != null) doc.documentInformation.subject = spec.category!;

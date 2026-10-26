@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' show Size;
+import 'dart:ui' show Rect, Size;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
@@ -10,7 +10,7 @@ import 'package:pdf_office/engines/pdf/pdf_tools_engine.dart';
 import 'package:pdf_office/features/pdf_tools/engine/syncfusion_pdf_tools.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
-/// Tạo PDF mẫu: trang i có chữ "<tag> page <i+1>", khổ lấy từ [sizes] (xoay vòng).
+/// Tạo PDF mẫu: trang i có chữ `<tag> page <i+1>`, khổ lấy từ [sizes] (xoay vòng).
 Future<String> makePdf(
   String dir,
   String name,
@@ -22,9 +22,13 @@ Future<String> makePdf(
   final doc = sf.PdfDocument();
   doc.pageSettings.margins.all = 0;
   for (var i = 0; i < pages; i++) {
-    final section = doc.sections!.add()!;
+    final section = doc.sections!.add();
     section.pageSettings.margins.all = 0;
-    section.pageSettings.size = sizes[i % sizes.length];
+    final size = sizes[i % sizes.length];
+    section.pageSettings.orientation = size.width > size.height
+        ? sf.PdfPageOrientation.landscape
+        : sf.PdfPageOrientation.portrait;
+    section.pageSettings.size = size;
     section.pages.add().graphics.drawString(
       '$tag page ${i + 1}',
       sf.PdfStandardFont(sf.PdfFontFamily.helvetica, 18),
@@ -91,6 +95,21 @@ void main() {
       expect(File('$out.tmp').existsSync(), isFalse);
       // file gốc nguyên vẹn
       expect(open(a).pages.count, 2);
+    });
+
+    test('giữ góc xoay sẵn của trang nguồn', () async {
+      final src = await makePdf(tmp.path, 'r.pdf', 2);
+      final pre = open(src);
+      pre.pages[1].rotation = sf.PdfPageRotateAngle.rotateAngle90;
+      final rotated = p.join(tmp.path, 'rot.pdf');
+      await File(rotated).writeAsBytes(await pre.save());
+      pre.dispose();
+      final out = p.join(tmp.path, 'm.pdf');
+      await engine.merge([rotated], out);
+      final d = open(out);
+      expect(d.pages[0].rotation, sf.PdfPageRotateAngle.rotateAngle0);
+      expect(d.pages[1].rotation, sf.PdfPageRotateAngle.rotateAngle90);
+      d.dispose();
     });
 
     test('không ghi đè file gốc', () async {

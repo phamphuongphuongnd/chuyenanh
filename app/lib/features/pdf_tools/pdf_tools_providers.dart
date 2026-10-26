@@ -4,7 +4,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../engines/pdf/pdf_tools_engine.dart';
+import 'engine/syncfusion_pdf_tools.dart';
 
 final pdfToolsEngineProvider = Provider<PdfToolsEngine>(
-  (ref) => throw UnimplementedError('PdfToolsEngine: chưa có impl (pdf_tools)'),
+  (ref) => const SyncfusionPdfTools(),
 );
