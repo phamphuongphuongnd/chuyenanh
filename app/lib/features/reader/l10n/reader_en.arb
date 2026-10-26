@@ -1,4 +1,108 @@
 {
   "@@locale": "en",
-  "reader_title": "PDF Reader"
+  "reader_title": "PDF Reader",
+  "reader_more": "More options",
+  "reader_search": "Search",
+  "reader_searchHint": "Search in document",
+  "reader_searchNoResult": "No results",
+  "reader_searchCount": "{current} / {total}",
+  "@reader_searchCount": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "reader_previousMatch": "Previous result",
+  "reader_nextMatch": "Next result",
+  "reader_previousPage": "Previous page",
+  "reader_nextPage": "Next page",
+  "reader_goToPage": "Go to page",
+  "reader_goToPageHint": "Page number (1–{total})",
+  "@reader_goToPageHint": {
+    "placeholders": {
+      "total": {"type": "int"}
+    }
+  },
+  "reader_goToPageInvalid": "Enter a number from 1 to {total}.",
+  "@reader_goToPageInvalid": {
+    "placeholders": {
+      "total": {"type": "int"}
+    }
+  },
+  "reader_bookmarks": "Bookmarks",
+  "reader_bookmarkPage": "Bookmark this page",
+  "reader_removePageBookmark": "Remove bookmark from this page",
+  "reader_bookmarkDocument": "Bookmark whole document",
+  "reader_removeDocumentBookmark": "Remove document bookmark",
+  "reader_bookmarkAdded": "Bookmark added",
+  "reader_bookmarkRemoved": "Bookmark removed",
+  "reader_wholeDocument": "Whole document",
+  "reader_pageLabel": "Page {page}",
+  "@reader_pageLabel": {
+    "placeholders": {
+      "page": {"type": "int"}
+    }
+  },
+  "reader_noBookmarks": "No bookmarks yet",
+  "reader_noBookmarksHint": "Tap the bookmark icon to mark a page.",
+  "reader_outline": "Table of contents",
+  "reader_noOutline": "This document has no table of contents.",
+  "reader_darkMode": "Dark mode",
+  "reader_horizontalScroll": "Scroll horizontally",
+  "reader_singlePage": "One page at a time",
+  "reader_print": "Print",
+  "reader_addShortcut": "Add to home screen",
+  "reader_shortcutRequested": "Confirm adding the shortcut on your home screen.",
+  "reader_shortcutFailed": "Could not create the shortcut.",
+  "reader_choosePdf": "Choose a PDF file to convert to images",
+  "reader_pageCount": "{count} pages",
+  "@reader_pageCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reader_pagesToConvert": "Pages to convert",
+  "reader_allPages": "All pages",
+  "reader_pageRange": "Page range",
+  "reader_pageRangeHint": "e.g. 1-3, 5",
+  "reader_rangeEmpty": "Enter the pages to convert.",
+  "reader_rangeSyntax": "Invalid format. Example: 1-3, 5",
+  "reader_rangeOutOfRange": "Pages must be between 1 and {total}.",
+  "@reader_rangeOutOfRange": {
+    "placeholders": {
+      "total": {"type": "int"}
+    }
+  },
+  "reader_rangeReversed": "In a range, the first page must not come after the last page.",
+  "reader_selectedCount": "{count} pages selected",
+  "@reader_selectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reader_imageFormat": "Image format",
+  "reader_resolution": "Resolution",
+  "reader_resolutionValue": "{dpi} DPI",
+  "@reader_resolutionValue": {
+    "placeholders": {
+      "dpi": {"type": "int"}
+    }
+  },
+  "reader_sizeEstimate": "About {width} × {height} px per page",
+  "@reader_sizeEstimate": {
+    "placeholders": {
+      "width": {"type": "int"},
+      "height": {"type": "int"}
+    }
+  },
+  "reader_convert": "Convert",
+  "reader_converting": "Converting to images…",
+  "reader_resultTitle": "Conversion complete",
+  "reader_resultMessage": "{count} images saved to:",
+  "@reader_resultMessage": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reader_convertMore": "Convert another file"
 }
