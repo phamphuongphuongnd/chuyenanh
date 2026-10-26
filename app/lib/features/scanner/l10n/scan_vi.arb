@@ -1,5 +1,7 @@
 {
   "@@locale": "vi",
+  "scan_searchablePdf": "Làm cho PDF tìm kiếm được (OCR)",
+  "scan_searchablePdfHint": "Thêm lớp chữ vô hình để tìm và sao chép chữ. Xuất sẽ lâu hơn.",
   "scan_title": "Quét tài liệu",
   "scan_scanButton": "Quét trang",
   "scan_emptyTitle": "Chưa có trang nào",

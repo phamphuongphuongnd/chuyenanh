@@ -1,5 +1,7 @@
 {
   "@@locale": "id",
+  "scan_searchablePdf": "Jadikan PDF dapat dicari (OCR)",
+  "scan_searchablePdfHint": "Menambahkan lapisan teks tak terlihat agar teks dapat dicari dan disalin. Ekspor lebih lama.",
   "scan_title": "Pindai dokumen",
   "scan_scanButton": "Pindai halaman",
   "scan_emptyTitle": "Belum ada halaman",

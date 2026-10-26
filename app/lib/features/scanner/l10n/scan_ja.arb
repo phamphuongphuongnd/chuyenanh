@@ -1,5 +1,7 @@
 {
   "@@locale": "ja",
+  "scan_searchablePdf": "PDFを検索可能にする（OCR）",
+  "scan_searchablePdfHint": "見えないテキスト層を追加し、検索やコピーができます。書き出しに時間がかかります。",
   "scan_title": "ドキュメントをスキャン",
   "scan_scanButton": "ページをスキャン",
   "scan_emptyTitle": "ページがありません",

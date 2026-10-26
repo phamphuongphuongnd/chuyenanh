@@ -1,5 +1,11 @@
 {
   "@@locale": "zh",
+  "conv_ocrLanguage": "扫描页面的文字语言",
+  "conv_ocrNotice": "没有文字的页面（扫描图像）将通过 OCR 识别，可能需要一些时间。",
+  "conv_scriptLatin": "拉丁文（英语、越南语、印尼语）",
+  "conv_scriptChinese": "中文",
+  "conv_scriptJapanese": "日语",
+  "conv_scriptKorean": "韩语",
   "conv_title": "转换",
   "conv_textToPdf": "文本转 PDF",
   "conv_wordToPdf": "Word 转 PDF",

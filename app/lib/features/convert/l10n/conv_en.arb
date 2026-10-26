@@ -1,5 +1,11 @@
 {
   "@@locale": "en",
+  "conv_ocrLanguage": "Text language for scanned pages",
+  "conv_ocrNotice": "Pages without text (scanned images) are recognized with OCR, which can take a while.",
+  "conv_scriptLatin": "Latin (English, Vietnamese, Indonesian)",
+  "conv_scriptChinese": "Chinese",
+  "conv_scriptJapanese": "Japanese",
+  "conv_scriptKorean": "Korean",
   "conv_title": "Convert",
   "conv_textToPdf": "Text to PDF",
   "conv_wordToPdf": "Word to PDF",

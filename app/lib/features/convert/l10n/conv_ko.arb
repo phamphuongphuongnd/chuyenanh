@@ -1,5 +1,11 @@
 {
   "@@locale": "ko",
+  "conv_ocrLanguage": "스캔 페이지의 문자 언어",
+  "conv_ocrNotice": "텍스트가 없는 페이지(스캔 이미지)는 OCR로 인식하며 시간이 걸릴 수 있습니다.",
+  "conv_scriptLatin": "라틴 문자 (영어, 베트남어, 인도네시아어)",
+  "conv_scriptChinese": "중국어",
+  "conv_scriptJapanese": "일본어",
+  "conv_scriptKorean": "한국어",
   "conv_title": "변환",
   "conv_textToPdf": "텍스트를 PDF로",
   "conv_wordToPdf": "Word를 PDF로",

@@ -1,5 +1,11 @@
 {
   "@@locale": "ja",
+  "conv_ocrLanguage": "スキャンページの文字言語",
+  "conv_ocrNotice": "文字のないページ（スキャン画像）はOCRで認識します。時間がかかる場合があります。",
+  "conv_scriptLatin": "ラテン文字（英語・ベトナム語・インドネシア語）",
+  "conv_scriptChinese": "中国語",
+  "conv_scriptJapanese": "日本語",
+  "conv_scriptKorean": "韓国語",
   "conv_title": "変換",
   "conv_textToPdf": "テキストをPDFに",
   "conv_wordToPdf": "WordをPDFに",

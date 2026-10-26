@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:office_reader/office_reader.dart' as office;
+import 'package:pdf_layout/pdf_layout.dart' show LayoutPage;
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
@@ -15,6 +16,9 @@ import 'pdf_extract.dart';
 
 /// Thiếu chữ để chuyển (PDF quét ảnh…) — bọc trong [Unknown] để UI nhận ra.
 bool isNoTextError(Object e) => e is Unknown && e.cause is NoTextFoundException;
+
+/// Định dạng đầu ra của PDF → văn bản.
+enum PdfTextTarget { text, docx, xlsx }
 
 /// [ConvertEngine] dùng Syncfusion PDF/XlsIO + `office_reader` + `pdf_layout`.
 ///
@@ -155,6 +159,46 @@ class PdfConvertEngine implements ConvertEngine {
       onProgress,
       cancelToken,
     );
+    return _save(outputPath, bytes);
+  }
+
+  // ---------------------------------------------------------------- PDF → (tách bước, cho OCR)
+
+  /// Trích chữ thật của PDF thành các trang layout (trang ảnh có `lines` rỗng).
+  /// Tiến độ 0→1 của bước trích.
+  Future<List<LayoutPage>> extractPages(
+    String inputPath, {
+    String? password,
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    final raw = await _readInput(inputPath);
+    return _run<List<LayoutPage>>(
+      (report) => extractLayoutPages(raw, password: password, report: (p) => report(p / 0.8)),
+      onProgress,
+      cancelToken,
+    );
+  }
+
+  /// Ghi [pages] ra [outputPath] theo [target]. Không có dòng chữ nào → `Unknown(NoTextFoundException)`.
+  Future<String> writePages(
+    PdfTextTarget target,
+    List<LayoutPage> pages,
+    String outputPath, {
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    if (!hasAnyText(pages)) throw const Unknown(NoTextFoundException());
+    final bytes = await _run<Uint8List>(
+      (_) => switch (target) {
+        PdfTextTarget.text => Uint8List.fromList(utf8.encode(layoutPagesToText(pages))),
+        PdfTextTarget.docx => layoutPagesToDocx(pages),
+        PdfTextTarget.xlsx => layoutPagesToXlsx(pages).bytes,
+      },
+      onProgress,
+      cancelToken,
+    );
+    onProgress?.call(1);
     return _save(outputPath, bytes);
   }
 

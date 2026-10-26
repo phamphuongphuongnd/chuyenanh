@@ -1,5 +1,7 @@
 {
   "@@locale": "zh",
+  "scan_searchablePdf": "使 PDF 可搜索（OCR）",
+  "scan_searchablePdfHint": "添加不可见的文字层，便于搜索和复制文字。导出耗时更长。",
   "scan_title": "扫描文档",
   "scan_scanButton": "扫描页面",
   "scan_emptyTitle": "还没有页面",
