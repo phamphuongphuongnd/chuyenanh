@@ -1,4 +1,57 @@
 {
   "@@locale": "id",
-  "docs_title": "Dokumen"
+  "docs_title": "Dokumen",
+  "docs_tabAll": "Semua",
+  "docs_searchHint": "Cari dokumen",
+  "docs_sort": "Urutkan",
+  "docs_sortNameAsc": "Nama (A–Z)",
+  "docs_sortNameDesc": "Nama (Z–A)",
+  "docs_sortDateDesc": "Terbaru dulu",
+  "docs_sortDateAsc": "Terlama dulu",
+  "docs_sortSizeDesc": "Terbesar dulu",
+  "docs_sortSizeAsc": "Terkecil dulu",
+  "docs_recents": "Terbaru dibuka",
+  "docs_favorites": "Favorit",
+  "docs_emptyAll": "Dokumen tidak ditemukan",
+  "docs_emptyRecents": "Belum ada file yang dibuka baru-baru ini",
+  "docs_emptyFavorites": "Belum ada favorit",
+  "docs_emptyFavoritesHint": "Ketuk bintang pada file untuk menambahkannya ke sini",
+  "docs_emptySearch": "Tidak ada file yang cocok",
+  "docs_permissionTitle": "Izinkan akses ke file",
+  "docs_permissionMessage": "PDF Office memerlukan akses ke semua file untuk menemukan dokumen di perangkat ini.",
+  "docs_grantPermission": "Beri izin",
+  "docs_pickFileInstead": "Pilih file secara manual",
+  "docs_permissionBanner": "Beri izin akses file untuk menemukan semua dokumen",
+  "docs_scanning": "Memindai… {count} file ditemukan",
+  "@docs_scanning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "docs_toolsTitle": "Alat",
+  "docs_categoryMore": "Lainnya",
+  "docs_drawerLanguage": "Bahasa",
+  "docs_drawerTheme": "Tampilan",
+  "docs_drawerOutputFolder": "Folder penyimpanan",
+  "docs_drawerAbout": "Tentang",
+  "docs_infoName": "Nama",
+  "docs_infoPath": "Jalur",
+  "docs_infoSize": "Ukuran",
+  "docs_infoModified": "Diubah",
+  "docs_renameTitle": "Ubah nama file",
+  "docs_renameExists": "File dengan nama ini sudah ada",
+  "docs_renameEmpty": "Nama tidak boleh kosong",
+  "docs_renameFailed": "Tidak dapat mengubah nama file",
+  "docs_deleted": "\"{name}\" dihapus",
+  "@docs_deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docs_fileMissing": "File sudah tidak ada",
+  "docs_lockedPdf": "PDF dengan kata sandi"
 }
