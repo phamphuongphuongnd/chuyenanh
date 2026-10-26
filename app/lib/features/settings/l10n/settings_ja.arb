@@ -1,4 +1,25 @@
 {
   "@@locale": "ja",
-  "settings_title": "設定"
+  "settings_title": "設定",
+  "settings_language": "言語",
+  "settings_languageSystem": "端末の設定に従う",
+  "settings_theme": "外観",
+  "settings_themeSystem": "端末の設定に従う",
+  "settings_themeLight": "ライト",
+  "settings_themeDark": "ダーク",
+  "settings_outputDir": "保存フォルダ",
+  "settings_outputDirDefault": "既定 (Documents/PDF Office)",
+  "settings_outputDirChoose": "フォルダを選択",
+  "settings_outputDirReset": "既定のフォルダを使う",
+  "settings_outputDirNotWritable": "このフォルダには書き込めません。別のフォルダを選択してください。",
+  "settings_pageSize": "既定の用紙サイズ",
+  "settings_pageSizeA4": "A4",
+  "settings_pageSizeLetter": "Letter",
+  "settings_pageSizeFit": "画像に合わせる",
+  "settings_about": "このアプリについて",
+  "settings_version": "バージョン {version}",
+  "settings_tagline": "PDF、Office、画像の閲覧・作成・変換。",
+  "settings_licenses": "オープンソースライセンス",
+  "settings_aboutOffline": "PDF Office は完全オフラインで動作します。データを収集せず、ネットワークも使用しません。",
+  "settings_aboutSyncfusion": "PDF 機能は Syncfusion Community License のもとで Syncfusion Flutter コンポーネントを使用しています。"
 }
