@@ -23,6 +23,7 @@
   "tools_splitEveryNLabel": "Halaman per file",
   "tools_splitInvalidRange": "Rentang tidak valid. Gunakan halaman 1 sampai {max}, mis. 1-3, 5.",
   "tools_splitFilesCount": "{count, plural, other{{count} file akan dibuat}}",
+  "tools_invalidNumber": "Masukkan bilangan bulat 1 atau lebih.",
   "tools_splitAction": "Pisahkan",
   "tools_organizeHint": "Ketuk untuk memilih halaman. Tekan lama lalu seret untuk mengurutkan.",
   "tools_rotate": "Putar",

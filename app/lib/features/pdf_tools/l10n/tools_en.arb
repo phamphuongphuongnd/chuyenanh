@@ -58,6 +58,7 @@
       }
     }
   },
+  "tools_invalidNumber": "Enter a whole number, 1 or more.",
   "tools_splitAction": "Split",
   "tools_organizeHint": "Tap to select pages. Touch and hold, then drag to reorder.",
   "tools_rotate": "Rotate",

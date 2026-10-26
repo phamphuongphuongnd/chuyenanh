@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdf_office/features/pdf_tools/engine/watermark_layout.dart';
 import 'package:pdf_office/features/pdf_tools/logic/tool_rules.dart';
@@ -33,6 +35,13 @@ void main() {
     expect(parseBlankPageCount('1001'), isNull);
     expect(parseBlankPageCount('abc'), isNull);
     expect(parseBlankPageCount(''), isNull);
+  });
+
+  test('isPngOrJpeg', () {
+    expect(isPngOrJpeg(Uint8List.fromList([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])), isTrue);
+    expect(isPngOrJpeg(Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0])), isTrue);
+    expect(isPngOrJpeg(Uint8List.fromList([0x47, 0x49, 0x46, 0x38])), isFalse);
+    expect(isPngOrJpeg(Uint8List(0)), isFalse);
   });
 
   test('splitEveryNFileCount', () {

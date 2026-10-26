@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:path/path.dart' as p;
 
 /// Tên gợi ý khi gộp: `A & B`; từ 3 file trở lên `A & B (+N)`. Cắt tối đa 80 ký tự.
@@ -36,3 +38,18 @@ int? parseBlankPageCount(String text) {
 /// Số file sẽ tạo khi tách mỗi [n] trang từ [pageCount] trang (n < 1 → 0).
 int splitEveryNFileCount(int pageCount, int n) =>
     n < 1 || pageCount < 1 ? 0 : (pageCount + n - 1) ~/ n;
+
+/// `true` nếu [bytes] bắt đầu bằng chữ ký PNG hoặc JPEG (Syncfusion chỉ nhận hai loại này).
+bool isPngOrJpeg(Uint8List bytes) {
+  if (bytes.length >= 8 &&
+      bytes[0] == 0x89 &&
+      bytes[1] == 0x50 &&
+      bytes[2] == 0x4E &&
+      bytes[3] == 0x47) {
+    return true;
+  }
+  return bytes.length >= 3 &&
+      bytes[0] == 0xFF &&
+      bytes[1] == 0xD8 &&
+      bytes[2] == 0xFF;
+}

@@ -23,6 +23,7 @@
   "tools_splitEveryNLabel": "Số trang mỗi tệp",
   "tools_splitInvalidRange": "Khoảng trang không hợp lệ. Dùng trang từ 1 đến {max}, vd. 1-3, 5.",
   "tools_splitFilesCount": "{count, plural, other{Sẽ tạo {count} tệp}}",
+  "tools_invalidNumber": "Nhập một số nguyên từ 1 trở lên.",
   "tools_splitAction": "Tách",
   "tools_organizeHint": "Chạm để chọn trang. Nhấn giữ rồi kéo để đổi thứ tự.",
   "tools_rotate": "Xoay",

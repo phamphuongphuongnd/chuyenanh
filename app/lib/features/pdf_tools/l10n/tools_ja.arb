@@ -23,6 +23,7 @@
   "tools_splitEveryNLabel": "1ファイルあたりのページ数",
   "tools_splitInvalidRange": "範囲が正しくありません。1〜{max} のページを指定してください(例: 1-3, 5)。",
   "tools_splitFilesCount": "{count, plural, other{{count} 個のファイルを作成します}}",
+  "tools_invalidNumber": "1以上の整数を入力してください。",
   "tools_splitAction": "分割",
   "tools_organizeHint": "タップしてページを選択。長押ししてドラッグすると並べ替えできます。",
   "tools_rotate": "回転",
