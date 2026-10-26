@@ -123,7 +123,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       Localizations.localeOf(context).languageCode,
     );
     final choice =
-        await showModalBottomSheet<({_ExportKind kind, OcrScript script})>(
+        await showModalBottomSheet<({_ExportKind kind, OcrScript script, bool searchable})>(
           context: context,
           showDragHandle: true,
           isScrollControlled: true,
@@ -135,7 +135,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     final l = context.l10n;
     final ctrl = showProgressDialog(
       context,
-      title: choice.kind == _ExportKind.pdf
+      title: choice.kind == _ExportKind.pdf && !choice.searchable
           ? l.scan_exporting
           : l.scan_recognizing,
     );
@@ -144,6 +144,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       final ScanExportResult r = switch (choice.kind) {
         _ExportKind.pdf => await exporter.exportPdf(
           pages,
+          searchable: choice.searchable,
+          script: choice.script,
           onProgress: ctrl.update,
           cancelToken: ctrl.cancelToken,
         ),
@@ -318,6 +320,7 @@ class _ExportSheet extends StatefulWidget {
 
 class _ExportSheetState extends State<_ExportSheet> {
   late OcrScript _script = widget.initialScript;
+  bool _searchable = true;
 
   String _scriptName(OcrScript s) {
     final l = context.l10n;
@@ -330,7 +333,7 @@ class _ExportSheetState extends State<_ExportSheet> {
   }
 
   void _pick(_ExportKind k) =>
-      Navigator.of(context).pop((kind: k, script: _script));
+      Navigator.of(context).pop((kind: k, script: _script, searchable: _searchable));
 
   @override
   Widget build(BuildContext context) {
@@ -339,6 +342,13 @@ class _ExportSheetState extends State<_ExportSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          SwitchListTile(
+            secondary: const Icon(Icons.manage_search),
+            title: Text(l.scan_searchablePdf),
+            subtitle: Text(l.scan_searchablePdfHint),
+            value: _searchable,
+            onChanged: (v) => setState(() => _searchable = v),
+          ),
           ListTile(
             leading: const Icon(Icons.picture_as_pdf_outlined),
             title: Text(l.scan_exportPdf),
