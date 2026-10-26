@@ -52,6 +52,8 @@ Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go
 | 26/10 10:14 | Build `flutter build apk --debug` | ✅ **THÀNH CÔNG** sau 5 lần (xem `lmm-wiki/concepts/build-android.md`): gỡ `flutter_tesseract_ocr`, hạ `permission_handler` 13→12, ép plugin đòi API 37 về SDK 36, tắt Kotlin incremental. APK 212 MB ở `app/build/app/outputs/flutter-apk/app-debug.apk` | chưa commit |
 | 26/10 | **Bỏ hẳn tiếng Thái** (UI, font, OCR) → 6 ngôn ngữ; xoá 11 file `*_th.arb`, sửa `l10n.dart`, `merge_arb.dart`, test | ✅ | chưa commit |
 | 26/10 | Dọn: 7 worktree + 7 nhánh agent (đã gộp hết), zip SDK, cache gói không dùng | ✅ | — |
+| 26/10 | **Push** `feat/pdf-office` lên `origin` (github.com/phamphuongphuongnd/chuyenanh) | ✅ `3452e68` | `origin/feat/pdf-office` |
+| 26/10 10:3x | Làm lại 3 việc kiểm chứng bị ngắt (lần này commit từng bước): H1 `office_reader` với Word/Excel thật · H2 `pptx_reader` với PowerPoint thật · S1 chữ Việt/CJK + mật khẩu trong Syncfusion PDF | ⏳ đang chạy, mỗi agent 1 worktree mới | nhánh `worktree-agent-*` — **khi xong: merge vào `feat/pdf-office`, chạy lại test, push** |
 | 26/10 | **Đổi kế hoạch (người dùng):** 10 tính năng **không** tung agent nữa — viết thành bản giao việc để người khác làm | ✅ `docs/superpowers/plans/2026-10-26-feature-tasks.md` | chưa commit |
 
 **Ghi chú:** 5 agent song song làm hết lượt dùng trong ~40 phút → agent nên **commit sau từng phần nhỏ** để bị ngắt

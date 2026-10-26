@@ -11,3 +11,4 @@ type: log
 - 2026-10-25 23:35 — checkpoint: du 4/4 thu vien Dart thuan qua test (them image_ops 252 test); dang chay H1/H2 thu file Office that, S1 spike chu Viet/Thai, MONG chua commit → [[thu-vien-dart-thuan]] [[build-song-song-agent]]
 - 2026-10-26 08:54 — MONG da kiem lai (50 test), merge 4 thu vien vao feat/pdf-office, noi path dependency; doi ke hoach: 10 tinh nang viet thanh ban giao viec cho nguoi khac (feature-tasks.md) → [[thu-vien-dart-thuan]] [[build-song-song-agent]]
 - 2026-10-26 10:14 — build APK debug thanh cong (5 lan), bo han tieng Thai (6 ngon ngu), don worktree; con chay analyze+test roi commit → [[build-android]] [[0004-pham-vi-bam-app-goc]]
+- 2026-10-26 10:28 — da push feat/pdf-office len origin; chay lai H1/H2/S1 (kiem chung thu vien voi file that, chu Viet/CJK trong PDF) → [[thu-vien-dart-thuan]] [[build-song-song-agent]]
