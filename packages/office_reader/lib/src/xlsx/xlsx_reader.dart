@@ -31,9 +31,72 @@ final _refRe = RegExp(r'^\$?([A-Za-z]{1,3})\$?(\d+)$');
   return (int.parse(m.group(2)!) - 1, columnIndex(m.group(1)!));
 }
 
+/// Shifts relative A1 references of [formula] by ([dRow], [dCol]); used to
+/// expand shared formulas (`<f t="shared" si=".."/>` stores only the master).
+String shiftFormula(String formula, int dRow, int dCol) {
+  if (dRow == 0 && dCol == 0) return formula;
+  final out = StringBuffer();
+  var i = 0;
+  while (i < formula.length) {
+    final ch = formula[i];
+    if (ch == '"' || ch == "'") {
+      // Copy string literal / quoted sheet name verbatim ("" and '' escape).
+      var j = i + 1;
+      while (j < formula.length) {
+        if (formula[j] == ch) {
+          if (j + 1 < formula.length && formula[j + 1] == ch) {
+            j += 2;
+            continue;
+          }
+          break;
+        }
+        j++;
+      }
+      final end = math.min(j + 1, formula.length);
+      out.write(formula.substring(i, end));
+      i = end;
+      continue;
+    }
+    var j = i;
+    while (j < formula.length && formula[j] != '"' && formula[j] != "'") {
+      j++;
+    }
+    out.write(
+      formula.substring(i, j).replaceAllMapped(_a1Re, (m) {
+        final colAbs = m.group(1)! == r'$';
+        final rowAbs = m.group(3)! == r'$';
+        final col = columnIndex(m.group(2)!) + (colAbs ? 0 : dCol);
+        final row = int.parse(m.group(4)!) + (rowAbs ? 0 : dRow);
+        if (col < 0 || row < 1) return '#REF!';
+        return '${m.group(1)}${_columnLetters(col)}${m.group(3)}$row';
+      }),
+    );
+    i = j;
+  }
+  return out.toString();
+}
+
+final _a1Re = RegExp(
+  r'(?<![A-Za-z0-9_.])(\$?)([A-Za-z]{1,3})(\$?)(\d+)(?![A-Za-z0-9_(])',
+);
+
+String _columnLetters(int index) {
+  var n = index + 1;
+  final sb = StringBuffer();
+  while (n > 0) {
+    final r = (n - 1) % 26;
+    sb.write(String.fromCharCode(0x41 + r));
+    n = (n - 1) ~/ 26;
+  }
+  return sb.toString().split('').reversed.join();
+}
+
 class _XlsxReader {
   final OoxmlPackage pkg;
   _XlsxReader(this.pkg);
+
+  /// Shared-formula masters of the sheet being parsed: si -> (row, col, text).
+  final Map<String, (int, int, String)> _sharedFormulas = {};
 
   late final List<String> _shared;
   late final XlsxStyles _styles;
@@ -129,6 +192,7 @@ class _XlsxReader {
       );
     }
     final root = doc.rootElement;
+    _sharedFormulas.clear();
     final cells = <(int, int), XlsxCell>{};
     final rowHeights = <int, double>{};
     var maxRow = 0, maxCol = 0;
@@ -159,7 +223,7 @@ class _XlsxReader {
         } else {
           colIdx++;
         }
-        final cell = _cell(c, rowStyle);
+        final cell = _cell(c, rowStyle, rowIdx, colIdx);
         if (cell == null) continue;
         cells[(rowIdx, colIdx)] = cell;
         maxRow = math.max(maxRow, rowIdx + 1);
@@ -235,12 +299,26 @@ class _XlsxReader {
     );
   }
 
-  XlsxCell? _cell(XmlElement c, int? rowStyle) {
+  XlsxCell? _cell(XmlElement c, int? rowStyle, int row, int col) {
     final sAttr = parseIntOrNull(c.attr('s'));
     final style = _styles.at(sAttr ?? rowStyle);
     final t = c.attr('t') ?? 'n';
     final fEl = c.child('f');
-    final formula = fEl?.innerText;
+    var formula = fEl?.innerText;
+    if (fEl != null && fEl.attr('t') == 'shared') {
+      final si = fEl.attr('si');
+      if (si != null) {
+        if (formula != null && formula.isNotEmpty) {
+          _sharedFormulas[si] = (row, col, formula);
+        } else {
+          final m = _sharedFormulas[si];
+          formula = m == null
+              ? null
+              : shiftFormula(m.$3, row - m.$1, col - m.$2);
+        }
+      }
+    }
+    if (formula != null && formula.isEmpty) formula = null;
     final v = c.child('v')?.innerText;
 
     XlsxCell make(String display, Object? raw, XlsxCellType type) => XlsxCell(
