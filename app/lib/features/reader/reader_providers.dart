@@ -4,7 +4,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../engines/pdf/pdf_render_engine.dart';
+import '../../engines/pdf/pdf_security.dart';
+import '../../engines/pdf/pdfx_render_engine.dart';
 
 final pdfRenderEngineProvider = Provider<PdfRenderEngine>(
-  (ref) => throw UnimplementedError('PdfRenderEngine: chưa có impl (reader)'),
+  (ref) => PdfxRenderEngine(security: ref.watch(pdfSecurityProvider)),
 );
