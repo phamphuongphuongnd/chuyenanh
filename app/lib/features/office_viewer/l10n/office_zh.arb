@@ -1,4 +1,19 @@
 {
   "@@locale": "zh",
-  "office_title": "Office 查看器"
+  "office_title": "查看 Office 文档",
+  "office_search": "搜索",
+  "office_searchHint": "在文档中查找",
+  "office_noResults": "无结果",
+  "office_matchCount": "{current}/{total}",
+  "office_prevMatch": "上一个",
+  "office_nextMatch": "下一个",
+  "office_convertToPdf": "转换为 PDF",
+  "office_zoomIn": "放大",
+  "office_zoomOut": "缩小",
+  "office_emptySheet": "此工作表为空",
+  "office_emptyDocument": "文档为空",
+  "office_encodingLabel": "编码：{name}",
+  "office_truncated": "文件较大，仅显示开头部分。",
+  "office_imageUnsupported": "无法显示图片",
+  "office_linkCopied": "链接已复制"
 }

@@ -1,4 +1,19 @@
 {
   "@@locale": "id",
-  "office_title": "Penampil Office"
+  "office_title": "Penampil Office",
+  "office_search": "Cari",
+  "office_searchHint": "Cari di dokumen",
+  "office_noResults": "Tidak ada hasil",
+  "office_matchCount": "{current}/{total}",
+  "office_prevMatch": "Sebelumnya",
+  "office_nextMatch": "Berikutnya",
+  "office_convertToPdf": "Ubah ke PDF",
+  "office_zoomIn": "Perbesar",
+  "office_zoomOut": "Perkecil",
+  "office_emptySheet": "Lembar ini kosong",
+  "office_emptyDocument": "Dokumen kosong",
+  "office_encodingLabel": "Encoding: {name}",
+  "office_truncated": "File besar, hanya bagian awal yang ditampilkan.",
+  "office_imageUnsupported": "Gambar tidak dapat ditampilkan",
+  "office_linkCopied": "Tautan disalin"
 }

@@ -1,4 +1,19 @@
 {
   "@@locale": "vi",
-  "office_title": "Xem tài liệu Office"
+  "office_title": "Xem tài liệu Office",
+  "office_search": "Tìm kiếm",
+  "office_searchHint": "Tìm trong tài liệu",
+  "office_noResults": "Không có kết quả",
+  "office_matchCount": "{current}/{total}",
+  "office_prevMatch": "Trước",
+  "office_nextMatch": "Sau",
+  "office_convertToPdf": "Chuyển sang PDF",
+  "office_zoomIn": "Phóng to",
+  "office_zoomOut": "Thu nhỏ",
+  "office_emptySheet": "Trang tính này trống",
+  "office_emptyDocument": "Tài liệu trống",
+  "office_encodingLabel": "Bảng mã: {name}",
+  "office_truncated": "File lớn, chỉ hiển thị phần đầu.",
+  "office_imageUnsupported": "Không hiển thị được ảnh",
+  "office_linkCopied": "Đã chép liên kết"
 }
