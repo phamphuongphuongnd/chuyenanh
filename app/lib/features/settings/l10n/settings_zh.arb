@@ -1,4 +1,25 @@
 {
   "@@locale": "zh",
-  "settings_title": "设置"
+  "settings_title": "设置",
+  "settings_language": "语言",
+  "settings_languageSystem": "跟随系统",
+  "settings_theme": "外观",
+  "settings_themeSystem": "跟随系统",
+  "settings_themeLight": "浅色",
+  "settings_themeDark": "深色",
+  "settings_outputDir": "保存文件夹",
+  "settings_outputDirDefault": "默认 (Documents/PDF Office)",
+  "settings_outputDirChoose": "选择文件夹",
+  "settings_outputDirReset": "使用默认文件夹",
+  "settings_outputDirNotWritable": "无法写入此文件夹，请选择其他文件夹。",
+  "settings_pageSize": "默认纸张大小",
+  "settings_pageSizeA4": "A4",
+  "settings_pageSizeLetter": "Letter",
+  "settings_pageSizeFit": "适应图片",
+  "settings_about": "关于",
+  "settings_version": "版本 {version}",
+  "settings_tagline": "阅读、创建和转换 PDF、Office 文档与图片。",
+  "settings_licenses": "开源许可",
+  "settings_aboutOffline": "PDF Office 完全离线运行，不收集任何数据，也不使用网络。",
+  "settings_aboutSyncfusion": "PDF 功能使用 Syncfusion Flutter 组件，遵循 Syncfusion Community License。"
 }

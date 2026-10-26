@@ -1,4 +1,57 @@
 {
   "@@locale": "vi",
-  "docs_title": "Tài liệu"
+  "docs_title": "Tài liệu",
+  "docs_tabAll": "Tất cả",
+  "docs_searchHint": "Tìm tài liệu",
+  "docs_sort": "Sắp xếp",
+  "docs_sortNameAsc": "Tên (A–Z)",
+  "docs_sortNameDesc": "Tên (Z–A)",
+  "docs_sortDateDesc": "Mới nhất trước",
+  "docs_sortDateAsc": "Cũ nhất trước",
+  "docs_sortSizeDesc": "Lớn nhất trước",
+  "docs_sortSizeAsc": "Nhỏ nhất trước",
+  "docs_recents": "Gần đây",
+  "docs_favorites": "Yêu thích",
+  "docs_emptyAll": "Không tìm thấy tài liệu",
+  "docs_emptyRecents": "Chưa mở file nào gần đây",
+  "docs_emptyFavorites": "Chưa có file yêu thích",
+  "docs_emptyFavoritesHint": "Nhấn ngôi sao ở một file để thêm vào đây",
+  "docs_emptySearch": "Không có file phù hợp",
+  "docs_permissionTitle": "Cho phép truy cập file",
+  "docs_permissionMessage": "PDF Office cần quyền truy cập tất cả file để tìm tài liệu trên thiết bị.",
+  "docs_grantPermission": "Cấp quyền",
+  "docs_pickFileInstead": "Chọn file thủ công",
+  "docs_permissionBanner": "Cấp quyền truy cập file để tìm tất cả tài liệu",
+  "docs_scanning": "Đang quét… đã tìm thấy {count} file",
+  "@docs_scanning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "docs_toolsTitle": "Công cụ",
+  "docs_categoryMore": "Khác",
+  "docs_drawerLanguage": "Ngôn ngữ",
+  "docs_drawerTheme": "Giao diện",
+  "docs_drawerOutputFolder": "Thư mục lưu",
+  "docs_drawerAbout": "Giới thiệu",
+  "docs_infoName": "Tên",
+  "docs_infoPath": "Đường dẫn",
+  "docs_infoSize": "Dung lượng",
+  "docs_infoModified": "Ngày sửa",
+  "docs_renameTitle": "Đổi tên file",
+  "docs_renameExists": "Đã có file trùng tên",
+  "docs_renameEmpty": "Tên không được để trống",
+  "docs_renameFailed": "Không đổi tên được file",
+  "docs_deleted": "Đã xoá \"{name}\"",
+  "@docs_deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docs_fileMissing": "File không còn tồn tại",
+  "docs_lockedPdf": "PDF có mật khẩu"
 }

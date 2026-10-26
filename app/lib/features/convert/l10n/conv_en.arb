@@ -1,4 +1,41 @@
 {
   "@@locale": "en",
-  "conv_title": "Convert"
+  "conv_title": "Convert",
+  "conv_textToPdf": "Text to PDF",
+  "conv_wordToPdf": "Word to PDF",
+  "conv_excelToPdf": "Excel to PDF",
+  "conv_pdfToText": "PDF to text",
+  "conv_pdfToWord": "PDF to Word",
+  "conv_pdfToExcel": "PDF to Excel",
+  "conv_textHint": "Type or paste text here",
+  "conv_loadTxt": "Open a TXT file",
+  "conv_chooseFile": "Choose a file",
+  "conv_chosenFile": "Selected: {name}",
+  "@conv_chosenFile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "conv_options": "Options",
+  "conv_pageSize": "Page size",
+  "conv_orientation": "Orientation",
+  "conv_portrait": "Portrait",
+  "conv_landscape": "Landscape",
+  "conv_fontSize": "Font size",
+  "conv_margin": "Margin",
+  "conv_convert": "Convert",
+  "conv_layoutNotice": "The original layout is not preserved. Headings, paragraphs and tables are rebuilt approximately from the text.",
+  "conv_noTextFound": "No text found. Scanned PDFs need OCR first.",
+  "conv_emptyText": "Enter some text first.",
+  "conv_doneTitle": "Conversion complete",
+  "conv_savedAs": "Saved to: {path}",
+  "@conv_savedAs": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

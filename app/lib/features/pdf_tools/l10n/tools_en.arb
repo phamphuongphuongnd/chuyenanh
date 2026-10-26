@@ -1,4 +1,134 @@
 {
   "@@locale": "en",
-  "tools_title": "PDF tools"
+  "tools_title": "PDF tools",
+  "tools_pickPdf": "Choose PDF file",
+  "tools_pickPdfHint": "Choose a PDF file to get started.",
+  "tools_changeFile": "Change file",
+  "tools_pages": "{count, plural, =1{1 page} other{{count} pages}}",
+  "@tools_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_resultDone": "All done!",
+  "tools_resultSavedTo": "Saved to {folder}",
+  "@tools_resultSavedTo": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tools_resultFiles": "{count, plural, =1{1 file created} other{{count} files created}}",
+  "@tools_resultFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_noteLosesFeatures": "Annotations, form fields and links are not kept in the new file.",
+  "tools_remove": "Remove",
+  "tools_mergeHint": "Drag to reorder. Files are merged from top to bottom.",
+  "tools_addFiles": "Add files",
+  "tools_mergeNeedTwo": "Select at least 2 PDF files.",
+  "tools_mergeAction": "Merge",
+  "tools_mergeNameTitle": "Merged file name",
+  "tools_splitModeRanges": "By ranges",
+  "tools_splitModeEvery": "Every page",
+  "tools_splitModeEveryN": "Every N pages",
+  "tools_splitRangesLabel": "Page ranges",
+  "tools_splitRangesHint": "e.g. 1-3, 5, 7-9",
+  "tools_splitEveryNLabel": "Pages per file",
+  "tools_splitInvalidRange": "Invalid range. Use pages from 1 to {max}, e.g. 1-3, 5.",
+  "@tools_splitInvalidRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_splitFilesCount": "{count, plural, =1{1 file will be created} other{{count} files will be created}}",
+  "@tools_splitFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_invalidNumber": "Enter a whole number, 1 or more.",
+  "tools_splitAction": "Split",
+  "tools_organizeHint": "Tap to select pages. Touch and hold, then drag to reorder.",
+  "tools_rotate": "Rotate",
+  "tools_extract": "Extract",
+  "tools_selectAll": "Select all",
+  "tools_clearSelection": "Clear selection",
+  "tools_selectedCount": "{count} selected",
+  "@tools_selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_moveEarlier": "Move earlier",
+  "tools_moveLater": "Move later",
+  "tools_reset": "Reset",
+  "tools_pageNumber": "Page {n}",
+  "@tools_pageNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_organizeKeepOne": "Keep at least one page.",
+  "tools_extractNeedSelection": "Select the pages to extract first.",
+  "tools_organizeNoChange": "No changes to save.",
+  "tools_lockHint": "Set a password. It will be required to open the file.",
+  "tools_confirmPassword": "Confirm password",
+  "tools_passwordMismatch": "Passwords do not match.",
+  "tools_passwordEmpty": "Enter a password.",
+  "tools_lockWarning": "Remember this password: it cannot be recovered if lost.",
+  "tools_lockAction": "Lock",
+  "tools_unlockNotLocked": "This file is not password protected.",
+  "tools_unlockHint": "Enter the current password to remove it.",
+  "tools_unlockAction": "Unlock",
+  "tools_wmTypeText": "Text",
+  "tools_wmTypeImage": "Image",
+  "tools_wmTextLabel": "Watermark text",
+  "tools_wmChooseImage": "Choose image",
+  "tools_wmFontSize": "Text size",
+  "tools_wmImageSize": "Image size",
+  "tools_wmOpacity": "Opacity",
+  "tools_wmAngle": "Rotation",
+  "tools_wmPosition": "Position",
+  "tools_wmColor": "Color",
+  "tools_wmAction": "Apply",
+  "tools_wmNeedText": "Enter the watermark text.",
+  "tools_wmNeedImage": "Choose a PNG or JPG image.",
+  "tools_wmNonLatinNote": "Text outside basic Latin needs an embedded font and may not display correctly yet.",
+  "tools_blankTemplate": "Template",
+  "tools_templateBlank": "Blank",
+  "tools_templateLined": "Lined",
+  "tools_templateGrid": "Grid",
+  "tools_blankTitleLabel": "Title",
+  "tools_blankTitleHint": "Optional, printed at the top of page 1",
+  "tools_blankPageSize": "Page size",
+  "tools_orientation": "Orientation",
+  "tools_portrait": "Portrait",
+  "tools_landscape": "Landscape",
+  "tools_blankBackground": "Background color",
+  "tools_blankCategory": "Category",
+  "tools_catNone": "None",
+  "tools_catWork": "Work",
+  "tools_catStudy": "Study",
+  "tools_catPersonal": "Personal",
+  "tools_catNotes": "Notes",
+  "tools_blankPages": "Number of pages",
+  "tools_blankPagesInvalid": "Enter a number from 1 to 1000.",
+  "tools_blankCreate": "Create",
+  "tools_blankDefaultName": "Blank document"
 }

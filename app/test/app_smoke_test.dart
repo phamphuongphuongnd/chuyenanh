@@ -1,3 +1,4 @@
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,21 +6,31 @@ import 'package:go_router/go_router.dart';
 import 'package:pdf_office/app.dart';
 import 'package:pdf_office/core/router/app_router.dart';
 import 'package:pdf_office/core/router/routes.dart';
-import 'package:pdf_office/core/widgets/placeholder_screen.dart';
+import 'package:pdf_office/data/db/app_database.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
+import 'package:pdf_office/features/documents/documents_logic.dart';
+import 'package:pdf_office/features/documents/documents_providers.dart';
+import 'package:pdf_office/features/documents/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _pumpApp(
   WidgetTester tester, {
   String? locale,
 }) async {
-  SharedPreferences.setMockInitialValues({
-    SettingsRepository.kLocale: ?locale,
-  });
+  SharedPreferences.setMockInitialValues({SettingsRepository.kLocale: ?locale});
   final prefs = await SharedPreferences.getInstance();
+  final db = AppDatabase(NativeDatabase.memory());
+  addTearDown(db.close);
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        appDatabaseProvider.overrideWithValue(db),
+        // Stream của drift để lại timer sau khi cây widget bị huỷ → dùng giá trị cố định.
+        documentsProvider.overrideWith(
+          (ref) => Stream.value(const <DocItem>[]),
+        ),
+      ],
       child: const PdfOfficeApp(),
     ),
   );
@@ -28,15 +39,15 @@ Future<ProviderContainer> _pumpApp(
 }
 
 void main() {
-  testWidgets('app khởi động vào trang chủ giữ chỗ', (tester) async {
+  testWidgets('app khởi động vào trang chủ Tài liệu', (tester) async {
     await _pumpApp(tester, locale: 'en');
-    expect(find.byType(PlaceholderScreen), findsOneWidget);
-    expect(find.textContaining('Documents'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.widgetWithText(Tab, 'All'), findsOneWidget);
   });
 
   testWidgets('locale từ cài đặt (vi)', (tester) async {
     await _pumpApp(tester, locale: 'vi');
-    expect(find.textContaining('Tài liệu'), findsOneWidget);
+    expect(find.widgetWithText(Tab, 'Tất cả'), findsOneWidget);
   });
 
   testWidgets('mọi route trong Routes đều đăng ký', (tester) async {
@@ -80,10 +91,7 @@ void main() {
       Routes.about,
     ];
     expect(registered, containsAll(all));
-
-    router.push(Routes.merge, extra: '/x/a.pdf');
-    await tester.pumpAndSettle();
-    expect(find.text('/x/a.pdf'), findsOneWidget);
-    expect(find.byType(Scaffold), findsWidgets);
+    // Không push route cụ thể ở đây: các màn thật (T1–T10) có hoạt ảnh/IO riêng nên pumpAndSettle không ổn định.
+    // Từng màn có widget test riêng trong test/features/<f>/.
   });
 }

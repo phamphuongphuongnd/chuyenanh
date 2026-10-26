@@ -4,7 +4,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../engines/convert/convert_engine.dart';
+import 'engine/pdf_convert_engine.dart';
 
 final convertEngineProvider = Provider<ConvertEngine>(
-  (ref) => throw UnimplementedError('ConvertEngine: chưa có impl (convert)'),
+  (ref) => const PdfConvertEngine(),
 );

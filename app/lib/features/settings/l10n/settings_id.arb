@@ -1,4 +1,25 @@
 {
   "@@locale": "id",
-  "settings_title": "Pengaturan"
+  "settings_title": "Pengaturan",
+  "settings_language": "Bahasa",
+  "settings_languageSystem": "Ikuti perangkat",
+  "settings_theme": "Tampilan",
+  "settings_themeSystem": "Ikuti perangkat",
+  "settings_themeLight": "Terang",
+  "settings_themeDark": "Gelap",
+  "settings_outputDir": "Folder penyimpanan",
+  "settings_outputDirDefault": "Bawaan (Documents/PDF Office)",
+  "settings_outputDirChoose": "Pilih folder",
+  "settings_outputDirReset": "Gunakan folder bawaan",
+  "settings_outputDirNotWritable": "Tidak dapat menulis ke folder ini. Pilih folder lain.",
+  "settings_pageSize": "Ukuran kertas bawaan",
+  "settings_pageSizeA4": "A4",
+  "settings_pageSizeLetter": "Letter",
+  "settings_pageSizeFit": "Sesuai gambar",
+  "settings_about": "Tentang",
+  "settings_version": "Versi {version}",
+  "settings_tagline": "Baca, buat, dan konversi PDF, Office, dan gambar.",
+  "settings_licenses": "Lisensi sumber terbuka",
+  "settings_aboutOffline": "PDF Office bekerja sepenuhnya secara luring. Aplikasi tidak mengumpulkan data dan tidak menggunakan jaringan.",
+  "settings_aboutSyncfusion": "Fitur PDF menggunakan komponen Syncfusion Flutter di bawah Syncfusion Community License."
 }

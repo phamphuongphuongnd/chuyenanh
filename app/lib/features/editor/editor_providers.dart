@@ -4,7 +4,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../engines/pdf/pdf_sign_engine.dart';
+import 'syncfusion_pdf_sign_engine.dart';
 
 final pdfSignEngineProvider = Provider<PdfSignEngine>(
-  (ref) => throw UnimplementedError('PdfSignEngine: chưa có impl (editor)'),
+  (ref) => const SyncfusionPdfSignEngine(),
 );

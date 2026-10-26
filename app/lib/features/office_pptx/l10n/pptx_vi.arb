@@ -1,4 +1,13 @@
 {
   "@@locale": "vi",
-  "pptx_title": "Trình chiếu"
+  "pptx_title": "Trình chiếu",
+  "pptx_unsupportedObject": "Không hỗ trợ",
+  "pptx_slideOf": "{current} / {total}",
+  "pptx_notes": "Ghi chú",
+  "pptx_noNotes": "Slide này không có ghi chú",
+  "pptx_showHidden": "Hiện slide ẩn",
+  "pptx_hideHidden": "Ẩn các slide ẩn",
+  "pptx_emptyDeck": "Bản trình chiếu không có slide nào",
+  "pptx_hiddenBadge": "Ẩn",
+  "pptx_slideN": "Slide {n}"
 }

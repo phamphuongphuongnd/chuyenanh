@@ -1,4 +1,19 @@
 {
   "@@locale": "ko",
-  "office_title": "Office 뷰어"
+  "office_title": "Office 뷰어",
+  "office_search": "검색",
+  "office_searchHint": "문서에서 찾기",
+  "office_noResults": "결과 없음",
+  "office_matchCount": "{current}/{total}",
+  "office_prevMatch": "이전",
+  "office_nextMatch": "다음",
+  "office_convertToPdf": "PDF로 변환",
+  "office_zoomIn": "확대",
+  "office_zoomOut": "축소",
+  "office_emptySheet": "이 시트는 비어 있습니다",
+  "office_emptyDocument": "문서가 비어 있습니다",
+  "office_encodingLabel": "인코딩: {name}",
+  "office_truncated": "파일이 커서 앞부분만 표시합니다.",
+  "office_imageUnsupported": "이미지를 표시할 수 없습니다",
+  "office_linkCopied": "링크를 복사했습니다"
 }

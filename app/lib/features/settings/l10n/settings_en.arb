@@ -1,4 +1,30 @@
 {
   "@@locale": "en",
-  "settings_title": "Settings"
+  "settings_title": "Settings",
+  "settings_language": "Language",
+  "settings_languageSystem": "Follow device",
+  "settings_theme": "Appearance",
+  "settings_themeSystem": "Follow device",
+  "settings_themeLight": "Light",
+  "settings_themeDark": "Dark",
+  "settings_outputDir": "Save folder",
+  "settings_outputDirDefault": "Default (Documents/PDF Office)",
+  "settings_outputDirChoose": "Choose folder",
+  "settings_outputDirReset": "Use default folder",
+  "settings_outputDirNotWritable": "Cannot write to this folder. Please choose another one.",
+  "settings_pageSize": "Default page size",
+  "settings_pageSizeA4": "A4",
+  "settings_pageSizeLetter": "Letter",
+  "settings_pageSizeFit": "Fit to image",
+  "settings_about": "About",
+  "settings_version": "Version {version}",
+  "@settings_version": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+  "settings_tagline": "Read, create and convert PDF, Office and images.",
+  "settings_licenses": "Open-source licenses",
+  "settings_aboutOffline": "PDF Office works entirely offline. It does not collect any data and does not use the network.",
+  "settings_aboutSyncfusion": "PDF features use Syncfusion Flutter components under the Syncfusion Community License."
 }
