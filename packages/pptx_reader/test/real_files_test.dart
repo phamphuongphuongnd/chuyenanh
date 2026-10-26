@@ -7,6 +7,8 @@ import 'dart:typed_data';
 import 'package:pptx_reader/pptx_reader.dart';
 import 'package:test/test.dart';
 
+import 'helpers/pptx_builder.dart';
+
 PptxDeck _load(String name) =>
     readPptx(File('test/fixtures/real/$name').readAsBytesSync());
 
@@ -366,6 +368,162 @@ void main() {
         expect(path.commands.first.kind, PptxPathOp.moveTo);
         expect(path.commands.any((c) => c.kind == PptxPathOp.lineTo), isTrue);
       }
+    });
+  });
+
+  group('deck_extras.pptx (PowerPoint, text box / transforms / fills / footer)', () {
+    late PptxDeck deck;
+    setUpAll(() => deck = _load('deck_extras.pptx'));
+
+    test('text box: character formatting, hyperlink, numbering, alignment', () {
+      final box = _byName<PptxTextShape>(deck.slides[0], 'FormatBox');
+      expect(box.paragraphs, hasLength(5));
+      final first = box.paragraphs[0].runs.single;
+      expect(first.bold, isTrue);
+      expect(first.italic, isTrue);
+      expect(first.underline, isTrue);
+      expect(first.colorArgb, 0xFFED7D31); // accent2
+      expect(first.fontSizePt, 20);
+      final link = box.paragraphs[1].runs.where((r) => r.hyperlink != null);
+      expect(link.map((r) => r.text), ['site']);
+      expect(link.single.hyperlink, 'https://example.com/');
+      expect(box.paragraphs[2].numbered, isTrue);
+      expect(box.paragraphs[2].numberingScheme, 'arabicPeriod');
+      expect(box.paragraphs[2].marginLeftEmu, greaterThan(0));
+      expect(box.paragraphs[3].numbered, isTrue);
+      expect(box.paragraphs[4].align, PptxAlign.right);
+      expect(box.paragraphs[4].numbered, isFalse);
+      expect(box.paragraphs[0].bulletChar, isNull);
+    });
+
+    test('subscript and superscript baseline offsets', () {
+      final box = _byName<PptxTextShape>(deck.slides[0], 'ScriptBox');
+      final runs = box.paragraphs.single.runs;
+      expect(runs.map((r) => r.text).join(), 'H2O and x2');
+      expect(runs.firstWhere((r) => r.text == '2').baselineOffsetPct, -25);
+      expect(runs.last.text, '2');
+      expect(runs.last.baselineOffsetPct, 30);
+      expect(runs.first.baselineOffsetPct, 0);
+    });
+
+    test('rotation, flip, preset names, line, gradient, picture fill', () {
+      final s = deck.slides[1];
+      expect(_byName<PptxTextShape>(s, 'Rotated').rotationDeg, 30);
+      final tri = _byName<PptxTextShape>(s, 'FlippedTriangle');
+      expect(tri.flipH, isTrue);
+      expect(tri.flipV, isFalse);
+      expect(tri.geometry, PptxGeometry.triangle);
+      final arrow = _byName<PptxTextShape>(s, 'RightArrow');
+      expect(arrow.geometry, PptxGeometry.other);
+      expect(arrow.presetGeometry, 'rightArrow');
+      final line = _byName<PptxTextShape>(s, 'DiagLine');
+      expect(line.geometry, PptxGeometry.line);
+      expect(line.line?.colorArgb, 0xFFC00000);
+      expect(line.line?.widthEmu, 50800);
+      expect(line.fill, isNull);
+      // gradient approximated by the first stop
+      expect(
+        _byName<PptxTextShape>(s, 'GradientRect').fill?.colorArgb,
+        0xFFFF0000,
+      );
+      final pf = _byName<PptxTextShape>(s, 'PictureFillRect').fill;
+      expect(pf?.isPicture, isTrue);
+      expect(pf?.imageExtension, 'png');
+      expect(pf?.imageBytes?.length, greaterThan(1000));
+    });
+
+    test('default outline is PowerPoint 172C51 (lnRef accent1 shade 15%)', () {
+      final r = _byName<PptxTextShape>(deck.slides[1], 'Rotated');
+      expect(r.line?.colorArgb, 0xFF172C51);
+      expect(r.line?.widthEmu, 12700);
+    });
+
+    test('footer and slide number placeholders come from the layout', () {
+      final s = deck.slides[2];
+      final f = _byName<PptxTextShape>(s, 'Footer Placeholder 3');
+      final n = _byName<PptxTextShape>(s, 'Slide Number Placeholder 4');
+      expect(f.paragraphs.single.text, 'My footer text');
+      expect(n.paragraphs.single.text, '3');
+      expect(f.frame.y, greaterThan(deck.slideHeightEmu * 0.85));
+      expect(n.frame.x, greaterThan(f.frame.x));
+      expect(f.paragraphs.single.align, PptxAlign.center);
+      expect(n.paragraphs.single.align, PptxAlign.right);
+      expect(_size(f), 12);
+      expect(f.paragraphs.single.runs.single.colorArgb, isNot(0xFF000000));
+    });
+
+    test('long list keeps all 30 paragraphs', () {
+      final body = _byName<PptxTextShape>(
+        deck.slides[3],
+        'Content Placeholder 2',
+      );
+      expect(body.paragraphs, hasLength(30));
+      expect(body.paragraphs.last.text, startsWith('Line number 30'));
+    });
+  });
+
+  // deck_organic.pptx is not committed (1 MB texture background); regenerate
+  // it with tool/make_real_fixtures.ps1 to run these.
+  group('deck_organic.pptx (PowerPoint, texture background via bgRef 1003)', () {
+    final file = File('test/fixtures/real/deck_organic.pptx');
+    final skip = file.existsSync() ? null : 'run tool/make_real_fixtures.ps1';
+
+    test('theme texture background is extracted as a picture', () {
+      final deck = _load('deck_organic.pptx');
+      for (final s in deck.slides) {
+        expect(s.background?.isPicture, isTrue);
+        expect(s.background?.imageBytes?.length, greaterThan(10000));
+      }
+    }, skip: skip);
+
+    test('decoration group (pictures + frame) is behind the text', () {
+      final deck = _load('deck_organic.pptx');
+      final s = deck.slides[0];
+      final g = s.shapes.whereType<PptxGroupShape>().first;
+      expect(g.children.whereType<PptxPictureShape>(), isNotEmpty);
+      final titleIdx = s.shapes.indexWhere((e) => e.name == 'Title 1');
+      expect(s.shapes.indexOf(g), lessThan(titleIdx));
+      expect(_title(s).paragraphs.single.runs.single.fontFamily, 'Garamond');
+    }, skip: skip);
+  });
+
+  group('theme fill styles (synthetic)', () {
+    PptxDeck read(String bgFillStyles, String masterBg) {
+      final b = PptxBuilder()
+        ..slides.add(TestSlide(''))
+        ..masterBg = masterBg
+        ..theme = defaultTheme.replaceFirst(
+          RegExp(r'<a:bgFillStyleLst>.*</a:bgFillStyleLst>', dotAll: true),
+          '<a:bgFillStyleLst>$bgFillStyles</a:bgFillStyleLst>',
+        );
+      return readPptx(b.build());
+    }
+
+    test('bgRef 1002 uses the 2nd theme background style (first stop)', () {
+      final deck = read(
+        '<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>'
+        '<a:gradFill><a:gsLst>'
+        '<a:gs pos="0"><a:schemeClr val="phClr"><a:shade val="50000"/></a:schemeClr></a:gs>'
+        '<a:gs pos="100000"><a:schemeClr val="phClr"/></a:gs></a:gsLst></a:gradFill>',
+        '<p:bg><p:bgRef idx="1002"><a:srgbClr val="FFFFFF"/></p:bgRef></p:bg>',
+      );
+      final c = deck.slides.single.background!.colorArgb!;
+      // shade 50% of white in linear RGB = 0xBC (not 0x80)
+      expect(c & 0xFF, closeTo(0xBC, 1));
+      expect(c >>> 24, 0xFF);
+    });
+
+    test('bgRef 1001 and a missing style fall back to the reference colour', () {
+      final one = read(
+        '<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>',
+        '<p:bg><p:bgRef idx="1001"><a:srgbClr val="123456"/></p:bgRef></p:bg>',
+      );
+      expect(one.slides.single.background!.colorArgb, 0xFF123456);
+      final missing = read(
+        '<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>',
+        '<p:bg><p:bgRef idx="1003"><a:srgbClr val="654321"/></p:bgRef></p:bg>',
+      );
+      expect(missing.slides.single.background!.colorArgb, 0xFF654321);
     });
   });
 }
