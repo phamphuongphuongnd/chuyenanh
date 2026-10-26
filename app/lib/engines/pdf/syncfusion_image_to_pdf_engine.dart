@@ -117,7 +117,6 @@ class SyncfusionImageToPdfEngine implements ImageToPdfEngine {
 
     final doc = sf.PdfDocument();
     try {
-      doc.pageSettings.margins.all = 0;
       final skipped = <String>[];
       var pages = 0;
       for (var i = 0; i < inputs.length; i++) {
@@ -138,8 +137,14 @@ class SyncfusionImageToPdfEngine implements ImageToPdfEngine {
           imageHeight: prepared.height,
           options: options,
         );
-        doc.pageSettings.size = Size(pl.pageWidth, pl.pageHeight);
-        final page = doc.pages.add();
+        // Syncfusion chỉ cho đổi khổ trước khi thêm trang → mỗi trang một section riêng.
+        final section = doc.sections!.add()!;
+        section.pageSettings.margins.all = 0;
+        section.pageSettings.orientation = pl.pageWidth > pl.pageHeight
+            ? sf.PdfPageOrientation.landscape
+            : sf.PdfPageOrientation.portrait;
+        section.pageSettings.size = Size(pl.pageWidth, pl.pageHeight);
+        final page = section.pages.add();
         page.graphics.drawImage(
           sf.PdfBitmap(prepared.bytes),
           Rect.fromLTWH(
