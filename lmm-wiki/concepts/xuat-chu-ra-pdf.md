@@ -49,3 +49,10 @@ Font **được subset tự động**: `vi_arial.pdf` 33 KB (font gốc 1,0 MB);
 - PDF chỉ có owner-password (user rỗng) mở được bình thường, `isEncrypted` = false.
 
 Liên quan: [[0002-syncfusion-community]], [[thu-vien-dart-thuan]].
+
+## Font Noto đã tải và đã kiểm (26/10)
+- Tải bằng `app/tool/fetch_fonts.sh` (chạy trong `app/`) → `app/assets/fonts/{NotoSans-Regular,NotoSans-Bold,NotoSansSC-Regular,NotoSansJP-Regular,NotoSansKR-Regular}.ttf`
+  (~39 MB, OFL 1.1). **Không commit** (`.gitignore`: `app/assets/fonts/*.ttf`) — máy mới phải chạy script; thiếu font thì app chạy nhưng PDF lỗi chữ có dấu/CJK.
+- Đã vẽ thử bằng Syncfusion + nhìn ảnh render: Việt có dấu chồng, chữ đậm, Trung/Nhật/Hàn, Indonesia **đều đúng**; PDF 6 dòng chỉ 120 KB (subset).
+- 3 font CJK là **bản biến thiên** (`[wght]`) nên nét hơi **mảnh** (light) — vẫn đọc rõ; muốn đậm hơn phải dùng bản static (`NotoSansCJK*` dạng OTF/CFF thì Syncfusion không nhận).
+- Bản biến thiên không có `Bold` riêng cho CJK → in đậm CJK là giả lập.

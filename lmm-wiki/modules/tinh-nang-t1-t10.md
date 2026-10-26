@@ -37,7 +37,7 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 | T10 Cài đặt + thương hiệu | Ngôn ngữ, Giao diện, Thư mục lưu, Khổ giấy, Giới thiệu, icon vector | màn con dùng `Navigator.push` (không có route riêng); icon chưa nhìn trên máy |
 
 ## Việc còn lại (theo thứ tự nên làm)
-1. **Tải font Noto** vào `app/assets/fonts/` (`NotoSans-Regular/Bold`, `NotoSansSC/JP/KR-Regular`, OFL) — T4, T6, T9 cần. Cần người dùng đồng ý tải.
+1. ~~Tải font Noto~~ **Xong 26/10**: `bash tool/fetch_fonts.sh` trong `app/` (font không nằm trong git) — xem [[xuat-chu-ra-pdf]]. T4/T6/T9 giờ có font thật; test 660/660 vẫn pass.
 2. **Cài lên Samsung Galaxy A13** (cáp USB + Gỡ lỗi USB) và đi qua checklist từng tính năng trong báo cáo của agent; ghi lỗi → sửa.
    Đặc biệt: quyền "tất cả file", camera, máy quét, lối tắt, OCR tiếng Việt.
 3. `composeVietnamese` bị nhân đôi (T4 `pdf_tools/logic/vi_nfc.dart`, T6 `convert/text/vietnamese_nfc.dart`) → gom vào `core/utils`.

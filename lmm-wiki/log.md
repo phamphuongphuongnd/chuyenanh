@@ -21,3 +21,4 @@ type: log
 - 2026-10-26 15:30 — tu kiem lai T2 (172 pass), T4 (148 pass + 1 fail smoke), T5 (145 pass), T10 (100 pass): bao cao agent khop → [[tinh-nang-t1-t10]]
 - 2026-10-26 15:55 — T3 xong, tu kiem: analyze sach, 144 pass (Kotlin chua bien dich); dot 1 (T2-T5, T10) hoan tat; day tat ca nhanh len origin → [[tinh-nang-t1-t10]]
 - 2026-10-26 15:50 — GHEP DU 10 TINH NANG vao feat/pdf-office (77a9828, da push): analyze sach, 660 test pass, build APK debug OK; noi shortcutLaunchProvider vao app.dart; don worktree/nhanh agent; con: font Noto, cai thu A13 → [[tinh-nang-t1-t10]] [[build-song-song-agent]]
+- 2026-10-26 16:02 — tai font Noto (5 file, 39MB) + app/tool/fetch_fonts.sh, khong commit font; kiem bang anh render: Viet/Trung/Nhat/Han/Indo dung; test 660/660 → [[xuat-chu-ra-pdf]] [[tinh-nang-t1-t10]]

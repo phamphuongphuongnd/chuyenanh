@@ -84,3 +84,6 @@ app/lib/l10n/
 
 # Worktree tam cua cac agent song song
 .claude/worktrees/
+
+# Font Noto tải bằng app/tool/fetch_fonts.sh (~39 MB, không commit)
+app/assets/fonts/*.ttf
