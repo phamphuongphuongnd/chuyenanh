@@ -1,5 +1,11 @@
 {
   "@@locale": "vi",
+  "conv_ocrLanguage": "Ngôn ngữ chữ trên trang quét",
+  "conv_ocrNotice": "Trang không có chữ (ảnh quét) sẽ được nhận dạng chữ (OCR), có thể mất thời gian.",
+  "conv_scriptLatin": "Latin (Anh, Việt, Indonesia)",
+  "conv_scriptChinese": "Tiếng Trung",
+  "conv_scriptJapanese": "Tiếng Nhật",
+  "conv_scriptKorean": "Tiếng Hàn",
   "conv_title": "Chuyển đổi",
   "conv_textToPdf": "Văn bản sang PDF",
   "conv_wordToPdf": "Word sang PDF",

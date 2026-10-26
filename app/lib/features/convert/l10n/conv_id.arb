@@ -1,5 +1,11 @@
 {
   "@@locale": "id",
+  "conv_ocrLanguage": "Bahasa teks pada halaman pindaian",
+  "conv_ocrNotice": "Halaman tanpa teks (gambar pindaian) dikenali dengan OCR, yang bisa memakan waktu.",
+  "conv_scriptLatin": "Latin (Inggris, Vietnam, Indonesia)",
+  "conv_scriptChinese": "Mandarin",
+  "conv_scriptJapanese": "Jepang",
+  "conv_scriptKorean": "Korea",
   "conv_title": "Konversi",
   "conv_textToPdf": "Teks ke PDF",
   "conv_wordToPdf": "Word ke PDF",

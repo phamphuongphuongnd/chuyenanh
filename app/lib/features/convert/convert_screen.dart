@@ -14,6 +14,7 @@ import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
 import '../../data/settings/settings_providers.dart';
 import '../../engines/convert/convert_engine.dart';
+import '../../engines/ocr/ocr_engine.dart';
 import 'convert_providers.dart';
 import 'engine/pdf_convert_engine.dart' show isNoTextError;
 import 'text/text_decoder.dart';
@@ -69,6 +70,7 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
   double _fontSize = 12;
   double _margin = 40;
   bool _busy = false;
+  OcrScript? _ocrScript;
 
   @override
   void initState() {
@@ -148,6 +150,9 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
       _busy = true;
       _resultPath = null;
     });
+    if (mode.fromPdf) {
+      ref.read(convertOcrScriptProvider.notifier).set(_ocrScript ?? _defaultOcrScript());
+    }
     final engine = ref.read(convertEngineProvider);
     try {
       final dir = await ref.read(outputDirectoryProvider.future);
@@ -187,6 +192,20 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  OcrScript _defaultOcrScript() => ocrScriptForLanguage(
+        (ref.read(settingsProvider).locale ?? Localizations.localeOf(context)).languageCode,
+      );
+
+  String _scriptName(OcrScript s) {
+    final l = context.l10n;
+    return switch (s) {
+      OcrScript.latin => l.conv_scriptLatin,
+      OcrScript.chinese => l.conv_scriptChinese,
+      OcrScript.japanese => l.conv_scriptJapanese,
+      OcrScript.korean => l.conv_scriptKorean,
+    };
   }
 
   void _handle(AppError e) {
@@ -277,6 +296,29 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
           if (mode.rebuildsLayout) ...[
             const SizedBox(height: 12),
             _Notice(text: l.conv_layoutNotice),
+          ],
+          if (mode.fromPdf) ...[
+            const SizedBox(height: 12),
+            _Notice(text: l.conv_ocrNotice),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: Text(l.conv_ocrLanguage)),
+                const SizedBox(width: 8),
+                DropdownButton<OcrScript>(
+                  value: _ocrScript ?? _defaultOcrScript(),
+                  isDense: true,
+                  items: [
+                    for (final s in OcrScript.values)
+                      DropdownMenuItem(
+                        value: s,
+                        child: Text(_scriptName(s), overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
+                  onChanged: _busy ? null : (s) => setState(() => _ocrScript = s),
+                ),
+              ],
+            ),
           ],
           if (mode.toPdf) ...[
             const SizedBox(height: 16),

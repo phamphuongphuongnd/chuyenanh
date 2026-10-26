@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:image_ops/image_ops.dart' as ops;
 import 'package:path/path.dart' as p;
 import 'package:pdf_layout/pdf_layout.dart';
@@ -11,8 +12,10 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/ocr/ocr_engine.dart';
 import '../../../engines/pdf/image_to_pdf_engine.dart';
+import '../../convert/engine/font_set.dart';
 import '../model/scan_page.dart';
 import '../ocr/ocr_blocks.dart';
+import 'searchable_pdf.dart';
 
 /// Áp chỉnh sửa lên ảnh, trả bytes đã mã hoá. Mặc định chạy `image_ops` trong isolate.
 typedef PageRenderer = Future<Uint8List> Function(
@@ -39,12 +42,16 @@ class ScanExportResult {
     required this.outputPath,
     required this.pageCount,
     this.hasText = true,
+    this.textLayer = false,
   });
   final String outputPath;
   final int pageCount;
 
   /// false = OCR không nhận ra chữ nào (TXT/DOCX trống).
   final bool hasText;
+
+  /// PDF đã có lớp chữ tìm kiếm được (chỉ khi xuất PDF với `searchable`).
+  final bool textLayer;
 }
 
 /// Xuất danh sách trang đã quét ra PDF / TXT / DOCX. Không ghi đè file cũ.
@@ -56,6 +63,7 @@ class ScanExporter {
     required this.tempDir,
     PageRenderer? renderer,
     DateTime Function()? now,
+    this.fontSource = const AssetFontSource(),
   }) : _render = renderer ?? renderPageInIsolate,
        _now = now ?? DateTime.now;
 
@@ -63,6 +71,9 @@ class ScanExporter {
   final OcrEngine ocrEngine;
   final String outputDir;
   final String tempDir;
+
+  /// Nguồn font Noto cho lớp chữ tìm kiếm được.
+  final FontSource fontSource;
   final PageRenderer _render;
   final DateTime Function() _now;
 
@@ -76,20 +87,45 @@ class ScanExporter {
         '${two(t.hour)}${two(t.minute)}${two(t.second)}';
   }
 
+  /// [searchable] = true: OCR từng trang (hệ chữ [script]) rồi phủ lớp chữ vô hình lên PDF.
+  /// OCR / vẽ lớp chữ lỗi (không phải huỷ) thì vẫn xuất PDF ảnh bình thường.
   Future<ScanExportResult> exportPdf(
     List<ScanPage> pages, {
     String? baseName,
+    bool searchable = false,
+    OcrScript script = OcrScript.latin,
     ProgressCallback? onProgress,
     CancelToken? cancelToken,
   }) async {
     _requirePages(pages);
+    // Chia tiến độ: [ảnh] → [OCR] → [tạo PDF] → [lớp chữ].
+    final imgEnd = searchable ? 0.15 : 0.4;
+    final ocrEnd = searchable ? 0.6 : imgEnd;
+    final pdfEnd = searchable ? 0.9 : 1.0;
     final work = await _makeWorkDir();
     try {
       final paths = <String>[];
       for (var i = 0; i < pages.length; i++) {
         cancelToken?.throwIfCancelled();
         paths.add(await _pathFor(pages[i], work, 'pdf$i', pages[i].toEdit()));
-        onProgress?.call(0.4 * (i + 1) / pages.length);
+        onProgress?.call(imgEnd * (i + 1) / pages.length);
+      }
+      List<OcrResult>? ocr;
+      if (searchable) {
+        try {
+          ocr = await _ocrAll(
+            pages,
+            script,
+            onProgress == null
+                ? null
+                : (v) => onProgress(imgEnd + (ocrEnd - imgEnd) * v),
+            cancelToken,
+          );
+        } on Cancelled {
+          rethrow;
+        } catch (e) {
+          debugPrint('scan_exporter: OCR lỗi ($e), xuất PDF không có lớp chữ');
+        }
       }
       await Directory(outputDir).create(recursive: true);
       final out = await uniqueOutputPath(
@@ -102,12 +138,28 @@ class ScanExporter {
         outputPath: out,
         onProgress: onProgress == null
             ? null
-            : (v) => onProgress(0.4 + 0.6 * v),
+            : (v) => onProgress(ocrEnd + (pdfEnd - ocrEnd) * v),
         cancelToken: cancelToken,
       );
+      var textLayer = false;
+      if (ocr != null) {
+        cancelToken?.throwIfCancelled();
+        final file = File(result.outputPath);
+        final withText = await addInvisibleTextLayer(
+          await file.readAsBytes(),
+          ocr,
+          fontSource,
+        );
+        if (withText != null) {
+          await writeAtomically(result.outputPath, withText);
+          textLayer = true;
+        }
+        onProgress?.call(1);
+      }
       return ScanExportResult(
         outputPath: result.outputPath,
         pageCount: result.pageCount,
+        textLayer: textLayer,
       );
     } finally {
       await _cleanup(work);

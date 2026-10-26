@@ -1,5 +1,7 @@
 {
   "@@locale": "en",
+  "scan_searchablePdf": "Make PDF searchable (OCR)",
+  "scan_searchablePdfHint": "Adds an invisible text layer so you can search and copy text. Takes longer to export.",
   "scan_title": "Scan document",
   "scan_scanButton": "Scan pages",
   "scan_emptyTitle": "No pages yet",

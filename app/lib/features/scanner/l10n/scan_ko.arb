@@ -1,5 +1,7 @@
 {
   "@@locale": "ko",
+  "scan_searchablePdf": "PDF 검색 가능하게 만들기 (OCR)",
+  "scan_searchablePdfHint": "보이지 않는 텍스트 레이어를 추가해 검색과 복사가 가능합니다. 내보내기가 더 오래 걸립니다.",
   "scan_title": "문서 스캔",
   "scan_scanButton": "페이지 스캔",
   "scan_emptyTitle": "페이지가 없습니다",
