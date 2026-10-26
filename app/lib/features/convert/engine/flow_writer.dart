@@ -49,7 +49,9 @@ class PdfFlowWriter {
     this.baseSize = 12,
   }) {
     _doc = PdfDocument();
-    _doc.pageSettings.size = Size(pageWidth, pageHeight);
+    final landscape = pageWidth > pageHeight;
+    _doc.pageSettings.size = landscape ? Size(pageHeight, pageWidth) : Size(pageWidth, pageHeight);
+    if (landscape) _doc.pageSettings.orientation = PdfPageOrientation.landscape;
     _doc.pageSettings.margins.all = 0;
     _newPage();
   }
