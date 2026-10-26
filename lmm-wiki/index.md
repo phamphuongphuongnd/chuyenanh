@@ -27,7 +27,10 @@ updated: 2026-10-22
 ## Đang làm dở — đọc trước khi tiếp tục
 - `planhistory/2026-10-25-pdf-office-khoi-tao.md` — **checkpoint tiến độ** build song song (nhánh nào xong, nhánh nào
   chưa merge, cách làm tiếp nếu phiên bị ngắt).
-- `docs/superpowers/plans/2026-10-25-parallel-build-contract.md` — hợp đồng chia việc cho agent.
+- `docs/superpowers/plans/2026-10-25-parallel-build-contract.md` — hợp đồng chia việc (sở hữu file, route, DB, engine,
+  đa ngôn ngữ; **mục 7 = ghi chú khớp code thật**).
+- `docs/superpowers/plans/2026-10-26-feature-tasks.md` — **giao việc 10 tính năng T1…T10** cho người khác làm
+  (mỗi việc tự đủ: sở hữu file, thư viện dùng, việc cần làm, test, ước lượng).
 
 ## Modules
 - [[thu-vien-dart-thuan]] — 4 thư viện Dart thuần trong `packages/` (office_reader, pptx_reader, pdf_layout, image_ops).
@@ -37,6 +40,7 @@ updated: 2026-10-22
 
 ## Concepts (pattern dùng lại được)
 - [[build-song-song-agent]] — chia việc cho nhiều agent song song bằng hợp đồng + worktree, không dẫm chân nhau.
+- [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
 
 ## Decisions (ADR)
 - [[0001-flutter-android-truoc]] — Flutter, Android trước, dùng cá nhân, test trên Samsung A13.

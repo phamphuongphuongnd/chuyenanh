@@ -16,7 +16,7 @@ App Flutter **PDF Office** (`com.phuong.pdfoffice`) có chức năng, bố cục
 | Kiếm tiền | Không: không quảng cáo, không mua trong app, không gói "Turbo" |
 | Mạng | Không dùng — chạy offline hoàn toàn |
 | Nền tảng | Android trước (minSdk 24, compileSdk 36). Code sẵn cho iOS nhưng chưa build/test (máy phát triển là Windows) |
-| Ngôn ngữ UI | Việt, Anh, Trung, Nhật, Hàn, Thái, Indonesia — mặc định theo máy, đổi tức thì trong app |
+| Ngôn ngữ UI | Việt, Anh, Trung, Nhật, Hàn, Indonesia (6; **bỏ tiếng Thái** 26/10) — mặc định theo máy, đổi tức thì trong app |
 | Thương hiệu | Tên, logo, biểu tượng file, hình minh hoạ **tự vẽ**, không chép tài nguyên của app mẫu |
 | Ngoài app mẫu | Chỉ thêm **chọn thư mục lưu file** (người dùng app mẫu phàn nàn thiếu) |
 
@@ -76,7 +76,7 @@ Mỗi phần có kế hoạch, code, test riêng; xong phần nào app chạy đ
 
 ### Phần 5 — Chuyển đổi
 - **→ PDF:** chữ gõ, TXT, DOCX, XLSX. Văn bản dùng `PdfTextElement` + `PdfLayoutType.paginate`; bảng dùng `PdfGrid`.
-  Nhúng font Noto (OFL 1.1): Noto Sans (Latin/Việt/Indonesia), Noto Sans Thai, Noto Sans SC/JP/KR — Syncfusion
+  Nhúng font Noto (OFL 1.1): Noto Sans (Latin/Việt/Indonesia), Noto Sans SC/JP/KR — Syncfusion
   tự subset nên PDF vẫn nhỏ; APK tăng khoảng 20MB do font CJK (chấp nhận).
 - **PDF →** TXT (`PdfTextExtractor`), DOCX (gom dòng thành đoạn theo khoảng cách dọc, lề trái, cỡ chữ; cỡ chữ lớn
   hơn trung vị → heading), XLSX (gom từ theo trục y thành hàng, mép trái theo trục x thành cột; ≥3 hàng liên tiếp
@@ -96,7 +96,6 @@ Mỗi phần có kế hoạch, code, test riêng; xong phần nào app chạy đ
 - `cunning_document_scanner`: tự nhận viền và chỉnh vuông góc (ML Kit qua Play Services); máy không có Play Services →
   kéo viền thủ công. iOS dùng VisionKit qua cùng gói.
 - OCR `google_mlkit_text_recognition` (model đóng sẵn, offline): Latin (gồm tiếng Việt), Trung, Nhật, Hàn.
-  Tiếng Thái: Tesseract (`flutter_tesseract_ocr` + `tha.traineddata`).
 - Xuất PDF / DOCX / TXT.
 
 ## 3. Kiến trúc
@@ -109,7 +108,7 @@ app/lib/
   core/
     theme/                     màu đỏ chủ đạo, màu theo loại file, sáng/tối
     router/                    go_router
-    l10n/                      app_{vi,en,zh,ja,ko,th,id}.arb
+    l10n/                      app_{vi,en,zh,ja,ko,id}.arb
     errors/                    AppError (sealed)
     utils/                     hàm thuần: định dạng dung lượng/ngày, tên file không trùng, ánh xạ đuôi → loại…
   data/
@@ -120,7 +119,7 @@ app/lib/
     pdf_engine.dart            interface PdfEngine
     syncfusion_pdf_engine.dart
     pdf_rasterizer.dart        pdfx
-    ocr_engine.dart            ML Kit / Tesseract
+    ocr_engine.dart            ML Kit
     office/                    docx, xlsx, pptx parser
   features/
     documents/ image_to_pdf/ reader/ pdf_tools/ editor/ convert/ office_viewer/ scanner/ settings/
@@ -134,7 +133,7 @@ app/test/
   `_pdfviewer` / `_signaturepad` / `_xlsio` 35.x, `pdfx`, `printing`, `photo_manager`, `image_picker`,
   `image_cropper`, `image`, `permission_handler`, `share_plus`, `open_filex`, `receive_sharing_intent`, `excel`,
   `docx_file_viewer`, `archive`, `xml`, `cunning_document_scanner`, `google_mlkit_text_recognition`,
-  `flutter_tesseract_ocr`, `intl`. Phiên bản cụ thể chốt trong kế hoạch từng phần.
+  `intl`. Phiên bản cụ thể chốt trong kế hoạch từng phần.
 
 ## 4. Giao diện chung
 
@@ -164,11 +163,11 @@ app/test/
 - **TDD** cho hàm thuần và engine: lọc/sắp xếp, định dạng dòng thông tin file, ánh xạ đuôi → loại, bố cục ảnh trên
   trang (khổ + lề + hướng), tên file không trùng, gom dòng thành đoạn, đoán bảng, parse DOCX/XLSX/PPTX,
   đổi toạ độ chữ ký.
-- **Fixtures** `app/test/fixtures/`: PDF thường, có mật khẩu, có form; DOCX/XLSX/PPTX; văn bản 7 thứ tiếng.
+- **Fixtures** `app/test/fixtures/`: PDF thường, có mật khẩu, có form; DOCX/XLSX/PPTX; văn bản 6 thứ tiếng.
 - **Widget test** cho màn hình chính của mỗi phần.
 - **Kiểm biên dịch:** `flutter analyze`. Không tự chạy app; người dùng chạy emulator/máy thật theo checklist.
 - **Spike đầu Phần 1 (~1 ngày), làm trước khi dựng màn hình:**
-  1. Xuất đoạn tiếng Việt + tiếng Thái ra PDF bằng Syncfusion + Noto, kiểm dấu đặt đúng chỗ.
+  1. Xuất đoạn tiếng Việt (dấu chồng) ra PDF bằng Syncfusion + Noto, kiểm dấu đặt đúng chỗ.
   2. PDF có mật khẩu: Syncfusion giải mã → `pdfx` render ra ảnh.
   Hỏng → báo người dùng và chốt cách xử lý trước khi đi tiếp.
 
@@ -182,8 +181,8 @@ Flutter SDK stable; Android Studio (Android SDK 36, emulator Android 14, JDK 17 
 
 | Rủi ro | Ảnh hưởng | Cách xử lý |
 |---|---|---|
-| Syncfusion đặt sai dấu/nguyên âm tiếng Thái (có thể cả tiếng Việt) | Phần 5 | Spike đầu Phần 1; chuẩn hoá NFC hoặc đổi cách vẽ chữ |
-| OCR dấu chồng tiếng Việt chưa được đo | Phần 7 | Đo trên 20–30 mẫu thật; dự phòng Tesseract `vie` |
+| Syncfusion đặt sai dấu chồng tiếng Việt | Phần 5 | Spike đầu Phần 1; chuẩn hoá NFC hoặc đổi cách vẽ chữ |
+| OCR dấu chồng tiếng Việt chưa được đo | Phần 7 | Đo trên 20–30 mẫu thật |
 | Máy quét cần Play Services | Phần 7 | Chế độ kéo viền thủ công |
 | Font CJK làm APK +~20MB | Phần 5 | Chấp nhận (dùng cá nhân) |
 | `docx_file_viewer` còn non, 1 tác giả | Phần 6 | Dự phòng tự parse |

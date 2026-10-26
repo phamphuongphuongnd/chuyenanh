@@ -11,7 +11,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-const locales = ['en', 'vi', 'zh', 'ja', 'ko', 'th', 'id'];
+const locales = ['en', 'vi', 'zh', 'ja', 'ko', 'id'];
 const templateLocale = 'en';
 
 void main(List<String> args) {

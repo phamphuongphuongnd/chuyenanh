@@ -21,6 +21,7 @@ tách, sắp xếp trang, khoá/mở khoá, watermark, tạo tài liệu trắng
 thẻ bo góc, nút CANCEL viền + nút đỏ đặc; màu đỏ `#E5393B`.
 
 **Ngoài app gốc chỉ thêm:** chọn thư mục lưu file (người dùng app gốc phàn nàn thiếu).
-**Không làm:** quảng cáo, gói Turbo, EPUB/RTF/ODT/ZIP, bộ lọc màu PDF.
+**Không làm:** quảng cáo, gói Turbo, EPUB/RTF/ODT/ZIP, bộ lọc màu PDF, **tiếng Thái** (chốt 26/10, bỏ hẳn: giao diện, font Thái
+khi xuất PDF, OCR — gói Tesseract cũ cũng hỏng build AGP 9).
 
 Liên quan: [[0001-flutter-android-truoc]].

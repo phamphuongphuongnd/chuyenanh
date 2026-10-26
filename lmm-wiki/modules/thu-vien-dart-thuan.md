@@ -11,7 +11,9 @@ sources:
 
 # Thư viện Dart thuần trong `packages/`
 
-Không phụ thuộc Flutter, an toàn chạy trong `Isolate.run`. App dùng qua path dependency. Kiểm bằng
+Không phụ thuộc Flutter, an toàn chạy trong `Isolate.run`. App dùng qua **path dependency** trong `app/pubspec.yaml`
+(`office_reader`, `pptx_reader`, `pdf_layout`, `image_ops` → `../packages/<tên>`). Mọi package phải dùng **`xml ^7`**
+và `archive ^4` cho khớp Syncfusion 35 (gói `excel` bị bỏ vì kẹt `xml <7`). Kiểm bằng
 `/c/src/flutter/bin/dart analyze && /c/src/flutter/bin/dart test` trong thư mục package.
 Trạng thái 2026-10-25: **đã qua test (fixture dựng bằng code), chưa thử file thật, chưa kiểm trên điện thoại.**
 

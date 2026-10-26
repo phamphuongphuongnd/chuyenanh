@@ -168,14 +168,14 @@ provider — test bằng fake/mocktail, không phụ thuộc impl A7. File impl 
 
 ## 3. Đa ngôn ngữ
 
-- Locale: `vi, en, zh, ja, ko, th, id`. Template = `en`.
+- Locale: `vi, en, zh, ja, ko, id` — **6 ngôn ngữ, đã bỏ tiếng Thái 26/10**. Template = `en`.
 - Mỗi chủ sở hữu viết chuỗi của mình ở `.../l10n/<prefix>_<locale>.arb` (core: `app/lib/core/l10n/core_<locale>.arb`;
   feature: `app/lib/features/<f>/l10n/<prefix>_<locale>.arb` — **tên file theo prefix**, vd. `img2pdf_vi.arb`,
   không phải `image_to_pdf_vi.arb`). **Key bắt đầu bằng prefix** của mình
   (`core_`, `docs_`, `img2pdf_`, `reader_`, `tools_`, `edit_`, `conv_`, `office_`, `pptx_`, `scan_`, `settings_`).
-  MÓNG đã tạo sẵn 7 file mỗi feature với key `<prefix>_title`. Placeholder chỉ khai `@key.placeholders` ở file `en`.
+  MÓNG đã tạo sẵn 6 file mỗi feature với key `<prefix>_title`. Placeholder chỉ khai `@key.placeholders` ở file `en`.
 - `tool/merge_arb.dart` gộp mọi file `*_<locale>.arb` → `lib/l10n/app_<locale>.arb`: **lỗi** nếu trùng key, key sai
-  prefix (phải trùng prefix tên file), `@@locale` khác tên file, locale khác 7 ngôn ngữ, hoặc key có ở locale khác mà
+  prefix (phải trùng prefix tên file), `@@locale` khác tên file, locale khác 6 ngôn ngữ, hoặc key có ở locale khác mà
   không có ở `en`; **cảnh báo** nếu thiếu bản dịch (`--strict` biến cảnh báo thành lỗi). Rồi `flutter gen-l10n` sinh
   `AppLocalizations` vào `lib/l10n/` (gitignore) — truy cập `context.l10n.<key>` (import `core/l10n/l10n.dart`, file này
   cũng export `AppLocalizations`, `appLocales`, `localeNativeNames`).
@@ -184,7 +184,7 @@ provider — test bằng fake/mocktail, không phụ thuộc impl A7. File impl 
   `core_passwordDialogMessage(name)`, `core_confirmDeleteTitle`, `core_confirmDeleteMessage(name)`, `core_processing`,
   `core_progressPercent(percent)`, `core_comingSoon`, `core_emptyTitle`, `core_errorXxx` (8 lỗi), `core_groupXxx`,
   `core_toolXxx` (19 công cụ), `core_appName`.
-- **Đủ 7 ngôn ngữ cho mọi key** (dịch máy được, giữ placeholder `{x}` đúng tên).
+- **Đủ 6 ngôn ngữ cho mọi key** (dịch máy được, giữ placeholder `{x}` đúng tên).
 
 ## 4. Phân công đợt 1 (song song)
 
@@ -198,17 +198,16 @@ provider — test bằng fake/mocktail, không phụ thuộc impl A7. File impl 
 | A6 | `features/convert`, impl convert_engine | Text/TXT/DOCX/XLSX→PDF (font Noto theo mục 5), PDF→TXT/DOCX/XLSX |
 | A7 | `features/office_viewer`, impl docx/xlsx engine | Xem DOCX, XLSX (nhiều sheet, ô gộp), TXT |
 | A8 | `features/office_pptx`, impl pptx_engine | Xem PPTX: chữ, ảnh, hình cơ bản, kế thừa placeholder layout/master |
-| A9 | `features/scanner`, impl ocr_engine | Quét tài liệu (cunning_document_scanner), OCR ML Kit + nhánh Tesseract cho tiếng Thái, xuất PDF/DOCX/TXT |
+| A9 | `features/scanner`, impl ocr_engine | Quét tài liệu (cunning_document_scanner), OCR ML Kit, xuất PDF/DOCX/TXT |
 | A10 | `features/settings`, `assets/branding/**` | Màn Cài đặt, Ngôn ngữ (đổi tức thì), Giao diện, Thư mục lưu (file_picker chọn thư mục), Giới thiệu; logo/launcher icon vẽ vector |
 
 Mỗi agent: **TDD cho logic thuần** (test trước), widget test cho màn chính, `flutter analyze` sạch.
 
 ## 5. Asset quy ước (không tải — chỉ code theo đường dẫn, người ghép tải sau khi người dùng đồng ý)
 
-- Font: `app/assets/fonts/NotoSans-Regular.ttf`, `NotoSans-Bold.ttf`, `NotoSansThai-Regular.ttf`,
+- Font: `app/assets/fonts/NotoSans-Regular.ttf`, `NotoSans-Bold.ttf`,
   `NotoSansSC-Regular.ttf`, `NotoSansJP-Regular.ttf`, `NotoSansKR-Regular.ttf`. Code phải chạy được khi file
   **chưa có** (bắt lỗi, rơi về font chuẩn và báo trong log).
-- Tesseract: `app/assets/tessdata/tha.traineddata`, `vie.traineddata` (tuỳ chọn).
 
 ## 6. Báo cáo khi xong (mỗi agent trả về)
 
@@ -221,10 +220,10 @@ Mỗi agent: **TDD cho logic thuần** (test trước), widget test cho màn ch�
 **Gói đã resolve** (`app/pubspec.yaml`, ràng buộc `^`): flutter_riverpod 3.4.3, go_router 18.1.1, drift 2.35.3,
 drift_flutter 0.3.1, path_provider 2.1.6, path 1.9.1, shared_preferences 2.5.6, intl 0.20.3 (ghim theo
 flutter_localizations), syncfusion_flutter_pdf / _pdfviewer / _signaturepad / _xlsio 35.1.41, pdfx 2.11.0,
-printing 5.15.1, permission_handler 13.0.2, photo_manager 3.12.0, image_picker 1.2.4, image_cropper 13.0.0,
+printing 5.15.1, permission_handler 12.0.1 (hạ từ 13.0.2 — bản 13 cần API 37, xem lmm-wiki/concepts/build-android.md), photo_manager 3.12.0, image_picker 1.2.4, image_cropper 13.0.0,
 image 4.12.0, file_picker 13.2.0, share_plus 13.3.1, open_filex 5.0.0, receive_sharing_intent 1.9.0,
 docx_file_viewer 1.0.5, archive 4.5.2, xml 7.1.0, two_dimensional_scrollables 0.5.5, cunning_document_scanner 3.0.4,
-google_mlkit_text_recognition 0.17.1, flutter_tesseract_ocr 0.4.31, collection 1.19.1. Dev: build_runner 2.17.1,
+google_mlkit_text_recognition 0.17.1, collection 1.19.1 (**flutter_tesseract_ocr đã gỡ 26/10** — hỏng build AGP 9, xem feature-tasks T9); path dependency: office_reader, pptx_reader, pdf_layout, image_ops (`../packages/`). Dev: build_runner 2.17.1,
 drift_dev 2.35.2, mocktail 1.0.5, flutter_lints 6.0.0. **Không thêm gói** (pubspec thuộc MÓNG) — cần gói → báo.
 
 **Gói bị bỏ:** `excel` (mọi bản yêu cầu `xml <7`, xung đột Syncfusion 35 + docx_file_viewer 1.x cần `xml ^7`);

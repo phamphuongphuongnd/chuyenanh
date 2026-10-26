@@ -1,14 +1,15 @@
 import 'dart:ui';
 
-/// Hệ chữ cho OCR. latin gồm cả tiếng Việt, Indonesia, Anh. thai dùng Tesseract.
-enum OcrScript { latin, chinese, japanese, korean, thai }
+/// Hệ chữ cho OCR (ML Kit). latin gồm cả tiếng Việt, Indonesia, Anh.
+/// Không hỗ trợ OCR tiếng Thái (người dùng chốt bỏ 26/10).
+enum OcrScript { latin, chinese, japanese, korean }
 
 /// Hệ chữ mặc định theo mã ngôn ngữ app (`vi`, `zh`…). Hàm thuần.
+/// Giao diện tiếng Thái (`th`) vẫn OCR bằng latin.
 OcrScript ocrScriptForLanguage(String languageCode) => switch (languageCode) {
   'zh' => OcrScript.chinese,
   'ja' => OcrScript.japanese,
   'ko' => OcrScript.korean,
-  'th' => OcrScript.thai,
   _ => OcrScript.latin,
 };
 
@@ -44,9 +45,9 @@ class OcrResult {
   static const empty = OcrResult(text: '', blocks: []);
 }
 
-/// Nhận dạng chữ offline (ML Kit; tiếng Thái qua Tesseract `assets/tessdata/tha.traineddata`).
+/// Nhận dạng chữ offline bằng ML Kit (model đóng sẵn, không cần mạng).
 abstract interface class OcrEngine {
-  /// Lỗi: `CorruptFile` (ảnh hỏng), `UnsupportedFormat` (thiếu traineddata cho [script]).
+  /// Lỗi: `CorruptFile` (ảnh hỏng), `UnsupportedFormat` (định dạng ảnh không đọc được).
   Future<OcrResult> recognize(String imagePath, OcrScript script);
 
   /// Giải phóng recognizer.

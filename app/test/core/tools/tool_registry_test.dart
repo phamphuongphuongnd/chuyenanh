@@ -44,8 +44,8 @@ void main() {
     expect(toolById('nope'), isNull);
   });
 
-  test('mọi labelKey có chuỗi ở 7 ngôn ngữ', () async {
-    expect(AppLocalizations.supportedLocales.length, 7);
+  test('mọi labelKey có chuỗi ở 6 ngôn ngữ', () async {
+    expect(AppLocalizations.supportedLocales.length, 6);
     for (final locale in AppLocalizations.supportedLocales) {
       final l = await AppLocalizations.delegate.load(locale);
       for (final t in allTools) {

@@ -10,8 +10,8 @@ Làm app giống app Google Play "Chuyển đổi hình ảnh sang PDF" (Trusted
 Phải test trước khi commit; test trên điện thoại thật (Samsung Galaxy A13) để sau.
 
 ## Quyết định đã chốt
-Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go_router + drift · 7 ngôn ngữ
-(vi, en, zh, ja, ko, th, id) · dùng cá nhân, không store, không quảng cáo, offline · quét toàn máy
+Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go_router + drift · 6 ngôn ngữ
+(vi, en, zh, ja, ko, id — bỏ tiếng Thái 26/10) · dùng cá nhân, không store, không quảng cáo, offline · quét toàn máy
 (MANAGE_EXTERNAL_STORAGE) · thêm "chọn thư mục lưu" · tên PDF Office `com.phuong.pdfoffice`. Chi tiết: wiki
 `decisions/0001-…` → `0004-…`.
 
@@ -41,24 +41,27 @@ Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go
 |---|---|---|---|
 | 22:5x | Spec + khung wiki + .gitignore | ✅ | `feat/pdf-office` @ `df60f88` |
 | 23:20 | Flutter SDK + Android SDK | ✅ | — |
-| 23:2x | `office_reader` (DOCX/XLSX → model) | ✅ 45/45 test, analyze sạch (đã tự chạy lại) | `worktree-agent-ae3f956b808ba2302` @ `393e8ee` — **chưa merge** |
-| 23:2x | `pptx_reader` (PPTX → model) | ✅ 30/30 test (đã chạy lại) | `worktree-agent-adb1786fc69ad74ab` @ `7af6df3` — **chưa merge** |
-| 23:3x | `pdf_layout` (dòng → đoạn/heading/bảng, ghi DOCX) | ✅ 31/31 test (đã chạy lại); DOCX mở được bằng Word | `worktree-agent-ad7481913ea186f0c` @ `f4e3eed` — **chưa merge** |
-| 23:34 | `image_ops` (lọc ảnh, xoay, cắt, nén, bố cục trang, viền giấy) | ✅ 252 test (243 + 9 perf), analyze sạch (đã chạy lại `dart test -x perf`) | `worktree-agent-ae83a622eee04d4e8` @ `c2a8d3e` — **chưa merge** |
-| 23:33 | H1: thử `office_reader` với file Word/Excel thật (COM) | ⏳ đang chạy | worktree mới (đã merge nhánh office_reader vào) |
-| 23:33 | H2: thử `pptx_reader` với file PowerPoint thật (COM) | ⏳ đang chạy | worktree mới |
-| 23:33 | S1: spike chữ Việt/Thái + mật khẩu trong Syncfusion PDF | ⏳ đang chạy | worktree mới, thư mục `spikes/pdf_text/` |
-| — | MÓNG `app/` | ⏳ đang chạy, chưa commit (file chưa track trong checkout chính) | `feat/pdf-office` |
-| — | Đợt 1 (10 agent) | chờ MÓNG | — |
+| 23:2x | `office_reader` (DOCX/XLSX → model) | ✅ 45/45 test | merge vào `feat/pdf-office` (`6d62eca`) |
+| 23:2x | `pptx_reader` (PPTX → model) | ✅ 30/30 test | merge (`c5f4ff2`) |
+| 23:3x | `pdf_layout` (dòng → đoạn/heading/bảng, ghi DOCX) | ✅ 31/31 test; DOCX mở được bằng Word | merge (`fce549e`); 26/10 nâng `xml ^6.5` → `^7.1` cho khớp app, 31/31 vẫn pass |
+| 23:34 | `image_ops` | ✅ 252 test | merge (`1b2d063`) |
+| 23:33 | H1/H2 (thử file Office thật) + S1 (spike chữ Việt/Thái + mật khẩu) | ❌ **bị ngắt** do hết lượt dùng (rate limit 429) — chỉ còn script dở trong worktree, chưa commit | worktree `agent-aafcd39…`, `agent-a7aee67…`, `agent-a14c345…` — **làm lại sau** |
+| 23:39 | MÓNG `app/` | ✅ commit `1c04c84`; 26/10 08:4x tự chạy lại: analyze sạch, **50/50 test** | `feat/pdf-office` |
+| 23:39 | Wiki + checkpoint | ✅ người dùng tự commit `0e185ac` | — |
+| 26/10 08:5x | Nối 4 thư viện vào `app/pubspec.yaml` (path dependency) | ✅ `pub get` giải được | chưa commit |
+| 26/10 10:14 | Build `flutter build apk --debug` | ✅ **THÀNH CÔNG** sau 5 lần (xem `lmm-wiki/concepts/build-android.md`): gỡ `flutter_tesseract_ocr`, hạ `permission_handler` 13→12, ép plugin đòi API 37 về SDK 36, tắt Kotlin incremental. APK 212 MB ở `app/build/app/outputs/flutter-apk/app-debug.apk` | chưa commit |
+| 26/10 | **Bỏ hẳn tiếng Thái** (UI, font, OCR) → 6 ngôn ngữ; xoá 11 file `*_th.arb`, sửa `l10n.dart`, `merge_arb.dart`, test | ✅ | chưa commit |
+| 26/10 | Dọn: 7 worktree + 7 nhánh agent (đã gộp hết), zip SDK, cache gói không dùng | ✅ | — |
+| 26/10 | **Đổi kế hoạch (người dùng):** 10 tính năng **không** tung agent nữa — viết thành bản giao việc để người khác làm | ✅ `docs/superpowers/plans/2026-10-26-feature-tasks.md` | chưa commit |
 
-**Ghi chú:** H1/H2 sửa trên nhánh riêng tách từ nhánh thư viện → khi ghép, merge nhánh H1/H2 (đã bao gồm nhánh
-thư viện gốc) thay vì merge nhánh thư viện gốc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng — gọi lại là được.
+**Ghi chú:** 5 agent song song làm hết lượt dùng trong ~40 phút → agent nên **commit sau từng phần nhỏ** để bị ngắt
+không mất việc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng — gọi lại là được.
 
 ### Nếu phiên bị ngắt — làm tiếp thế nào
-1. `git -C D:/Phuong/project/chuyenanh worktree list` và `git log --all --oneline -20` để xem nhánh nào đã có.
-2. Nhánh thư viện đã xong mà chưa merge → `git merge --no-ff <nhánh>` vào `feat/pdf-office` (chỉ chạm `packages/`).
-3. Nếu MÓNG chưa commit: kiểm `app/` bằng `dart run tool/merge_arb.dart && flutter gen-l10n && flutter analyze && flutter test` trong `app/`, sạch thì commit.
-4. Tung agent đợt 1 theo bảng phân công ở hợp đồng mục 4 (prompt mẫu: đọc hợp đồng + spec, chỉ sửa thư mục của mình, TDD, analyze/test sạch, commit trong worktree).
+1. `git -C D:/Phuong/project/chuyenanh log --oneline -10` và `git status` để xem đã commit tới đâu.
+2. Phần nền còn lại (Claude làm): build APK debug sạch → commit; làm lại H1/H2/S1 nếu người dùng muốn.
+3. **Tính năng:** người khác nhận theo `docs/superpowers/plans/2026-10-26-feature-tasks.md` (T1…T10), mỗi người một
+   nhánh `feat/<feature>` tách từ `feat/pdf-office`.
 
 ## Rủi ro / lưu ý
 - Flutter giữ "startup lock" → nhiều agent chạy lệnh flutter cùng lúc phải chờ nhau.

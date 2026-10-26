@@ -50,7 +50,7 @@ dependencies:
   syncfusion_flutter_xlsio: ^35.1.41
   pdfx: ^2.11.0
   printing: ^5.15.1
-  permission_handler: ^13.0.2
+  permission_handler: ^12.0.1
   photo_manager: ^3.12.0
   image_picker: ^1.2.4
   image_cropper: ^13.0.0
@@ -65,8 +65,16 @@ dependencies:
   two_dimensional_scrollables: ^0.5.5
   cunning_document_scanner: ^3.0.4
   google_mlkit_text_recognition: ^0.17.1
-  flutter_tesseract_ocr: ^0.4.31
   collection: ^1.19.1
+  # Thu vien Dart thuan cua du an (packages/)
+  office_reader:
+    path: ../packages/office_reader
+  pptx_reader:
+    path: ../packages/pptx_reader
+  pdf_layout:
+    path: ../packages/pdf_layout
+  image_ops:
+    path: ../packages/image_ops
 
 dev_dependencies:
   flutter_test:

@@ -9,14 +9,13 @@ extension L10nX on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
 }
 
-/// 7 ngôn ngữ của app (thứ tự hiển thị trong màn Ngôn ngữ).
+/// 6 ngôn ngữ của app (đã bỏ tiếng Thái 26/10) (thứ tự hiển thị trong màn Ngôn ngữ).
 const List<Locale> appLocales = [
   Locale('vi'),
   Locale('en'),
   Locale('zh'),
   Locale('ja'),
   Locale('ko'),
-  Locale('th'),
   Locale('id'),
 ];
 
@@ -27,6 +26,5 @@ const Map<String, String> localeNativeNames = {
   'zh': '中文',
   'ja': '日本語',
   'ko': '한국어',
-  'th': 'ไทย',
   'id': 'Bahasa Indonesia',
 };
