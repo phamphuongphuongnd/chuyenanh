@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/core/utils/output_directory.dart';
 import 'package:pdf_office/core/utils/page_size.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
-import 'package:pdf_office/features/settings/settings_logic.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pdf_office/features/settings/settings_logic.dart';import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _container() async {
   SharedPreferences.setMockInitialValues({});
@@ -115,6 +115,73 @@ void main() {
       await n.setOutputDir('/x');
       expect(await applyOutputDirectory(n, null), isTrue);
       expect(c.read(settingsProvider).outputDir, isNull);
+    });
+  });
+
+  group('effectiveOutputDir', () {
+    test('null/rỗng -> thư mục mặc định', () {
+      expect(effectiveOutputDir(null), defaultAndroidOutputDir);
+      expect(effectiveOutputDir(''), defaultAndroidOutputDir);
+    });
+
+    test('có cấu hình -> dùng đúng cấu hình', () {
+      expect(effectiveOutputDir('/sdcard/Mine'), '/sdcard/Mine');
+    });
+  });
+
+  group('chooseOutputDirectory', () {
+    test('người dùng huỷ chọn -> cancelled, cài đặt không đổi', () async {
+      final c = await _container();
+      final r = await chooseOutputDirectory(
+        c.read(settingsProvider.notifier),
+        (_) async => null,
+        'Chọn',
+      );
+      expect(r, OutputDirResult.cancelled);
+      expect(c.read(settingsProvider).outputDir, isNull);
+    });
+
+    test('chọn thư mục ghi được -> applied và lưu', () async {
+      final c = await _container();
+      final tmp = Directory.systemTemp.createTempSync('settings_pick_');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+      String? askedTitle;
+      final r = await chooseOutputDirectory(
+        c.read(settingsProvider.notifier),
+        (title) async {
+          askedTitle = title;
+          return tmp.path;
+        },
+        'Chọn thư mục',
+      );
+      expect(r, OutputDirResult.applied);
+      expect(askedTitle, 'Chọn thư mục');
+      expect(c.read(settingsProvider).outputDir, tmp.path);
+    });
+
+    test('chọn thư mục không ghi được -> notWritable, giữ cài đặt cũ', () async {
+      final c = await _container();
+      final n = c.read(settingsProvider.notifier);
+      await n.setOutputDir('/cu');
+      final r = await chooseOutputDirectory(
+        n,
+        (_) async => p.join(Directory.systemTemp.path, 'settings_khong_co_abc'),
+        'Chọn',
+      );
+      expect(r, OutputDirResult.notWritable);
+      expect(c.read(settingsProvider).outputDir, '/cu');
+    });
+  });
+
+  group('kAppVersion', () {
+    test('khớp version trong pubspec.yaml', () {
+      final text = File('pubspec.yaml').readAsStringSync();
+      final m = RegExp(
+        r'^version:\s*([0-9]+\.[0-9]+\.[0-9]+)',
+        multiLine: true,
+      ).firstMatch(text);
+      expect(m, isNotNull);
+      expect(kAppVersion, m!.group(1));
     });
   });
 }

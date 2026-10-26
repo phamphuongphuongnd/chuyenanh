@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/l10n/l10n.dart';
 import '../../data/settings/settings_providers.dart';
+import 'settings_widgets.dart';
 
 /// Màn chọn ngôn ngữ: "Theo máy" + 6 ngôn ngữ (tên bản địa). Chọn là đổi tức thì.
 class LanguageScreen extends ConsumerWidget {
@@ -17,14 +18,14 @@ class LanguageScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l.settings_language)),
       body: ListView(
         children: [
-          _LanguageTile(
+          ChoiceTile(
             key: const ValueKey('lang_system'),
             title: l.settings_languageSystem,
             selected: current == null,
             onTap: () => notifier.setLocale(null),
           ),
           for (final locale in appLocales)
-            _LanguageTile(
+            ChoiceTile(
               key: ValueKey('lang_${locale.languageCode}'),
               title:
                   localeNativeNames[locale.languageCode] ?? locale.languageCode,
@@ -33,30 +34,6 @@ class LanguageScreen extends ConsumerWidget {
             ),
         ],
       ),
-    );
-  }
-}
-
-class _LanguageTile extends StatelessWidget {
-  const _LanguageTile({
-    super.key,
-    required this.title,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String title;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    return ListTile(
-      title: Text(title),
-      trailing: selected ? Icon(Icons.check, color: primary) : null,
-      selected: selected,
-      onTap: onTap,
     );
   }
 }
