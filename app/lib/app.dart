@@ -6,6 +6,7 @@ import 'core/l10n/l10n.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'data/settings/settings_providers.dart';
+import 'features/reader/shortcut/shortcut_launcher.dart';
 
 class PdfOfficeApp extends ConsumerWidget {
   const PdfOfficeApp({super.key});
@@ -14,6 +15,8 @@ class PdfOfficeApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(appRouterProvider);
+    // Mở trình đọc khi app được bật từ lối tắt màn hình chính (T3).
+    ref.watch(shortcutLaunchProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => context.l10n.core_appName,
       debugShowCheckedModeBanner: false,

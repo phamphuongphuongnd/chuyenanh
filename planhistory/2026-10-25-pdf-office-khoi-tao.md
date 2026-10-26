@@ -92,3 +92,12 @@ không mất việc. Lần đầu gọi Agent tạo worktree từng lỗi rỗng
 - `.claude/worktrees/` đã thêm vào `.gitignore` để commit `git add -A` không kéo worktree vào.
 - Thư viện mới chỉ test bằng fixture dựng bằng code — chưa thử file Office/PDF thật.
 - Chưa build Android lần nào → lỗi Gradle giữa ~30 plugin có thể xuất hiện ở đợt 2.
+
+### Cập nhật 26/10 ~16:00 — ĐÃ GHÉP ĐỦ 10 TÍNH NĂNG
+- Đợt 1 (T2, T3, T4, T5, T10) + T1 + đợt 2 (T6, T7, T8, T9) đã xong và ghép bằng nhánh tạm `integrate` → merge `77a9828` vào `feat/pdf-office`, **đã push**.
+- Kiểm bằng máy: `flutter analyze` sạch, **660/660 test**, `flutter build apk --debug` OK (226 MB). 2 fail khi ghép lần đầu đã xử lý:
+  `app_smoke_test` (bỏ bước `push(Routes.merge)`; chỉ kiểm route đã đăng ký) và import nhập nhằng `PdfFilePicker` trong test T4 (`hide`).
+  `settings_screens_test` chập chờn khi tải nặng (pass khi chạy riêng).
+- MÓNG đã nối `shortcutLaunchProvider` vào `lib/app.dart` (lối tắt T3).
+- Đã dọn worktree + nhánh `worktree-agent-*` và `integrate`. Còn lại: font Noto (cần đồng ý tải), cài thử Samsung A13, gom `composeVietnamese`.
+- **Chưa chạy trên điện thoại thật.** Chi tiết từng tính năng/hạn chế: `lmm-wiki/modules/tinh-nang-t1-t10.md`.
