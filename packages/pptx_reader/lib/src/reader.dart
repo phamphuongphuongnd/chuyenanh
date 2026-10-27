@@ -209,8 +209,10 @@ class _Reader {
     _firstMasterPath = pres.relOfType('/slideMaster')?.target;
     _tableStylesPath = pres.relOfType('/tableStyles')?.target;
     final sz = pres.root.child('sldSz');
-    final width = sz?.intAttr('cx') ?? 9144000;
-    final height = sz?.intAttr('cy') ?? 6858000;
+    final cx = sz?.intAttr('cx');
+    final cy = sz?.intAttr('cy');
+    final width = (cx != null && cx > 0) ? cx : 9144000;
+    final height = (cy != null && cy > 0) ? cy : 6858000;
 
     final slides = <PptxSlide>[];
     for (final sid

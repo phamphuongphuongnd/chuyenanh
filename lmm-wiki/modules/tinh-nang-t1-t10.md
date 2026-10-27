@@ -62,3 +62,17 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 - Thêm plugin mới → **build thử APK debug ngay** (lỗi Gradle chỉ lộ khi build Android) — xem [[build-android]].
 
 Liên quan: [[build-song-song-agent]], [[0004-pham-vi-bam-app-goc]], [[documents]], [[kiem-thu-flutter]].
+
+## Thử máy thật + rà lỗi toàn hệ thống (27/10/2026)
+Thử trên Galaxy A13 (32-bit): trang chủ, 6 tab, ⋮, tìm kiếm, ngôn ngữ, cài đặt, đọc PDF, DOCX, XLSX đều chạy. 5 agent đọc code song song
+(chỉ đọc) rồi mới kiểm chứng và sửa — **báo cáo agent là giả thuyết, phải kiểm lại đúng dòng code**: một mục sai (nói ném lỗi ở
+`formatNumber` nhưng thật ra ném ở lần đổi `DateTime` sau đó).
+**Đã sửa (có test đỏ→xanh):** quét trùng; hộp thoại chuyển đổi không đóng khi lỗi; TXT UTF-8 có byte rác thành 1252; `Uri.decodeFull`
+làm hỏng cả DOCX/XLSX; ô Excel số lớn làm hỏng cả file; vùng gộp XLSX `A1:XFD1048576` phình triệu hàng (kẹp +200 hàng/+50 cột);
+slide PPTX kích thước 0; zoom PPTX kẹt; tách PDF ghi đè file có sẵn; đổi album ảnh làm lưới trống; thụt lề DOCX; ảnh DOCX giải mã
+full-res (`cacheWidth`); máy quét huỷ để lại PDF dở; ảnh quét tạm không dọn (`cleanupStaleScanFiles`); mã hoá/giải mã PDF chạy
+trên isolate nền; OCR zh/ja/ko thiếu gói ML Kit.
+**Còn lại (chưa làm):** TXT rất lớn (tách dòng/tìm trên UI isolate, dòng 20MB); gộp nhiều PDF lớn giữ hết trong RAM; ký PDF parse
+lại mỗi trang; PDF→ảnh trần 16MP có thể OOM 32-bit; trang ảnh hỏng khi xuất máy quét bị bỏ im lặng; lối tắt PDF nhận path tuỳ ý
+(`ShortcutChannel.extractPath`, exported); `writeAtomically` xoá trước khi đổi tên; XLSX→PDF O(ô×vùng gộp); file Office hỏng một
+phần làm hỏng cả file; ghi đè mật khẩu: watermark/gộp/tách làm mất mã hoá file gốc mà không cảnh báo; đo kỹ khởi động (3–4s sau splash).

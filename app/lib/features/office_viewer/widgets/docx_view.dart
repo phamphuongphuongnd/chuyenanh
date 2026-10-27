@@ -397,10 +397,11 @@ class _DocxParagraphViewState extends State<DocxParagraphView> {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Trang Word rộng hơn màn hình nhiều: chừa ít nhất nửa bề rộng cho chữ.
-        final maxPad = (constraints.maxWidth - padLeft) * 0.5;
+        final left = padLeft.clamp(0.0, constraints.maxWidth * 0.5);
+        final maxPad = (constraints.maxWidth - left) * 0.5;
         final padRight = rawPadRight.clamp(0.0, maxPad < 0 ? 0.0 : maxPad);
         return Padding(
-          padding: EdgeInsets.fromLTRB(padLeft, padTop, padRight, padBottom),
+          padding: EdgeInsets.fromLTRB(left, padTop, padRight, padBottom),
           child: content,
         );
       },
@@ -423,12 +424,20 @@ class _ImageBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, c) {
-        final w = (image.widthPt * ctx.k).clamp(1.0, c.maxWidth).toDouble();
+        final natural = image.widthPt * ctx.k;
+        // Không có kích thước (VML/`wp:extent` = 0) thì lấp đầy bề ngang thay vì thành vạch 1px.
+        final w = (natural > 1 ? natural : c.maxWidth)
+            .clamp(1.0, c.maxWidth)
+            .toDouble();
+        final decodeW = (w * MediaQuery.devicePixelRatioOf(context))
+            .round()
+            .clamp(1, 2048);
         return Align(
           alignment: _boxAlign(align),
           child: Image.memory(
             image.bytes,
             width: w,
+            cacheWidth: decodeW,
             fit: BoxFit.contain,
             gaplessPlayback: true,
             errorBuilder: (context, _, _) => Padding(

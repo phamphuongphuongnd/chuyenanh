@@ -40,6 +40,10 @@ Future<String> resolveOutputDirectory(String? configured) async {
 Future<bool> _ensureDir(String dir) async {
   try {
     await Directory(dir).create(recursive: true);
+    // Thư mục đã có nhưng không ghi được (mất quyền) thì `create` vẫn thành công.
+    final probe = File(p.join(dir, '.write_test_$pid'));
+    await probe.writeAsString('');
+    await probe.delete();
     return true;
   } on FileSystemException {
     return false;

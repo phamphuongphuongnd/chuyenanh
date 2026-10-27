@@ -11,8 +11,6 @@ import 'documents_logic.dart';
 import 'documents_providers.dart';
 import 'widgets/document_tile.dart';
 
-const int _sectionLimit = 5;
-
 /// Tab "Trang chủ": ô tìm kiếm, 3 ô tính năng chính, Yêu thích và Gần đây.
 class HomeTab extends ConsumerWidget {
   const HomeTab({super.key});
@@ -20,8 +18,8 @@ class HomeTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final recents = ref.watch(recentItemsProvider).value ?? const [];
-    final favorites = ref.watch(favoriteItemsProvider).value ?? const [];
+    final recents = ref.watch(homeRecentItemsProvider).value ?? const [];
+    final favorites = ref.watch(homeFavoriteItemsProvider).value ?? const [];
 
     return Scaffold(
       appBar: AppBar(title: Text(l.core_appName)),
@@ -35,14 +33,14 @@ class HomeTab extends ConsumerWidget {
             viewAllKey: const ValueKey('home-favorites-all'),
             route: Routes.favorites,
             empty: l.docs_emptyFavorites,
-            items: favorites.take(_sectionLimit).toList(),
+            items: favorites,
           ),
           _Section(
             title: l.docs_recents,
             viewAllKey: const ValueKey('home-view-all'),
             route: Routes.recents,
             empty: l.docs_emptyRecents,
-            items: recents.take(_sectionLimit).toList(),
+            items: recents,
           ),
         ],
       ),

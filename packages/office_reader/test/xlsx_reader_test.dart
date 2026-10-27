@@ -242,6 +242,39 @@ void main() {
     expect(readXlsx(bytes).sheets.single.cells[(0, 0)]!.display, '1904-01-01');
   });
 
+  test('ô định dạng ngày có số quá lớn không làm hỏng cả workbook', () {
+    final bytes = buildXlsx(
+      styles: _styles,
+      sheets: [
+        SheetSpec(
+          'S',
+          '<sheetData><row r="1">${_c('A1', '900000000', s: 4)}${_c('B1', '1', s: 4)}</row></sheetData>',
+        ),
+      ],
+    );
+    final cells = readXlsx(bytes).sheets.single.cells;
+    expect(cells[(0, 0)], isNotNull); // ô lạ vẫn đọc được, hiện giá trị gốc
+    expect(cells[(0, 0)]!.display, '900000000');
+    expect(cells[(0, 1)]!.display, isNotEmpty); // ô bình thường không bị ảnh hưởng
+  });
+
+  test('vùng gộp khổng lồ không làm phình số hàng/cột của sheet', () {
+    final bytes = buildXlsx(
+      styles: _styles,
+      sheets: [
+        SheetSpec(
+          'S',
+          '<sheetData><row r="1">${_c('A1', '1', s: 0)}${_c('B1', '2', s: 0)}</row></sheetData>'
+          '<mergeCells count="1"><mergeCell ref="A1:XFD1048576"/></mergeCells>',
+        ),
+      ],
+    );
+    final sheet = readXlsx(bytes).sheets.single;
+    expect(sheet.maxRow, lessThanOrEqualTo(1 + 200));
+    expect(sheet.maxCol, lessThanOrEqualTo(2 + 50));
+    expect(sheet.merges, hasLength(1)); // vùng gộp vẫn được ghi nhận
+  });
+
   test('broken files throw OfficeFormatException', () {
     expect(
       () => readXlsx(Uint8List.fromList(List.filled(64, 7))),

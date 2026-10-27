@@ -30,10 +30,10 @@ Future<ProviderContainer> _pumpApp(
         documentsProvider.overrideWith(
           (ref) => Stream.value(const <DocItem>[]),
         ),
-        recentItemsProvider.overrideWith(
+        homeRecentItemsProvider.overrideWith(
           (ref) => Stream.value(const <DocItem>[]),
         ),
-        favoriteItemsProvider.overrideWith(
+        homeFavoriteItemsProvider.overrideWith(
           (ref) => Stream.value(const <DocItem>[]),
         ),
       ],

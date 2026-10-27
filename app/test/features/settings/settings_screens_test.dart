@@ -81,12 +81,16 @@ Finder _key(String k) => find.byKey(ValueKey(k));
 
 /// File I/O thật không chạy trong FakeAsync của testWidgets: nhường cho vòng lặp thật.
 /// Mỗi vòng: chờ I/O thật rồi `pump` để chạy phần tiếp theo của chuỗi `await`.
-Future<void> _realIo(WidgetTester tester) async {
-  for (var i = 0; i < 10; i++) {
+Future<void> _realIo(WidgetTester tester, {bool Function()? until}) async {
+  // Có [until]: chờ tới khi đạt điều kiện (tối đa ~5 giây) thay vì số vòng cố định,
+  // vì ghi/xoá file thật chậm hơn nhiều khi máy đang tải.
+  final rounds = until == null ? 10 : 170;
+  for (var i = 0; i < rounds; i++) {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 30)),
     );
     await tester.pump();
+    if (until != null && until()) return;
   }
 }
 
@@ -179,7 +183,7 @@ void main() {
       await tester.tap(_key('settings_outputDir'));
       await tester.pumpAndSettle();
       await tester.tap(_key('output_dir_choose'));
-      await _realIo(tester);
+      await _realIo(tester, until: () => c.read(settingsProvider).outputDir == tmp.path);
       await tester.pumpAndSettle();
       expect(c.read(settingsProvider).outputDir, tmp.path);
       expect(find.text(tmp.path), findsOneWidget);

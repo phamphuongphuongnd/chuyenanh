@@ -231,6 +231,8 @@ class _XlsxReader {
       }
     }
 
+    // Vùng gộp như `A1:XFD1048576` không được kéo sheet ra cả triệu hàng/hàng nghìn cột.
+    final dataRows = maxRow, dataCols = maxCol;
     final merges = <XlsxRange>[];
     for (final m
         in root.child('mergeCells')?.childrenNamed('mergeCell') ??
@@ -248,8 +250,8 @@ class _XlsxReader {
         math.max(a.$2, b.$2),
       );
       merges.add(range);
-      maxRow = math.max(maxRow, range.lastRow + 1);
-      maxCol = math.max(maxCol, range.lastCol + 1);
+      maxRow = math.max(maxRow, math.min(range.lastRow + 1, dataRows + 200));
+      maxCol = math.max(maxCol, math.min(range.lastCol + 1, dataCols + 50));
     }
 
     final fmt = root.child('sheetFormatPr');
@@ -366,11 +368,17 @@ class _XlsxReader {
         }
         final n = double.tryParse(v.trim());
         if (n == null) return make(v, v, XlsxCellType.string);
-        final display = formatNumber(
-          n,
-          style.numberFormat,
-          date1904: _date1904,
-        );
+        // Ô định dạng ngày nhưng số vượt 31/12/9999 (Excel hiện `####`): giữ giá trị gốc,
+        // không để một ô lạ làm hỏng cả workbook.
+        if (isDateFormat(style.numberFormat) && n > 2958465) {
+          return make(v.trim(), n, XlsxCellType.number);
+        }
+        String display;
+        try {
+          display = formatNumber(n, style.numberFormat, date1904: _date1904);
+        } catch (_) {
+          return make(v.trim(), n, XlsxCellType.number);
+        }
         if (isDateFormat(style.numberFormat) && n >= 0) {
           return make(
             display,

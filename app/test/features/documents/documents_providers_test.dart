@@ -189,6 +189,22 @@ void main() {
       expect(scanner.calls, 0);
     });
 
+    test('nhiều lượt quét gọi cùng lúc chỉ chạy một lượt', () async {
+      final scanner = _FakeScanner(ScanResult(files: [_file('a.pdf')]));
+      final c = makeContainer(scanner, _FakePermission(granted: true));
+
+      c.read(scanControllerProvider); // lượt tự động đầu tiên
+      final n = c.read(scanControllerProvider.notifier);
+      await Future.wait([
+        n.refresh(),
+        n.refresh(),
+        n.requestPermissionAndScan(),
+      ]);
+      await settle();
+
+      expect(scanner.calls, 1);
+    });
+
     test('refresh(force: false) bỏ qua khi vừa quét xong', () async {
       final scanner = _FakeScanner(ScanResult(files: [_file('a.pdf')]));
       final c = makeContainer(scanner, _FakePermission(granted: true));

@@ -47,6 +47,14 @@ kotlin {
     }
 }
 
+dependencies {
+    // Plugin google_mlkit_text_recognition chỉ khai 3 gói này ở dạng compileOnly: thiếu thì
+    // chọn OCR Trung/Nhật/Hàn sẽ ném NoClassDefFoundError lúc chạy.
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
+}
+
 flutter {
     source = "../.."
 }

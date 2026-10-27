@@ -101,7 +101,11 @@ class _PptxDeckViewState extends State<PptxDeckView> {
   }
 
   void _onPageChanged(int page) {
-    setState(() => _page = page);
+    // Trang đang zoom bị huỷ không báo lại `onZoomChanged(false)`: tự bỏ khoá vuốt.
+    setState(() {
+      _page = page;
+      _zoomed = false;
+    });
     final aspect = widget.deck.slideWidthEmu / widget.deck.slideHeightEmu;
     final step = _thumbH * aspect + _thumbGap;
     if (_thumbs.hasClients) {

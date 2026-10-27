@@ -36,6 +36,24 @@ void main() {
       expect(r.text, sample);
     });
 
+    test('UTF-8 tiếng Việt có một byte rác ở giữa vẫn là UTF-8', () {
+      final good = utf8.encode('Tiếng Việt: ệ ữ ẫ ậ ề ở ' * 20);
+      final bytes = Uint8List.fromList([
+        ...good.sublist(0, 100),
+        0xFF, // byte rác
+        ...good.sublist(100),
+      ]);
+      final r = decodeText(bytes);
+      expect(r.encoding, TextEncoding.utf8);
+      expect(r.text, contains('ệ ữ ẫ ậ ề ở'));
+    });
+
+    test('Windows-1252 thật (không có chuỗi UTF-8 hợp lệ) vẫn nhận là 1252', () {
+      final r = decodeText(Uint8List.fromList('café crème'.codeUnits));
+      expect(r.encoding, TextEncoding.windows1252);
+      expect(r.text, 'café crème');
+    });
+
     test('UTF-8 có BOM: bỏ BOM', () {
       final r = decodeText(
         Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(sample)]),

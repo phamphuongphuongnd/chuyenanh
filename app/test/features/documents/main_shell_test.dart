@@ -53,9 +53,9 @@ Future<void> _pump(
         appDatabaseProvider.overrideWithValue(db),
         scanControllerProvider.overrideWith(_FixedScan.new),
         documentsProvider.overrideWith((ref) => Stream.value(recents)),
-        recentItemsProvider.overrideWith((ref) => Stream.value(recents)),
+        homeRecentItemsProvider.overrideWith((ref) => Stream.value(recents)),
         favoritePathsProvider.overrideWith((ref) => Stream.value(<String>{})),
-        favoriteItemsProvider.overrideWith((ref) => Stream.value(favorites)),
+        homeFavoriteItemsProvider.overrideWith((ref) => Stream.value(favorites)),
       ],
       child: MaterialApp.router(
         routerConfig: router,

@@ -141,26 +141,36 @@ class ScanExporter {
             : (v) => onProgress(ocrEnd + (pdfEnd - ocrEnd) * v),
         cancelToken: cancelToken,
       );
-      var textLayer = false;
-      if (ocr != null) {
-        cancelToken?.throwIfCancelled();
-        final file = File(result.outputPath);
-        final withText = await addInvisibleTextLayer(
-          await file.readAsBytes(),
-          ocr,
-          fontSource,
-        );
-        if (withText != null) {
-          await writeAtomically(result.outputPath, withText);
-          textLayer = true;
+      try {
+        var textLayer = false;
+        if (ocr != null) {
+          cancelToken?.throwIfCancelled();
+          final file = File(result.outputPath);
+          final withText = await addInvisibleTextLayer(
+            await file.readAsBytes(),
+            ocr,
+            fontSource,
+          );
+          if (withText != null) {
+            await writeAtomically(result.outputPath, withText);
+            textLayer = true;
+          }
+          onProgress?.call(1);
         }
-        onProgress?.call(1);
+        return ScanExportResult(
+          outputPath: result.outputPath,
+          pageCount: result.pageCount,
+          textLayer: textLayer,
+        );
+      } catch (_) {
+        // Huỷ/lỗi sau khi PDF đã ghi: không để lại file dở trong thư mục xuất.
+        try {
+          await File(result.outputPath).delete();
+        } on FileSystemException {
+          // đã không còn
+        }
+        rethrow;
       }
-      return ScanExportResult(
-        outputPath: result.outputPath,
-        pageCount: result.pageCount,
-        textLayer: textLayer,
-      );
     } finally {
       await _cleanup(work);
     }

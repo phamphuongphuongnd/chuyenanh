@@ -96,7 +96,13 @@ class OoxmlPackage {
 
   /// Resolves [target] relative to directory [baseDir] inside the package.
   static String resolvePath(String baseDir, String target) {
-    final t = Uri.decodeFull(target.replaceAll('\\', '/'));
+    final raw = target.replaceAll('\\', '/');
+    String t;
+    try {
+      t = Uri.decodeFull(raw);
+    } catch (_) {
+      t = raw; // `%` trần hoặc UTF-8 sai trong Target: dùng nguyên văn
+    }
     final parts = <String>[];
     if (!t.startsWith('/')) {
       parts.addAll(baseDir.split('/').where((s) => s.isNotEmpty));

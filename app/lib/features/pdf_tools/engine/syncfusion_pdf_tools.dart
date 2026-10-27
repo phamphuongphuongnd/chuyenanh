@@ -81,7 +81,7 @@ class SyncfusionPdfTools implements PdfToolsEngine {
       );
       // Hai khoảng trùng nhau (vd. "1-2, 1-2") cùng tên → đánh số tiếp.
       var n = 1;
-      while (outputs.contains(path)) {
+      while (outputs.contains(path) || File(path).existsSync()) {
         path = p.join(
           outputDir,
           '${sanitizeFileName('$baseName (${rangeLabel(r)})')} ($n).pdf',

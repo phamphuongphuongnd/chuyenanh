@@ -24,7 +24,13 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return Scaffold(
+    // Back ở tab khác Trang chủ thì về Trang chủ thay vì thoát app.
+    return PopScope(
+      canPop: _index == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(() => _index = 0);
+      },
+      child: Scaffold(
       body: IndexedStack(
         index: _index,
         children: const [
@@ -76,6 +82,7 @@ class _MainShellState extends State<MainShell> {
           ),
         ],
       ),
+    ),
     );
   }
 

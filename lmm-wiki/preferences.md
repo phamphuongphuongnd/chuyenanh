@@ -85,3 +85,9 @@ sources: []
 ## Tôn trọng chỉnh sửa song song của người dùng
 - Người dùng có thể tự sửa file **trong lúc** tôi đang làm việc trên cùng file. Thấy note "modified by the user or a
   linter" → **không revert**, điều chỉnh code của mình cho tương thích, không hỏi lại.
+
+## Bổ sung 27/10/2026
+- Người dùng muốn **link tải APK để gửi người khác** và nút Chia sẻ trong Cài đặt gửi link đó → xem [[phat-hanh-apk]]; muốn biết **mốc giờ xong** và hay hỏi tiến độ: báo ước lượng thật + ghi rõ phần bỏ qua.
+- Hướng dẫn thao tác trên web/terminal phải **từng bước, nói rõ nút nào, trang nào**; lệnh PowerShell chạy file có dấu cách cần `&`.
+- Muốn app **phản hồi nhanh**: đánh giá bằng bản release trên máy thật, không dùng debug; việc nặng đưa ra isolate nền.
+- Không tự đăng nhập GitHub/`gh`: người dùng tự làm trên trình duyệt; tôi cài `gh` được nhưng không auth.

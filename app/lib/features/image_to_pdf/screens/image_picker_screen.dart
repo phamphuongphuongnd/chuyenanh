@@ -121,6 +121,8 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
       if (mounted) setState(() => _error = AppError.from(e));
     } finally {
       _loadingPage = false;
+      // Đổi album giữa lúc đang tải: lượt tải cũ bị bỏ, phải tải lại cho album mới.
+      if (mounted && _album != album) unawaited(_loadMore());
     }
   }
 

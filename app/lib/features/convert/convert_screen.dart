@@ -176,6 +176,9 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
         } on WrongPassword {
           progress.close();
           wrongHint = l.core_errorWrongPassword;
+        } catch (_) {
+          progress.close();
+          rethrow;
         }
         if (!mounted) return;
         password = await showPasswordDialog(

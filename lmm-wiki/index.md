@@ -31,7 +31,7 @@ updated: 2026-10-27
   đa ngôn ngữ; **mục 7 = ghi chú khớp code thật**).
 - `docs/superpowers/plans/2026-10-26-feature-tasks.md` — **giao việc 10 tính năng T1…T10** cho người khác làm
   (mỗi việc tự đủ: sở hữu file, thư viện dùng, việc cần làm, test, ước lượng). **Mục E = bảng bàn giao + cách nhận việc.**
-- **Đủ 10 tính năng đã ghép vào `feat/pdf-office`** (692 test, build APK debug OK, chưa chạy máy thật) — xem [[tinh-nang-t1-t10]]. Các nhánh `feat/t1-…` … `feat/t10-…` trên origin chỉ còn là lịch sử.
+- **Đủ 10 tính năng đã ghép vào `feat/pdf-office`** (707 test, đã thử trên Galaxy A13, có bản release + link tải) — xem [[tinh-nang-t1-t10]]. Các nhánh `feat/t1-…` … `feat/t10-…` trên origin chỉ còn là lịch sử.
 - `README.md` ở thư mục gốc = hướng dẫn dự án (GitHub chỉ hiện README của nhánh mặc định `master`).
 
 ## Modules
@@ -47,7 +47,8 @@ updated: 2026-10-27
 - [[xuat-chu-ra-pdf]] — kết quả spike: chữ Việt phải chuẩn hoá NFC, CJK phải fallback font theo script, lỗi mật khẩu PDF.
 - [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
-- [[ui-app-goc]] — cấu trúc giao diện app mẫu: bottom nav 5 item, 3 tile tính năng, badge màu loại file, PDF viewer.
+- [[ui-app-goc]] — cấu trúc giao diện app mẫu (bottom nav 5 item, 3 tile, Cài đặt) và phần đã làm giống.
+- [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
 
 ## Decisions (ADR)
 - [[0001-flutter-android-truoc]] — Flutter, Android trước, dùng cá nhân, test trên Samsung A13.

@@ -27,6 +27,15 @@ void main() {
       expect(deck.slides, hasLength(1));
     });
 
+    test('slide size 0 or missing falls back to 4:3 default', () {
+      final b = _deck([TestSlide('')])
+        ..slideWidth = 0
+        ..slideHeight = 0;
+      final deck = _read(b);
+      expect(deck.slideWidthEmu, 9144000);
+      expect(deck.slideHeightEmu, 6858000);
+    });
+
     test('slide order follows presentation.xml, not file names', () {
       final b = _deck([
         for (final t in ['first', 'second', 'third'])

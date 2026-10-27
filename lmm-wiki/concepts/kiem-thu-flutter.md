@@ -39,3 +39,12 @@ Tách phụ thuộc thành interface rồi override bằng bản giả: `FileSca
 `scanControllerProvider.overrideWith(() => _FixedScan(state))`.
 
 Liên quan: [[documents]], [[build-android]], [[build-song-song-agent]].
+
+## Bài học 27/10/2026 (chạy lệnh Flutter)
+- **Đừng chạy 2 lệnh `flutter` cùng lúc** (test + build + analyze, kể cả từ agent): tranh khoá SDK và khoá `build/native_assets/sqlite3.dll`
+  → treo hoặc lỗi "Flutter failed to delete file". Chạy tuần tự; agent chỉ được ĐỌC.
+- Ghi output ra file (`*> file`) rồi đọc đuôi, vì `| Select-Object -Last` chỉ in khi lệnh kết thúc (trông như treo).
+- Test màn hình mới dùng `HomeTab` cần override mọi stream drift, nếu không "A Timer is still pending" làm cả bộ test treo.
+- Test `settings_screens_test` "chọn thư mục ghi được" (đĩa thật) chập chờn khi chạy cả bộ, pass khi chạy riêng.
+- Bấm ADB theo toạ độ ước lượng khi app còn khởi động có thể đổi cài đặt người dùng (đã lỡ đổi giao diện Tối, gắn sao 3 file):
+  luôn `uiautomator dump` lấy `bounds` và chờ màn hình sẵn sàng trước khi bấm.

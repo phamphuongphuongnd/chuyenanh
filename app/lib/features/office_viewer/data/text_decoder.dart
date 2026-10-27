@@ -74,11 +74,31 @@ DecodedText decodeText(Uint8List bytes, {bool truncated = false}) {
       // thử cắt thêm byte cuối
     }
   }
+  final lenient = _lenientUtf8(bytes, truncated: truncated);
+  if (lenient != null) {
+    return DecodedText(lenient, TextEncoding.utf8, truncated: truncated);
+  }
   return DecodedText(
     _windows1252(bytes),
     TextEncoding.windows1252,
     truncated: truncated,
   );
+}
+
+/// UTF-8 có vài byte rác (log, file ghép): vẫn coi là UTF-8 nếu chuỗi hợp lệ nhiều gấp
+/// 10 lần chỗ lỗi. File Windows-1252 thật không có chuỗi hợp lệ nào nên vẫn rơi xuống 1252.
+String? _lenientUtf8(Uint8List bytes, {required bool truncated}) {
+  final s = utf8.decode(bytes, allowMalformed: true);
+  var valid = 0, bad = 0;
+  for (final r in s.runes) {
+    if (r == 0xFFFD) {
+      bad++;
+    } else if (r > 0x7F) {
+      valid++;
+    }
+  }
+  if (valid == 0 || valid < bad * 10) return null;
+  return s;
 }
 
 /// `true` = UTF-16 LE, `false` = BE, `null` = không phải UTF-16.

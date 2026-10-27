@@ -116,3 +116,9 @@ Menu ⋮: các chức năng bổ sung (in, chia sẻ, thông tin, ...).
 **Tính năng**: đã đủ, chỉ khác giao diện.
 
 Liên quan: [[0004-pham-vi-bam-app-goc]], [[tinh-nang-t1-t10]], [[documents]].
+
+## Cập nhật 27/10: đã làm giao diện giống app mẫu
+Bottom nav 5 mục + 3 ô tính năng + Yêu thích/Gần đây đã làm xong (xem [[documents]]). **Cài đặt app mẫu** (chụp qua ADB): nhóm
+*Chung* (Ngôn ngữ, Màu chủ đề) và *Về ứng dụng* (Thêm tiện ích, Chia sẻ ứng dụng, Phản hồi, Chính sách bảo mật, Ứng dụng khác,
+Quản lý Đăng ký) + biểu ngữ nâng cấp. App mình làm: Chia sẻ (gửi link Release), Phản hồi (mailto), Chính sách bảo mật (màn tĩnh),
+chia 2 nhóm. **Bỏ** biểu ngữ/Ứng dụng khác/Quản lý Đăng ký (không quảng cáo, không đăng ký, không store); **chưa làm** "Thêm tiện ích".

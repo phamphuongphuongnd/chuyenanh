@@ -90,3 +90,19 @@ Tên test còn tham chiếu tiếng Thái (đã bỏ) → đổi thành tên mô
 - Hiệu năng quét toàn bộ bộ nhớ trong, đổi tên/xoá file thật, chia sẻ, mở file Office cũ bằng app ngoài.
 
 Liên quan: [[co-so-du-lieu]], [[0003-kien-truc-riverpod]], [[tinh-nang-t1-t10]], [[kiem-thu-flutter]].
+
+## Khung 5 nút dưới (27/10/2026) — thay Hamburger + FAB
+- `MainShell` (`main_shell.dart`, route `Routes.home`): `NavigationBar` 5 mục **Trang chủ · Tập tin · ⇄ · Công cụ · Cài đặt**,
+  `IndexedStack` 4 trang (`HomeTab`, `HomeScreen`, `ToolsPage`, `SettingsScreen`). Nút ⇄ giữa **không phải trang**: bấm là
+  `launchTool(imageToPdf)` (vào thẳng chọn ảnh → PDF). `PopScope`: Back ở tab khác về Trang chủ.
+- `HomeTab`: ô tìm kiếm, 3 ô tính năng (Ảnh sang PDF đỏ lớn, Quét tài liệu xanh, PDF sang ảnh cam), mục **Yêu thích** và
+  **Gần đây** (mỗi mục tối đa 5, "Xem tất cả" → `Routes.favorites`/`recents`). Dùng `homeFavoriteItemsProvider` /
+  `homeRecentItemsProvider` (chỉ `stat` tối đa 5 file thay vì cả trăm).
+- `HomeScreen` (tab Tập tin) bỏ FAB, thêm nút ⭐ và 🕘 trên AppBar; vẫn còn drawer.
+- `tools_sheet.dart` tách `_toolSections` dùng chung cho bottom sheet và `ToolsPage`.
+- Test: `main_shell_test.dart`; test có `HomeTab` phải override **cả** `homeRecentItemsProvider`/`homeFavoriteItemsProvider`
+  (stream drift để timer treo → "A Timer is still pending").
+- Sửa: `ScanController._scan` có cờ `_scanning` (refresh/resume/request trước đó có thể quét trùng); `pdfHasEncryptMarker`
+  chỉ đọc 128KB đầu + 128KB cuối; `resolveOutputDirectory` thử ghi file thật; `main.dart` chỉ nạp ngày giờ 6 locale.
+
+Liên quan: [[ui-app-goc]], [[phat-hanh-apk]].

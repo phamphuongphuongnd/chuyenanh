@@ -36,6 +36,28 @@ class FakePdf implements ImageToPdfEngine {
   }
 }
 
+/// Ghi xong PDF rồi mới bị huỷ (người dùng bấm Huỷ ở bước thêm lớp chữ).
+class CancelAfterWritePdf extends FakePdf {
+  @override
+  Future<ImageToPdfResult> createPdf({
+    required List<String> imagePaths,
+    required String outputPath,
+    ImageToPdfOptions options = const ImageToPdfOptions(),
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    final r = await super.createPdf(
+      imagePaths: imagePaths,
+      outputPath: outputPath,
+      options: options,
+      onProgress: onProgress,
+      cancelToken: cancelToken,
+    );
+    cancelToken?.cancel();
+    return r;
+  }
+}
+
 class FakeOcr implements OcrEngine {
   final seen = <String>[];
   @override
@@ -131,6 +153,19 @@ void main() {
       throwsA(isA<Cancelled>()),
     );
     expect(pdf.paths, isNull);
+  });
+
+  test('huỷ sau khi PDF đã ghi xong → xoá PDF dở, không để lại file', () async {
+    pdf = CancelAfterWritePdf();
+    final t = CancelToken();
+    await expectLater(
+      make().exportPdf(pages(), searchable: true, cancelToken: t),
+      throwsA(isA<Cancelled>()),
+    );
+    final left = Directory(out).existsSync()
+        ? Directory(out).listSync().whereType<File>().toList()
+        : <File>[];
+    expect(left, isEmpty);
   });
 
   test('TXT: OCR từng trang, ghi UTF-8 giữ dấu', () async {

@@ -137,7 +137,21 @@ class ScanController extends Notifier<ScanState> {
     return true;
   }
 
+  /// Đặt đồng bộ ngay đầu `_scan`: `refresh` kiểm `isScanning` trước một `await`
+  /// nên hai lời gọi gần nhau vẫn có thể cùng lọt vào quét.
+  bool _scanning = false;
+
   Future<void> _scan() async {
+    if (_scanning) return;
+    _scanning = true;
+    try {
+      await _runScan();
+    } finally {
+      _scanning = false;
+    }
+  }
+
+  Future<void> _runScan() async {
     final roots = ref.read(scanRootsProvider);
     if (roots.isEmpty) {
       state = state.copyWith(
@@ -225,6 +239,37 @@ final recentItemsProvider = StreamProvider<List<DocItem>>((ref) {
   final dao = ref.watch(appDatabaseProvider).recentsDao;
   return dao.watchRecent().map(
     (rows) => [for (final r in rows) ?DocItem.fromFileSync(r.path)],
+  );
+});
+
+/// Chỉ [limit] mục đầu còn tồn tại: Trang chủ chỉ hiện vài mục nên không `stat` cả trăm file
+/// (bộ nhớ trong của máy yếu chậm, làm trễ khung hình đầu).
+List<DocItem> _firstExisting(Iterable<String> paths, int limit) {
+  final out = <DocItem>[];
+  for (final path in paths) {
+    final item = DocItem.fromFileSync(path);
+    if (item != null) out.add(item);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+/// Số mục mỗi nhóm hiện ở Trang chủ.
+const int homeSectionLimit = 5;
+
+/// Yêu thích cho Trang chủ (tối đa [homeSectionLimit] mục).
+final homeFavoriteItemsProvider = StreamProvider<List<DocItem>>((ref) {
+  final dao = ref.watch(appDatabaseProvider).favoritesDao;
+  return dao.watchAll().map(
+    (rows) => _firstExisting(rows.map((r) => r.path), homeSectionLimit),
+  );
+});
+
+/// Gần đây cho Trang chủ (tối đa [homeSectionLimit] mục).
+final homeRecentItemsProvider = StreamProvider<List<DocItem>>((ref) {
+  final dao = ref.watch(appDatabaseProvider).recentsDao;
+  return dao.watchRecent().map(
+    (rows) => _firstExisting(rows.map((r) => r.path), homeSectionLimit),
   );
 });
 
