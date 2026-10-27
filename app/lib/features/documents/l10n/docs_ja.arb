@@ -53,5 +53,8 @@
     }
   },
   "docs_fileMissing": "ファイルはもう存在しません",
-  "docs_lockedPdf": "パスワード付き PDF"
+  "docs_lockedPdf": "パスワード付き PDF",
+  "docs_navHome": "ホーム",
+  "docs_navFiles": "ファイル",
+  "docs_viewAll": "すべて表示"
 }

@@ -190,6 +190,21 @@ void main() {
       expect(await check(bytes), isTrue);
     });
 
+    test('file lớn: thấy marker ở đầu hoặc ở cuối', () async {
+      const size = 3 * 1024 * 1024;
+      final tail = [
+        ...List<int>.filled(size - 20, 0x20),
+        ...'/Encrypt 9 0 R'.codeUnits,
+      ];
+      final head = [
+        ...'%PDF-1.7 /Encrypt 9 0 R'.codeUnits,
+        ...List<int>.filled(size, 0x20),
+      ];
+      expect(await check(tail), isTrue);
+      expect(await check(head), isTrue);
+      expect(await check(List<int>.filled(size, 0x20)), isFalse);
+    });
+
     test('file không tồn tại → false', () async {
       expect(await pdfHasEncryptMarker(p.join(dir.path, 'none.pdf')), isFalse);
     });

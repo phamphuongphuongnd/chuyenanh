@@ -53,5 +53,8 @@
     }
   },
   "docs_fileMissing": "This file no longer exists",
-  "docs_lockedPdf": "Password-protected PDF"
+  "docs_lockedPdf": "Password-protected PDF",
+  "docs_navHome": "Home",
+  "docs_navFiles": "Files",
+  "docs_viewAll": "See all"
 }

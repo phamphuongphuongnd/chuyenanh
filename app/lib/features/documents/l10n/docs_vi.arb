@@ -53,5 +53,8 @@
     }
   },
   "docs_fileMissing": "File không còn tồn tại",
-  "docs_lockedPdf": "PDF có mật khẩu"
+  "docs_lockedPdf": "PDF có mật khẩu",
+  "docs_navHome": "Trang chủ",
+  "docs_navFiles": "Tập tin",
+  "docs_viewAll": "Xem tất cả"
 }

@@ -21,5 +21,14 @@
   "settings_tagline": "PDF, Office, 이미지를 읽고 만들고 변환합니다.",
   "settings_licenses": "오픈소스 라이선스",
   "settings_aboutOffline": "PDF Office는 완전히 오프라인으로 작동합니다. 데이터를 수집하지 않으며 네트워크를 사용하지 않습니다.",
-  "settings_aboutSyncfusion": "PDF 기능은 Syncfusion Community License에 따라 Syncfusion Flutter 구성요소를 사용합니다."
+  "settings_aboutSyncfusion": "PDF 기능은 Syncfusion Community License에 따라 Syncfusion Flutter 구성요소를 사용합니다.",
+  "settings_sectionGeneral": "일반",
+  "settings_sectionAbout": "앱 정보",
+  "settings_share": "앱 공유",
+  "settings_shareText": "PDF Office로 PDF를 읽고 변환하고 편집해요. 완전 오프라인에 광고도 없어요.",
+  "settings_feedback": "의견 보내기",
+  "settings_feedbackSubject": "PDF Office 의견",
+  "settings_feedbackFailed": "이메일 앱을 열 수 없습니다",
+  "settings_privacy": "개인정보 처리방침",
+  "settings_privacyBody": "PDF Office는 완전히 오프라인으로 작동하며 데이터를 수집, 전송, 공유하지 않습니다.\n\n파일은 표시와 변환을 위해 이 기기에서만 읽습니다. 새 파일은 선택한 폴더에 저장되며 원본은 덮어쓰지 않습니다.\n\n네트워크를 사용하지 않고 광고와 인앱 결제도 없습니다. 파일 접근 권한은 기기의 문서를 찾는 데만 사용됩니다."
 }

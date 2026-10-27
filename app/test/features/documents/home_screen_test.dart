@@ -156,17 +156,6 @@ void main() {
     expect(find.text('Scanning… 42 files found'), findsOneWidget);
   });
 
-  testWidgets('nút ＋ mở bottom sheet công cụ', (tester) async {
-    await _pump(tester, docs: [_doc('a.pdf')]);
-
-    await tester.tap(find.byKey(const ValueKey('home-tools')));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Tools'), findsWidgets);
-    expect(find.byKey(const ValueKey('tool-imageToPdf')), findsOneWidget);
-    expect(find.byKey(const ValueKey('tool-merge')), findsOneWidget);
-  });
-
   testWidgets('menu sắp xếp đổi và lưu lựa chọn', (tester) async {
     await _pump(tester, docs: [_doc('a.pdf')]);
     final container = ProviderScope.containerOf(

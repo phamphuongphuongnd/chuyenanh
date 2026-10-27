@@ -21,5 +21,14 @@
   "settings_tagline": "Baca, buat, dan konversi PDF, Office, dan gambar.",
   "settings_licenses": "Lisensi sumber terbuka",
   "settings_aboutOffline": "PDF Office bekerja sepenuhnya secara luring. Aplikasi tidak mengumpulkan data dan tidak menggunakan jaringan.",
-  "settings_aboutSyncfusion": "Fitur PDF menggunakan komponen Syncfusion Flutter di bawah Syncfusion Community License."
+  "settings_aboutSyncfusion": "Fitur PDF menggunakan komponen Syncfusion Flutter di bawah Syncfusion Community License.",
+  "settings_sectionGeneral": "Umum",
+  "settings_sectionAbout": "Tentang aplikasi",
+  "settings_share": "Bagikan aplikasi",
+  "settings_shareText": "Saya memakai PDF Office untuk membaca, mengonversi, dan mengedit PDF: sepenuhnya offline dan tanpa iklan.",
+  "settings_feedback": "Masukan",
+  "settings_feedbackSubject": "Masukan PDF Office",
+  "settings_feedbackFailed": "Tidak dapat membuka aplikasi email",
+  "settings_privacy": "Kebijakan privasi",
+  "settings_privacyBody": "PDF Office bekerja sepenuhnya offline. Aplikasi tidak mengumpulkan, mengirim, atau membagikan data Anda.\n\nBerkas Anda hanya dibaca di perangkat ini untuk ditampilkan dan dikonversi. Berkas baru disimpan ke folder pilihan Anda; berkas asli tidak pernah ditimpa.\n\nAplikasi tidak memakai jaringan, tanpa iklan, dan tanpa pembelian dalam aplikasi. Akses berkas hanya dipakai untuk mencari dokumen di perangkat."
 }

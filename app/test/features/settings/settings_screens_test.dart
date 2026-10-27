@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/core/router/routes.dart';
+import 'package:pdf_office/core/utils/link_opener.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
 import 'package:pdf_office/core/utils/page_size.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
@@ -22,7 +23,13 @@ Future<ProviderContainer> _pump(
   String locale = 'en',
   String? pickedDir,
   Map<String, Object> prefsValues = const {},
+  LinkLauncher? launcher,
 }) async {
+  // Màn Cài đặt dài hơn khung 600px mặc định của test.
+  tester.view.physicalSize = const Size(800, 1800);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
   SharedPreferences.setMockInitialValues({
     SettingsRepository.kLocale: locale,
     ...prefsValues,
@@ -32,6 +39,7 @@ Future<ProviderContainer> _pump(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
       directoryPickerProvider.overrideWithValue((_) async => pickedDir),
+      if (launcher != null) linkLauncherProvider.overrideWithValue(launcher),
     ],
   );
   addTearDown(container.dispose);
@@ -243,6 +251,48 @@ void main() {
       await tester.tap(_key('about_licenses'));
       await tester.pumpAndSettle();
       expect(find.byType(LicensePage), findsOneWidget);
+    });
+  });
+
+  group('SettingsScreen nhóm Về ứng dụng', () {
+    testWidgets('có 2 nhóm và 3 mục mới: Chia sẻ, Phản hồi, Chính sách', (
+      tester,
+    ) async {
+      await _pump(tester);
+      expect(find.text('General'), findsOneWidget);
+      expect(find.text('About the app'), findsOneWidget);
+      expect(_key('settings_share'), findsOneWidget);
+      expect(_key('settings_feedback'), findsOneWidget);
+      expect(_key('settings_privacy'), findsOneWidget);
+    });
+
+    testWidgets('Chính sách bảo mật mở màn có nội dung', (tester) async {
+      await _pump(tester);
+      await tester.tap(_key('settings_privacy'));
+      await tester.pumpAndSettle();
+      expect(_key('privacy_body'), findsOneWidget);
+      expect(find.textContaining('offline'), findsWidgets);
+    });
+
+    testWidgets('Phản hồi mở email; không mở được thì báo lỗi', (tester) async {
+      Uri? opened;
+      var ok = true;
+      await _pump(
+        tester,
+        launcher: (uri) async {
+          opened = uri;
+          return ok;
+        },
+      );
+      await tester.tap(_key('settings_feedback'));
+      await tester.pumpAndSettle();
+      expect(opened?.scheme, 'mailto');
+      expect(find.text('Could not open an email app'), findsNothing);
+
+      ok = false;
+      await tester.tap(_key('settings_feedback'));
+      await tester.pumpAndSettle();
+      expect(find.text('Could not open an email app'), findsOneWidget);
     });
   });
 }

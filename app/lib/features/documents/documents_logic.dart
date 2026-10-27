@@ -135,20 +135,20 @@ String renameTarget(String oldPath, String newBaseName) {
 /// Không thấy ⇒ chắc chắn chưa khoá; thấy ⇒ cần engine xác nhận.
 Future<bool> pdfHasEncryptMarker(String path) async {
   const marker = [0x2F, 0x45, 0x6E, 0x63, 0x72, 0x79, 0x70, 0x74]; // /Encrypt
+  // /Encrypt nằm trong trailer/xref ở cuối file (hoặc đầu file với PDF linearized),
+  // nên chỉ đọc hai đầu: tránh quét cả file vài MB cho mỗi dòng danh sách.
+  const window = 128 * 1024;
   RandomAccessFile? raf;
   try {
     raf = await File(path).open();
-    const chunk = 256 * 1024;
-    var carry = <int>[];
-    while (true) {
-      final data = await raf.read(chunk);
-      if (data.isEmpty) return false;
-      final buf = carry.isEmpty ? data : [...carry, ...data];
-      if (_indexOf(buf, marker) >= 0) return true;
-      carry = buf.length >= marker.length - 1
-          ? buf.sublist(buf.length - (marker.length - 1))
-          : buf;
+    final length = await raf.length();
+    if (length == 0) return false;
+    if (length <= 2 * window) {
+      return _indexOf(await raf.read(length), marker) >= 0;
     }
+    if (_indexOf(await raf.read(window), marker) >= 0) return true;
+    await raf.setPosition(length - window);
+    return _indexOf(await raf.read(window), marker) >= 0;
   } on FileSystemException {
     return false;
   } finally {

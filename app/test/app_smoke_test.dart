@@ -10,7 +10,7 @@ import 'package:pdf_office/data/db/app_database.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/documents/documents_logic.dart';
 import 'package:pdf_office/features/documents/documents_providers.dart';
-import 'package:pdf_office/features/documents/home_screen.dart';
+import 'package:pdf_office/features/documents/main_shell.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _pumpApp(
@@ -30,6 +30,12 @@ Future<ProviderContainer> _pumpApp(
         documentsProvider.overrideWith(
           (ref) => Stream.value(const <DocItem>[]),
         ),
+        recentItemsProvider.overrideWith(
+          (ref) => Stream.value(const <DocItem>[]),
+        ),
+        favoriteItemsProvider.overrideWith(
+          (ref) => Stream.value(const <DocItem>[]),
+        ),
       ],
       child: const PdfOfficeApp(),
     ),
@@ -41,13 +47,14 @@ Future<ProviderContainer> _pumpApp(
 void main() {
   testWidgets('app khởi động vào trang chủ Tài liệu', (tester) async {
     await _pumpApp(tester, locale: 'en');
-    expect(find.byType(HomeScreen), findsOneWidget);
-    expect(find.widgetWithText(Tab, 'All'), findsOneWidget);
+    expect(find.byType(MainShell), findsOneWidget);
+    expect(find.byType(NavigationDestination), findsNWidgets(5));
+    expect(find.text('Home'), findsWidgets);
   });
 
   testWidgets('locale từ cài đặt (vi)', (tester) async {
     await _pumpApp(tester, locale: 'vi');
-    expect(find.widgetWithText(Tab, 'Tất cả'), findsOneWidget);
+    expect(find.text('Trang chủ'), findsWidgets);
   });
 
   testWidgets('mọi route trong Routes đều đăng ký', (tester) async {

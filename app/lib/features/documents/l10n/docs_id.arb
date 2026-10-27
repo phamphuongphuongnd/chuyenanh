@@ -53,5 +53,8 @@
     }
   },
   "docs_fileMissing": "File sudah tidak ada",
-  "docs_lockedPdf": "PDF dengan kata sandi"
+  "docs_lockedPdf": "PDF dengan kata sandi",
+  "docs_navHome": "Beranda",
+  "docs_navFiles": "Berkas",
+  "docs_viewAll": "Lihat semua"
 }

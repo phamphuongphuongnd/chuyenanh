@@ -10,7 +10,6 @@ import 'documents_providers.dart';
 import 'widgets/document_list.dart';
 import 'widgets/home_drawer.dart';
 import 'widgets/sort_menu.dart';
-import 'widgets/tools_sheet.dart';
 
 /// Thứ tự tab trang chủ: All · PDF · DOC · XLS · PPT · TXT (`null` = All).
 const List<DocCategory?> homeTabs = [
@@ -22,7 +21,7 @@ const List<DocCategory?> homeTabs = [
   DocCategory.txt,
 ];
 
-/// Trang chủ: AppBar đổi màu theo tab, tab loại file, danh sách tài liệu, nút ＋ công cụ.
+/// Tab "Tập tin": AppBar đổi màu theo tab, tab loại file, danh sách tài liệu.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -77,6 +76,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         title: Text(l.core_appName),
         actions: [
           IconButton(
+            key: const ValueKey('home-favorites'),
+            tooltip: l.docs_favorites,
+            icon: const Icon(Icons.star_border),
+            onPressed: () => context.push(Routes.favorites),
+          ),
+          IconButton(
+            key: const ValueKey('home-recents'),
+            tooltip: l.docs_recents,
+            icon: const Icon(Icons.history),
+            onPressed: () => context.push(Routes.recents),
+          ),
+          IconButton(
             key: const ValueKey('home-search'),
             tooltip: l.docs_searchHint,
             icon: const Icon(Icons.search),
@@ -107,12 +118,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               onPickCategory: category == null ? _goToCategory : null,
             ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        key: const ValueKey('home-tools'),
-        tooltip: l.docs_toolsTitle,
-        onPressed: () => showToolsSheet(context),
-        child: const Icon(Icons.add),
       ),
     );
   }

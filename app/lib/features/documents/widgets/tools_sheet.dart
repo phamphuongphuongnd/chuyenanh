@@ -12,7 +12,38 @@ String _groupLabel(AppLocalizations l, ToolGroup g) => switch (g) {
   ToolGroup.edit => l.core_groupEdit,
 };
 
-/// Bottom sheet công cụ mở từ nút ＋ (lấy danh sách từ `allTools`).
+/// Các nhóm công cụ (lấy từ `allTools`); [onLaunch] chạy khi chạm một công cụ.
+List<Widget> _toolSections(
+  BuildContext context,
+  void Function(ToolSpec tool) onLaunch,
+) {
+  final l = context.l10n;
+  final theme = Theme.of(context);
+  return [
+    for (final group in ToolGroup.values) ...[
+      Padding(
+        padding: const EdgeInsets.only(top: 16, bottom: 8),
+        child: Text(
+          _groupLabel(l, group),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      Wrap(
+        spacing: 4,
+        runSpacing: 8,
+        children: [
+          for (final tool in allTools.where((t) => t.group == group))
+            _ToolCell(tool: tool, onTap: () => onLaunch(tool)),
+        ],
+      ),
+    ],
+  ];
+}
+
+/// Bottom sheet công cụ mở từ nút giữa thanh điều hướng.
 Future<void> showToolsSheet(BuildContext context) {
   final l = context.l10n;
   return showModalBottomSheet<void>(
@@ -31,34 +62,26 @@ Future<void> showToolsSheet(BuildContext context) {
             l.docs_toolsTitle,
             style: Theme.of(sheetContext).textTheme.titleLarge,
           ),
-          for (final group in ToolGroup.values) ...[
-            Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 8),
-              child: Text(
-                _groupLabel(l, group),
-                style: Theme.of(sheetContext).textTheme.titleSmall?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Wrap(
-              spacing: 4,
-              runSpacing: 8,
-              children: [
-                for (final tool in allTools.where((t) => t.group == group))
-                  _ToolCell(
-                    tool: tool,
-                    onTap: () {
-                      Navigator.of(sheetContext).pop();
-                      launchTool(context, tool);
-                    },
-                  ),
-              ],
-            ),
-          ],
+          ..._toolSections(context, (tool) {
+            Navigator.of(sheetContext).pop();
+            launchTool(context, tool);
+          }),
         ],
       ),
+    ),
+  );
+}
+
+/// Tab "Công cụ": cùng lưới công cụ nhưng nằm trong trang.
+class ToolsPage extends StatelessWidget {
+  const ToolsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(context.l10n.docs_toolsTitle)),
+    body: ListView(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      children: _toolSections(context, (tool) => launchTool(context, tool)),
     ),
   );
 }
