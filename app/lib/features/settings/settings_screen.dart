@@ -106,7 +106,7 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.share_outlined),
             title: Text(l.settings_share),
             onTap: () => SharePlus.instance.share(
-              ShareParams(text: l.settings_shareText),
+              ShareParams(text: appShareMessage(l.settings_shareText)),
             ),
           ),
           ListTile(

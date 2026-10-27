@@ -10,6 +10,7 @@ import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/core/router/routes.dart';
 import 'package:pdf_office/core/utils/link_opener.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
+import 'package:pdf_office/core/utils/url_safety.dart';
 import 'package:pdf_office/core/utils/page_size.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/settings/settings_logic.dart';
@@ -293,6 +294,22 @@ void main() {
       await tester.tap(_key('settings_feedback'));
       await tester.pumpAndSettle();
       expect(find.text('Could not open an email app'), findsOneWidget);
+    });
+  });
+
+  group('Link chia sẻ ứng dụng', () {
+    test('link tải là https hợp lệ trỏ tới file APK trong repo', () {
+      final uri = safeLinkUri(kAppDownloadUrl);
+      expect(uri, isNotNull);
+      expect(uri!.scheme, 'https');
+      expect(uri.host, 'github.com');
+      expect(uri.path, endsWith('.apk'));
+    });
+
+    test('nội dung chia sẻ gồm lời giới thiệu và link ở dòng cuối', () {
+      final msg = appShareMessage('Xin chào');
+      expect(msg, startsWith('Xin chào\n'));
+      expect(msg.endsWith(kAppDownloadUrl), isTrue);
     });
   });
 }

@@ -10,6 +10,14 @@ import 'settings_providers.dart';
 /// (chưa có gói đọc phiên bản app — xem "Cần MÓNG bổ sung").
 const String kAppVersion = '1.0.0';
 
+/// Link tải APK mới nhất: file đính kèm của GitHub Release gắn tag `android-latest`
+/// (Release cho file tới 2GB, còn file trong repo bị chặn trên 100MB).
+const String kAppDownloadUrl =
+    'https://github.com/phamphuongphuongnd/chuyenanh/releases/download/android-latest/PDFOffice.apk';
+
+/// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải.
+String appShareMessage(String intro) => '$intro\n$kAppDownloadUrl';
+
 /// `true` nếu ghi được file vào [path] (thư mục phải tồn tại). Thử bằng cách tạo rồi xoá
 /// một file tạm — không để lại dấu vết.
 Future<bool> isDirectoryWritable(String path) async {
