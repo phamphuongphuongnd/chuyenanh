@@ -1,11 +1,9 @@
 import 'dart:ui';
 
 /// Hệ chữ cho OCR (ML Kit). latin gồm cả tiếng Việt, Indonesia, Anh.
-/// Không hỗ trợ OCR tiếng Thái (người dùng chốt bỏ 26/10).
 enum OcrScript { latin, chinese, japanese, korean }
 
 /// Hệ chữ mặc định theo mã ngôn ngữ app (`vi`, `zh`…). Hàm thuần.
-/// Giao diện tiếng Thái (`th`) vẫn OCR bằng latin.
 OcrScript ocrScriptForLanguage(String languageCode) => switch (languageCode) {
   'zh' => OcrScript.chinese,
   'ja' => OcrScript.japanese,

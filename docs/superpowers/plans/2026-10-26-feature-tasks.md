@@ -18,7 +18,7 @@
 - **Engine:** viết impl cạnh interface hoặc trong thư mục feature, rồi sửa **đúng một dòng** provider trong
   `app/lib/features/<f>/<f>_providers.dart` để trỏ sang impl thật.
 - **Chuỗi:** chỉ thêm vào `app/lib/features/<f>/l10n/<prefix>_<locale>.arb`, key bắt đầu bằng `<prefix>_`, **đủ 6
-  ngôn ngữ** (vi, en, zh, ja, ko, id) — tiếng Thái đã bỏ hẳn 26/10. Dùng sẵn chuỗi `core_*` cho nút OK/Huỷ/Xoá…
+  ngôn ngữ** (vi, en, zh, ja, ko, id) (6 ngôn ngữ). Dùng sẵn chuỗi `core_*` cho nút OK/Huỷ/Xoá…
 - **Việc nặng** (PDF, ảnh, parse) chạy trong `Isolate.run` hoặc engine async, có `ProgressCallback` + `CancelToken`.
 - **Không ghi đè file gốc:** dùng `uniqueOutputPath` + `writeAtomically`, thư mục lưu `outputDirectoryProvider`.
 - **Lỗi:** ném/bắt `AppError`, hiển thị bằng `appErrorMessage(context, e)`.
@@ -164,7 +164,7 @@
 - **Sở hữu:** `app/lib/features/scanner/**`, impl `OcrEngine`. Prefix `scan_`.
 - **Dùng:** `cunning_document_scanner` (tự nhận viền; máy không Play Services → kéo viền tay bằng
   `image_ops.detectDocumentCorners` + `perspectiveWarp`), `image_ops` bộ lọc, `google_mlkit_text_recognition`
-  (Latin gồm tiếng Việt, Indonesia, Anh; Trung; Nhật; Hàn). (Gói `flutter_tesseract_ocr` đã gỡ — app không còn tiếng Thái.)
+  (Latin gồm tiếng Việt, Indonesia, Anh; Trung; Nhật; Hàn).
 - **Route:** `Routes.scanner`.
 - **Làm:** chụp nhiều trang → danh sách trang (sắp xếp, xoá, chụp lại, bộ lọc) → xuất PDF (dùng engine của T2 qua
   `imageToPdfEngineProvider` hoặc Syncfusion trực tiếp) / TXT / DOCX (`pdf_layout.writeDocx` từ kết quả OCR).

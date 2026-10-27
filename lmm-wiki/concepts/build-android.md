@@ -22,8 +22,7 @@ AGP **9.1.0**, Kotlin 2.4.0, Gradle 9.3.1, `android.newDsl=false`, `android.buil
 
 **Lỗi đã gặp & cách sửa:**
 1. `flutter_tesseract_ocr` 0.4.31 — `'kotlin-android' plugin requires one of the Android Gradle plugins`: gói cũ
-   (AGP 7.1, `jcenter`, `lintOptions`) không chạy với AGP 9 → **đã gỡ khỏi pubspec**; người dùng chốt bỏ hẳn tiếng Thái
-   ([[0004-pham-vi-bam-app-goc]]).
+   (AGP 7.1, `jcenter`, `lintOptions`) không chạy với AGP 9 → **không dùng, đã gỡ khỏi pubspec** (OCR chỉ dùng ML Kit).
 2. `Failed to find target with hash string 'android-37'`: plugin đặt `compileSdk = 37`, SDK Android 17 cài tên
    `android-37.0`, AGP 9.1 không khớp.
    - `permission_handler` 13.x (`permission_handler_android` 14.1.0) **thật sự dùng API 37** (`ACCESS_LOCAL_NETWORK`,

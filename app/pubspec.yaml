@@ -102,5 +102,4 @@ flutter:
   # Asset quy uoc (hop dong muc 5) - file that do nguoi ghep tai sau.
   assets:
     - assets/fonts/
-    - assets/tessdata/
     - assets/branding/

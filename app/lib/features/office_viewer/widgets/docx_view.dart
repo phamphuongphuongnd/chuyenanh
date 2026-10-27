@@ -391,14 +391,19 @@ class _DocxParagraphViewState extends State<DocxParagraphView> {
       );
     }
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        padLeft,
-        (para.spaceBeforePt ?? (heading > 0 ? 8 : 0)) * k,
-        (para.indentRightPt ?? 0) * k,
-        (para.spaceAfterPt ?? 6) * k,
-      ),
-      child: content,
+    final padTop = (para.spaceBeforePt ?? (heading > 0 ? 8 : 0)) * k;
+    final padBottom = (para.spaceAfterPt ?? 6) * k;
+    final rawPadRight = (para.indentRightPt ?? 0) * k;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Trang Word rộng hơn màn hình nhiều: chừa ít nhất nửa bề rộng cho chữ.
+        final maxPad = (constraints.maxWidth - padLeft) * 0.5;
+        final padRight = rawPadRight.clamp(0.0, maxPad < 0 ? 0.0 : maxPad);
+        return Padding(
+          padding: EdgeInsets.fromLTRB(padLeft, padTop, padRight, padBottom),
+          child: content,
+        );
+      },
     );
   }
 }

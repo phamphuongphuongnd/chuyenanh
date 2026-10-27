@@ -9,7 +9,7 @@ extension L10nX on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
 }
 
-/// 6 ngôn ngữ của app (đã bỏ tiếng Thái 26/10) (thứ tự hiển thị trong màn Ngôn ngữ).
+/// 6 ngôn ngữ của app (thứ tự hiển thị trong màn Ngôn ngữ).
 const List<Locale> appLocales = [
   Locale('vi'),
   Locale('en'),

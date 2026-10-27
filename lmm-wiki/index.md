@@ -1,7 +1,7 @@
 ---
 title: Index — Mục lục wiki
 type: index
-updated: 2026-10-26
+updated: 2026-10-27
 ---
 
 # Index — Mục lục LLM Wiki
@@ -47,6 +47,7 @@ updated: 2026-10-26
 - [[xuat-chu-ra-pdf]] — kết quả spike: chữ Việt phải chuẩn hoá NFC, CJK phải fallback font theo script, lỗi mật khẩu PDF.
 - [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
+- [[ui-app-goc]] — cấu trúc giao diện app mẫu: bottom nav 5 item, 3 tile tính năng, badge màu loại file, PDF viewer.
 
 ## Decisions (ADR)
 - [[0001-flutter-android-truoc]] — Flutter, Android trước, dùng cá nhân, test trên Samsung A13.

@@ -16,7 +16,7 @@ App Flutter **PDF Office** (`com.phuong.pdfoffice`) có chức năng, bố cục
 | Kiếm tiền | Không: không quảng cáo, không mua trong app, không gói "Turbo" |
 | Mạng | Không dùng — chạy offline hoàn toàn |
 | Nền tảng | Android trước (minSdk 24, compileSdk 36). Code sẵn cho iOS nhưng chưa build/test (máy phát triển là Windows) |
-| Ngôn ngữ UI | Việt, Anh, Trung, Nhật, Hàn, Indonesia (6; **bỏ tiếng Thái** 26/10) — mặc định theo máy, đổi tức thì trong app |
+| Ngôn ngữ UI | Việt, Anh, Trung, Nhật, Hàn, Indonesia (6) — mặc định theo máy, đổi tức thì trong app |
 | Thương hiệu | Tên, logo, biểu tượng file, hình minh hoạ **tự vẽ**, không chép tài nguyên của app mẫu |
 | Ngoài app mẫu | Chỉ thêm **chọn thư mục lưu file** (người dùng app mẫu phàn nàn thiếu) |
 

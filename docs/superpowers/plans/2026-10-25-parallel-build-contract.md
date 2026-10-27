@@ -168,7 +168,7 @@ provider — test bằng fake/mocktail, không phụ thuộc impl A7. File impl 
 
 ## 3. Đa ngôn ngữ
 
-- Locale: `vi, en, zh, ja, ko, id` — **6 ngôn ngữ, đã bỏ tiếng Thái 26/10**. Template = `en`.
+- Locale: `vi, en, zh, ja, ko, id` — **6 ngôn ngữ**. Template = `en`.
 - Mỗi chủ sở hữu viết chuỗi của mình ở `.../l10n/<prefix>_<locale>.arb` (core: `app/lib/core/l10n/core_<locale>.arb`;
   feature: `app/lib/features/<f>/l10n/<prefix>_<locale>.arb` — **tên file theo prefix**, vd. `img2pdf_vi.arb`,
   không phải `image_to_pdf_vi.arb`). **Key bắt đầu bằng prefix** của mình
@@ -223,7 +223,7 @@ flutter_localizations), syncfusion_flutter_pdf / _pdfviewer / _signaturepad / _x
 printing 5.15.1, permission_handler 12.0.1 (hạ từ 13.0.2 — bản 13 cần API 37, xem lmm-wiki/concepts/build-android.md), photo_manager 3.12.0, image_picker 1.2.4, image_cropper 13.0.0,
 image 4.12.0, file_picker 13.2.0, share_plus 13.3.1, open_filex 5.0.0, receive_sharing_intent 1.9.0,
 docx_file_viewer 1.0.5, archive 4.5.2, xml 7.1.0, two_dimensional_scrollables 0.5.5, cunning_document_scanner 3.0.4,
-google_mlkit_text_recognition 0.17.1, collection 1.19.1 (**flutter_tesseract_ocr đã gỡ 26/10** — hỏng build AGP 9, xem feature-tasks T9); path dependency: office_reader, pptx_reader, pdf_layout, image_ops (`../packages/`). Dev: build_runner 2.17.1,
+google_mlkit_text_recognition 0.17.1, collection 1.19.1 (OCR chỉ dùng ML Kit); path dependency: office_reader, pptx_reader, pdf_layout, image_ops (`../packages/`). Dev: build_runner 2.17.1,
 drift_dev 2.35.2, mocktail 1.0.5, flutter_lints 6.0.0. **Không thêm gói** (pubspec thuộc MÓNG) — cần gói → báo.
 
 **Gói bị bỏ:** `excel` (mọi bản yêu cầu `xml <7`, xung đột Syncfusion 35 + docx_file_viewer 1.x cần `xml ^7`);

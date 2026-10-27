@@ -1,7 +1,7 @@
 ---
 title: Trạng thái 10 tính năng T1…T10 (bàn giao)
 type: module
-updated: 2026-10-26
+updated: 2026-10-27
 sources:
   - docs/superpowers/plans/2026-10-26-feature-tasks.md
   - planhistory/2026-10-25-pdf-office-khoi-tao.md
@@ -15,7 +15,8 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 
 ## Tóm tắt (cập nhật 26/10 ~16:00)
 - **Cả 10 tính năng đã có code và đã ghép vào `feat/pdf-office`** (merge `77a9828`, push lên origin). Tự kiểm bằng máy: `flutter analyze`
-  sạch, **660/660 test pass**, `flutter build apk --debug` thành công (APK 226 MB). **Chưa việc nào chạy trên điện thoại thật.**
+  sạch, **693/693 test pass** (cập nhật 27/10 sau các fix T1/T9), `flutter build apk --debug` thành công. **Chưa việc nào chạy trên điện thoại thật.**
+  Build APK debug 27/10 xác nhận compile OK, đang cài lên Samsung Galaxy A13 để test thủ công.
 - Nền: [[0003-kien-truc-riverpod]] + [[thu-vien-dart-thuan]] (4 thư viện, đã thử file thật 2/4) + build Android ([[build-android]]) +
   spike chữ ([[xuat-chu-ra-pdf]]). Trang chủ chi tiết: [[documents]]; cách kiểm thử: [[kiem-thu-flutter]].
 - Cách làm đã chạy: 2 đợt agent (đợt 1: T2, T3, T4, T5, T10; đợt 2: T6, T7, T8, T9; T1 do Claude làm), mỗi agent 1 worktree, sau đó ghép
@@ -45,8 +46,8 @@ Chi tiết từng việc (sở hữu file, thư viện dùng, việc cần làm,
 - **Chưa làm được bằng code:** đo OCR tiếng Việt dấu chồng — cần máy thật (checklist ở báo cáo L2: chuyển ảnh quét có `ặ ỗ ữ ẫ ậ ề ở`, xem TXT/DOCX giữ dấu không).
 
 ## Việc còn lại (theo thứ tự nên làm)
-1. ~~Tải font Noto~~ **Xong 26/10**: `bash tool/fetch_fonts.sh` trong `app/` (font không nằm trong git) — xem [[xuat-chu-ra-pdf]]. T4/T6/T9 giờ có font thật; test 660/660 vẫn pass.
-2. **Cài lên Samsung Galaxy A13** (cáp USB + Gỡ lỗi USB) và đi qua checklist từng tính năng trong báo cáo của agent; ghi lỗi → sửa.
+1. ~~Tải font Noto~~ **Xong 26/10**: `bash tool/fetch_fonts.sh` trong `app/` (font không nằm trong git) — xem [[xuat-chu-ra-pdf]]. T4/T6/T9 giờ có font thật; test 693/693 vẫn pass.
+2. **Cài lên Samsung Galaxy A13** — đang làm 27/10 (ADB kết nối R58TC12SRZW, build APK debug xong). Đi qua checklist từng tính năng; ghi lỗi → sửa.
    Đặc biệt: quyền "tất cả file", camera, máy quét, lối tắt, OCR tiếng Việt.
 3. `composeVietnamese` bị nhân đôi (T4 `pdf_tools/logic/vi_nfc.dart`, T6 `convert/text/vietnamese_nfc.dart`) → gom vào `core/utils`.
 4. Tuỳ chọn: `device_info_plus` (biết SDK để xin quyền đúng), `package_info_plus` (T10 đang hằng `kAppVersion`),

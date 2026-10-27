@@ -11,7 +11,7 @@ Phải test trước khi commit; test trên điện thoại thật (Samsung Gala
 
 ## Quyết định đã chốt
 Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go_router + drift · 6 ngôn ngữ
-(vi, en, zh, ja, ko, id — bỏ tiếng Thái 26/10) · dùng cá nhân, không store, không quảng cáo, offline · quét toàn máy
+(vi, en, zh, ja, ko, id) · dùng cá nhân, không store, không quảng cáo, offline · quét toàn máy
 (MANAGE_EXTERNAL_STORAGE) · thêm "chọn thư mục lưu" · tên PDF Office `com.phuong.pdfoffice`. Chi tiết: wiki
 `decisions/0001-…` → `0004-…`.
 
@@ -45,12 +45,11 @@ Flutter · Android trước (minSdk 24) · Syncfusion Community · Riverpod + go
 | 23:2x | `pptx_reader` (PPTX → model) | ✅ 30/30 test | merge (`c5f4ff2`) |
 | 23:3x | `pdf_layout` (dòng → đoạn/heading/bảng, ghi DOCX) | ✅ 31/31 test; DOCX mở được bằng Word | merge (`fce549e`); 26/10 nâng `xml ^6.5` → `^7.1` cho khớp app, 31/31 vẫn pass |
 | 23:34 | `image_ops` | ✅ 252 test | merge (`1b2d063`) |
-| 23:33 | H1/H2 (thử file Office thật) + S1 (spike chữ Việt/Thái + mật khẩu) | ❌ **bị ngắt** do hết lượt dùng (rate limit 429) — chỉ còn script dở trong worktree, chưa commit | worktree `agent-aafcd39…`, `agent-a7aee67…`, `agent-a14c345…` — **làm lại sau** |
+| 23:33 | H1/H2 (thử file Office thật) + S1 (spike chữ Việt/CJK + mật khẩu) | ❌ **bị ngắt** do hết lượt dùng (rate limit 429) — chỉ còn script dở trong worktree, chưa commit | worktree `agent-aafcd39…`, `agent-a7aee67…`, `agent-a14c345…` — **làm lại sau** |
 | 23:39 | MÓNG `app/` | ✅ commit `1c04c84`; 26/10 08:4x tự chạy lại: analyze sạch, **50/50 test** | `feat/pdf-office` |
 | 23:39 | Wiki + checkpoint | ✅ người dùng tự commit `0e185ac` | — |
 | 26/10 08:5x | Nối 4 thư viện vào `app/pubspec.yaml` (path dependency) | ✅ `pub get` giải được | chưa commit |
 | 26/10 10:14 | Build `flutter build apk --debug` | ✅ **THÀNH CÔNG** sau 5 lần (xem `lmm-wiki/concepts/build-android.md`): gỡ `flutter_tesseract_ocr`, hạ `permission_handler` 13→12, ép plugin đòi API 37 về SDK 36, tắt Kotlin incremental. APK 212 MB ở `app/build/app/outputs/flutter-apk/app-debug.apk` | chưa commit |
-| 26/10 | **Bỏ hẳn tiếng Thái** (UI, font, OCR) → 6 ngôn ngữ; xoá 11 file `*_th.arb`, sửa `l10n.dart`, `merge_arb.dart`, test | ✅ | chưa commit |
 | 26/10 | Dọn: 7 worktree + 7 nhánh agent (đã gộp hết), zip SDK, cache gói không dùng | ✅ | — |
 | 26/10 | **Push** `feat/pdf-office` lên `origin` (github.com/phamphuongphuongnd/chuyenanh) | ✅ `3452e68` | `origin/feat/pdf-office` |
 | 26/10 10:3x | Làm lại 3 việc kiểm chứng bị ngắt (lần này commit từng bước): H1 `office_reader` với Word/Excel thật · H2 `pptx_reader` với PowerPoint thật · S1 chữ Việt/CJK + mật khẩu trong Syncfusion PDF | ⏳ đang chạy, mỗi agent 1 worktree mới | nhánh `worktree-agent-*` — **khi xong: merge vào `feat/pdf-office`, chạy lại test, push** |

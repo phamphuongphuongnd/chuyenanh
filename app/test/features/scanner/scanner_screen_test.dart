@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/scanner/capture/document_capture.dart';
 import 'package:pdf_office/features/scanner/model/scan_session.dart';
 import 'package:pdf_office/features/scanner/ui/scanner_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeCapture implements DocumentCapture {
   FakeCapture({this.pages, this.unavailable = false, this.denied = false});
@@ -35,9 +37,14 @@ Future<ProviderContainer> pump(
   FakeCapture capture, {
   String locale = 'en',
 }) async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [documentCaptureProvider.overrideWithValue(capture)],
+      overrides: [
+        documentCaptureProvider.overrideWithValue(capture),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
       child: MaterialApp(
         locale: Locale(locale),
         supportedLocales: appLocales,

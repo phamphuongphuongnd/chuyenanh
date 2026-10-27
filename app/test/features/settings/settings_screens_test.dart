@@ -157,7 +157,13 @@ void main() {
   group('Thư mục lưu', () {
     late Directory tmp;
     setUp(() => tmp = Directory.systemTemp.createTempSync('settings_ui_'));
-    tearDown(() => tmp.deleteSync(recursive: true));
+    tearDown(() async {
+      try {
+        tmp.deleteSync(recursive: true);
+      } on FileSystemException {
+        // Windows: handle chưa release kịp sau isDirectoryWritable probe → bỏ qua
+      }
+    });
 
     testWidgets('chọn thư mục ghi được: lưu và hiện đường dẫn', (tester) async {
       final c = await _pump(tester, pickedDir: tmp.path);

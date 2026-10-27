@@ -1,7 +1,7 @@
 ---
 title: Module documents — Trang chủ Tài liệu (T1)
 type: module
-updated: 2026-10-26
+updated: 2026-10-27
 sources:
   - app/lib/features/documents/
   - app/lib/data/file_scanner/
@@ -51,6 +51,37 @@ Thao tác file ở `document_actions.dart`: `openDocumentWithFeedback`, `renameD
 ## Chuỗi
 Prefix `docs_` (40 key, đủ vi/en/zh/ja/ko/id) ở `app/lib/features/documents/l10n/`. Tên tab PDF/DOC/XLS/PPT/TXT không dịch;
 chỉ `docs_tabAll` dịch.
+
+## Fix đã áp dụng (27/10/2026, 693 test pass)
+
+### 1. Permission fallback Android ≤10 (`documents_providers.dart`)
+`manageExternalStorage` trả `RESTRICTED` trên Android < API 30 (không tồn tại trước Android 11).
+Sửa thành hai bước: thử `manageExternalStorage` trước; nếu không được thì fallback `Permission.storage`:
+```dart
+if (await Permission.manageExternalStorage.request().isGranted) return true;
+return (await Permission.storage.request()).isGranted;
+```
+
+### 2. skippedDirectories check (`documents_providers.dart`)
+`ScanResult` có field `skippedDirectories > 0` nghĩa là có thư mục bị từ chối đọc → set `needsPermission`:
+```dart
+if (result.files.isEmpty && result.skippedDirectories > 0) {
+  state = state.copyWith(phase: ScanPhase.needsPermission);
+  return;
+}
+```
+
+### 3. Flaky tearDown Windows (`settings_screens_test.dart`)
+`deleteSync` trên Windows khi file handle chưa release → bọc `try/catch FileSystemException`.
+
+### 4. `sharedPreferencesProvider` override (`scanner_screen_test.dart`)
+Test pump thiếu override → thêm `sharedPreferencesProvider.overrideWithValue(prefs)`.
+
+### 5. Import ordering (`scanner_screen.dart`)
+`data/settings/settings_providers.dart` nằm giữa hai import `core/` → chuyển sau tất cả `core/`.
+
+### 6. Stale test name (`ml_kit_ocr_engine_test.dart`)
+Tên test còn tham chiếu tiếng Thái (đã bỏ) → đổi thành tên mô tả đúng hành vi thật.
 
 ## Chưa kiểm
 - Quyền trên Android thật: Android 11/12 với chỉ `READ_EXTERNAL_STORAGE` được cấp sẽ **quét một phần** (chỉ media) mà vẫn báo

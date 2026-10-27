@@ -204,6 +204,19 @@ void main() {
       expect(scanner.calls, 2);
     });
 
+    test(
+      'quét xong không có file nhưng nhiều thư mục bị bỏ qua → needsPermission',
+      () async {
+        final scanner = _FakeScanner(
+          const ScanResult(files: [], skippedDirectories: 5),
+        );
+        final c = makeContainer(scanner, _FakePermission(granted: true));
+        c.read(scanControllerProvider);
+        await settle();
+        expect(c.read(scanControllerProvider).needsPermission, isTrue);
+      },
+    );
+
     test('file bị xoá khỏi máy → biến mất sau lượt quét sau', () async {
       final scanner = _FakeScanner(
         ScanResult(files: [_file('a.pdf'), _file('b.pdf')]),

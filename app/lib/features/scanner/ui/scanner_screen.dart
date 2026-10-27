@@ -6,6 +6,7 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_document.dart';
 import '../../../core/widgets/widgets.dart';
+import '../../../data/settings/settings_providers.dart';
 import '../../../engines/ocr/ocr_engine.dart';
 import '../capture/document_capture.dart';
 import '../export/scan_export_providers.dart';
@@ -120,7 +121,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
 
   Future<void> _export() async {
     final defaultScript = ocrScriptForLanguage(
-      Localizations.localeOf(context).languageCode,
+      (ref.read(settingsProvider).locale ?? Localizations.localeOf(context))
+          .languageCode,
     );
     final choice =
         await showModalBottomSheet<({_ExportKind kind, OcrScript script, bool searchable})>(

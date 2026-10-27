@@ -45,7 +45,7 @@ void main() {
     );
   });
 
-  test('ocrScriptForLanguage: vi/id/en → latin, zh/ja/ko đúng, th → latin', () {
+  test('ocrScriptForLanguage: vi/id/en → latin, zh/ja/ko đúng, ngôn ngữ khác → latin', () {
     expect(ocrScriptForLanguage('vi'), OcrScript.latin);
     expect(ocrScriptForLanguage('id'), OcrScript.latin);
     expect(ocrScriptForLanguage('en'), OcrScript.latin);

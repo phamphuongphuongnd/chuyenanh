@@ -45,7 +45,10 @@ class PermissionHandlerStorage implements StoragePermissionService {
   @override
   Future<bool> request() async {
     if (!Platform.isAndroid) return true;
+    // Android 11+ (R+): mở trang Cài đặt "Truy cập tất cả file".
     if (await Permission.manageExternalStorage.request().isGranted) return true;
+    // Android ≤10: manageExternalStorage → RESTRICTED (không khả dụng trước API 30);
+    // phải xin READ_EXTERNAL_STORAGE qua permission_handler.storage.
     return (await Permission.storage.request()).isGranted;
   }
 }
@@ -165,6 +168,12 @@ class ScanController extends Notifier<ScanState> {
       if (!ref.mounted) return;
       // Đọc được 0 thư mục gốc ⇒ thực chất chưa có quyền.
       if (result.unreadableRoots.length == roots.length) {
+        state = state.copyWith(phase: ScanPhase.needsPermission);
+        return;
+      }
+      // Root đọc được nhưng không thấy file và nhiều thư mục con bị chặn
+      // (Android 11-12: READ_EXTERNAL_STORAGE không đủ, cần MANAGE_EXTERNAL_STORAGE).
+      if (result.files.isEmpty && result.skippedDirectories > 0) {
         state = state.copyWith(phase: ScanPhase.needsPermission);
         return;
       }

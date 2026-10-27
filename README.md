@@ -30,7 +30,7 @@ mô tả việc ban đầu: [`docs/superpowers/plans/2026-10-26-feature-tasks.md
 - **Chuyển đổi:** Text / Word / Excel → PDF; PDF → Text / Word / Excel.
 - **Máy quét + OCR** (Google ML Kit).
 - **Cài đặt:** ngôn ngữ, giao diện sáng / tối, thư mục lưu, giới thiệu.
-- **6 ngôn ngữ:** vi, en, zh, ja, ko, id (đã bỏ tiếng Thái).
+- **6 ngôn ngữ:** vi, en, zh, ja, ko, id.
 
 ## 3. Công nghệ
 
@@ -177,6 +177,6 @@ Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đ�
 - Gộp / tách PDF mất annotation, form, link ở file kết quả (Syncfusion không có API gộp). PDF → Word / Excel không giữ nguyên bố cục.
 - `pptx_reader`: hình preset (mũi tên…) chưa vẽ đúng, gradient chỉ lấy màu đầu, SmartArt / media / WordArt chưa thử.
 - `office_reader`: định dạng ngày kiểu Mỹ bị đảo, rich text trong ô Excel và `vAlign` bảng Word chưa xử lý; chữ Excel chưa tràn sang ô bên cạnh.
-- OCR dùng Google ML Kit (**không có tiếng Thái** — đã bỏ hẳn cả giao diện lẫn OCR); độ chính xác tiếng Việt dấu chồng chưa đo.
+- OCR dùng Google ML Kit (Latin gồm tiếng Việt, Trung, Nhật, Hàn); độ chính xác tiếng Việt dấu chồng chưa đo.
 - PDF từ máy quét có lớp chữ trong suốt để tìm kiếm / bôi chọn — chưa thử trên trình đọc ngoài.
 - Ghi chú build Android thay đổi theo bản AGP / plugin — đọc `lmm-wiki/concepts/build-android.md` trước khi nâng cấp hoặc thêm plugin.
