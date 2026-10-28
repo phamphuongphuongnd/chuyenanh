@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:image/image.dart' as img;
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
@@ -60,28 +61,90 @@ class SyncfusionPdfSignEngine implements PdfSignEngine {
     return outputPath;
   }
 
+  /// Cache kích thước (đã tính xoay) của TẤT CẢ trang, theo đường dẫn + thời gian sửa + dung lượng.
+  /// Chỉ parse file một lần (trong isolate nền), không giữ bytes của file.
+  static final Map<String, Future<List<Size>>> _sizeCache = {};
+  static int _parseCount = 0;
+  static const _maxCachedFiles = 4;
+
+  @visibleForTesting
+  static int get debugPageSizeParseCount => _parseCount;
+
+  @visibleForTesting
+  static void debugClearPageSizeCache() {
+    _sizeCache.clear();
+    _parseCount = 0;
+  }
+
   @override
   Future<Size> pageSize(
     String inputPath,
     int pageIndex, {
     String? password,
   }) async {
+    final String key;
+    try {
+      final stat = await File(inputPath).stat();
+      if (stat.type == FileSystemEntityType.notFound) {
+        throw const FileSystemException('not found');
+      }
+      key = '$inputPath|${stat.modified.microsecondsSinceEpoch}|${stat.size}';
+    } on FileSystemException catch (e) {
+      throw AppError.from(e);
+    }
+    var future = _sizeCache.remove(key);
+    if (future == null) {
+      _parseCount++;
+      future = _readAllSizes(inputPath, password);
+      future.then<void>((_) {}, onError: (_) => _sizeCache.remove(key));
+    }
+    _sizeCache[key] = future; // đưa về cuối = mới dùng nhất
+    while (_sizeCache.length > _maxCachedFiles) {
+      _sizeCache.remove(_sizeCache.keys.first);
+    }
+    final sizes = await future;
+    if (pageIndex < 0 || pageIndex >= sizes.length) {
+      throw CorruptFile('page $pageIndex out of range');
+    }
+    return sizes[pageIndex];
+  }
+
+  static Future<List<Size>> _readAllSizes(
+    String inputPath,
+    String? password,
+  ) async {
     final Uint8List input;
     try {
       input = await File(inputPath).readAsBytes();
     } on FileSystemException catch (e) {
       throw AppError.from(e);
     }
-    final doc = _open(input, password);
     try {
-      final page = _page(doc, pageIndex);
-      return visualPageSize(
+      final raw = await Isolate.run(() => _allSizes(input, password));
+      return [for (final (w, h) in raw) Size(w, h)];
+    } on AppError {
+      rethrow;
+    } catch (e) {
+      throw AppError.from(e);
+    }
+  }
+}
+
+List<(double, double)> _allSizes(Uint8List input, String? password) {
+  final doc = _open(input, password);
+  try {
+    final out = <(double, double)>[];
+    for (var i = 0; i < doc.pages.count; i++) {
+      final page = doc.pages[i];
+      final v = visualPageSize(
         Size(page.size.width, page.size.height),
         _rotationDegrees(page),
       );
-    } finally {
-      doc.dispose();
+      out.add((v.width, v.height));
     }
+    return out;
+  } finally {
+    doc.dispose();
   }
 }
 

@@ -15,6 +15,7 @@ import '../reader/reader_providers.dart';
 import 'edited_output.dart';
 import 'editor_common.dart';
 import 'editor_providers.dart';
+import 'page_lru_cache.dart';
 import 'signature_image.dart';
 import 'signature_overlay.dart';
 import 'signature_overlay_model.dart';
@@ -76,7 +77,8 @@ class _SignScreenState extends ConsumerState<SignScreen> {
   Object? _openError;
   bool _opening = true;
   int _pageIndex = 0;
-  final Map<int, Future<_PageData>> _pages = {};
+  /// Chỉ giữ ảnh vài trang gần nhất (ảnh PNG lớn); kích thước trang giữ riêng ở [_pageSizes].
+  final PageLruCache<int, Future<_PageData>> _pages = PageLruCache(4);
   final Map<int, Size> _pageSizes = {};
 
   final List<PlacedSignature> _items = [];
