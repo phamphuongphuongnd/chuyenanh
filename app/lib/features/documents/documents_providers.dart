@@ -325,16 +325,21 @@ class DocSortNotifier extends Notifier<DocSort> {
   }
 }
 
-/// Tài liệu của một tab ([category] null = tất cả) đã sắp xếp theo lựa chọn hiện tại.
-final categoryDocumentsProvider = Provider.autoDispose
-    .family<AsyncValue<List<DocItem>>, DocCategory?>((ref, category) {
+/// Toàn bộ tài liệu đã sắp xếp một lần; các tab chỉ lọc lại (giữ nguyên thứ tự) nên không sắp xếp 6 lần.
+final _sortedDocumentsProvider =
+    Provider.autoDispose<AsyncValue<List<DocItem>>>((ref) {
       final sort = ref.watch(docSortProvider);
       return ref
           .watch(documentsProvider)
-          .whenData(
-            (items) =>
-                sortDocuments(filterDocuments(items, category: category), sort),
-          );
+          .whenData((items) => sortDocuments(items, sort));
+    });
+
+/// Tài liệu của một tab ([category] null = tất cả) đã sắp xếp theo lựa chọn hiện tại.
+final categoryDocumentsProvider = Provider.autoDispose
+    .family<AsyncValue<List<DocItem>>, DocCategory?>((ref, category) {
+      return ref
+          .watch(_sortedDocumentsProvider)
+          .whenData((items) => filterDocuments(items, category: category));
     });
 
 /// PDF có mật khẩu không (kết quả được cache theo path suốt phiên).
