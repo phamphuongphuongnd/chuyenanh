@@ -1,0 +1,39 @@
+name: ios-build
+
+# Chỉ chạy tay hoặc khi đẩy tag ios-*: không ảnh hưởng quy trình Android.
+on:
+  workflow_dispatch:
+  push:
+    tags: ['ios-*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run tool/merge_arb.dart
+      - run: flutter gen-l10n
+      - run: bash tool/fetch_fonts.sh
+      - run: flutter build ios --release --no-codesign
+      - name: Đóng gói IPA không ký
+        run: |
+          rm -rf Payload && mkdir Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry PDFOffice-ios.ipa Payload
+      - name: Đăng lên Release ios-latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view ios-latest >/dev/null 2>&1 || gh release create ios-latest --title "iOS (latest)" --notes "IPA không ký, cài bằng Sideloadly/AltStore."
+          gh release upload ios-latest PDFOffice-ios.ipa --clobber
