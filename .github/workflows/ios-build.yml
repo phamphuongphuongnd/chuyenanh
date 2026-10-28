@@ -21,8 +21,9 @@ jobs:
         with:
           channel: stable
           cache: true
+      # lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên cần có ARB gộp TRƯỚC.
+      - run: dart tool/merge_arb.dart
       - run: flutter pub get
-      - run: dart run tool/merge_arb.dart
       - run: flutter gen-l10n
       - run: bash tool/fetch_fonts.sh
       - run: flutter build ios --release --no-codesign
