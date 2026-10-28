@@ -64,3 +64,14 @@ Liên quan: [[tinh-nang-t1-t10]], [[phat-hanh-apk]], [[documents]], [[kiem-thu-f
   (chỉ giảm RAM được bằng cách giới hạn tổng dung lượng/cảnh báo người dùng). *Lối tắt PDF nhận path tuỳ ý* — chặn thư mục `/data/` sẽ làm hỏng lối tắt PDF mở từ chia sẻ (file nằm trong cache app); mức nguy cơ thấp.
 - **Chat khác đang làm song song** (đừng sửa trùng): tìm kiếm (`app_search_field.dart`), khoá/mở khoá PDF (`pdf_pick_screen.dart`, `lock_screen`/`unlock_screen`), trình xem TXT,
   `home_screen` (giảm dựng lại AppBar), `pdfLockedProvider.autoDispose`. Khi hai chat cùng chạy: chỉ `git add` đúng file của mình, `git fetch` trước khi push, đừng chạy `flutter test` cùng lúc (tranh khoá).
+
+## 5. Thử máy thật 28/10 (bản release KHÔNG thu gọn code, 114MB) — kết quả
+- **Test tự động:** 741 test pass, analyze sạch.
+- **Mở được, không văng (log `FATAL EXCEPTION` = 0):** cả 18 công cụ ở tab Công cụ. Văn bản sang PDF, Tạo PDF trắng, Word/Excel sang PDF, PDF sang ảnh/văn bản/Word/Excel mở đúng màn;
+  Gộp, Tách, Sắp xếp, Thêm hình mờ, Chú thích, Ký, Điền biểu mẫu mở bộ chọn file của hệ thống (đúng thiết kế, cần chọn PDF); Khoá/Mở khoá PDF hiện danh sách file (màn chọn mới);
+  Ảnh sang PDF mở thư viện ảnh. **Quét tài liệu: chế độ tự động + thủ công của Google chạy đúng** (người dùng xác nhận).
+- **Mới chỉ kiểm "mở được", chưa kiểm xuất file thật** cho: Văn bản/Word/Excel→PDF, PDF→ảnh/văn bản/Word/Excel, Gộp/Tách/Sắp xếp/Khoá/Mở khoá/Hình mờ, Chú thích/Ký/Điền biểu mẫu, PPTX; cần người dùng chọn file thật.
+  (Người dùng đã thử TXT trên máy thật — chat song song ghi ở log.) OCR tiếng Việt có dấu chồng vẫn chưa đo.
+- **Cách duyệt công cụ bằng ADB không đọc ảnh riêng tư:** `uiautomator dump` lấy `content-desc`/`bounds`; mỗi công cụ `am force-stop` → `am start` → bấm tab Công cụ (`756,2160`) → bấm công cụ →
+  `dumpsys window | grep mCurrentFocus` kiểm app còn trên cùng. Màn bộ chọn file của hệ thống = `com.google.android.documentsui`.
+- **Quyết định:** dùng bản không thu gọn code làm bản phát hành (xem [[phat-hanh-apk]]).
