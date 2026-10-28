@@ -29,6 +29,15 @@ sources:
   Trung/Nhật/Hàn ở dạng `compileOnly`. Đã thêm `implementation("com.google.mlkit:text-recognition-{chinese,japanese,korean}:16.0.1")`
   (APK chỉ tăng ~2MB) + `proguard-rules.pro` với `-dontwarn` (cho Devanagari). Không thêm gói thì OCR zh/ja/ko ném
   `NoClassDefFoundError` lúc chạy (bản debug cũng bị).
+- **R8 làm hỏng ML Kit ở bản release (phát hiện 28/10)**: log app ghi `ComponentDiscovery: Could not instantiate
+  com.google.mlkit.common.internal.CommonComponentRegistrar ... NoSuchMethodException <init>` → R8 xoá constructor các
+  `ComponentRegistrar` (ML Kit khởi tạo bằng reflection). Hậu quả: **Quét tài liệu mất chế độ tự động** (plugin rơi về
+  `cunning_document_scanner.fallback.DocumentScannerActivity` chỉ mở camera thường) và OCR hỏng. Bản debug (không thu gọn) vẫn chạy nên
+  dễ tưởng không sao. Sửa: `-keep class com.google.mlkit.** { *; }` + `-keep class * implements ...ComponentRegistrar { <init>(); }`
+  trong `proguard-rules.pro`. Sau sửa log sạch và hiện đúng màn Google "Chụp thủ công / Tự động chụp"
+  (`com.google.android.gms.mlkit.docscan.ui.DocumentScanningActivity`).
+  **Cách kiểm sau mỗi lần build release:** `adb logcat -d --pid=$(pidof com.phuong.pdfoffice) | grep ComponentDiscovery` phải rỗng; bấm
+  Quét tài liệu phải thấy `DocumentScanningActivity` của Google, không phải `...fallback.DocumentScannerActivity`.
 - Gradle mới từ chối `getDefaultProguardFile("proguard-android.txt")`; dùng `proguard-android-optimize.txt`.
 - Bản release ký bằng khoá debug (cùng khoá với bản debug nên cài đè được, không cần gỡ).
 - Bản debug mở >10s; **release ≈ 1s** tới màn hình chính có đủ nội dung (đo bằng `startupTrace`, xem [[viec-con-lai]]). Con số 4,5–5,8s
