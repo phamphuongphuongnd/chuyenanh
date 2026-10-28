@@ -52,6 +52,6 @@ Gần đây/Yêu thích kiểm tồn tại bằng `File.exists` bất đồng b�
 - Test widget có drift stream (`favoritePathsProvider`, `documentsProvider`): override bằng stream cố định (`Stream.value`/`StreamController`), không dùng `AppDatabase(NativeDatabase.memory())` → tránh "A Timer is still pending". Xem [[kiem-thu-flutter]].
 - Đóng màn bằng `Navigator.pop` cần `pump(1s)` hai lần mới hết hiệu ứng chuyển trang trước khi `expect(find…, findsNothing)`.
 - `dart format <thư mục>` đổi cả file không liên quan → format đúng file mình sửa.
-- Chưa thử trên máy thật: TXT (chỉ đổi icon). Đã thử A13: Word, Excel, PPT, PDF, Khoá/Mở khoá.
+- Đã thử trên A13 (28/10): Word, Excel, PPT, PDF, **TXT** (tìm "hello" ra 1/2, kết quả hiện tại cam + còn lại vàng, zoom đổi cỡ chữ), Khoá/Mở khoá. Bố cục nút PDF/PPT lệch so với Word/Excel/TXT (PDF/PPT: 🔍 ở x≈391, Word/Excel/TXT: 🔍 ở x≈503) → toạ độ chạm khác nhau.
 
 Liên quan: [[documents]], [[kiem-thu-flutter]], [[viec-con-lai]], [[tinh-nang-t1-t10]].

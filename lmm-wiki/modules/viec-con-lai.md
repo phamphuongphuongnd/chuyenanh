@@ -14,7 +14,7 @@ Máy dev: Windows, Flutter ở `C:\src\flutter\bin`, ADB `C:\Android\Sdk\platfor
 
 ## Đã làm 28/10 (phiên sau) — xem [[trinh-xem-dong-bo]]
 - Thanh tìm kiếm chung + tìm/zoom cho cả 5 định dạng, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách, lọc tab dùng chung một lần sắp xếp. Đã push + merge `master` (commit `d1ff646`, `3cdb98d`, `293470b`).
-- Còn lại tuỳ chọn: thử TXT trên máy thật; đo tốc độ trước/sau; PPT tô riêng kết quả hiện tại; Excel tìm cả hàng/cột ẩn (hiện vẫn tính).
+- TXT đã thử máy thật (OK). Còn lại tuỳ chọn: đo tốc độ trước/sau; PPT tô riêng kết quả hiện tại; Excel tìm cả hàng/cột ẩn (hiện vẫn tính).
 
 ## 0. Việc của người dùng (cần làm tay, ~2 phút)
 - [ ] **Thay file trong GitHub Release** `android-latest`: link tải đang ra bản CŨ (113.497.671 byte), bản mới ở
