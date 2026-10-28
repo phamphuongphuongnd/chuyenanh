@@ -33,10 +33,22 @@ Future<void> tapKey(
 }) async {
   final finder = find.byKey(ValueKey(key));
   if (scrollable != null && finder.evaluate().isEmpty) {
-    await tester.scrollUntilVisible(finder, 200, scrollable: scrollable);
+    // scrollUntilVisible chỉ cuộn một chiều (xuống) → về đầu danh sách trước,
+    // nếu không mục nằm phía trên (vd. Ngôn ngữ sau khi đã cuộn tới Giới thiệu) sẽ không bao giờ thấy.
+    await tester.drag(scrollable, const Offset(0, 10000));
+    await tester.pumpAndSettle();
+    if (finder.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(finder, 200, scrollable: scrollable);
+    }
   }
   await tester.ensureVisible(finder);
   await tester.tap(finder);
+}
+
+/// Bấm nút Back của AppBar. Không dùng `tester.pageBack()`: nó tìm theo tooltip
+/// tiếng Anh 'Back', đổi sang tiếng Việt ("Quay lại") là không thấy.
+Future<void> goBack(WidgetTester tester) async {
+  await tester.tap(find.byType(BackButton));
 }
 
 /// Chờ yên rồi chụp ảnh `<name>.png`.

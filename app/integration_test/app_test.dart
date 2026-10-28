@@ -31,7 +31,7 @@ void main() {
     Future<void> openSetting(String key, String name) async {
       await tapKey(tester, key, scrollable: settingsList);
       await shot(tester, binding, name);
-      await tester.pageBack();
+      await goBack(tester);
       await settle(tester, binding, 'back-$name');
     }
 
@@ -65,7 +65,7 @@ void main() {
     await settle(tester, binding, 'language-open');
     await tapKey(tester, 'lang_vi');
     await settle(tester, binding, 'language-vi');
-    await tester.pageBack();
+    await goBack(tester);
     await settle(tester, binding, 'back-language-vi');
     await tab('nav-home', 'tab-home-vi');
     expect(find.text('Trang chủ'), findsWidgets);
@@ -77,7 +77,7 @@ void main() {
     await settle(tester, binding, 'theme-open');
     await tapKey(tester, 'theme_dark');
     await settle(tester, binding, 'theme-dark');
-    await tester.pageBack();
+    await goBack(tester);
     await settle(tester, binding, 'back-theme-dark');
     await tab('nav-home', 'tab-home-dark');
     final brightness = Theme.of(
