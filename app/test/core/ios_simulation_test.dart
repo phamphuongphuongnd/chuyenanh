@@ -197,6 +197,17 @@ void main() {
       expect(yml, contains('runs-on: macos-15-intel'));
     });
 
+    // Image Intel mặc định Xcode 16.4 (SDK iOS 18); device_info_plus 13.3 gọi
+    // `isiOSAppOnVision` chỉ có từ SDK iOS 26 → phải chọn Xcode 26 trước khi build.
+    test('Workflow ios-sim.yml chọn Xcode 26.3 trước flutter drive', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      final select = yml.indexOf(
+        'sudo xcode-select -s /Applications/Xcode_26.3.app',
+      );
+      expect(select, isNonNegative);
+      expect(select, lessThan(yml.indexOf('flutter drive')));
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
     for (final name in ['ios-build.yml', 'ios-sim.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {
