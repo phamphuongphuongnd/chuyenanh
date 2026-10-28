@@ -184,6 +184,12 @@ void main() {
       expect(yml, contains('PDFOffice-ios.ipa'));
     });
 
+    // Tag ios-sim-* chỉ dành cho workflow simulator; khớp cả ios-* nên phải loại trừ.
+    test('Workflow ios-build.yml bỏ qua tag ios-sim-*', () {
+      final yml = File('../.github/workflows/ios-build.yml').readAsStringSync();
+      expect(yml, contains("tags: ['ios-*', '!ios-sim-*']"));
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
     for (final name in ['ios-build.yml', 'ios-sim.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {

@@ -1,10 +1,11 @@
 name: ios-build
 
 # Chỉ chạy tay hoặc khi đẩy tag ios-*: không ảnh hưởng quy trình Android.
+# Tag ios-sim-* dành cho workflow ios-sim (simulator), không build IPA.
 on:
   workflow_dispatch:
   push:
-    tags: ['ios-*']
+    tags: ['ios-*', '!ios-sim-*']
 
 permissions:
   contents: write
