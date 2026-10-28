@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'pdf_file_picker.dart';
+import 'pdf_pick_screen.dart';
 import 'tool_runner.dart';
 
 /// Phần dùng chung của màn công cụ làm việc trên MỘT file PDF: nhận path từ route (hoặc tự
@@ -39,10 +40,20 @@ mixin SinglePdfToolState<T extends ConsumerStatefulWidget>
 
   /// Mở hộp chọn file rồi nạp file mới (huỷ → giữ file cũ).
   Future<void> pickNew() async {
+    final mode = pickMode;
+    if (mode != null) {
+      final path = await ref.read(inAppPdfPickerProvider)(context, mode);
+      if (!mounted || path == null) return;
+      await _load(path);
+      return;
+    }
     final picked = await ref.read(pdfFilePickerProvider).pickPdfs();
     if (!mounted || picked.isEmpty) return;
     await _load(picked.first);
   }
+
+  /// Khác null = chọn file từ danh sách PDF trong app (đã lọc theo trạng thái khoá).
+  PdfPickMode? get pickMode => null;
 
   Future<void> _load(String path) async {
     setState(() => loading = true);

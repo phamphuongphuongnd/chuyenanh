@@ -49,7 +49,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
-  void _onTabChanged() => setState(() {});
+  int _shownIndex = 0;
+
+  /// Chỉ dựng lại AppBar khi tab thật sự đổi (listener bắn nhiều lần lúc vuốt).
+  void _onTabChanged() {
+    if (_tabs.index == _shownIndex) return;
+    setState(() => _shownIndex = _tabs.index);
+  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -65,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final current = homeTabs[_tabs.index];
+    final current = homeTabs[_shownIndex];
     // Khởi động lượt quét đầu tiên.
     ref.watch(scanControllerProvider.select((s) => s.phase == ScanPhase.idle));
 

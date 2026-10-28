@@ -242,6 +242,16 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
     _snack(ok ? l.reader_shortcutRequested : l.reader_shortcutFailed);
   }
 
+  static const double _zoomStep = 0.25;
+  static const double _zoomMin = 1.0;
+  static const double _zoomMax = 3.0;
+
+  /// Đổi mức phóng đại theo bước 0.25, kẹp 1.0–3.0 (giới hạn của syncfusion).
+  void _zoomBy(double delta) {
+    final next = (_controller.zoomLevel + delta).clamp(_zoomMin, _zoomMax);
+    _controller.zoomLevel = next.toDouble();
+  }
+
   void _startSearch() => setState(() => _searching = true);
 
   void _runSearch(String query) {
@@ -370,6 +380,18 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
           tooltip: l.reader_search,
           icon: const Icon(Icons.search),
           onPressed: _loaded ? _startSearch : null,
+        ),
+        IconButton(
+          key: const Key('reader_zoomOutButton'),
+          tooltip: l.office_zoomOut,
+          icon: const Icon(Icons.zoom_out),
+          onPressed: _loaded ? () => _zoomBy(-_zoomStep) : null,
+        ),
+        IconButton(
+          key: const Key('reader_zoomInButton'),
+          tooltip: l.office_zoomIn,
+          icon: const Icon(Icons.zoom_in),
+          onPressed: _loaded ? () => _zoomBy(_zoomStep) : null,
         ),
         IconButton(
           key: const Key('reader_bookmarkButton'),

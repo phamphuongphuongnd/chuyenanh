@@ -130,6 +130,7 @@ class _DocxViewerPageState extends State<DocxViewerPage> {
         children: [
           if (_searching)
             OfficeSearchBar(
+              color: AppColors.doc,
               controller: _searchCtrl,
               onChanged: _onQuery,
               current: _hits.isEmpty ? 0 : _current + 1,

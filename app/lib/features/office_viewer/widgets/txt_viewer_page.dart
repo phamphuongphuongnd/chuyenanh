@@ -90,12 +90,12 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
           ),
           IconButton(
             tooltip: l.office_zoomOut,
-            icon: const Icon(Icons.text_decrease),
+            icon: const Icon(Icons.zoom_out),
             onPressed: () => notifier.set(fontSize - 2),
           ),
           IconButton(
             tooltip: l.office_zoomIn,
-            icon: const Icon(Icons.text_increase),
+            icon: const Icon(Icons.zoom_in),
             onPressed: () => notifier.set(fontSize + 2),
           ),
           IconButton(
@@ -110,6 +110,7 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
         children: [
           if (_searching)
             OfficeSearchBar(
+              color: AppColors.txt,
               controller: _searchCtrl,
               onChanged: _onQuery,
               current: _hits.isEmpty ? 0 : _current + 1,

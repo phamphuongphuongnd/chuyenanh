@@ -26,7 +26,10 @@ class DocumentList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final scan = ref.watch(scanControllerProvider);
+    // Chỉ dựng lại khi trạng thái quét đổi; số file đã tìm (đổi liên tục) do _LiveScanBar tự theo dõi.
+    final (isScanning, needsPermission) = ref.watch(
+      scanControllerProvider.select((s) => (s.isScanning, s.needsPermission)),
+    );
     final docs = ref.watch(categoryDocumentsProvider(category));
 
     return docs.when(
@@ -38,27 +41,26 @@ class DocumentList extends ConsumerWidget {
         onAction: () => ref.invalidate(documentsProvider),
       ),
       data: (items) {
-        if (items.isEmpty && scan.isScanning) {
-          return Column(
+        if (items.isEmpty && isScanning) {
+          return const Column(
             children: [
-              ScanProgressBar(found: scan.found),
-              const Expanded(child: DocumentListSkeleton()),
+              _LiveScanBar(),
+              Expanded(child: DocumentListSkeleton()),
             ],
           );
         }
         final showGrid = onPickCategory != null;
         return Column(
           children: [
-            if (scan.needsPermission && items.isNotEmpty)
-              const PermissionBanner(),
-            if (scan.isScanning) ScanProgressBar(found: scan.found),
+            if (needsPermission && items.isNotEmpty) const PermissionBanner(),
+            if (isScanning) const _LiveScanBar(),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () =>
                     ref.read(scanControllerProvider.notifier).refresh(),
                 child: items.isEmpty
                     ? _EmptyScrollable(
-                        child: scan.needsPermission
+                        child: needsPermission
                             ? const _NoPermissionView()
                             : EmptyState(
                                 illustration: category == null
@@ -117,6 +119,16 @@ class _NoPermissionView extends StatelessWidget {
   Widget build(BuildContext context) => const Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [PermissionGate(), PickFileButton(), SizedBox(height: 32)],
+  );
+}
+
+/// [ScanProgressBar] tự theo dõi số file đã tìm, để danh sách bên dưới không dựng lại theo.
+class _LiveScanBar extends ConsumerWidget {
+  const _LiveScanBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ScanProgressBar(
+    found: ref.watch(scanControllerProvider.select((s) => s.found)),
   );
 }
 

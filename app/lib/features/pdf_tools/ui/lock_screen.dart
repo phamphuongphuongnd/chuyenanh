@@ -10,6 +10,7 @@ import '../../../core/utils/file_paths.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../engines/pdf/pdf_security.dart';
 import '../logic/tool_rules.dart';
+import 'pdf_pick_screen.dart';
 import 'single_pdf_state.dart';
 import 'tool_runner.dart';
 import 'tool_widgets.dart';
@@ -33,6 +34,9 @@ class _LockScreenState extends ConsumerState<LockScreen>
 
   @override
   String? get initialPath => widget.path;
+
+  @override
+  PdfPickMode? get pickMode => PdfPickMode.unlockedOnly;
 
   @override
   void dispose() {

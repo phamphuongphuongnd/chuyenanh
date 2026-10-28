@@ -13,7 +13,7 @@ import '../../../core/utils/file_paths.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../engines/pdf/pdf_security.dart';
 import '../logic/tool_rules.dart';
-import 'pdf_file_picker.dart';
+import 'pdf_pick_screen.dart';
 import 'tool_runner.dart';
 import 'tool_widgets.dart';
 
@@ -58,9 +58,12 @@ class _UnlockScreenState extends ConsumerState<UnlockScreen> {
   }
 
   Future<void> _pick() async {
-    final picked = await ref.read(pdfFilePickerProvider).pickPdfs();
-    if (!mounted || picked.isEmpty) return;
-    await _check(picked.first);
+    final path = await ref.read(inAppPdfPickerProvider)(
+      context,
+      PdfPickMode.lockedOnly,
+    );
+    if (!mounted || path == null) return;
+    await _check(path);
   }
 
   Future<void> _check(String path) async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -86,11 +88,38 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = TextEditingController();
+  Timer? _debounce;
+
+  /// Truy vấn dùng để lọc (trễ ~200ms so với ô nhập).
+  String _query = '';
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onChanged(String text) {
+    // Ô nhập/nút xoá cập nhật tức thì; chỉ việc lọc danh sách bị trễ.
+    final hadText = _lastHadText;
+    _lastHadText = text.isNotEmpty;
+    if (hadText != _lastHadText) setState(() {});
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 200), () {
+      if (mounted) setState(() => _query = text);
+    });
+  }
+
+  bool _lastHadText = false;
+
+  void _clear() {
+    _debounce?.cancel();
+    setState(() {
+      _controller.clear();
+      _query = '';
+      _lastHadText = false;
+    });
   }
 
   @override
@@ -100,25 +129,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final docs = ref.watch(documentsProvider);
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
+        title: AppSearchField(
           key: const ValueKey('search-field'),
           controller: _controller,
-          autofocus: true,
-          cursorColor: Colors.white,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          decoration: InputDecoration(
-            hintText: l.docs_searchHint,
-            hintStyle: const TextStyle(color: Colors.white70),
-            filled: false,
-            border: InputBorder.none,
-          ),
-          onChanged: (_) => setState(() {}),
+          hintText: l.docs_searchHint,
+          onChanged: _onChanged,
         ),
         actions: [
           if (_controller.text.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () => setState(_controller.clear),
+              onPressed: _clear,
             ),
           const SortMenuButton(),
         ],
@@ -129,7 +150,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             EmptyState(title: appErrorMessage(context, AppError.from(e))),
         data: (items) {
           final result = sortDocuments(
-            filterDocuments(items, query: _controller.text),
+            filterDocuments(items, query: _query),
             sort,
           );
           if (result.isEmpty) {

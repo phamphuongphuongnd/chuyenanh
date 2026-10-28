@@ -9,6 +9,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import 'office_pptx_providers.dart';
 import 'pptx_layout.dart';
+import '../office_viewer/widgets/office_common.dart' show OfficeSearchBar;
+import 'pptx_search.dart';
 import 'slide_view.dart';
 
 class PptxViewerScreen extends ConsumerWidget {
@@ -77,6 +79,16 @@ class _PptxDeckViewState extends State<PptxDeckView> {
   bool _zoomed = false;
   int _page = 0;
 
+  // Tìm kiếm.
+  bool _searching = false;
+  final TextEditingController _searchCtrl = TextEditingController();
+  List<PptxHit> _hits = const [];
+  int _current = 0;
+
+  // Zoom bằng nút: các trang đang dựng, khoá theo vị trí trang.
+  final Map<int, _ZoomablePageState> _zoomPages = {};
+  static const double _zoomStep = 0.25;
+
   static const double _thumbH = 64;
   static const double _thumbGap = 8;
 
@@ -89,6 +101,7 @@ class _PptxDeckViewState extends State<PptxDeckView> {
   void dispose() {
     _pages.dispose();
     _thumbs.dispose();
+    _searchCtrl.dispose();
     super.dispose();
   }
 
@@ -98,6 +111,35 @@ class _PptxDeckViewState extends State<PptxDeckView> {
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
     );
+  }
+
+  void _runSearch() {
+    _hits = findPptxHits(
+      widget.deck,
+      _indexes,
+      _searchCtrl.text,
+      includeNotes: _showNotes,
+    );
+  }
+
+  void _onQuery(String _) {
+    setState(() {
+      _runSearch();
+      _current = 0;
+    });
+    if (_hits.isNotEmpty) _goTo(_hits[0].page);
+  }
+
+  void _step(int d) {
+    if (_hits.isEmpty) return;
+    setState(() => _current = (_current + d) % _hits.length);
+    if (_current < 0) _current += _hits.length;
+    _goTo(_hits[_current].page);
+  }
+
+  void _zoomBy(double delta) {
+    final i = _indexes.isEmpty ? 0 : _page.clamp(0, _indexes.length - 1);
+    _zoomPages[i]?.zoomBy(delta);
   }
 
   void _onPageChanged(int page) {
@@ -134,11 +176,29 @@ class _PptxDeckViewState extends State<PptxDeckView> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
+            tooltip: l.office_search,
+            icon: const Icon(Icons.search),
+            onPressed: () => setState(() => _searching = !_searching),
+          ),
+          IconButton(
+            tooltip: l.office_zoomOut,
+            icon: const Icon(Icons.zoom_out),
+            onPressed: () => _zoomBy(-_zoomStep),
+          ),
+          IconButton(
+            tooltip: l.office_zoomIn,
+            icon: const Icon(Icons.zoom_in),
+            onPressed: () => _zoomBy(_zoomStep),
+          ),
+          IconButton(
             tooltip: l.pptx_notes,
             icon: Icon(
               _showNotes ? Icons.sticky_note_2 : Icons.sticky_note_2_outlined,
             ),
-            onPressed: () => setState(() => _showNotes = !_showNotes),
+            onPressed: () => setState(() {
+              _showNotes = !_showNotes;
+              if (_searching) _runSearch();
+            }),
           ),
           if (_hasHidden)
             IconButton(
@@ -149,111 +209,150 @@ class _PptxDeckViewState extends State<PptxDeckView> {
               onPressed: () => setState(() {
                 _showHidden = !_showHidden;
                 _page = 0;
+                _current = 0;
+                if (_searching) _runSearch();
                 if (_pages.hasClients) _pages.jumpToPage(0);
               }),
             ),
         ],
       ),
-      body: indexes.isEmpty
-          ? Center(child: Text(l.pptx_emptyDeck))
-          : Column(
-              children: [
-                Expanded(
-                  child: PageView.builder(
-                    key: ValueKey(_showHidden),
-                    controller: _pages,
-                    physics: _zoomed
-                        ? const NeverScrollableScrollPhysics()
-                        : const PageScrollPhysics(),
-                    itemCount: indexes.length,
-                    onPageChanged: _onPageChanged,
-                    itemBuilder: (context, i) => _ZoomablePage(
-                      onZoomChanged: (z) {
-                        if (z != _zoomed) setState(() => _zoomed = z);
-                      },
-                      child: SlideView(
-                        deck: deck,
-                        slide: deck.slides[indexes[i]],
-                        renderScale: 2.5,
-                      ),
-                    ),
-                  ),
-                ),
-                if (_showNotes) _NotesPanel(slide: deck.slides[indexes[page]]),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Text(
-                    l.pptx_slideOf(page + 1, indexes.length),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-                SizedBox(
-                  height: _thumbH + 16,
-                  child: ListView.separated(
-                    controller: _thumbs,
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    itemCount: indexes.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: _thumbGap),
-                    itemBuilder: (context, i) {
-                      final slide = deck.slides[indexes[i]];
-                      final selected = i == page;
-                      return Semantics(
-                        button: true,
-                        label: l.pptx_slideN(i + 1),
-                        child: GestureDetector(
-                          onTap: () => _goTo(i),
-                          child: Container(
-                            height: _thumbH,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: selected
-                                    ? AppColors.ppt
-                                    : Colors.grey.shade400,
-                                width: selected ? 2.5 : 1,
-                              ),
-                            ),
-                            child: Stack(
-                              children: [
-                                RepaintBoundary(
-                                  child: SlideView(
-                                    deck: deck,
-                                    slide: slide,
-                                    renderScale: 0.4,
-                                  ),
-                                ),
-                                if (slide.hidden)
-                                  const Positioned(
-                                    right: 2,
-                                    top: 2,
-                                    child: Icon(
-                                      Icons.visibility_off,
-                                      size: 14,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                              ],
+      body: Column(
+        children: [
+          if (_searching)
+            OfficeSearchBar(
+              color: AppColors.ppt,
+              controller: _searchCtrl,
+              onChanged: _onQuery,
+              current: _hits.isEmpty ? 0 : _current + 1,
+              total: _hits.length,
+              onPrev: () => _step(-1),
+              onNext: () => _step(1),
+              onClose: () => setState(() {
+                _searching = false;
+                _searchCtrl.clear();
+                _hits = const [];
+                _current = 0;
+              }),
+            ),
+          Expanded(
+            child: indexes.isEmpty
+                ? Center(child: Text(l.pptx_emptyDeck))
+                : Column(
+                    children: [
+                      Expanded(
+                        child: PageView.builder(
+                          key: ValueKey(_showHidden),
+                          controller: _pages,
+                          physics: _zoomed
+                              ? const NeverScrollableScrollPhysics()
+                              : const PageScrollPhysics(),
+                          itemCount: indexes.length,
+                          onPageChanged: _onPageChanged,
+                          itemBuilder: (context, i) => _ZoomablePage(
+                            key: ValueKey('${_showHidden}_$i'),
+                            onAttach: (st) => _zoomPages[i] = st,
+                            onDetach: (st) {
+                              if (_zoomPages[i] == st) _zoomPages.remove(i);
+                            },
+                            onZoomChanged: (z) {
+                              if (z != _zoomed) setState(() => _zoomed = z);
+                            },
+                            child: SlideView(
+                              deck: deck,
+                              slide: deck.slides[indexes[i]],
+                              renderScale: 2.5,
                             ),
                           ),
                         ),
-                      );
-                    },
+                      ),
+                      if (_showNotes)
+                        _NotesPanel(slide: deck.slides[indexes[page]]),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          l.pptx_slideOf(page + 1, indexes.length),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      SizedBox(
+                        height: _thumbH + 16,
+                        child: ListView.separated(
+                          controller: _thumbs,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          itemCount: indexes.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(width: _thumbGap),
+                          itemBuilder: (context, i) {
+                            final slide = deck.slides[indexes[i]];
+                            final selected = i == page;
+                            return Semantics(
+                              button: true,
+                              label: l.pptx_slideN(i + 1),
+                              child: GestureDetector(
+                                onTap: () => _goTo(i),
+                                child: Container(
+                                  height: _thumbH,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: selected
+                                          ? AppColors.ppt
+                                          : Colors.grey.shade400,
+                                      width: selected ? 2.5 : 1,
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      RepaintBoundary(
+                                        child: SlideView(
+                                          deck: deck,
+                                          slide: slide,
+                                          renderScale: 0.4,
+                                        ),
+                                      ),
+                                      if (slide.hidden)
+                                        const Positioned(
+                                          right: 2,
+                                          top: 2,
+                                          child: Icon(
+                                            Icons.visibility_off,
+                                            size: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 /// Trang slide có zoom 2 ngón; khi đang zoom thì khoá vuốt chuyển trang (báo qua callback).
 class _ZoomablePage extends StatefulWidget {
-  const _ZoomablePage({required this.child, required this.onZoomChanged});
+  const _ZoomablePage({
+    super.key,
+    required this.child,
+    required this.onZoomChanged,
+    required this.onAttach,
+    required this.onDetach,
+  });
   final Widget child;
   final ValueChanged<bool> onZoomChanged;
+  final ValueChanged<_ZoomablePageState> onAttach;
+  final ValueChanged<_ZoomablePageState> onDetach;
 
   @override
   State<_ZoomablePage> createState() => _ZoomablePageState();
@@ -262,9 +361,35 @@ class _ZoomablePage extends StatefulWidget {
 class _ZoomablePageState extends State<_ZoomablePage> {
   final TransformationController _c = TransformationController();
 
+  static const double _minZoom = 1;
+  static const double _maxZoom = 4;
+
+  /// Phóng/thu quanh tâm khung, bước làm tròn theo [delta], trong 1.0–4.0.
+  void zoomBy(double delta) {
+    final cur = _c.value.getMaxScaleOnAxis();
+    final target = ((cur / delta.abs()).round() * delta.abs() + delta).clamp(
+      _minZoom,
+      _maxZoom,
+    );
+    if (target <= _minZoom + 1e-6) {
+      _c.value = Matrix4.identity();
+      return;
+    }
+    final size = context.size;
+    if (size == null) return;
+    final f = target / cur;
+    final cx = size.width / 2, cy = size.height / 2;
+    final t = Matrix4.identity()
+      ..translateByDouble(cx, cy, 0, 1)
+      ..scaleByDouble(f, f, 1, 1)
+      ..translateByDouble(-cx, -cy, 0, 1);
+    _c.value = t * _c.value;
+  }
+
   @override
   void initState() {
     super.initState();
+    widget.onAttach(this);
     _c.addListener(() {
       widget.onZoomChanged(_c.value.getMaxScaleOnAxis() > 1.02);
     });
@@ -272,6 +397,7 @@ class _ZoomablePageState extends State<_ZoomablePage> {
 
   @override
   void dispose() {
+    widget.onDetach(this);
     _c.dispose();
     super.dispose();
   }
@@ -283,7 +409,7 @@ class _ZoomablePageState extends State<_ZoomablePage> {
       child: InteractiveViewer(
         transformationController: _c,
         minScale: 1,
-        maxScale: 5,
+        maxScale: 4,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -317,9 +443,7 @@ class _NotesPanel extends StatelessWidget {
       child: SingleChildScrollView(
         child: Text(
           has ? text : l.pptx_noNotes,
-          style: has
-              ? null
-              : TextStyle(color: Theme.of(context).hintColor),
+          style: has ? null : TextStyle(color: Theme.of(context).hintColor),
         ),
       ),
     );

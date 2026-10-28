@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/errors/app_error.dart';
 import '../../core/utils/doc_type.dart';
+import '../../core/utils/file_paths.dart';
 import '../../data/db/app_database.dart';
 import '../../data/file_scanner/file_scanner.dart';
 import '../../data/file_scanner/scan_sync.dart';
@@ -229,18 +231,50 @@ final favoritePathsProvider = StreamProvider<Set<String>>(
 /// Danh sách Yêu thích, mới thêm trước; file không còn trên đĩa bị bỏ qua.
 final favoriteItemsProvider = StreamProvider<List<DocItem>>((ref) {
   final dao = ref.watch(appDatabaseProvider).favoritesDao;
-  return dao.watchAll().map(
-    (rows) => [for (final r in rows) ?DocItem.fromFileSync(r.path)],
+  return dao.watchAll().asyncMap(
+    (rows) => _resolveExisting(ref, rows.map((r) => r.path).toList()),
   );
 });
 
 /// Danh sách Gần đây, mới mở trước; file không còn trên đĩa bị bỏ qua.
 final recentItemsProvider = StreamProvider<List<DocItem>>((ref) {
   final dao = ref.watch(appDatabaseProvider).recentsDao;
-  return dao.watchRecent().map(
-    (rows) => [for (final r in rows) ?DocItem.fromFileSync(r.path)],
+  return dao.watchRecent().asyncMap(
+    (rows) => _resolveExisting(ref, rows.map((r) => r.path).toList()),
   );
 });
+
+/// Dựng [DocItem] cho [paths] (giữ thứ tự) mà không chặn UI isolate: kiểm tồn tại bằng
+/// `exists()` bất đồng bộ (song song); metadata lấy từ bảng `documents` nếu đã có trong
+/// [documentsProvider], còn lại mới `stat` bất đồng bộ. File đã mất bị bỏ qua.
+Future<List<DocItem>> _resolveExisting(Ref ref, List<String> paths) async {
+  if (paths.isEmpty) return const [];
+  final known = <String, DocItem>{
+    for (final d in ref.read(documentsProvider).value ?? const <DocItem>[])
+      d.path: d,
+  };
+  final items = await Future.wait(
+    paths.map((path) async {
+      try {
+        if (!await File(path).exists()) return null;
+        final cached = known[path];
+        if (cached != null) return cached;
+        final stat = await File(path).stat();
+        return DocItem(
+          path: path,
+          name: p.basename(path),
+          ext: extensionOf(path),
+          size: stat.size,
+          modified: stat.modified,
+          folder: parentFolderName(path),
+        );
+      } on FileSystemException {
+        return null;
+      }
+    }),
+  );
+  return [for (final item in items) ?item];
+}
 
 /// Chỉ [limit] mục đầu còn tồn tại: Trang chủ chỉ hiện vài mục nên không `stat` cả trăm file
 /// (bộ nhớ trong của máy yếu chậm, làm trễ khung hình đầu).
@@ -292,8 +326,8 @@ class DocSortNotifier extends Notifier<DocSort> {
 }
 
 /// Tài liệu của một tab ([category] null = tất cả) đã sắp xếp theo lựa chọn hiện tại.
-final categoryDocumentsProvider =
-    Provider.family<AsyncValue<List<DocItem>>, DocCategory?>((ref, category) {
+final categoryDocumentsProvider = Provider.autoDispose
+    .family<AsyncValue<List<DocItem>>, DocCategory?>((ref, category) {
       final sort = ref.watch(docSortProvider);
       return ref
           .watch(documentsProvider)
@@ -304,7 +338,7 @@ final categoryDocumentsProvider =
     });
 
 /// PDF có mật khẩu không (kết quả được cache theo path suốt phiên).
-final pdfLockedProvider = FutureProvider.family<bool, String>((
+final pdfLockedProvider = FutureProvider.autoDispose.family<bool, String>((
   ref,
   path,
 ) async {

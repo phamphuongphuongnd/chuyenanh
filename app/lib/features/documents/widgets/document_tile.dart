@@ -21,8 +21,12 @@ class DocumentTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final locale = Localizations.localeOf(context).toString();
-    final isFavorite =
-        ref.watch(favoritePathsProvider).value?.contains(item.path) ?? false;
+    // select: đổi sao của file khác không làm dựng lại dòng này.
+    final isFavorite = ref.watch(
+      favoritePathsProvider.select(
+        (v) => v.value?.contains(item.path) ?? false,
+      ),
+    );
     final locked = ref.watch(pdfLockedProvider(item.path)).value ?? false;
 
     return ListTile(

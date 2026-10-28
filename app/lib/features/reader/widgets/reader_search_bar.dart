@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/widgets/app_search_field.dart';
 
 /// Thanh tìm chữ thay cho AppBar: ô nhập, "2 / 7", ‹ ›, đóng.
 class ReaderSearchAppBar extends StatelessWidget
@@ -38,18 +39,10 @@ class ReaderSearchAppBar extends StatelessWidget
         icon: const Icon(Icons.arrow_back),
         onPressed: onClose,
       ),
-      title: TextField(
+      title: AppSearchField(
         key: const Key('reader_searchField'),
         controller: textController,
-        autofocus: true,
-        textInputAction: TextInputAction.search,
-        style: const TextStyle(color: Colors.white),
-        cursorColor: Colors.white,
-        decoration: InputDecoration(
-          hintText: l.reader_searchHint,
-          hintStyle: const TextStyle(color: Colors.white70),
-          border: InputBorder.none,
-        ),
+        hintText: l.reader_searchHint,
         onSubmitted: onSubmitted,
       ),
       actions: [

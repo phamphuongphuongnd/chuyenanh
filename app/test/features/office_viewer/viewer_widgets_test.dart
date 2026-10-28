@@ -227,7 +227,7 @@ void main() {
       expect(find.text('Encoding: UTF-16 LE'), findsOneWidget);
 
       final before = tester.widget<Text>(find.text('dong 0 xin chao')).style!.fontSize!;
-      await tester.tap(find.byIcon(Icons.text_increase));
+      await tester.tap(find.byIcon(Icons.zoom_in));
       await tester.pumpAndSettle();
       final after = tester.widget<Text>(find.text('dong 0 xin chao')).style!.fontSize!;
       expect(after, before + 2);

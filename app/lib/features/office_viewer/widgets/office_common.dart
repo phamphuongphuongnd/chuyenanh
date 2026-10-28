@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_search_field.dart';
 
 /// Bắt thao tác chụm 2 ngón để phóng to / thu nhỏ mà không tranh cử chỉ với cuộn
 /// (dùng [Listener], không vào arena cử chỉ).
@@ -85,8 +87,11 @@ class OfficeSearchBar extends StatelessWidget {
     required this.onPrev,
     required this.onNext,
     required this.onClose,
+    this.color,
   });
 
+  /// Nền thanh = màu theo loại file (mặc định đỏ chủ đạo).
+  final Color? color;
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
 
@@ -103,49 +108,53 @@ class OfficeSearchBar extends StatelessWidget {
     final theme = Theme.of(context);
     final hasQuery = controller.text.trim().isNotEmpty;
     return Material(
-      color: theme.colorScheme.surface,
+      color: color ?? AppColors.primary,
       elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                autofocus: true,
-                textInputAction: TextInputAction.search,
-                onChanged: onChanged,
-                onSubmitted: (_) => onNext(),
-                decoration: InputDecoration(
+      child: IconTheme(
+        data: const IconThemeData(color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: AppSearchField(
+                  controller: controller,
                   hintText: l.office_searchHint,
-                  border: InputBorder.none,
-                  isDense: true,
+                  onChanged: onChanged,
+                  onSubmitted: (_) => onNext(),
                 ),
               ),
-            ),
-            if (hasQuery)
-              Text(
-                total == 0
-                    ? l.office_noResults
-                    : l.office_matchCount(current, total),
-                style: theme.textTheme.bodySmall,
+              if (hasQuery)
+                Text(
+                  total == 0
+                      ? l.office_noResults
+                      : l.office_matchCount(current, total),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+              IconButton(
+                tooltip: l.office_prevMatch,
+                icon: const Icon(Icons.keyboard_arrow_up),
+                color: Colors.white,
+                disabledColor: Colors.white38,
+                onPressed: total == 0 ? null : onPrev,
               ),
-            IconButton(
-              tooltip: l.office_prevMatch,
-              icon: const Icon(Icons.keyboard_arrow_up),
-              onPressed: total == 0 ? null : onPrev,
-            ),
-            IconButton(
-              tooltip: l.office_nextMatch,
-              icon: const Icon(Icons.keyboard_arrow_down),
-              onPressed: total == 0 ? null : onNext,
-            ),
-            IconButton(
-              tooltip: l.core_close,
-              icon: const Icon(Icons.close),
-              onPressed: onClose,
-            ),
-          ],
+              IconButton(
+                tooltip: l.office_nextMatch,
+                icon: const Icon(Icons.keyboard_arrow_down),
+                color: Colors.white,
+                disabledColor: Colors.white38,
+                onPressed: total == 0 ? null : onNext,
+              ),
+              IconButton(
+                tooltip: l.core_close,
+                icon: const Icon(Icons.close),
+                color: Colors.white,
+                onPressed: onClose,
+              ),
+            ],
+          ),
         ),
       ),
     );

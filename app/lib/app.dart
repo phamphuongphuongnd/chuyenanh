@@ -13,7 +13,8 @@ class PdfOfficeApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider);
+    final themeMode = ref.watch(settingsProvider.select((s) => s.themeMode));
+    final locale = ref.watch(settingsProvider.select((s) => s.locale));
     final router = ref.watch(appRouterProvider);
     // Mở trình đọc khi app được bật từ lối tắt màn hình chính (T3).
     ref.watch(shortcutLaunchProvider);
@@ -22,8 +23,8 @@ class PdfOfficeApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: settings.themeMode,
-      locale: settings.locale,
+      themeMode: themeMode,
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
