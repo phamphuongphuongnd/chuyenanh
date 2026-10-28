@@ -79,7 +79,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       if (paths != null && mounted) {
         ref.read(scanSessionProvider.notifier).addPaths(paths);
       }
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('scan: quét lỗi: $e | $st');
       _showError(e);
     } finally {
       _busy = false;
@@ -183,7 +184,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
           },
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('scan: xuất lỗi: $e | $st');
       ctrl.close();
       _showError(e);
     }

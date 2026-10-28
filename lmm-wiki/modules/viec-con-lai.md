@@ -75,3 +75,5 @@ Liên quan: [[tinh-nang-t1-t10]], [[phat-hanh-apk]], [[documents]], [[kiem-thu-f
 - **Cách duyệt công cụ bằng ADB không đọc ảnh riêng tư:** `uiautomator dump` lấy `content-desc`/`bounds`; mỗi công cụ `am force-stop` → `am start` → bấm tab Công cụ (`756,2160`) → bấm công cụ →
   `dumpsys window | grep mCurrentFocus` kiểm app còn trên cùng. Màn bộ chọn file của hệ thống = `com.google.android.documentsui`.
 - **Quyết định:** dùng bản không thu gọn code làm bản phát hành (xem [[phat-hanh-apk]]).
+- **Sửa thêm 28/10 (xuất sau khi quét):** người dùng báo xuất PDF/TXT/DOCX từ ảnh quét đều lỗi → tái hiện trên máy bằng ADB, nguyên nhân `scanExporterProvider` autoDispose (xem [[loi-chi-hien-tren-may-that]]).
+  Sau sửa: xuất **PDF (có lớp chữ OCR)** và **DOCX** thành công trên A13 (báo "Đã lưu: Scan_….pdf", nút Mở); **TXT** chưa thử riêng (cùng đường chạy). Đã xoá file thử.
