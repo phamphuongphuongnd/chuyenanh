@@ -190,6 +190,13 @@ void main() {
       expect(yml, contains("tags: ['ios-*', '!ios-sim-*']"));
     });
 
+    // ML Kit (GoogleMLKit/MLKitVision/MLKitCommon) loại arm64 khi build simulator →
+    // runner Apple Silicon báo "Framework 'Pods_Runner' not found". Simulator x86_64 thì được.
+    test('Workflow ios-sim.yml chạy trên runner Intel (ML Kit không có arm64 simulator)', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      expect(yml, contains('runs-on: macos-15-intel'));
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
     for (final name in ['ios-build.yml', 'ios-sim.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {

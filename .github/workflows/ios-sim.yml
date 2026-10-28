@@ -11,7 +11,9 @@ permissions:
 
 jobs:
   simulator:
-    runs-on: macos-latest
+    # ML Kit (OCR) loại arm64 khi build simulator → runner Apple Silicon (macos-latest) link lỗi
+    # "Framework 'Pods_Runner' not found". Runner Intel có simulator x86_64 nên build được.
+    runs-on: macos-15-intel
     timeout-minutes: 45
     defaults:
       run:
