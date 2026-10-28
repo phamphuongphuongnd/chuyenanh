@@ -10,6 +10,7 @@ sources:
   - app/lib/features/office_pptx/pptx_search.dart
   - app/lib/features/office_viewer/logic/xlsx_search.dart
   - app/lib/features/pdf_tools/ui/pdf_pick_screen.dart
+  - planhistory/2026-10-28-dong-bo-trinh-xem.md
 ---
 
 # Trình xem đồng bộ: cả 5 định dạng cùng một kiểu

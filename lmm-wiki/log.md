@@ -29,3 +29,4 @@ type: log
 - 2026-10-27 17:42 — /luu-wiki: chốt danh sách việc còn lại để làm tiếp 28/10 (thay file Release, tối ưu tốc độ mở app, ~12 lỗi đã biết chưa sửa, dở dang startupTrace trong main.dart chưa commit) → [[viec-con-lai]] [[phat-hanh-apk]] [[tinh-nang-t1-t10]]
 - 2026-10-28 10:10 — /luu-wiki: đồng bộ 5 định dạng (tìm kiếm chung AppSearchField, zoom, PPT tô vàng, Excel tìm, PDF thanh tìm dưới AppBar), Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách; đã thử A13; push + merge master (d1ff646, 3cdb98d, 293470b); còn TXT chưa thử máy → [[trinh-xem-dong-bo]] [[documents]] [[viec-con-lai]] [[kiem-thu-flutter]] [[preferences]]
 - 2026-10-28 10:20 — thử TXT trên A13: tìm kiếm (1/2, hiện tại cam) + zoom OK; cả 5 định dạng đã kiểm máy thật → [[trinh-xem-dong-bo]] [[viec-con-lai]]
+- 2026-10-28 10:30 — người dùng xác nhận xong hết; thêm planhistory/2026-10-28-dong-bo-trinh-xem.md (mốc phiên, commit, cách làm) → [[trinh-xem-dong-bo]] [[viec-con-lai]]
