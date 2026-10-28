@@ -1,0 +1,57 @@
+name: ios-sim
+
+# Chạy tay hoặc khi đẩy tag ios-sim-*: mỗi lần mất 15–30 phút macOS nên không chạy mỗi lần push.
+on:
+  workflow_dispatch:
+  push:
+    tags: ['ios-sim-*']
+
+permissions:
+  contents: read
+
+jobs:
+  simulator:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      # lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên cần ARB gộp TRƯỚC.
+      - run: dart tool/merge_arb.dart
+      - run: flutter pub get
+      - run: flutter gen-l10n
+      - run: bash tool/fetch_fonts.sh
+      - name: Chọn và bật iPhone simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)['devices']
+          for rt in sorted([k for k in d if 'iOS' in k], reverse=True):
+              ph=[x for x in d[rt] if x['name'].startswith('iPhone') and x['isAvailable']]
+              if ph:
+                  print(ph[-1]['udid']); break
+          ")
+          echo "Simulator: $UDID"
+          test -n "$UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+      - name: Chạy integration_test và chụp ảnh
+        run: >
+          flutter drive
+          --driver=test_driver/integration_test.dart
+          --target=integration_test/app_test.dart
+          -d "$UDID"
+      - name: Đăng ảnh chụp
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-sim-screenshots
+          path: app/screenshots
+          if-no-files-found: warn
