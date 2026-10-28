@@ -83,6 +83,7 @@ class _PptxDeckViewState extends State<PptxDeckView> {
   bool _searching = false;
   final TextEditingController _searchCtrl = TextEditingController();
   List<PptxHit> _hits = const [];
+  Map<PptxParagraph, PptxParagraphPos>? _hitIndex;
   int _current = 0;
 
   // Zoom bằng nút: các trang đang dựng, khoá theo vị trí trang.
@@ -120,6 +121,7 @@ class _PptxDeckViewState extends State<PptxDeckView> {
       _searchCtrl.text,
       includeNotes: _showNotes,
     );
+    _hitIndex = indexPptxParagraphs(widget.deck, _indexes, _searchCtrl.text);
   }
 
   void _onQuery(String _) {
@@ -231,12 +233,16 @@ class _PptxDeckViewState extends State<PptxDeckView> {
                 _searching = false;
                 _searchCtrl.clear();
                 _hits = const [];
+                _hitIndex = null;
                 _current = 0;
               }),
             ),
           Expanded(
             child: PptxSearchHighlight(
               query: _searching ? _searchCtrl.text : '',
+              index: _searching ? _hitIndex : null,
+              currentSlide: _hits.isEmpty ? -1 : _hits[_current].slideIndex,
+              currentOccurrence: currentOccurrenceInSlide(_hits, _current),
               child: indexes.isEmpty
                   ? Center(child: Text(l.pptx_emptyDeck))
                   : Column(

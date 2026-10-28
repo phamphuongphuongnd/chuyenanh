@@ -11,6 +11,7 @@ sources:
   - app/lib/features/office_viewer/logic/xlsx_search.dart
   - app/lib/features/pdf_tools/ui/pdf_pick_screen.dart
   - planhistory/2026-10-28-dong-bo-trinh-xem.md
+  - app/test/features/office_pptx/pptx_search_test.dart
 ---
 
 # Trình xem đồng bộ: cả 5 định dạng cùng một kiểu
@@ -30,11 +31,11 @@ bấm 🔍 thì hiện thanh tìm ngay **dưới** thanh tiêu đề, nền = m�
 |---|---|---|
 | PDF | `PdfViewerController.searchText`; zoom `controller.zoomLevel` bước 0,25 (1,0–3,0) | `reader/screens/pdf_reader_screen.dart` |
 | DOCX/TXT | tìm trong khối chữ, tô nền | `docx_view.dart`, `txt_viewer_page.dart` |
-| XLSX | `findXlsxHits` trên chuỗi hiển thị `cell.display`, qua mọi sheet hiện; nhảy tới ô, tô vàng nhạt / cam (ô hiện tại) | `logic/xlsx_search.dart`, `xlsx_view.dart` |
+| XLSX | `findXlsxHits` trên chuỗi hiển thị `cell.display`, qua mọi sheet hiện, **bỏ ô ở hàng/cột ẩn** (hàng ẩn: `rowHeightsPt[r] ?? defaultRowHeightPt <= 0`; cột ẩn: `columnWidthsChars[c] ?? defaultColumnWidthChars <= 0`, khớp `XlsxGridLayout`); nhảy tới ô, tô vàng nhạt / cam (ô hiện tại) | `logic/xlsx_search.dart`, `xlsx_view.dart` |
 | PPTX | `findPptxHits` trên văn bản khung/bảng/nhóm; nhảy slide; tô vàng bằng `PptxSearchHighlight` (InheritedWidget) + `highlightSpans` trong `ParagraphWidget` (bảng dùng chung) | `pptx_search.dart`, `slide_view.dart` |
 
 Nút zoom PPTX: `_ZoomablePageState.zoomBy` trên `TransformationController`, kẹp 1,0–4,0; về 1,0 thì bỏ khoá vuốt (`_zoomed`).
-PPTX chưa tô riêng kết quả hiện tại (tất cả chỗ khớp cùng màu vàng).
+PPTX tô **kết quả hiện tại màu cam**, các chỗ khớp còn lại vàng: `indexPptxParagraphs` lập bảng tra (theo danh tính đối tượng `PptxParagraph`, `HashMap.identity`) đoạn văn → (slide, số kết quả đứng trước trong slide), cùng thứ tự duyệt với `findPptxHits`; `currentOccurrenceInSlide(hits, current)` cho thứ tự kết quả hiện tại; `ParagraphWidget` tìm khớp trên **chuỗi ghép của cả đoạn** (`findMatchRanges`) rồi chia theo từng run (`highlightRunSpans`) nên chỗ khớp trải qua nhiều run vẫn tô đúng. `PptxSearchHighlight` mang `query`, `index`, `currentSlide`, `currentOccurrence`.
 
 ## Khoá / Mở khoá PDF chọn trong app
 Trước: picker hệ thống (`FilePicker`). Giờ: `PdfPickScreen(mode)` (`pdf_tools/ui/pdf_pick_screen.dart`) liệt kê PDF từ `documentsProvider`,
@@ -52,7 +53,8 @@ Gần đây/Yêu thích kiểm tồn tại bằng `File.exists` bất đồng b�
 ## Gotcha khi làm / test phần này
 - Test widget có drift stream (`favoritePathsProvider`, `documentsProvider`): override bằng stream cố định (`Stream.value`/`StreamController`), không dùng `AppDatabase(NativeDatabase.memory())` → tránh "A Timer is still pending". Xem [[kiem-thu-flutter]].
 - Đóng màn bằng `Navigator.pop` cần `pump(1s)` hai lần mới hết hiệu ứng chuyển trang trước khi `expect(find…, findsNothing)`.
-- `dart format <thư mục>` đổi cả file không liên quan → format đúng file mình sửa.
+- `dart format <thư mục>` đổi cả file không liên quan (đã gặp 2 lần: `reader/*`, `office_pptx/pptx_engine_impl.dart` + 2 test) → format đúng file mình sửa, hoặc `git checkout --` các file ngoài phạm vi.
+- Dán script Python dài chứa `'''` vào heredoc Bash từng lỗi cú pháp → ghi script ra file trong scratchpad rồi chạy (`io.open(..., newline='')` để giữ CRLF).
 - Đã thử trên A13 (28/10): Word, Excel, PPT, PDF, **TXT** (tìm "hello" ra 1/2, kết quả hiện tại cam + còn lại vàng, zoom đổi cỡ chữ), Khoá/Mở khoá. Bố cục nút PDF/PPT lệch so với Word/Excel/TXT (PDF/PPT: 🔍 ở x≈391, Word/Excel/TXT: 🔍 ở x≈503) → toạ độ chạm khác nhau.
 
 Liên quan: [[documents]], [[kiem-thu-flutter]], [[viec-con-lai]], [[tinh-nang-t1-t10]].

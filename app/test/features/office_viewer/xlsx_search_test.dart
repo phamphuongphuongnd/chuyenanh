@@ -52,4 +52,32 @@ void main() {
     expect(findXlsxHits([s], '12,5%'), const [XlsxHit(0, 0, 0)]);
     expect(findXlsxHits([s], '0.125'), isEmpty);
   });
+
+  test('bỏ qua ô ở hàng ẩn (chiều cao 0)', () {
+    final s = rd.XlsxSheet(
+      name: 'H',
+      maxRow: 5,
+      maxCol: 5,
+      cells: {(0, 0): _c('abc'), (1, 0): _c('abc'), (2, 1): _c('abc')},
+      rowHeightsPt: const {1: 0},
+    );
+    expect(findXlsxHits([s], 'abc'), const [
+      XlsxHit(0, 0, 0),
+      XlsxHit(0, 2, 1),
+    ]);
+  });
+
+  test('bỏ qua ô ở cột ẩn (độ rộng 0)', () {
+    final s = rd.XlsxSheet(
+      name: 'C',
+      maxRow: 5,
+      maxCol: 5,
+      cells: {(0, 0): _c('abc'), (0, 1): _c('abc'), (1, 2): _c('abc')},
+      columnWidthsChars: const {1: 0},
+    );
+    expect(findXlsxHits([s], 'abc'), const [
+      XlsxHit(0, 0, 0),
+      XlsxHit(0, 1, 2),
+    ]);
+  });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pdf_office/features/office_pptx/pptx_search.dart';
 import 'package:pdf_office/features/office_pptx/slide_view.dart';
 
 void main() {
@@ -41,4 +42,34 @@ void main() {
     );
     expect(seen, 'abc');
   });
+
+  test(
+    'highlightRunSpans: chỗ khớp trải qua nhiều run, kết quả hiện tại tô cam',
+    () {
+      // Đoạn "Level one" gồm 2 run: "Lev" + "el one"; khớp "level" trải qua cả hai.
+      final ranges = findMatchRanges('level one level', 'level');
+      final a = highlightRunSpans(
+        'Lev',
+        0,
+        ranges,
+        base,
+        null,
+        isCurrent: (k) => k == 1,
+      );
+      final b = highlightRunSpans(
+        'el one level',
+        3,
+        ranges,
+        base,
+        null,
+        isCurrent: (k) => k == 1,
+      );
+      expect(a.map((s) => s.text), ['Lev']);
+      expect(a.single.style?.backgroundColor, const Color(0xFFFFEB3B));
+      expect(b.map((s) => s.text), ['el', ' one ', 'level']);
+      expect(b[0].style?.backgroundColor, const Color(0xFFFFEB3B));
+      expect(b[1].style?.backgroundColor, isNull);
+      expect(b[2].style?.backgroundColor, const Color(0xFFFF9800));
+    },
+  );
 }

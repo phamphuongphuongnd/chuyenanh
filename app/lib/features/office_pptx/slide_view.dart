@@ -6,32 +6,96 @@ import 'package:pptx_reader/pptx_reader.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/utils/link_opener.dart';
 import 'pptx_layout.dart';
+import 'pptx_search.dart';
 
 Color _argb(int v) => Color(v);
 
 /// Từ khoá đang tìm: mọi đoạn chữ bên dưới tô vàng chỗ khớp (không phân biệt hoa thường).
+/// Kết quả hiện tại (slide [currentSlide], thứ tự [currentOccurrence] trong slide) tô cam.
 class PptxSearchHighlight extends InheritedWidget {
   const PptxSearchHighlight({
     super.key,
     required this.query,
     required super.child,
+    this.index,
+    this.currentSlide = -1,
+    this.currentOccurrence = -1,
   });
 
   final String query;
+  final Map<PptxParagraph, PptxParagraphPos>? index;
+  final int currentSlide;
+  final int currentOccurrence;
 
-  static String queryOf(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<PptxSearchHighlight>()
-          ?.query ??
-      '';
+  static PptxSearchHighlight? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<PptxSearchHighlight>();
+
+  static String queryOf(BuildContext context) => of(context)?.query ?? '';
 
   @override
-  bool updateShouldNotify(PptxSearchHighlight old) => query != old.query;
+  bool updateShouldNotify(PptxSearchHighlight old) =>
+      query != old.query ||
+      index != old.index ||
+      currentSlide != old.currentSlide ||
+      currentOccurrence != old.currentOccurrence;
 }
 
 const Color _highlightBg = Color(0xFFFFEB3B);
+const Color _highlightCurrentBg = Color(0xFFFF9800);
 
-/// Tách [text] thành các đoạn; chỗ khớp [query] có nền vàng + chữ đen.
+/// Tách [text] của một run thành các đoạn; phần giao với [ranges] (toạ độ trên cả đoạn văn,
+/// run bắt đầu ở [runStart]) có nền vàng + chữ đen, kết quả [isCurrent] nền cam.
+List<TextSpan> highlightRunSpans(
+  String text,
+  int runStart,
+  List<(int, int)> ranges,
+  TextStyle? style,
+  GestureRecognizer? recognizer, {
+  bool Function(int rangeIndex)? isCurrent,
+}) {
+  final runEnd = runStart + text.length;
+  final spans = <TextSpan>[];
+  var cursor = runStart;
+  for (var k = 0; k < ranges.length; k++) {
+    final s = ranges[k].$1 > runStart ? ranges[k].$1 : runStart;
+    final e = ranges[k].$2 < runEnd ? ranges[k].$2 : runEnd;
+    if (e <= s) continue;
+    if (s > cursor) {
+      spans.add(
+        TextSpan(
+          text: text.substring(cursor - runStart, s - runStart),
+          style: style,
+          recognizer: recognizer,
+        ),
+      );
+    }
+    spans.add(
+      TextSpan(
+        text: text.substring(s - runStart, e - runStart),
+        style: (style ?? const TextStyle()).copyWith(
+          backgroundColor: (isCurrent?.call(k) ?? false)
+              ? _highlightCurrentBg
+              : _highlightBg,
+          color: Colors.black,
+        ),
+        recognizer: recognizer,
+      ),
+    );
+    cursor = e;
+  }
+  if (cursor < runEnd || spans.isEmpty) {
+    spans.add(
+      TextSpan(
+        text: text.substring(cursor - runStart),
+        style: style,
+        recognizer: recognizer,
+      ),
+    );
+  }
+  return spans;
+}
+
+/// Bản đơn giản: tô vàng mọi chỗ khớp [query] trong một chuỗi (không có kết quả hiện tại).
 List<TextSpan> highlightSpans(
   String text,
   TextStyle? style,
@@ -41,46 +105,16 @@ List<TextSpan> highlightSpans(
   final q = query.trim().toLowerCase();
   final lower = text.toLowerCase();
   // Đổi hoa/thường làm lệch độ dài (vài ký tự đặc biệt) thì bỏ qua tô sáng.
-  if (q.isEmpty || lower.length != text.length || !lower.contains(q)) {
+  if (q.isEmpty || lower.length != text.length) {
     return [TextSpan(text: text, style: style, recognizer: recognizer)];
   }
-  final hit = (style ?? const TextStyle()).copyWith(
-    backgroundColor: _highlightBg,
-    color: Colors.black,
+  return highlightRunSpans(
+    text,
+    0,
+    findMatchRanges(lower, q),
+    style,
+    recognizer,
   );
-  final spans = <TextSpan>[];
-  var from = 0;
-  while (true) {
-    final i = lower.indexOf(q, from);
-    if (i < 0) break;
-    if (i > from) {
-      spans.add(
-        TextSpan(
-          text: text.substring(from, i),
-          style: style,
-          recognizer: recognizer,
-        ),
-      );
-    }
-    spans.add(
-      TextSpan(
-        text: text.substring(i, i + q.length),
-        style: hit,
-        recognizer: recognizer,
-      ),
-    );
-    from = i + q.length;
-  }
-  if (from < text.length) {
-    spans.add(
-      TextSpan(
-        text: text.substring(from),
-        style: style,
-        recognizer: recognizer,
-      ),
-    );
-  }
-  return spans;
 }
 
 /// Slide hoàn chỉnh, tự co theo bề rộng có sẵn (giữ tỉ lệ).
@@ -412,16 +446,39 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
     _recognizers.clear();
     final p = paragraph;
     final height = lineHeightFactor(p, _firstSize);
-    final query = PptxSearchHighlight.queryOf(context);
-    final spans = <InlineSpan>[
-      for (final r in p.runs)
-        ...highlightSpans(
-          r.text,
-          runStyle(r, defaultColor, _firstSize, height),
-          query,
-          _recognizerFor(r),
-        ),
-    ];
+    final hl = PptxSearchHighlight.of(context);
+    final q = hl?.query.trim().toLowerCase() ?? '';
+    final fullText = p.runs.map((r) => r.text).join();
+    final lowerFull = fullText.toLowerCase();
+    // Đổi hoa/thường làm lệch độ dài (vài ký tự đặc biệt) thì bỏ qua tô sáng.
+    final ranges = (q.isEmpty || lowerFull.length != fullText.length)
+        ? const <(int, int)>[]
+        : findMatchRanges(lowerFull, q);
+    final pos = hl?.index?[p];
+    final spans = <InlineSpan>[];
+    var offset = 0;
+    for (final r in p.runs) {
+      final style = runStyle(r, defaultColor, _firstSize, height);
+      final rec = _recognizerFor(r);
+      if (ranges.isEmpty) {
+        spans.add(TextSpan(text: r.text, style: style, recognizer: rec));
+      } else {
+        spans.addAll(
+          highlightRunSpans(
+            r.text,
+            offset,
+            ranges,
+            style,
+            rec,
+            isCurrent: (k) =>
+                pos != null &&
+                pos.slideIndex == hl!.currentSlide &&
+                pos.firstOccurrence + k == hl.currentOccurrence,
+          ),
+        );
+      }
+      offset += r.text.length;
+    }
     if (spans.isEmpty) {
       spans.add(
         TextSpan(
