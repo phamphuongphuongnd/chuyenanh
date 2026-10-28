@@ -11,7 +11,9 @@ import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/tools/tool_registry.dart';
 import '../../core/navigation/open_document.dart';
+import '../../core/platform/app_platform.dart';
 import '../../core/utils/doc_type.dart';
+import '../../core/utils/file_import.dart';
 import '../../core/utils/file_format.dart';
 import '../../core/utils/file_paths.dart';
 import '../../core/widgets/widgets.dart';
@@ -40,14 +42,20 @@ Future<void> pickAndOpenDocument(BuildContext context) async {
     type: FileType.custom,
     allowedExtensions: documentExtensions.toList(),
   );
-  final path = picked?.path;
-  if (path == null || !context.mounted) return;
+  final picked0 = picked?.path;
+  if (picked0 == null) return;
+  final path = await importIntoAppDocuments(picked0);
+  if (!context.mounted) return;
   await openDocumentWithFeedback(context, path);
 }
 
 /// Chia sẻ file qua hộp thoại chia sẻ của hệ thống.
-Future<void> shareDocument(DocItem item) =>
-    SharePlus.instance.share(ShareParams(files: [XFile(item.path)]));
+Future<void> shareDocument(DocItem item) => SharePlus.instance.share(
+  ShareParams(
+    files: [XFile(item.path)],
+    sharePositionOrigin: defaultShareOrigin(),
+  ),
+);
 
 /// Hộp thoại Thông tin file.
 Future<void> showDocumentInfo(BuildContext context, DocItem item) {
@@ -194,8 +202,10 @@ Future<void> launchTool(BuildContext context, ToolSpec tool) async {
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
     );
-    final path = picked?.path;
-    if (path == null || !context.mounted) return;
+    final picked0 = picked?.path;
+    if (picked0 == null) return;
+    final path = await importIntoAppDocuments(picked0);
+    if (!context.mounted) return;
     await context.push(tool.route, extra: path);
     return;
   }

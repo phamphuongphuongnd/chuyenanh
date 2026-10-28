@@ -19,7 +19,9 @@ const String kAppDownloadUrl =
 const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';
 
 /// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải.
-String appShareMessage(String intro) => '$intro\n$kAppDownloadUrl';
+/// [withLink] = false (iOS): link trên là APK Android nên bỏ đi.
+String appShareMessage(String intro, {bool withLink = true}) =>
+    withLink ? '$intro\n$kAppDownloadUrl' : intro;
 
 /// `true` nếu ghi được file vào [path] (thư mục phải tồn tại). Thử bằng cách tạo rồi xoá
 /// một file tạm — không để lại dấu vết.

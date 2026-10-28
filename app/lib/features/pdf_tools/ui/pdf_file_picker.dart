@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/utils/file_import.dart';
+
 /// Chọn file cho các công cụ PDF. Tách thành interface để test không cần hộp thoại hệ thống.
 abstract interface class PdfFilePicker {
   /// Chọn một hoặc nhiều PDF. Huỷ → list rỗng.
@@ -25,7 +27,7 @@ class SystemPdfFilePicker implements PdfFilePicker {
       );
       return [
         for (final f in files)
-          if (f.path != null) f.path!,
+          if (f.path != null) await importIntoAppDocuments(f.path!),
       ];
     }
     final file = await FilePicker.pickFile(
@@ -33,7 +35,7 @@ class SystemPdfFilePicker implements PdfFilePicker {
       allowedExtensions: const ['pdf'],
     );
     final path = file?.path;
-    return path == null ? const [] : [path];
+    return path == null ? const [] : [await importIntoAppDocuments(path)];
   }
 
   @override

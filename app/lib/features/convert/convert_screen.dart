@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/navigation/open_document.dart';
+import '../../core/platform/app_platform.dart';
 import '../../core/utils/file_paths.dart';
 import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
@@ -493,7 +494,12 @@ class _ResultCard extends StatelessWidget {
                   ),
                 OutlinedButton.icon(
                   onPressed: () =>
-                      SharePlus.instance.share(ShareParams(files: [XFile(path)])),
+                      SharePlus.instance.share(
+                        ShareParams(
+                          files: [XFile(path)],
+                          sharePositionOrigin: defaultShareOrigin(),
+                        ),
+                      ),
                   icon: const Icon(Icons.share),
                   label: Text(l.core_share),
                 ),

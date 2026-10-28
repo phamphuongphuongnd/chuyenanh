@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../core/platform/app_platform.dart';
 import '../../core/router/routes.dart';
 import '../../core/utils/link_opener.dart';
 import '../../data/settings/settings_providers.dart';
@@ -22,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final s = ref.watch(settingsProvider);
+    final isIos = ref.watch(appPlatformProvider) == AppPlatform.ios;
 
     void open(Widget screen) =>
         Navigator.of(context)
@@ -82,17 +84,19 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: Text(themeModeLabel(context, s.themeMode)),
             onTap: () => open(const ThemeScreen()),
           ),
-          ListTile(
-            key: const ValueKey('settings_outputDir'),
-            leading: const Icon(Icons.folder_outlined),
-            title: Text(l.settings_outputDir),
-            subtitle: Text(
-              effectiveOutputDir(s.outputDir),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+          // iOS không cho chọn thư mục tuỳ ý: file luôn lưu trong Documents của app.
+          if (!isIos)
+            ListTile(
+              key: const ValueKey('settings_outputDir'),
+              leading: const Icon(Icons.folder_outlined),
+              title: Text(l.settings_outputDir),
+              subtitle: Text(
+                effectiveOutputDir(s.outputDir),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              onTap: () => open(const OutputDirScreen()),
             ),
-            onTap: () => open(const OutputDirScreen()),
-          ),
           ListTile(
             key: const ValueKey('settings_pageSize'),
             leading: const Icon(Icons.crop_portrait),
@@ -107,7 +111,12 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.share_outlined),
             title: Text(l.settings_share),
             onTap: () => SharePlus.instance.share(
-              ShareParams(text: appShareMessage(l.settings_shareText)),
+              ShareParams(
+                text: appShareMessage(l.settings_shareText, withLink: !isIos),
+                sharePositionOrigin: defaultShareOrigin(
+                  platform: ref.read(appPlatformProvider),
+                ),
+              ),
             ),
           ),
           ListTile(

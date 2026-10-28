@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_document.dart';
+import '../../../core/platform/app_platform.dart';
 import '../../../core/utils/doc_type.dart';
 import '../../../core/utils/file_format.dart';
 import '../../../core/widgets/widgets.dart';
@@ -277,7 +278,12 @@ Future<void> openToolFile(BuildContext context, String path) async {
 /// Chia sẻ file kết quả.
 Future<void> shareToolFile(BuildContext context, String path) async {
   try {
-    await SharePlus.instance.share(ShareParams(files: [XFile(path)]));
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(path)],
+        sharePositionOrigin: defaultShareOrigin(),
+      ),
+    );
   } catch (e) {
     if (context.mounted) showToolError(context, AppError.from(e));
   }

@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/errors/app_error.dart';
+import '../../core/platform/app_platform.dart';
 import '../../core/utils/doc_type.dart';
 import '../../core/utils/file_paths.dart';
 import '../../data/db/app_database.dart';
@@ -19,6 +21,17 @@ import 'documents_logic.dart';
 final scanRootsProvider = Provider<List<String>>(
   (ref) => Platform.isAndroid ? const ['/storage/emulated/0'] : const [],
 );
+
+/// Thư mục quét khi [scanRootsProvider] rỗng: iOS chỉ có vùng Documents của chính app
+/// (file nhập từ Tệp + kết quả xuất); nền tảng khác → rỗng như cũ.
+final platformScanRootsProvider = Provider<Future<List<String>> Function()>((
+  ref,
+) {
+  final platform = ref.watch(appPlatformProvider);
+  return () async => platform == AppPlatform.ios
+      ? [(await getApplicationDocumentsDirectory()).path]
+      : const <String>[];
+});
 
 final fileScannerProvider = Provider<FileScanner>(
   (ref) => const IsolateFileScanner(),
@@ -154,7 +167,9 @@ class ScanController extends Notifier<ScanState> {
   }
 
   Future<void> _runScan() async {
-    final roots = ref.read(scanRootsProvider);
+    var roots = ref.read(scanRootsProvider);
+    if (roots.isEmpty) roots = await ref.read(platformScanRootsProvider)();
+    if (!ref.mounted) return;
     if (roots.isEmpty) {
       state = state.copyWith(
         phase: ScanPhase.done,

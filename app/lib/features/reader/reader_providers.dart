@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/platform/app_platform.dart';
+import '../../core/utils/file_import.dart';
 import '../../engines/pdf/pdf_render_engine.dart';
 import '../../engines/pdf/pdf_security.dart';
 import '../../engines/pdf/pdfx_render_engine.dart';
@@ -21,7 +23,8 @@ final pdfFilePickerProvider = Provider<PdfFilePicker>(
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
     );
-    return file?.path;
+    final path = file?.path;
+    return path == null ? null : importIntoAppDocuments(path);
   },
 );
 
@@ -31,7 +34,10 @@ typedef FileSharer = Future<void> Function(List<String> paths);
 final fileSharerProvider = Provider<FileSharer>(
   (ref) => (paths) async {
     await SharePlus.instance.share(
-      ShareParams(files: [for (final path in paths) XFile(path)]),
+      ShareParams(
+        files: [for (final path in paths) XFile(path)],
+        sharePositionOrigin: defaultShareOrigin(),
+      ),
     );
   },
 );

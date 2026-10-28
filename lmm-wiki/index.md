@@ -53,6 +53,7 @@ updated: 2026-10-28
 - [[ui-app-goc]] — cấu trúc giao diện app mẫu (bottom nav 5 item, 3 tile, Cài đặt) và phần đã làm giống.
 - [[loi-chi-hien-tren-may-that]] — 3 lỗi chỉ lộ trên máy thật (R8/ML Kit, provider autoDispose khi `read`), cách tái hiện bằng ADB, quy tắc rút ra.
 - [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
+- [[ios]] — chạy trên iPhone: khác Android, build bằng CI macOS, cài bằng Sideloadly (7 ngày), việc chưa kiểm.
 
 ## Decisions (ADR)
 - [[0001-flutter-android-truoc]] — Flutter, Android trước, dùng cá nhân, test trên Samsung A13.

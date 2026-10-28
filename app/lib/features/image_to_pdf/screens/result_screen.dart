@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_document.dart';
+import '../../../core/platform/app_platform.dart';
 import '../../../core/router/routes.dart';
 import '../../../core/utils/file_format.dart';
 import '../../../core/utils/file_paths.dart';
@@ -48,7 +49,12 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
   Future<void> _share() async {
     try {
-      await SharePlus.instance.share(ShareParams(files: [XFile(_path)]));
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(_path)],
+          sharePositionOrigin: defaultShareOrigin(),
+        ),
+      );
     } catch (e) {
       if (mounted) _snack(appErrorMessage(context, AppError.from(e)));
     }
