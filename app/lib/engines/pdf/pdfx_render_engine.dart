@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:pdfx/pdfx.dart' as pdfx;
 
 import '../../core/errors/app_error.dart';
@@ -10,9 +11,24 @@ import '../../core/utils/page_size.dart';
 import 'pdf_render_engine.dart';
 import 'pdf_security.dart';
 
-/// Số điểm ảnh tối đa của một ảnh render (≈ 16 MP ≈ 64 MB RGBA) — tránh hết RAM
-/// trên máy yếu khi chọn DPI quá cao với trang lớn.
-const int kMaxRenderPixels = 16000000;
+/// Số điểm ảnh tối đa của một ảnh render (9 MP ≈ 36 MB RGBA) — tránh hết RAM
+/// trên máy yếu (RAM 3GB, hệ 32-bit) khi chọn DPI quá cao với trang lớn (A1/A0).
+/// Bitmap còn được nhân bản qua bytes PNG/JPEG và bản sao phía Dart nên đỉnh bộ
+/// nhớ gấp vài lần. 9 MP là mức thấp nhất vẫn giữ nguyên A4 ở 300 dpi (2480×3508
+/// ≈ 8,7 MP); trang lớn hơn bị giảm DPI hiệu dụng, giữ tỉ lệ.
+const int kMaxRenderPixels = 9000000;
+
+/// `true` nếu [error] là lỗi hết bộ nhớ khi dựng bitmap (Dart OOM hoặc
+/// `PlatformException` từ plugin pdfx mang thông điệp OutOfMemory).
+bool isRenderOutOfMemory(Object error) {
+  if (error is OutOfMemoryError) return true;
+  if (error is PlatformException) {
+    final text = '${error.code} ${error.message} ${error.details}'
+        .toLowerCase();
+    return text.contains('outofmemory') || text.contains('out of memory');
+  }
+  return false;
+}
 
 /// Kích thước ảnh theo pixel.
 class RenderSize {
@@ -165,15 +181,22 @@ class _PdfxDocument implements PdfRenderDocument {
     return _withPage(pageIndex, (page) async {
       cancelToken?.throwIfCancelled();
       final size = sizeFor(PdfPageSize(page.width, page.height));
-      final image = await page.render(
-        width: size.width.toDouble(),
-        height: size.height.toDouble(),
-        format: format,
-        // PNG mặc định trong suốt → nền trắng như giấy.
-        backgroundColor: '#FFFFFF',
-        quality: quality,
-        forPrint: true,
-      );
+      final pdfx.PdfPageImage? image;
+      try {
+        image = await page.render(
+          width: size.width.toDouble(),
+          height: size.height.toDouble(),
+          format: format,
+          // PNG mặc định trong suốt → nền trắng như giấy.
+          backgroundColor: '#FFFFFF',
+          quality: quality,
+          forPrint: true,
+        );
+      } catch (e) {
+        // Hết bộ nhớ → báo thân thiện (dùng thông điệp "không đủ dung lượng").
+        if (isRenderOutOfMemory(e)) throw const NoSpace();
+        rethrow;
+      }
       if (image == null) throw const CorruptFile('render');
       return image.bytes;
     });
