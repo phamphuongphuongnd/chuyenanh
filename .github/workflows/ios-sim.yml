@@ -43,15 +43,24 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           echo "UDID=$UDID" >> "$GITHUB_ENV"
       - name: Chạy integration_test và chụp ảnh
-        run: >
-          flutter drive
-          --driver=test_driver/integration_test.dart
-          --target=integration_test/app_test.dart
-          -d "$UDID"
-      - name: Đăng ảnh chụp
+        run: |
+          set -o pipefail
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart \
+            -d "$UDID" 2>&1 | tee drive.log
+      # Log job chỉ xem được khi đăng nhập; annotation thì đọc được công khai qua API.
+      - name: Đưa đoạn cuối log lỗi ra annotation
+        if: failure()
+        run: |
+          MSG=$(tail -n 60 drive.log 2>/dev/null | sed -e 's/%/%25/g' -e 's/\r//g' | awk 'BEGIN{ORS="%0A"}{print}')
+          echo "::error title=flutter drive (60 dòng cuối)::${MSG:-không có drive.log}"
+      - name: Đăng ảnh chụp và log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ios-sim-screenshots
-          path: app/screenshots
+          path: |
+            app/screenshots
+            app/drive.log
           if-no-files-found: warn
