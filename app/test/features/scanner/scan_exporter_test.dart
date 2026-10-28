@@ -58,6 +58,33 @@ class CancelAfterWritePdf extends FakePdf {
   }
 }
 
+/// Engine báo bỏ qua một số ảnh (ảnh hỏng/mất file).
+class SkippingPdf extends FakePdf {
+  SkippingPdf(this.skipIndexes);
+  final List<int> skipIndexes;
+  @override
+  Future<ImageToPdfResult> createPdf({
+    required List<String> imagePaths,
+    required String outputPath,
+    ImageToPdfOptions options = const ImageToPdfOptions(),
+    ProgressCallback? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    final r = await super.createPdf(
+      imagePaths: imagePaths,
+      outputPath: outputPath,
+      options: options,
+      onProgress: onProgress,
+      cancelToken: cancelToken,
+    );
+    return ImageToPdfResult(
+      outputPath: r.outputPath,
+      pageCount: imagePaths.length - skipIndexes.length,
+      skippedImages: [for (final i in skipIndexes) imagePaths[i]],
+    );
+  }
+}
+
 class FakeOcr implements OcrEngine {
   final seen = <String>[];
   @override
@@ -166,6 +193,19 @@ void main() {
         ? Directory(out).listSync().whereType<File>().toList()
         : <File>[];
     expect(left, isEmpty);
+  });
+
+  test('trang ảnh hỏng bị bỏ → kết quả báo số trang bị bỏ', () async {
+    // Hai trang đã sửa (render ra file riêng); engine báo bỏ trang thứ 2.
+    pdf = SkippingPdf([1]);
+    final r = await make().exportPdf(pages());
+    expect(r.skippedCount, 1);
+    expect(r.pageCount, 2);
+  });
+
+  test('không trang nào bị bỏ → skippedCount = 0', () async {
+    final r = await make().exportPdf(pages());
+    expect(r.skippedCount, 0);
   });
 
   test('TXT: OCR từng trang, ghi UTF-8 giữ dấu', () async {

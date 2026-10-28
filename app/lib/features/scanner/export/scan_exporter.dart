@@ -43,6 +43,7 @@ class ScanExportResult {
     required this.pageCount,
     this.hasText = true,
     this.textLayer = false,
+    this.skippedCount = 0,
   });
   final String outputPath;
   final int pageCount;
@@ -52,6 +53,9 @@ class ScanExportResult {
 
   /// PDF đã có lớp chữ tìm kiếm được (chỉ khi xuất PDF với `searchable`).
   final bool textLayer;
+
+  /// Số trang bị bỏ qua vì ảnh hỏng/không đọc được (PDF thiếu các trang này).
+  final int skippedCount;
 }
 
 /// Xuất danh sách trang đã quét ra PDF / TXT / DOCX. Không ghi đè file cũ.
@@ -142,13 +146,23 @@ class ScanExporter {
         cancelToken: cancelToken,
       );
       try {
+        // Trang ảnh hỏng bị engine bỏ: PDF ít trang hơn → bỏ luôn kết quả OCR của trang đó,
+        // nếu không số trang lệch nhau và mất cả lớp chữ.
+        final skipped = result.skippedImages.toSet();
+        final skippedIdx = <int>{
+          for (var i = 0; i < paths.length; i++)
+            if (skipped.contains(paths[i])) i,
+        };
         var textLayer = false;
         if (ocr != null) {
           cancelToken?.throwIfCancelled();
           final file = File(result.outputPath);
           final withText = await addInvisibleTextLayer(
             await file.readAsBytes(),
-            ocr,
+            [
+              for (var i = 0; i < ocr.length; i++)
+                if (!skippedIdx.contains(i)) ocr[i],
+            ],
             fontSource,
           );
           if (withText != null) {
@@ -161,6 +175,7 @@ class ScanExporter {
           outputPath: result.outputPath,
           pageCount: result.pageCount,
           textLayer: textLayer,
+          skippedCount: skippedIdx.length,
         );
       } catch (_) {
         // Huỷ/lỗi sau khi PDF đã ghi: không để lại file dở trong thư mục xuất.

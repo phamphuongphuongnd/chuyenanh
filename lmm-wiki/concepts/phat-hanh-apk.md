@@ -31,7 +31,7 @@ sources:
   `NoClassDefFoundError` lúc chạy (bản debug cũng bị).
 - Gradle mới từ chối `getDefaultProguardFile("proguard-android.txt")`; dùng `proguard-android-optimize.txt`.
 - Bản release ký bằng khoá debug (cùng khoá với bản debug nên cài đè được, không cần gỡ).
-- Bản debug mở >10s; **release ~4,5–5,8s** tới màn hình chính (hệ điều hành hiện splash sau ~0,9s; phần còn lại là Flutter
-  khởi động trên máy 32-bit). Nên thử trên máy thật bằng release, đừng đánh giá tốc độ bằng debug.
+- Bản debug mở >10s; **release ≈ 1s** tới màn hình chính có đủ nội dung (đo bằng `startupTrace`, xem [[viec-con-lai]]). Con số 4,5–5,8s
+  từng ghi là do đo bằng `uiautomator` (tự tốn 1,5–3s mỗi lần). Đánh giá tốc độ bằng release trên máy thật, không dùng debug.
 
 Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].

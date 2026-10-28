@@ -167,8 +167,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       ctrl.close();
       if (!mounted) return;
       final name = r.outputPath.split(RegExp(r'[\\/]')).last;
+      final base = r.hasText ? l.scan_exported(name) : l.scan_noText;
       _toast(
-        r.hasText ? l.scan_exported(name) : l.scan_noText,
+        r.skippedCount > 0
+            ? '$base ${l.img2pdf_skippedImages(r.skippedCount)}'
+            : base,
         action: SnackBarAction(
           label: l.core_open,
           onPressed: () async {

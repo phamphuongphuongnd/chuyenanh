@@ -25,6 +25,7 @@ updated: 2026-10-27
 - [[preferences]] — cách làm việc người dùng muốn tôi tuân theo.
 
 ## Đang làm dở — đọc trước khi tiếp tục
+- **[[viec-con-lai]] — danh sách việc làm tiếp (đọc trước tiên)**.
 - `planhistory/2026-10-25-pdf-office-khoi-tao.md` — **checkpoint tiến độ** build song song (nhánh nào xong, nhánh nào
   chưa merge, cách làm tiếp nếu phiên bị ngắt).
 - `docs/superpowers/plans/2026-10-25-parallel-build-contract.md` — hợp đồng chia việc (sở hữu file, route, DB, engine,
@@ -37,6 +38,7 @@ updated: 2026-10-27
 ## Modules
 - [[thu-vien-dart-thuan]] — 4 thư viện Dart thuần trong `packages/` (office_reader, pptx_reader, pdf_layout, image_ops).
 - [[tinh-nang-t1-t10]] — **trạng thái 10 tính năng (đã ghép)**: từng tính năng làm được gì, hạn chế, việc còn lại (font, thử máy thật).
+- [[viec-con-lai]] — **việc còn lại / làm tiếp** (chốt 27/10): thay file Release, tối ưu khởi động, lỗi đã biết chưa sửa.
 - [[documents]] — T1 Trang chủ Tài liệu: màn, provider quét + quyền, quyết định thiết kế, phần chưa kiểm trên máy thật.
 
 ## Entities

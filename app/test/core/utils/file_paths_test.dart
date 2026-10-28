@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -77,5 +78,35 @@ void main() {
       'Download',
     );
     expect(baseNameWithoutExtension('report.final.pdf'), 'report.final');
+  });
+
+  group('tên file quá dài', () {
+    late Directory dir;
+    setUp(() => dir = Directory.systemTemp.createTempSync('long_name_'));
+    tearDown(() => dir.deleteSync(recursive: true));
+
+    test('tên tiếng Việt rất dài được cắt, vẫn tạo được file', () async {
+      final path = await uniqueOutputPath(dir.path, 'Việt Nam ' * 60, 'pdf');
+      expect(p.basename(path).codeUnits.length, lessThan(255));
+      expect(utf8.encode(p.basename(path)).length, lessThanOrEqualTo(200));
+      // Ghi thật: không được ném ENAMETOOLONG kể cả khi thêm " (1)" và ".tmp".
+      await writeAtomically(path, [1, 2, 3]);
+      expect(File(path).existsSync(), isTrue);
+      final next = await uniqueOutputPath(dir.path, 'Việt Nam ' * 60, 'pdf');
+      expect(next, isNot(path));
+      expect(utf8.encode(p.basename(next)).length, lessThanOrEqualTo(210));
+    });
+
+    test('tên ngắn giữ nguyên', () async {
+      final path = await uniqueOutputPath(dir.path, 'Báo cáo', 'pdf');
+      expect(p.basename(path), 'Báo cáo.pdf');
+    });
+
+    test('writeAtomically ghi đè file có sẵn', () async {
+      final f = File(p.join(dir.path, 'a.bin'))..writeAsBytesSync([9, 9, 9, 9]);
+      await writeAtomically(f.path, [1, 2]);
+      expect(f.readAsBytesSync(), [1, 2]);
+      expect(File('${f.path}.tmp').existsSync(), isFalse);
+    });
   });
 }
