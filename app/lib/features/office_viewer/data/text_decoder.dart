@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import '../logic/text_search.dart';
 import 'office_io.dart';
 
 /// Bảng mã nhận được của file TXT.
@@ -141,6 +142,59 @@ String _windows1252(Uint8List b) {
 
 /// Tách dòng theo `\r\n`, `\n` hoặc `\r` đơn. Chuỗi rỗng → `['']`.
 List<String> splitLines(String text) => text.split(RegExp(r'\r\n|\n|\r'));
+
+/// Số ký tự tối đa của một đoạn hiển thị (dòng dài hơn bị cắt thành nhiều đoạn).
+const int maxLineChars = 5000;
+
+/// Văn bản dài hơn ngưỡng này thì tách dòng / tìm trong isolate nền.
+const int largeTextChars = 200000;
+
+/// Số kết quả tìm tối đa giữ lại.
+const int maxSearchHits = 5000;
+
+/// Như [splitLines] nhưng dòng dài hơn [maxLen] được cắt thành nhiều đoạn
+/// (không cắt giữa cặp surrogate) để một widget `Text` không phải bố trí hàng triệu ký tự.
+List<String> splitLinesCapped(String text, {int maxLen = maxLineChars}) {
+  final out = <String>[];
+  for (final line in splitLines(text)) {
+    if (line.length <= maxLen) {
+      out.add(line);
+      continue;
+    }
+    var pos = 0;
+    while (pos < line.length) {
+      var end = pos + maxLen;
+      if (end >= line.length) {
+        end = line.length;
+      } else {
+        final c = line.codeUnitAt(end - 1);
+        if (c >= 0xD800 && c <= 0xDBFF) end--;
+      }
+      out.add(line.substring(pos, end));
+      pos = end;
+    }
+  }
+  return out;
+}
+
+/// Như `findHits` nhưng dừng khi đủ [limit] kết quả; [truncated] = còn kết quả bị bỏ.
+({List<SearchHit> hits, bool truncated}) findHitsLimited(
+  List<String> blocks,
+  String query, {
+  int limit = maxSearchHits,
+}) {
+  final q = query.trim();
+  if (q.isEmpty) return (hits: const <SearchHit>[], truncated: false);
+  final re = RegExp(RegExp.escape(q), caseSensitive: false);
+  final hits = <SearchHit>[];
+  for (var i = 0; i < blocks.length; i++) {
+    for (final m in re.allMatches(blocks[i])) {
+      if (hits.length >= limit) return (hits: hits, truncated: true);
+      hits.add(SearchHit(i, m.start, m.end - m.start));
+    }
+  }
+  return (hits: hits, truncated: false);
+}
 
 /// Đọc tối đa [maxTextBytes] byte đầu của file rồi nhận mã + giải mã (trong isolate).
 Future<DecodedText> readTextFile(String path) => runParsing(() {

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,23 +37,65 @@ class TxtViewerPage extends ConsumerStatefulWidget {
 }
 
 class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
-  late final List<String> _lines = splitLines(widget.content.text);
+  List<String> _lines = const [];
+  bool _loading = true;
+  Timer? _debounce;
+  int _seq = 0;
   final _scroller = IndexedScroller();
   final _searchCtrl = TextEditingController();
   bool _searching = false;
   List<SearchHit> _hits = const [];
   int _current = 0;
 
+  bool get _large => widget.content.text.length > largeTextChars;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLines();
+  }
+
+  Future<void> _loadLines() async {
+    final text = widget.content.text;
+    if (text.length <= largeTextChars) {
+      _lines = splitLinesCapped(text);
+      _loading = false;
+      return;
+    }
+    final lines = await Isolate.run(() => splitLinesCapped(text));
+    if (!mounted) return;
+    setState(() {
+      _lines = lines;
+      _loading = false;
+    });
+  }
+
   @override
   void dispose() {
+    _debounce?.cancel();
     _scroller.dispose();
     _searchCtrl.dispose();
     super.dispose();
   }
 
   void _onQuery(String q) {
+    _debounce?.cancel();
+    final seq = ++_seq;
+    if (!_large) {
+      _applyHits(findHitsLimited(_lines, q));
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 350), () async {
+      final lines = _lines;
+      final r = await Isolate.run(() => findHitsLimited(lines, q));
+      if (!mounted || seq != _seq) return;
+      _applyHits(r);
+    });
+  }
+
+  void _applyHits(({List<SearchHit> hits, bool truncated}) r) {
     setState(() {
-      _hits = findHits(_lines, q);
+      _hits = r.hits;
       _current = 0;
     });
     _goToCurrent();
@@ -118,6 +163,8 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
               onPrev: () => _step(-1),
               onNext: () => _step(1),
               onClose: () => setState(() {
+                _debounce?.cancel();
+                _seq++;
                 _searching = false;
                 _searchCtrl.clear();
                 _hits = const [];
@@ -130,7 +177,9 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
               dividerColor: Colors.transparent,
             ),
           Expanded(
-            child: PinchZoom(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : PinchZoom(
               scale: fontSize / 16,
               min: 10 / 16,
               max: 40 / 16,
