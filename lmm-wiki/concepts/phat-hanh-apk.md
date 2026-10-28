@@ -38,6 +38,11 @@ sources:
   (`com.google.android.gms.mlkit.docscan.ui.DocumentScanningActivity`).
   **Cách kiểm sau mỗi lần build release:** `adb logcat -d --pid=$(pidof com.phuong.pdfoffice) | grep ComponentDiscovery` phải rỗng; bấm
   Quét tài liệu phải thấy `DocumentScanningActivity` của Google, không phải `...fallback.DocumentScannerActivity`.
+- **Quyết định 28/10: TẮT R8 cho bản release** (`isMinifyEnabled = false`, `isShrinkResources = false` trong `build.gradle.kts`).
+  Giữ ML Kit bằng keep rule chưa đủ: khởi tạo được nhưng Google báo `GmsDocScanDelAct: Failed to handle result` sau khi chụp
+  (bản thu gọn hỏng ở bước nhận kết quả). Tắt R8 thì Quét tài liệu (tự động + thủ công) chạy đúng như bản debug; APK 110→114MB.
+  Đây là app cá nhân nên đổi vài MB lấy độ tin cậy là hợp lý. Đừng bật lại R8 nếu chưa thử đủ quét/OCR/PDF trên máy thật.
+  `proguard-rules.pro` vẫn giữ (vô hại khi R8 tắt).
 - Gradle mới từ chối `getDefaultProguardFile("proguard-android.txt")`; dùng `proguard-android-optimize.txt`.
 - Bản release ký bằng khoá debug (cùng khoá với bản debug nên cài đè được, không cần gỡ).
 - Bản debug mở >10s; **release ≈ 1s** tới màn hình chính có đủ nội dung (đo bằng `startupTrace`, xem [[viec-con-lai]]). Con số 4,5–5,8s

@@ -33,10 +33,10 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
+            // Tắt R8: thu gọn code làm hỏng ML Kit (khởi tạo + nhận kết quả quét) và các thư viện dùng
+            // reflection khác. Bản debug chạy đúng, bản thu gọn thì không. Đổi lại APK lớn hơn một chút.
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
