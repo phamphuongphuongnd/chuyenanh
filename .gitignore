@@ -87,3 +87,6 @@ app/lib/l10n/
 
 # Font Noto tải bằng app/tool/fetch_fonts.sh (~39 MB, không commit)
 app/assets/fonts/*.ttf
+
+# Ảnh chụp từ integration_test trên simulator iOS (CI tạo)
+app/screenshots/
