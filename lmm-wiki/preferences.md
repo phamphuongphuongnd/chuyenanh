@@ -91,3 +91,9 @@ sources: []
 - Hướng dẫn thao tác trên web/terminal phải **từng bước, nói rõ nút nào, trang nào**; lệnh PowerShell chạy file có dấu cách cần `&`.
 - Muốn app **phản hồi nhanh**: đánh giá bằng bản release trên máy thật, không dùng debug; việc nặng đưa ra isolate nền.
 - Không tự đăng nhập GitHub/`gh`: người dùng tự làm trên trình duyệt; tôi cài `gh` được nhưng không auth.
+
+## Bổ sung 28/10/2026
+- Người dùng có thể **đang dùng chat khác trên cùng thư mục**: sửa tối thiểu, không đụng file ngoài phạm vi, không commit/đổi nhánh khi chưa được bảo; kiểm `git status` trước khi sửa. Khi nói "bên kia đã xong" thì hết ràng buộc này.
+- Người dùng muốn các **loại tài liệu hành xử giống hệt nhau** (cùng nút, cùng thanh tìm, cùng màu theo loại) — thấy khác là coi như lỗi.
+- Sau khi thử xong và sửa lỗi, người dùng cho phép **commit + push + merge `master`** (đã dặn rõ ngày 28/10); vẫn không commit file không phải của mình (`baocao.docx`).
+- Cho agent chạy song song chỉ để **sửa code theo file riêng**; tôi tự chạy `flutter analyze/test` tuần tự sau đó.

@@ -1,7 +1,7 @@
 ---
 title: Module documents — Trang chủ Tài liệu (T1)
 type: module
-updated: 2026-10-27
+updated: 2026-10-28
 sources:
   - app/lib/features/documents/
   - app/lib/data/file_scanner/
@@ -106,3 +106,6 @@ Liên quan: [[co-so-du-lieu]], [[0003-kien-truc-riverpod]], [[tinh-nang-t1-t10]]
   chỉ đọc 128KB đầu + 128KB cuối; `resolveOutputDirectory` thử ghi file thật; `main.dart` chỉ nạp ngày giờ 6 locale.
 
 Liên quan: [[ui-app-goc]], [[phat-hanh-apk]].
+
+## Cập nhật 28/10
+Thanh tìm kiếm của `SearchScreen` dùng `AppSearchField` chung, debounce 200ms; danh sách giảm dựng lại, tab dựng lười, sắp xếp một lần dùng chung — chi tiết ở [[trinh-xem-dong-bo]].

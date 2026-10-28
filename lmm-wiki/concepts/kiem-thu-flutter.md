@@ -48,3 +48,9 @@ Liên quan: [[documents]], [[build-android]], [[build-song-song-agent]].
 - Test `settings_screens_test` "chọn thư mục ghi được" (đĩa thật) chập chờn khi chạy cả bộ, pass khi chạy riêng.
 - Bấm ADB theo toạ độ ước lượng khi app còn khởi động có thể đổi cài đặt người dùng (đã lỡ đổi giao diện Tối, gắn sao 3 file):
   luôn `uiautomator dump` lấy `bounds` và chờ màn hình sẵn sàng trước khi bấm.
+
+## Bài học 28/10/2026
+- Git Bash đổi `/sdcard/...` thành đường dẫn Windows: dùng `export MSYS_NO_PATHCONV=1` và **đường dẫn Windows** cho file nguồn của `adb push` (`D:\...`).
+- Chạm ADB theo toạ độ khi điện thoại **đang dùng** (bong bóng Zalo nổi, thông báo) sẽ rơi vào app khác (đã lỡ mở trình duyệt Zalo). Chụp màn hình kiểm tra trước **mỗi** lần chạm, dừng ngay khi thấy app lạ; chạm đến trễ làm danh sách dịch chỗ (thanh "Đang quét" hiện ra sau khi resume).
+- Tiến trình `flutter_tester` bỏ lại từ lượt test nền bị kẹt sẽ giữ `build/native_assets/windows/sqlite3.dll` → mọi `flutter test` sau đó lỗi "failed to delete file"; phải dừng tiến trình đó (cần người dùng cho phép nếu bị chặn).
+- Test mới dùng drift stream thật hay lỗi timer treo: xem [[trinh-xem-dong-bo]].

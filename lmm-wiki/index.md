@@ -1,7 +1,7 @@
 ---
 title: Index — Mục lục wiki
 type: index
-updated: 2026-10-27
+updated: 2026-10-28
 ---
 
 # Index — Mục lục LLM Wiki
@@ -49,6 +49,7 @@ updated: 2026-10-27
 - [[xuat-chu-ra-pdf]] — kết quả spike: chữ Việt phải chuẩn hoá NFC, CJK phải fallback font theo script, lỗi mật khẩu PDF.
 - [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
+- [[trinh-xem-dong-bo]] — 5 định dạng cùng thanh tìm kiếm + zoom, tô vàng chữ tìm, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách.
 - [[ui-app-goc]] — cấu trúc giao diện app mẫu (bottom nav 5 item, 3 tile, Cài đặt) và phần đã làm giống.
 - [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
 

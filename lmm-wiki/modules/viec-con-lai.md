@@ -1,7 +1,7 @@
 ---
 title: Việc còn lại — làm tiếp ngày 28/10/2026
 type: module
-updated: 2026-10-27
+updated: 2026-10-28
 sources:
   - lmm-wiki/modules/tinh-nang-t1-t10.md
   - lmm-wiki/concepts/phat-hanh-apk.md
@@ -11,6 +11,10 @@ sources:
 
 Trạng thái lúc chốt: commit `04a7f96` đã **push + merge vào `master`** (`master` = `feat/pdf-office`). Gần 710 test pass, analyze sạch.
 Máy dev: Windows, Flutter ở `C:\src\flutter\bin`, ADB `C:\Android\Sdk\platform-tools\adb.exe`, máy thử Galaxy A13 (**32-bit armeabi-v7a**).
+
+## Đã làm 28/10 (phiên sau) — xem [[trinh-xem-dong-bo]]
+- Thanh tìm kiếm chung + tìm/zoom cho cả 5 định dạng, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách, lọc tab dùng chung một lần sắp xếp. Đã push + merge `master` (commit `d1ff646`, `3cdb98d`, `293470b`).
+- Còn lại tuỳ chọn: thử TXT trên máy thật; đo tốc độ trước/sau; PPT tô riêng kết quả hiện tại; Excel tìm cả hàng/cột ẩn (hiện vẫn tính).
 
 ## 0. Việc của người dùng (cần làm tay, ~2 phút)
 - [ ] **Thay file trong GitHub Release** `android-latest`: link tải đang ra bản CŨ (113.497.671 byte), bản mới ở
@@ -27,7 +31,7 @@ OS báo `Displayed +0,75–1,2s`; chụp màn hình lúc 1,5s đã thấy đủ 
   dùng `startupTrace`/logcat `Displayed`. Bản debug mới là >10s.
 - Đã làm trước đó (vẫn hợp lý): chỉ nạp ngày giờ 6 locale, Trang chủ chỉ `stat` 5 file, mã hoá PDF ở isolate. Các "ứng viên nghi ngờ" (hoãn quét,
   dựng tab lười…) **không cần** vì Dart khởi động chỉ vài ms.
-- Còn lại (tuỳ chọn): `favoriteItemsProvider`/`recentItemsProvider` còn `statSync` cả trăm hàng ở màn Gần đây/Yêu thích; `DocumentList` watch cả `scanControllerProvider`.
+- Hai mục tuỳ chọn trước đây (Gần đây/Yêu thích còn `statSync`; `DocumentList` watch cả `scanControllerProvider`) **đã làm 28/10**.
 
 ## 2. Lỗi đã biết, CHƯA sửa (do 5 agent đọc code, chưa tái hiện trên máy thật)
 Ưu tiên theo mức gây hại thật cho người dùng:
