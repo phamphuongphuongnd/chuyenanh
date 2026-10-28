@@ -255,6 +255,43 @@ List<List<int>> partitionColumns(List<double> widths, double maxWidth) {
 
 const _maxXlsxRows = 50000;
 
+/// Tra vùng gộp phủ ô (r, c) mà không quét toàn bộ danh sách: duyệt hàng tăng dần, chỉ giữ các
+/// vùng đang "sống" ở hàng hiện tại. Nếu nhiều vùng chồng nhau, chọn vùng đứng trước trong danh sách
+/// (giống bản quét tuyến tính cũ). Mỗi dải cột phải tạo cursor mới (hàng bắt đầu lại từ đầu).
+class XlsxMergeCursor {
+  XlsxMergeCursor(this._merges)
+      : _order = List<int>.generate(_merges.length, (i) => i)
+          ..sort((a, b) {
+            final d = _merges[a].firstRow - _merges[b].firstRow;
+            return d != 0 ? d : a - b;
+          });
+
+  final List<office.XlsxRange> _merges;
+  final List<int> _order;
+  final List<int> _active = [];
+  var _next = 0;
+  var _row = -1;
+
+  /// Vùng gộp phủ (r, c) hoặc null. Các lần gọi phải có [r] không giảm.
+  office.XlsxRange? covering(int r, int c) {
+    if (_merges.isEmpty) return null;
+    assert(r >= _row, 'XlsxMergeCursor: hàng phải tăng dần');
+    if (r != _row) {
+      _row = r;
+      _active.removeWhere((i) => _merges[i].lastRow < r);
+      while (_next < _order.length && _merges[_order[_next]].firstRow <= r) {
+        final i = _order[_next++];
+        if (_merges[i].lastRow >= r) _active.add(i);
+      }
+    }
+    int? best;
+    for (final i in _active) {
+      if (_merges[i].contains(r, c) && (best == null || i < best)) best = i;
+    }
+    return best == null ? null : _merges[best];
+  }
+}
+
 PdfBuildResult buildXlsxPdf(
   office.XlsxWorkbook wb,
   ToPdfOptions options,
@@ -268,18 +305,23 @@ PdfBuildResult buildXlsxPdf(
     final s = sheets[si];
     var lastRow = -1;
     var lastCol = -1;
+    var truncated = false;
     for (final e in s.cells.entries) {
       final c = e.value;
       if (c.display.isEmpty && c.style.fillArgb == null) continue;
+      if (e.key.$1 >= _maxXlsxRows) {
+        truncated = true; // hàng quá giới hạn bị cắt, không được kéo dài sheet bằng hàng trống
+        continue;
+      }
       if (e.key.$1 > lastRow) lastRow = e.key.$1;
       if (e.key.$2 > lastCol) lastCol = e.key.$2;
     }
     if (lastRow < 0 || lastCol < 0) continue;
     final rowsAll = <int>[
-      for (var r = 0; r <= lastRow && r < _maxXlsxRows; r++)
+      for (var r = 0; r <= lastRow; r++)
         if ((s.rowHeightsPt[r] ?? 1) != 0) r,
     ];
-    if (lastRow >= _maxXlsxRows) debugPrint('convert: sheet ${s.name} bị cắt còn $_maxXlsxRows hàng');
+    if (truncated) debugPrint('convert: sheet ${s.name} bị cắt còn $_maxXlsxRows hàng');
     final cols = <int>[
       for (var c = 0; c <= lastCol; c++)
         if ((s.columnWidthsChars[c] ?? s.defaultColumnWidthChars) != 0) c,
@@ -295,13 +337,6 @@ PdfBuildResult buildXlsxPdf(
     for (final m in s.merges) {
       anchors[(m.firstRow, m.firstCol)] = m;
     }
-    office.XlsxRange? mergeCovering(int r, int c) {
-      for (final m in s.merges) {
-        if (m.contains(r, c)) return m;
-      }
-      return null;
-    }
-
     for (var bi = 0; bi < bands.length; bi++) {
       final band = bands[bi];
       w.pageBreak();
@@ -312,14 +347,15 @@ PdfBuildResult buildXlsxPdf(
       );
       final bandCols = [for (final i in band) cols[i]];
       final bandWidths = [for (final i in band) widths[i]];
-      final rows = <List<GridCell>>[];
-      for (final r in rowsAll) {
+      final mergeCursor = XlsxMergeCursor(s.merges);
+      // Dựng và vẽ theo từng nhóm hàng (tối đa 500 hàng) cùng chiều cao, không giữ toàn bộ hàng trong RAM.
+      List<GridCell> buildRow(int r) {
         final cells = <GridCell>[];
         var k = 0;
         while (k < bandCols.length) {
           final c = bandCols[k];
           final cell = s.cell(r, c);
-          final m = s.merges.isEmpty ? null : mergeCovering(r, c);
+          final m = mergeCursor.covering(r, c);
           var span = 1;
           var covered = false;
           var source = cell;
@@ -375,21 +411,22 @@ PdfBuildResult buildXlsxPdf(
           ));
           k += span;
         }
-        rows.add(cells);
+        return cells;
       }
-      // Chiều cao tối thiểu theo từng hàng: vẽ theo từng nhóm hàng cùng chiều cao.
+
       var idx = 0;
-      while (idx < rows.length) {
+      while (idx < rowsAll.length) {
         final r = rowsAll[idx];
         final h = (s.rowHeightsPt[r] ?? s.defaultRowHeightPt).toDouble();
         var j = idx + 1;
-        while (j < rows.length &&
+        while (j < rowsAll.length &&
+            j - idx < 500 &&
             ((s.rowHeightsPt[rowsAll[j]] ?? s.defaultRowHeightPt).toDouble()) == h) {
           j++;
         }
         w.table(
           colWidths: bandWidths,
-          rows: rows.sublist(idx, j),
+          rows: [for (var q = idx; q < j; q++) buildRow(rowsAll[q])],
           fontSize: cellSize,
           padding: 2,
           minRowHeight: h.clamp(8.0, 400.0),
