@@ -30,9 +30,10 @@ class SettingsScreen extends ConsumerWidget {
     Future<void> sendFeedback() async {
       final messenger = ScaffoldMessenger.of(context);
       final launcher = linkLauncherOf(context);
-      // Link do chính app tạo (không có người nhận), nên không qua bộ lọc `safeLinkUri`.
+      // Link do chính app tạo, nên không qua bộ lọc `safeLinkUri` của link trong tài liệu.
       final uri = Uri(
         scheme: 'mailto',
+        path: kFeedbackEmail,
         query: 'subject=${Uri.encodeComponent(l.settings_feedbackSubject)}',
       );
       var opened = false;

@@ -292,6 +292,8 @@ void main() {
       await tester.tap(_key('settings_feedback'));
       await tester.pumpAndSettle();
       expect(opened?.scheme, 'mailto');
+      expect(opened?.path, 'phamphuongphuongnd@gmail.com');
+      expect(opened?.query, contains('subject='));
       expect(find.text('Could not open an email app'), findsNothing);
 
       ok = false;

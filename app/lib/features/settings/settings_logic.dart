@@ -15,6 +15,9 @@ const String kAppVersion = '1.0.0';
 const String kAppDownloadUrl =
     'https://github.com/phamphuongphuongnd/chuyenanh/releases/download/android-latest/PDFOffice.apk';
 
+/// Địa chỉ nhận phản hồi (người gửi là tài khoản mail đang dùng trên máy bấm nút).
+const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';
+
 /// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải.
 String appShareMessage(String intro) => '$intro\n$kAppDownloadUrl';
 
