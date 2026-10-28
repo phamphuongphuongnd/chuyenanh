@@ -65,6 +65,15 @@ Liên quan: [[tinh-nang-t1-t10]], [[phat-hanh-apk]], [[documents]], [[kiem-thu-f
 - **Chat khác đang làm song song** (đừng sửa trùng): tìm kiếm (`app_search_field.dart`), khoá/mở khoá PDF (`pdf_pick_screen.dart`, `lock_screen`/`unlock_screen`), trình xem TXT,
   `home_screen` (giảm dựng lại AppBar), `pdfLockedProvider.autoDispose`. Khi hai chat cùng chạy: chỉ `git add` đúng file của mình, `git fetch` trước khi push, đừng chạy `flutter test` cùng lúc (tranh khoá).
 
+## 4b. Đã sửa tiếp 28/10 (4 agent song song trong worktree riêng, ghép bằng cherry-pick, 757 test pass)
+- **TXT lớn:** tách dòng + tìm trong isolate khi >200.000 ký tự, cắt dòng >5.000 ký tự, tìm tối đa 5.000 kết quả, debounce 350ms (`splitLinesCapped`, `findHitsLimited` trong `text_decoder.dart`). Không có thông báo "kết quả bị cắt" (chưa có chuỗi l10n).
+- **Ký PDF:** `pageSize()` lấy kích thước mọi trang MỘT lần trong isolate, cache theo (đường dẫn, mtime, dung lượng) tối đa 4 file; ảnh trang là LRU 4 (`page_lru_cache.dart`). Cache không tính mật khẩu vào khoá; chưa thử trang xoay lẫn lộn.
+- **XLSX→PDF:** `XlsxMergeCursor` thay `mergeCovering` O(ô×vùng gộp); bỏ hàng trống cuối; dựng/vẽ theo nhóm ≤500 hàng (ô gộp dọc cắt ngang ranh giới nhóm có thể bị cụt — hiếm).
+- **PDF→ảnh:** `kMaxRenderPixels` 16M→9M (A4 300dpi ≈8,7MP vẫn giữ nguyên); `OutOfMemory` → `NoSpace` (thông báo "không đủ dung lượng" hơi lệch nghĩa so với thiếu RAM; thêm khoá l10n riêng nếu muốn).
+- **Bài học dùng agent song song:** chạy `flutter` đồng thời trong CÙNG thư mục dự án làm kẹt `sqlite3.dll`; dùng `isolation: worktree` thì được (nhớ `merge_arb` + `gen-l10n` + chép font vào bản sao). Hạn mức sử dụng có thể cạn giữa chừng khi chạy 4 agent: công việc dở vẫn nằm trong worktree, `SendMessage` để agent tiếp tục.
+  Viết script Python/PowerShell sửa file `.dart` dễ hỏng `
+` và tiếng Việt → dùng công cụ Edit.
+
 ## 5. Thử máy thật 28/10 (bản release KHÔNG thu gọn code, 114MB) — kết quả
 - **Test tự động:** 741 test pass, analyze sạch.
 - **Mở được, không văng (log `FATAL EXCEPTION` = 0):** cả 18 công cụ ở tab Công cụ. Văn bản sang PDF, Tạo PDF trắng, Word/Excel sang PDF, PDF sang ảnh/văn bản/Word/Excel mở đúng màn;

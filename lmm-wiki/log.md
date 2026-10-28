@@ -33,3 +33,4 @@ type: log
 - 2026-10-28 10:20 — PPT tô cam kết quả hiện tại (chỉ mục đoạn văn + tìm trên chuỗi ghép cả đoạn), Excel bỏ ô hàng/cột ẩn khỏi tìm; 97 test office_pptx+office_viewer pass, analyze sạch; chưa thử máy thật → [[trinh-xem-dong-bo]] [[viec-con-lai]]
 - 2026-10-28 11:01 — chốt: tắt R8 (ML Kit hỏng khi thu gọn: init + nhận kết quả quét), Quét tài liệu tự động chạy đúng, 741 test pass, 18 công cụ mở được trên A13, push master 2673b6d → [[phat-hanh-apk]] [[viec-con-lai]]
 - 2026-10-28 11:23 — sửa lỗi xuất PDF/TXT/DOCX sau khi quét (scanExporterProvider autoDispose bị huỷ giữa await), tái hiện + xác nhận trên A13, thêm log lỗi màn quét, wiki bài học lỗi chỉ lộ trên máy thật → [[loi-chi-hien-tren-may-that]] [[viec-con-lai]] [[phat-hanh-apk]]
+- 2026-10-28 11:54 — 4 agent song song sửa TXT lớn/Ký PDF/XLSX→PDF/PDF→ảnh (worktree riêng, cherry-pick), 757 test pass, build APK 114MB cuối, push master → [[viec-con-lai]] [[phat-hanh-apk]] [[loi-chi-hien-tren-may-that]]
