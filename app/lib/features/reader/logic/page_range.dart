@@ -80,7 +80,8 @@ String formatPageRanges(List<int> pagesZeroBased) {
   final out = <String>[];
   var start = sorted.first;
   var prev = start;
-  void flush() => out.add(start == prev ? '${start + 1}' : '${start + 1}-${prev + 1}');
+  void flush() =>
+      out.add(start == prev ? '${start + 1}' : '${start + 1}-${prev + 1}');
   for (final p in sorted.skip(1)) {
     if (p == prev + 1) {
       prev = p;

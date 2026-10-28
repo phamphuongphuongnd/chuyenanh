@@ -23,7 +23,6 @@ final List<RouteBase> readerRoutes = [
   ),
   GoRoute(
     path: Routes.pdfToImage,
-    builder: (context, state) =>
-        PdfToImageScreen(path: state.extra as String?),
+    builder: (context, state) => PdfToImageScreen(path: state.extra as String?),
   ),
 ];

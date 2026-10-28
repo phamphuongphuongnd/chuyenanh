@@ -145,9 +145,7 @@ class _GoToPageDialogState extends State<_GoToPageDialog> {
         keyboardType: TextInputType.number,
         textInputAction: TextInputAction.go,
         hintText: l.reader_goToPageHint(widget.pageCount),
-        errorText: _invalid
-            ? l.reader_goToPageInvalid(widget.pageCount)
-            : null,
+        errorText: _invalid ? l.reader_goToPageInvalid(widget.pageCount) : null,
         onChanged: (_) {
           if (_invalid) setState(() => _invalid = false);
         },

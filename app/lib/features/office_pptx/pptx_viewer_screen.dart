@@ -235,104 +235,107 @@ class _PptxDeckViewState extends State<PptxDeckView> {
               }),
             ),
           Expanded(
-            child: indexes.isEmpty
-                ? Center(child: Text(l.pptx_emptyDeck))
-                : Column(
-                    children: [
-                      Expanded(
-                        child: PageView.builder(
-                          key: ValueKey(_showHidden),
-                          controller: _pages,
-                          physics: _zoomed
-                              ? const NeverScrollableScrollPhysics()
-                              : const PageScrollPhysics(),
-                          itemCount: indexes.length,
-                          onPageChanged: _onPageChanged,
-                          itemBuilder: (context, i) => _ZoomablePage(
-                            key: ValueKey('${_showHidden}_$i'),
-                            onAttach: (st) => _zoomPages[i] = st,
-                            onDetach: (st) {
-                              if (_zoomPages[i] == st) _zoomPages.remove(i);
-                            },
-                            onZoomChanged: (z) {
-                              if (z != _zoomed) setState(() => _zoomed = z);
-                            },
-                            child: SlideView(
-                              deck: deck,
-                              slide: deck.slides[indexes[i]],
-                              renderScale: 2.5,
+            child: PptxSearchHighlight(
+              query: _searching ? _searchCtrl.text : '',
+              child: indexes.isEmpty
+                  ? Center(child: Text(l.pptx_emptyDeck))
+                  : Column(
+                      children: [
+                        Expanded(
+                          child: PageView.builder(
+                            key: ValueKey(_showHidden),
+                            controller: _pages,
+                            physics: _zoomed
+                                ? const NeverScrollableScrollPhysics()
+                                : const PageScrollPhysics(),
+                            itemCount: indexes.length,
+                            onPageChanged: _onPageChanged,
+                            itemBuilder: (context, i) => _ZoomablePage(
+                              key: ValueKey('${_showHidden}_$i'),
+                              onAttach: (st) => _zoomPages[i] = st,
+                              onDetach: (st) {
+                                if (_zoomPages[i] == st) _zoomPages.remove(i);
+                              },
+                              onZoomChanged: (z) {
+                                if (z != _zoomed) setState(() => _zoomed = z);
+                              },
+                              child: SlideView(
+                                deck: deck,
+                                slide: deck.slides[indexes[i]],
+                                renderScale: 2.5,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      if (_showNotes)
-                        _NotesPanel(slide: deck.slides[indexes[page]]),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          l.pptx_slideOf(page + 1, indexes.length),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                      SizedBox(
-                        height: _thumbH + 16,
-                        child: ListView.separated(
-                          controller: _thumbs,
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                        if (_showNotes)
+                          _NotesPanel(slide: deck.slides[indexes[page]]),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Text(
+                            l.pptx_slideOf(page + 1, indexes.length),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
-                          itemCount: indexes.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(width: _thumbGap),
-                          itemBuilder: (context, i) {
-                            final slide = deck.slides[indexes[i]];
-                            final selected = i == page;
-                            return Semantics(
-                              button: true,
-                              label: l.pptx_slideN(i + 1),
-                              child: GestureDetector(
-                                onTap: () => _goTo(i),
-                                child: Container(
-                                  height: _thumbH,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: selected
-                                          ? AppColors.ppt
-                                          : Colors.grey.shade400,
-                                      width: selected ? 2.5 : 1,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      RepaintBoundary(
-                                        child: SlideView(
-                                          deck: deck,
-                                          slide: slide,
-                                          renderScale: 0.4,
-                                        ),
+                        ),
+                        SizedBox(
+                          height: _thumbH + 16,
+                          child: ListView.separated(
+                            controller: _thumbs,
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            itemCount: indexes.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(width: _thumbGap),
+                            itemBuilder: (context, i) {
+                              final slide = deck.slides[indexes[i]];
+                              final selected = i == page;
+                              return Semantics(
+                                button: true,
+                                label: l.pptx_slideN(i + 1),
+                                child: GestureDetector(
+                                  onTap: () => _goTo(i),
+                                  child: Container(
+                                    height: _thumbH,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: selected
+                                            ? AppColors.ppt
+                                            : Colors.grey.shade400,
+                                        width: selected ? 2.5 : 1,
                                       ),
-                                      if (slide.hidden)
-                                        const Positioned(
-                                          right: 2,
-                                          top: 2,
-                                          child: Icon(
-                                            Icons.visibility_off,
-                                            size: 14,
-                                            color: Colors.grey,
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        RepaintBoundary(
+                                          child: SlideView(
+                                            deck: deck,
+                                            slide: slide,
+                                            renderScale: 0.4,
                                           ),
                                         ),
-                                    ],
+                                        if (slide.hidden)
+                                          const Positioned(
+                                            right: 2,
+                                            top: 2,
+                                            child: Icon(
+                                              Icons.visibility_off,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+            ),
           ),
         ],
       ),

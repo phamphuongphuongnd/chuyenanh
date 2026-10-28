@@ -9,6 +9,80 @@ import 'pptx_layout.dart';
 
 Color _argb(int v) => Color(v);
 
+/// Từ khoá đang tìm: mọi đoạn chữ bên dưới tô vàng chỗ khớp (không phân biệt hoa thường).
+class PptxSearchHighlight extends InheritedWidget {
+  const PptxSearchHighlight({
+    super.key,
+    required this.query,
+    required super.child,
+  });
+
+  final String query;
+
+  static String queryOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<PptxSearchHighlight>()
+          ?.query ??
+      '';
+
+  @override
+  bool updateShouldNotify(PptxSearchHighlight old) => query != old.query;
+}
+
+const Color _highlightBg = Color(0xFFFFEB3B);
+
+/// Tách [text] thành các đoạn; chỗ khớp [query] có nền vàng + chữ đen.
+List<TextSpan> highlightSpans(
+  String text,
+  TextStyle? style,
+  String query,
+  GestureRecognizer? recognizer,
+) {
+  final q = query.trim().toLowerCase();
+  final lower = text.toLowerCase();
+  // Đổi hoa/thường làm lệch độ dài (vài ký tự đặc biệt) thì bỏ qua tô sáng.
+  if (q.isEmpty || lower.length != text.length || !lower.contains(q)) {
+    return [TextSpan(text: text, style: style, recognizer: recognizer)];
+  }
+  final hit = (style ?? const TextStyle()).copyWith(
+    backgroundColor: _highlightBg,
+    color: Colors.black,
+  );
+  final spans = <TextSpan>[];
+  var from = 0;
+  while (true) {
+    final i = lower.indexOf(q, from);
+    if (i < 0) break;
+    if (i > from) {
+      spans.add(
+        TextSpan(
+          text: text.substring(from, i),
+          style: style,
+          recognizer: recognizer,
+        ),
+      );
+    }
+    spans.add(
+      TextSpan(
+        text: text.substring(i, i + q.length),
+        style: hit,
+        recognizer: recognizer,
+      ),
+    );
+    from = i + q.length;
+  }
+  if (from < text.length) {
+    spans.add(
+      TextSpan(
+        text: text.substring(from),
+        style: style,
+        recognizer: recognizer,
+      ),
+    );
+  }
+  return spans;
+}
+
 /// Slide hoàn chỉnh, tự co theo bề rộng có sẵn (giữ tỉ lệ).
 /// [renderScale]: số pixel thiết bị dự kiến trên mỗi pt canvas (giới hạn giải mã ảnh).
 class SlideView extends StatelessWidget {
@@ -76,7 +150,11 @@ class _FillBox extends StatelessWidget {
 
 /// Một hình bất kỳ, trả về `Positioned` (đặt trong Stack của canvas hoặc của nhóm).
 class ShapeWidget extends StatelessWidget {
-  const ShapeWidget({super.key, required this.shape, required this.renderScale});
+  const ShapeWidget({
+    super.key,
+    required this.shape,
+    required this.renderScale,
+  });
 
   final PptxShape shape;
   final double renderScale;
@@ -102,9 +180,10 @@ class ShapeWidget extends StatelessWidget {
       );
     }
     final Widget body = switch (s) {
-      PptxTextShape() => s.unsupportedKind != null
-          ? UnsupportedBox(kind: s.unsupportedKind!)
-          : TextShapeBody(shape: s, size: rect.size),
+      PptxTextShape() =>
+        s.unsupportedKind != null
+            ? UnsupportedBox(kind: s.unsupportedKind!)
+            : TextShapeBody(shape: s, size: rect.size),
       PptxPictureShape() => PictureBody(
         shape: s,
         size: rect.size,
@@ -333,12 +412,14 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
     _recognizers.clear();
     final p = paragraph;
     final height = lineHeightFactor(p, _firstSize);
+    final query = PptxSearchHighlight.queryOf(context);
     final spans = <InlineSpan>[
       for (final r in p.runs)
-        TextSpan(
-          text: r.text,
-          style: runStyle(r, defaultColor, _firstSize, height),
-          recognizer: _recognizerFor(r),
+        ...highlightSpans(
+          r.text,
+          runStyle(r, defaultColor, _firstSize, height),
+          query,
+          _recognizerFor(r),
         ),
     ];
     if (spans.isEmpty) {
@@ -408,7 +489,12 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
 }
 
 /// Kiểu chữ của một run (pt dùng thẳng).
-TextStyle runStyle(PptxRun r, Color defaultColor, double paragraphSize, double height) {
+TextStyle runStyle(
+  PptxRun r,
+  Color defaultColor,
+  double paragraphSize,
+  double height,
+) {
   final sizeBase = r.fontSizePt ?? paragraphSize;
   final scaled = r.baselineOffsetPct != 0 ? sizeBase * 0.65 : sizeBase;
   final decorations = <TextDecoration>[
@@ -536,7 +622,10 @@ class TableBody extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         for (final b in boxes)
-          Positioned.fromRect(rect: b.rect, child: _CellView(box: b)),
+          Positioned.fromRect(
+            rect: b.rect,
+            child: _CellView(box: b),
+          ),
       ],
     );
   }
@@ -589,8 +678,18 @@ class _CellBorderPainter extends CustomPainter {
   void paint(Canvas canvas, Size s) {
     _edge(canvas, cell.borderLeft, Offset.zero, Offset(0, s.height));
     _edge(canvas, cell.borderTop, Offset.zero, Offset(s.width, 0));
-    _edge(canvas, cell.borderRight, Offset(s.width, 0), Offset(s.width, s.height));
-    _edge(canvas, cell.borderBottom, Offset(0, s.height), Offset(s.width, s.height));
+    _edge(
+      canvas,
+      cell.borderRight,
+      Offset(s.width, 0),
+      Offset(s.width, s.height),
+    );
+    _edge(
+      canvas,
+      cell.borderBottom,
+      Offset(0, s.height),
+      Offset(s.width, s.height),
+    );
   }
 
   @override

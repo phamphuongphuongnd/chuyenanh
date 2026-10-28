@@ -48,8 +48,10 @@ class ReaderViewerConfig {
   final void Function(String detail) onLoadFailed;
 }
 
-typedef ReaderViewerBuilder =
-    Widget Function(BuildContext context, ReaderViewerConfig config);
+typedef ReaderViewerBuilder = Widget Function(
+  BuildContext context,
+  ReaderViewerConfig config,
+);
 
 /// Viewer thật: `SfPdfViewer`. Hộp thoại mật khẩu của Syncfusion tắt — app dùng
 /// `showPasswordDialog` + `pdfSecurityProvider.decrypt`.

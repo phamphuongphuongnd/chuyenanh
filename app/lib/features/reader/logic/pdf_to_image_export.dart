@@ -74,12 +74,7 @@ Future<PdfExportResult> exportPdfToImages({
         jpgQuality: jpgQuality,
         cancelToken: cancelToken,
       );
-      final name = exportImageName(
-        baseName,
-        page,
-        document.pageCount,
-        format,
-      );
+      final name = exportImageName(baseName, page, document.pageCount, format);
       final file = await writeAtomically(p.join(dirPath, name), bytes);
       files.add(file.path);
       onProgress?.call((i + 1) / pages.length);

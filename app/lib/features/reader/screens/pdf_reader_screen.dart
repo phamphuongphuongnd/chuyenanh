@@ -325,17 +325,21 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
         if (!didPop) _closeSearch();
       },
       child: Scaffold(
-        appBar: _searching
-            ? ReaderSearchAppBar(
+        appBar: _buildAppBar(context, prefs, bookmarks),
+        body: Column(
+          children: [
+            if (_searching)
+              ReaderSearchBar(
                 textController: _searchText,
                 result: _result,
                 onSubmitted: _runSearch,
                 onPrevious: () => _result?.previousInstance(),
                 onNext: () => _result?.nextInstance(),
                 onClose: _closeSearch,
-              )
-            : _buildAppBar(context, prefs, bookmarks),
-        body: _buildBody(context, prefs),
+              ),
+            Expanded(child: _buildBody(context, prefs)),
+          ],
+        ),
         bottomNavigationBar: _loaded && _error == null
             ? PageIndicatorBar(
                 page: _page.clamp(1, _pageCount),
@@ -411,7 +415,11 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
             item(_Menu.goToPage, Icons.pin_outlined, l.reader_goToPage),
             const PopupMenuDivider(),
             check(_Menu.darkMode, prefs.darkMode, l.reader_darkMode),
-            check(_Menu.horizontal, prefs.horizontal, l.reader_horizontalScroll),
+            check(
+              _Menu.horizontal,
+              prefs.horizontal,
+              l.reader_horizontalScroll,
+            ),
             check(_Menu.singlePage, prefs.singlePage, l.reader_singlePage),
             const PopupMenuDivider(),
             item(
@@ -425,7 +433,11 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
             ),
             item(_Menu.print, Icons.print_outlined, l.reader_print),
             if (shortcutOk)
-              item(_Menu.shortcut, Icons.add_to_home_screen, l.reader_addShortcut),
+              item(
+                _Menu.shortcut,
+                Icons.add_to_home_screen,
+                l.reader_addShortcut,
+              ),
             item(_Menu.toImages, Icons.image_outlined, l.core_toolPdfToImage),
           ],
         ),

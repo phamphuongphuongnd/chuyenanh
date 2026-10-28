@@ -217,9 +217,8 @@ class _PdfToImageScreenState extends ConsumerState<PdfToImageScreen> {
       ctrl.close();
       if (!mounted) return;
       final err = e is AppError ? e : AppError.from(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(appErrorMessage(context, err))),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(appErrorMessage(context, err))));
     }
   }
 
