@@ -179,9 +179,22 @@ void main() {
     });
 
     test('Workflow CI build IPA không ký tồn tại', () {
-      final yml = File('../.github/workflows/ios.yml').readAsStringSync();
+      final yml = File('../.github/workflows/ios-build.yml').readAsStringSync();
       expect(yml, contains('flutter build ios --release --no-codesign'));
       expect(yml, contains('PDFOffice-ios.ipa'));
     });
+
+    // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
+    for (final name in ['ios-build.yml', 'ios-sim.yml']) {
+      test('Workflow $name chạy merge_arb trước flutter pub get', () {
+        final yml = File('../.github/workflows/$name').readAsStringSync();
+        // So khớp dòng lệnh, không so khớp comment có nhắc tên lệnh.
+        final merge = yml.indexOf('- run: dart tool/merge_arb.dart');
+        final pubGet = yml.indexOf('- run: flutter pub get');
+        expect(merge, isNonNegative);
+        expect(pubGet, isNonNegative);
+        expect(merge, lessThan(pubGet));
+      });
+    }
   });
 }
