@@ -208,6 +208,14 @@ void main() {
       expect(select, lessThan(yml.indexOf('flutter drive')));
     });
 
+    // Lần ios-sim-test4 bị huỷ vì quá 45 phút khiến bước in log bị bỏ qua → không thấy chỗ treo.
+    // Bước drive phải có thời hạn riêng và log phải được in cả khi bị huỷ.
+    test('Workflow ios-sim.yml: bước drive có timeout riêng, log in cả khi huỷ', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      expect(yml, contains('timeout-minutes: 25'));
+      expect(yml, contains('if: failure() || cancelled()'));
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
     for (final name in ['ios-build.yml', 'ios-sim.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {

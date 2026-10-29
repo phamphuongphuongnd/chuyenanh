@@ -51,6 +51,8 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           echo "UDID=$UDID" >> "$GITHUB_ENV"
       - name: Chạy integration_test và chụp ảnh
+        # Thời hạn riêng: nếu treo thì step bị huỷ ở phút 25, các step sau (in log, đăng ảnh) vẫn chạy.
+        timeout-minutes: 25
         run: |
           set -o pipefail
           flutter drive \
@@ -59,7 +61,7 @@ jobs:
             -d "$UDID" 2>&1 | tee drive.log
       # Log job chỉ xem được khi đăng nhập; annotation thì đọc được công khai qua API.
       - name: Đưa đoạn cuối log lỗi ra annotation
-        if: failure()
+        if: failure() || cancelled()
         run: |
           MSG=$(tail -n 60 drive.log 2>/dev/null | sed -e 's/%/%25/g' -e 's/\r//g' | awk 'BEGIN{ORS="%0A"}{print}')
           echo "::error title=flutter drive (60 dòng cuối)::${MSG:-không có drive.log}"
