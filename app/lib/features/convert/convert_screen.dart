@@ -305,23 +305,21 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
             const SizedBox(height: 12),
             _Notice(text: l.conv_ocrNotice),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(child: Text(l.conv_ocrLanguage)),
-                const SizedBox(width: 8),
-                DropdownButton<OcrScript>(
-                  value: _ocrScript ?? _defaultOcrScript(),
-                  isDense: true,
-                  items: [
-                    for (final s in OcrScript.values)
-                      DropdownMenuItem(
-                        value: s,
-                        child: Text(_scriptName(s), overflow: TextOverflow.ellipsis),
-                      ),
-                  ],
-                  onChanged: _busy ? null : (s) => setState(() => _ocrScript = s),
-                ),
+            // Nhãn trên, ô chọn dưới và giãn hết bề ngang: đặt chung một hàng thì ô chọn (chữ dài) chiếm gần hết
+            // chiều rộng, nhãn bị ép thành cột dọc từng chữ trên điện thoại hẹp (thấy trên iPhone).
+            Text(l.conv_ocrLanguage),
+            DropdownButton<OcrScript>(
+              value: _ocrScript ?? _defaultOcrScript(),
+              isDense: true,
+              isExpanded: true,
+              items: [
+                for (final s in OcrScript.values)
+                  DropdownMenuItem(
+                    value: s,
+                    child: Text(_scriptName(s), overflow: TextOverflow.ellipsis),
+                  ),
               ],
+              onChanged: _busy ? null : (s) => setState(() => _ocrScript = s),
             ),
           ],
           if (mode.toPdf) ...[

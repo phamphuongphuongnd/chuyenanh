@@ -24,6 +24,19 @@ Future<void> _pump(WidgetTester tester, ConvertMode mode) async {
 }
 
 void main() {
+  // iPhone ~390pt rong: o chon ngon ngu OCR (chu dai) khong duoc ep nhan thanh cot doc tung chu.
+  testWidgets('PDF to Word: nhan ngon ngu OCR du rong tren man hinh dien thoai', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await _pump(tester, ConvertMode.pdfToWord);
+    final label = find.text('Text language for scanned pages');
+    expect(label, findsOneWidget);
+    final size = tester.getSize(label);
+    expect(size.width, greaterThan(150), reason: 'nhan bi ep hep: ${size.width}x${size.height}');
+    expect(size.height, lessThan(60), reason: 'nhan bi xep doc: ${size.width}x${size.height}');
+  });
+
   testWidgets('PDF → Word hiện cảnh báo không giữ bố cục, không có tuỳ chọn khổ giấy', (tester) async {
     await _pump(tester, ConvertMode.pdfToWord);
     expect(find.textContaining('not preserved'), findsOneWidget);
