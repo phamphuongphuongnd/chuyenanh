@@ -23,10 +23,15 @@ const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';
 const String kIosDownloadUrl =
     'https://github.com/phamphuongphuongnd/chuyenanh/releases/tag/ios-latest';
 
-/// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải.
-/// [link] mặc định là APK Android; iOS truyền [kIosDownloadUrl] vì iPhone không cài được APK.
-String appShareMessage(String intro, {String link = kAppDownloadUrl}) =>
-    '$intro\n$link';
+/// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải cho CẢ hai hệ điều hành, trên mọi nền tảng
+/// (người nhận dùng máy nào thì bấm link của máy đó).
+///
+///     <lời giới thiệu>
+///
+///     Android: <link APK>
+///     iPhone: <link trang cài iOS>
+String appShareMessage(String intro) =>
+    '$intro\n\nAndroid: $kAppDownloadUrl\niPhone: $kIosDownloadUrl';
 
 /// `true` nếu ghi được file vào [path] (thư mục phải tồn tại). Thử bằng cách tạo rồi xoá
 /// một file tạm — không để lại dấu vết.

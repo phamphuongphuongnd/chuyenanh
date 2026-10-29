@@ -312,10 +312,11 @@ void main() {
       expect(uri.path, endsWith('.apk'));
     });
 
-    test('nội dung chia sẻ gồm lời giới thiệu và link ở dòng cuối', () {
-      final msg = appShareMessage('Xin chào');
-      expect(msg, startsWith('Xin chào\n'));
-      expect(msg.endsWith(kAppDownloadUrl), isTrue);
+    test('noi dung chia se gom loi gioi thieu, link Android va link iPhone', () {
+      final msg = appShareMessage('Xin chao');
+      expect(msg, startsWith('Xin chao\n\n'));
+      expect(msg, contains('Android: $kAppDownloadUrl'));
+      expect(msg, contains('iPhone: $kIosDownloadUrl'));
     });
   });
 }
