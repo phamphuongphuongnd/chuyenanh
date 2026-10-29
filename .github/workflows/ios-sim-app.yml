@@ -35,15 +35,26 @@ jobs:
       - run: flutter gen-l10n
       - run: bash tool/fetch_fonts.sh
       # Simulator chỉ hỗ trợ debug.
-      - name: Build bản simulator
+      # `flutter build ios --simulator` nhắm mọi kiến trúc (kể cả arm64 mà ML Kit loại) → "Pods_Runner not found".
+      # Ép chỉ build x86_64 (runner Intel); flutter drive nhắm đúng simulator theo UDID nên không bị lỗi này.
+      - name: Build bản simulator (chỉ x86_64)
         run: |
           set -o pipefail
-          flutter build ios --simulator --debug 2>&1 | tee build.log
+          {
+            echo 'ARCHS = x86_64'
+            echo 'EXCLUDED_ARCHS = arm64'
+            echo 'ONLY_ACTIVE_ARCH = NO'
+          } > "$RUNNER_TEMP/sim.xcconfig"
+          export XCODE_XCCONFIG_FILE="$RUNNER_TEMP/sim.xcconfig"
+          flutter build ios --simulator --debug -v 2>&1 | tee build.log
+          grep -E "xcodebuild.*(destination|ARCHS)" build.log | head -3 || true
       # Log job chỉ xem được khi đăng nhập; annotation thì đọc được công khai qua API.
       - name: Đưa đoạn cuối log lỗi ra annotation
         if: failure()
         run: |
-          MSG=$(tail -n 60 build.log 2>/dev/null | sed -e 's/%/%25/g' -e 's/\r//g' | awk 'BEGIN{ORS="%0A"}{print}')
+          grep -E "xcodebuild.*(destination|ARCHS)" build.log 2>/dev/null | head -3 | cut -c1-600 > build-cmd.log || true
+          cat build-cmd.log build.log 2>/dev/null > build-all.log
+          MSG=$(tail -n 70 build-all.log 2>/dev/null | sed -e 's/%/%25/g' -e 's/\r//g' | awk 'BEGIN{ORS="%0A"}{print}')
           echo "::error title=flutter build ios (60 dòng cuối)::${MSG:-không có build.log}"
       - name: Nén Runner.app
         run: |

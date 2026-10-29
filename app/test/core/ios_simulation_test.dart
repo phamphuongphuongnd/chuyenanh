@@ -242,6 +242,15 @@ void main() {
       expect(yml, contains('::error'));
     });
 
+    // `flutter build ios --simulator` nham moi kien truc (ke ca arm64 ma ML Kit loai) -> Pods_Runner not found.
+    // Ep chi build x86_64 bang xcconfig; flutter drive (dich theo UDID) khong bi loi nay.
+    test('Workflow ios-sim-app.yml ep ARCHS=x86_64 cho ban simulator', () {
+      final yml = File('../.github/workflows/ios-sim-app.yml').readAsStringSync();
+      expect(yml, contains('XCODE_XCCONFIG_FILE'));
+      expect(yml, contains('ARCHS = x86_64'));
+      expect(yml, contains('EXCLUDED_ARCHS = arm64'));
+    });
+
     // Tag ios-sim-app-* chi chay workflow dong goi, khong chay lai bo test simulator.
     test('Workflow ios-sim.yml bo qua tag ios-sim-app-*', () {
       final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
