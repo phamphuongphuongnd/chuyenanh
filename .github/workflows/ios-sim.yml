@@ -33,6 +33,9 @@ jobs:
       # lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên cần ARB gộp TRƯỚC.
       - run: dart tool/merge_arb.dart
       - run: flutter pub get
+      # integration_test KHÔNG nằm trong pubspec.yaml (làm hỏng build APK release: registrant Android đăng ký plugin
+      # mà bản release không có). Chỉ thêm trên máy CI này.
+      - run: flutter pub add --dev integration_test --sdk=flutter
       - run: flutter gen-l10n
       - run: bash tool/fetch_fonts.sh
       - name: Chọn và bật iPhone simulator

@@ -14,6 +14,9 @@ analyzer:
     - build/**
     - android/**
     - ios/**
+    # Test simulator iOS: gói integration_test chỉ được thêm trên CI (xem .github/workflows/ios-sim.yml).
+    - integration_test/**
+    - test_driver/**
 
 linter:
   # The lint rules applied to this project can be customized in the

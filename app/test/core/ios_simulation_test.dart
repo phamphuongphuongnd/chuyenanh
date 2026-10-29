@@ -263,6 +263,23 @@ void main() {
       expect(yml, contains("tags: ['ios-sim-*', '!ios-sim-app-*']"));
     });
 
+    // integration_test trong pubspec.yaml lam GeneratedPluginRegistrant.java cua Android dang ky plugin do,
+    // ban release khong co -> loi bien dich `package dev.flutter.plugins.integration_test does not exist`.
+    // Chi them goi nay tren may CI luc chay test simulator.
+    test('pubspec.yaml khong chua integration_test (se pha build APK release)', () {
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      expect(pubspec, isNot(contains('integration_test')));
+    });
+
+    test('Workflow ios-sim.yml them integration_test luc chay tren CI', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      expect(yml, contains('flutter pub add --dev integration_test --sdk=flutter'));
+      expect(
+        yml.indexOf('flutter pub add --dev integration_test'),
+        lessThan(yml.indexOf('--driver=')),
+      );
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
     for (final name in ['ios-build.yml', 'ios-sim.yml', 'ios-sim-app.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {
