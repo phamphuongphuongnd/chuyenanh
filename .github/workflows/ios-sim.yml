@@ -7,14 +7,14 @@ on:
     tags: ['ios-sim-*']
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   simulator:
     # ML Kit (OCR) loại arm64 khi build simulator → runner Apple Silicon (macos-latest) link lỗi
     # "Framework 'Pods_Runner' not found". Runner Intel có simulator x86_64 nên build được.
     runs-on: macos-15-intel
-    timeout-minutes: 45
+    timeout-minutes: 75
     defaults:
       run:
         working-directory: app
@@ -51,14 +51,19 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           echo "UDID=$UDID" >> "$GITHUB_ENV"
       - name: Chạy integration_test và chụp ảnh
-        # Thời hạn riêng: nếu treo thì step bị huỷ ở phút 25, các step sau (in log, đăng ảnh) vẫn chạy.
-        timeout-minutes: 25
+        # Thời hạn riêng: nếu treo thì step bị huỷ, các step sau (in log, đăng ảnh) vẫn chạy.
+        timeout-minutes: 50
         run: |
           set -o pipefail
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/app_test.dart \
             -d "$UDID" 2>&1 | tee drive.log
+          # Đợt 2: xem file + chuyển đổi (dùng lại bản build, nhanh hơn lần đầu).
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_features_test.dart \
+            -d "$UDID" 2>&1 | tee -a drive.log
       # Log job chỉ xem được khi đăng nhập; annotation thì đọc được công khai qua API.
       - name: Đưa đoạn cuối log lỗi ra annotation
         if: failure() || cancelled()
@@ -74,3 +79,13 @@ jobs:
             app/screenshots
             app/drive.log
           if-no-files-found: warn
+      # Ảnh trong artifact phải đăng nhập mới tải; Release công khai thì xem được ngay.
+      - name: Đăng ảnh lên Release ios-sim-latest
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ls screenshots/*.png >/dev/null 2>&1 || { echo 'không có ảnh để đăng'; exit 0; }
+          gh release view ios-sim-latest >/dev/null 2>&1 || gh release create ios-sim-latest --title "iOS simulator screenshots" --notes "Ảnh chụp từ integration_test trên iPhone simulator (ghi đè mỗi lần chạy)."
+          for a in $(gh release view ios-sim-latest --json assets -q '.assets[].name'); do gh release delete-asset ios-sim-latest "$a" -y; done
+          gh release upload ios-sim-latest screenshots/*.png drive.log --clobber

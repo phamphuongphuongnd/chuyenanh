@@ -212,8 +212,17 @@ void main() {
     // Bước drive phải có thời hạn riêng và log phải được in cả khi bị huỷ.
     test('Workflow ios-sim.yml: bước drive có timeout riêng, log in cả khi huỷ', () {
       final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
-      expect(yml, contains('timeout-minutes: 25'));
+      expect(yml, contains('timeout-minutes: 50'));
       expect(yml, contains('if: failure() || cancelled()'));
+    });
+
+    // Dot 2: chay ca bo test xem/chuyen doi va dang anh len Release de xem khong can dang nhap.
+    test('Workflow ios-sim.yml chay app_features_test va dang anh len Release ios-sim-latest', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      expect(yml, contains('integration_test/app_test.dart'));
+      expect(yml, contains('integration_test/app_features_test.dart'));
+      expect(yml, contains('contents: write'));
+      expect(yml, contains('ios-sim-latest'));
     });
 
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
