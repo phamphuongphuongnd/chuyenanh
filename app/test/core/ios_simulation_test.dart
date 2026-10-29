@@ -234,6 +234,14 @@ void main() {
       expect(yml, contains('ios-sim-app'));
     });
 
+    // ios-sim-app-1 loi o buoc build ma khong co log -> phai ghi build.log va dua 60 dong cuoi ra annotation.
+    test('Workflow ios-sim-app.yml ghi build.log va in annotation khi loi', () {
+      final yml = File('../.github/workflows/ios-sim-app.yml').readAsStringSync();
+      expect(yml, contains('tee build.log'));
+      expect(yml, contains('if: failure()'));
+      expect(yml, contains('::error'));
+    });
+
     // Tag ios-sim-app-* chi chay workflow dong goi, khong chay lai bo test simulator.
     test('Workflow ios-sim.yml bo qua tag ios-sim-app-*', () {
       final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();

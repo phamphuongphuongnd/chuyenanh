@@ -35,7 +35,16 @@ jobs:
       - run: flutter gen-l10n
       - run: bash tool/fetch_fonts.sh
       # Simulator chỉ hỗ trợ debug.
-      - run: flutter build ios --simulator --debug
+      - name: Build bản simulator
+        run: |
+          set -o pipefail
+          flutter build ios --simulator --debug 2>&1 | tee build.log
+      # Log job chỉ xem được khi đăng nhập; annotation thì đọc được công khai qua API.
+      - name: Đưa đoạn cuối log lỗi ra annotation
+        if: failure()
+        run: |
+          MSG=$(tail -n 60 build.log 2>/dev/null | sed -e 's/%/%25/g' -e 's/\r//g' | awk 'BEGIN{ORS="%0A"}{print}')
+          echo "::error title=flutter build ios (60 dòng cuối)::${MSG:-không có build.log}"
       - name: Nén Runner.app
         run: |
           cd build/ios/iphonesimulator
