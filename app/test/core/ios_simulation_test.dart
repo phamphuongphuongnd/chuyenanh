@@ -280,6 +280,13 @@ void main() {
       );
     });
 
+    // iPhone SE (man thap 667pt) lam the ket qua nam duoi man hinh, danh sach chua dung -> test khong thay.
+    // Chon iPhone ban Pro (man lon, giong may nguoi dung).
+    test('Workflow ios-sim.yml uu tien iPhone ban Pro khi chon simulator', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      expect(yml, contains("'Pro' in x['name']"));
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
     for (final name in ['ios-build.yml', 'ios-sim.yml', 'ios-sim-app.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {

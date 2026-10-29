@@ -46,7 +46,8 @@ jobs:
           for rt in sorted([k for k in d if 'iOS' in k], reverse=True):
               ph=[x for x in d[rt] if x['name'].startswith('iPhone') and x['isAvailable']]
               if ph:
-                  print(ph[-1]['udid']); break
+                  pro=[x for x in ph if 'Pro' in x['name'] and 'Max' not in x['name']]
+                  print((pro or ph)[-1]['udid']); break
           ")
           echo "Simulator: $UDID"
           test -n "$UDID"

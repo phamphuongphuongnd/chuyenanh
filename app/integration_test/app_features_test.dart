@@ -131,12 +131,10 @@ void main() {
               .first;
           await tester.ensureVisible(button);
       await tester.tap(button);
-          await waitFor(
-            tester,
-            binding,
-            find.byIcon(Icons.check_circle),
-            '$name-done',
-          );
+          // skipOffstage:false + ensureVisible: trên màn thấp thẻ kết quả nằm dưới màn hình (danh sách cuộn).
+          final done = find.byIcon(Icons.check_circle, skipOffstage: false);
+          await waitFor(tester, binding, done, '$name-done');
+          await tester.ensureVisible(done.first);
           await snap('$name-2-done');
         });
 
