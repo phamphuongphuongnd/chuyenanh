@@ -4,7 +4,7 @@ name: ios-sim
 on:
   workflow_dispatch:
   push:
-    tags: ['ios-sim-*']
+    tags: ['ios-sim-*', '!ios-sim-app-*']
 
 permissions:
   contents: write

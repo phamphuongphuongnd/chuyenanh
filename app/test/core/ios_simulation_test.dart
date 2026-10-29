@@ -225,8 +225,23 @@ void main() {
       expect(yml, contains('ios-sim-latest'));
     });
 
+    // Ban app cho simulator (dua len Appetize de xem iPhone ao trong trinh duyet).
+    test('Workflow ios-sim-app.yml build ban simulator tren runner Intel + Xcode 26.3', () {
+      final yml = File('../.github/workflows/ios-sim-app.yml').readAsStringSync();
+      expect(yml, contains('runs-on: macos-15-intel'));
+      expect(yml, contains('sudo xcode-select -s /Applications/Xcode_26.3.app'));
+      expect(yml, contains('flutter build ios --simulator'));
+      expect(yml, contains('ios-sim-app'));
+    });
+
+    // Tag ios-sim-app-* chi chay workflow dong goi, khong chay lai bo test simulator.
+    test('Workflow ios-sim.yml bo qua tag ios-sim-app-*', () {
+      final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
+      expect(yml, contains("tags: ['ios-sim-*', '!ios-sim-app-*']"));
+    });
+
     // lib/l10n/ bị gitignore; flutter pub get tự sinh gói l10n nên phải gộp ARB trước.
-    for (final name in ['ios-build.yml', 'ios-sim.yml']) {
+    for (final name in ['ios-build.yml', 'ios-sim.yml', 'ios-sim-app.yml']) {
       test('Workflow $name chạy merge_arb trước flutter pub get', () {
         final yml = File('../.github/workflows/$name').readAsStringSync();
         // So khớp dòng lệnh, không so khớp comment có nhắc tên lệnh.
