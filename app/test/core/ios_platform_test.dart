@@ -77,9 +77,12 @@ void main() {
     expect(defaultShareOrigin(platform: AppPlatform.ios), isNotNull);
   });
 
-  test('appShareMessage: iOS bỏ link APK, mặc định giữ nguyên', () {
+  test('appShareMessage: mặc định (Android) kèm link APK, iOS kèm link trang cài iOS', () {
     expect(appShareMessage('hi'), 'hi\n$kAppDownloadUrl');
-    expect(appShareMessage('hi', withLink: false), 'hi');
+    expect(appShareMessage('hi', link: kIosDownloadUrl), 'hi\n$kIosDownloadUrl');
+    // iPhone không cài được APK → link iOS phải khác link APK và trỏ trang Release ios-latest.
+    expect(kIosDownloadUrl, isNot(kAppDownloadUrl));
+    expect(kIosDownloadUrl, endsWith('/releases/tag/ios-latest'));
   });
 
   test('platformScanRootsProvider: Android/khác rỗng', () async {

@@ -112,7 +112,10 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l.settings_share),
             onTap: () => SharePlus.instance.share(
               ShareParams(
-                text: appShareMessage(l.settings_shareText, withLink: !isIos),
+                text: appShareMessage(
+                  l.settings_shareText,
+                  link: isIos ? kIosDownloadUrl : kAppDownloadUrl,
+                ),
                 sharePositionOrigin: defaultShareOrigin(
                   platform: ref.read(appPlatformProvider),
                 ),

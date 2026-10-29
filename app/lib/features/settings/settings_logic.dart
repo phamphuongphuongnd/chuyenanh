@@ -18,10 +18,15 @@ const String kAppDownloadUrl =
 /// Địa chỉ nhận phản hồi (người gửi là tài khoản mail đang dùng trên máy bấm nút).
 const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';
 
+/// Link cài cho iPhone: trang GitHub Release gắn tag `ios-latest` (có ghi chú cách cài bằng Sideloadly).
+/// Không trỏ thẳng file .ipa vì IPA không ký không mở được bằng cách bấm tải.
+const String kIosDownloadUrl =
+    'https://github.com/phamphuongphuongnd/chuyenanh/releases/tag/ios-latest';
+
 /// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải.
-/// [withLink] = false (iOS): link trên là APK Android nên bỏ đi.
-String appShareMessage(String intro, {bool withLink = true}) =>
-    withLink ? '$intro\n$kAppDownloadUrl' : intro;
+/// [link] mặc định là APK Android; iOS truyền [kIosDownloadUrl] vì iPhone không cài được APK.
+String appShareMessage(String intro, {String link = kAppDownloadUrl}) =>
+    '$intro\n$link';
 
 /// `true` nếu ghi được file vào [path] (thư mục phải tồn tại). Thử bằng cách tạo rồi xoá
 /// một file tạm — không để lại dấu vết.
