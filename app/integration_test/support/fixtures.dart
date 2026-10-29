@@ -17,6 +17,7 @@ class Fixtures {
     required this.txt,
     required this.png,
     required this.jpg,
+    required this.ocrPdf,
   });
 
   final String pdf;
@@ -25,6 +26,9 @@ class Fixtures {
   final String txt;
   final String png;
   final String jpg;
+
+  /// PDF chỉ chứa ảnh có chữ "HELLO OCR 12345" (không có lớp chữ) → buộc app dùng OCR.
+  final String ocrPdf;
 }
 
 Future<Fixtures> makeFixtures() async {
@@ -96,6 +100,26 @@ Future<Fixtures> makeFixtures() async {
   File(at('photo1.png')).writeAsBytesSync(img.encodePng(photo(200, 60, 60)));
   File(at('photo2.jpg')).writeAsBytesSync(img.encodeJpg(photo(60, 90, 200)));
 
+  // PDF chỉ chứa ảnh có chữ rõ (không có lớp chữ) để thử OCR: chữ đen lớn trên nền trắng.
+  final textImage = img.Image(width: 1200, height: 300);
+  img.fill(textImage, color: img.ColorRgb8(255, 255, 255));
+  img.drawString(
+    textImage,
+    'HELLO OCR 12345',
+    font: img.arial48,
+    x: 60,
+    y: 120,
+    color: img.ColorRgb8(0, 0, 0),
+  );
+  final ocrDoc = PdfDocument();
+  final ocrPage = ocrDoc.pages.add();
+  ocrPage.graphics.drawImage(
+    PdfBitmap(img.encodePng(textImage)),
+    const Rect.fromLTWH(30, 60, 540, 135),
+  );
+  File(at('ocr_sample.pdf')).writeAsBytesSync(ocrDoc.saveSync());
+  ocrDoc.dispose();
+
   return Fixtures(
     pdf: at('sample.pdf'),
     docx: at('sample.docx'),
@@ -103,5 +127,6 @@ Future<Fixtures> makeFixtures() async {
     txt: at('sample.txt'),
     png: at('photo1.png'),
     jpg: at('photo2.jpg'),
+    ocrPdf: at('ocr_sample.pdf'),
   );
 }

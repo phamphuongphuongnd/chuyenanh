@@ -129,7 +129,8 @@ void main() {
                 matching: find.byType(FilledButton),
               )
               .first;
-          await tester.tap(button);
+          await tester.ensureVisible(button);
+      await tester.tap(button);
           await waitFor(
             tester,
             binding,
@@ -161,6 +162,42 @@ void main() {
         'pdf2img-done',
       );
       await snap('38-pdf-to-image-2-done');
+    });
+
+    // ---------- OCR: PDF chỉ chứa ảnh có chữ → TXT, đọc file kết quả ----------
+    await scenario('39-ocr-pdf-to-text', () async {
+      await open(Routes.pdfToText, fx.ocrPdf, 'ocr-open');
+      await snap('39-ocr-1-before');
+      final button = find
+          .descendant(
+            of: find.byType(ConvertScreen),
+            matching: find.byType(FilledButton),
+          )
+          .first;
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      // OCR chạy lâu hơn chuyển đổi thường; "No text found" hiện ở SnackBar nếu OCR không ra chữ.
+      await waitFor(
+        tester,
+        binding,
+        find.byIcon(Icons.check_circle),
+        'ocr-done',
+        timeout: const Duration(seconds: 180),
+      );
+      await snap('39-ocr-2-done');
+      final saved = find.textContaining('.txt');
+      expect(saved, findsWidgets);
+      final label = tester.widget<Text>(saved.first).data ?? '';
+      final match = RegExp(r'(/.*[.]txt)').firstMatch(label);
+      expect(match, isNotNull, reason: 'khong tim thay duong dan file .txt trong "$label"');
+      final text = File(match!.group(1)!).readAsStringSync();
+      // ignore: avoid_print
+      print('OCR RESULT: "$text"');
+      expect(
+        text.toUpperCase().contains('HELLO'),
+        isTrue,
+        reason: 'OCR khong nhan ra chu, ket qua: "$text"',
+      );
     });
 
     // ignore: avoid_print
