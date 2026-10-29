@@ -1,7 +1,7 @@
 ---
 title: Preferences — Cách làm việc người dùng muốn
 type: preferences
-updated: 2026-10-22
+updated: 2026-10-28
 sources: []
 ---
 
@@ -97,3 +97,6 @@ sources: []
 - Người dùng muốn các **loại tài liệu hành xử giống hệt nhau** (cùng nút, cùng thanh tìm, cùng màu theo loại) — thấy khác là coi như lỗi.
 - Sau khi thử xong và sửa lỗi, người dùng cho phép **commit + push + merge `master`** (đã dặn rõ ngày 28/10); vẫn không commit file không phải của mình (`baocao.docx`).
 - Cho agent chạy song song chỉ để **sửa code theo file riêng**; tôi tự chạy `flutter analyze/test` tuần tự sau đó.
+- Người dùng muốn **mọi việc làm theo quy trình superpowers** (`/using-superpowers`): lỗi thì `systematic-debugging` (tìm nguyên nhân gốc, tái hiện, rồi mới sửa), tính năng mới thì `brainstorming` trước, xong thì `verification-before-completion`.
+- Mục tiêu iOS: **dùng được như Android** trên cả hai hệ điều hành; khi `/luu-wiki` kèm "không đẩy lên git" thì chỉ lưu file wiki, không commit/push.
+- Người dùng muốn **thấy kết quả cụ thể** (ảnh chụp màn hình, link, bước làm từng nút) và hay hỏi "xong chưa / bao nhiêu phút nữa": luôn báo trạng thái từng việc, ước lượng kèm độ chắc, nói rõ việc nào CHƯA kiểm chứng. Khi người dùng nói "làm hết phần chưa xong" thì làm tuần tự không hỏi lại từng bước, nhưng vẫn hỏi trước khi đè file công khai.

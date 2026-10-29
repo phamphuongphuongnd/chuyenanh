@@ -49,3 +49,8 @@ sources:
   từng ghi là do đo bằng `uiautomator` (tự tốn 1,5–3s mỗi lần). Đánh giá tốc độ bằng release trên máy thật, không dùng debug.
 
 Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].
+
+## Cập nhật 29/10/2026
+- APK trên Release `android-latest` đã được thay bằng bản build 29/10 (96.360.245 byte, SHA-256 `6ef26eb1…8d4917`, gồm hỗ trợ iPhone và sửa nhãn OCR), ký bằng khoá debug MỚI (xem [[build-android]]).
+  Bản cũ (119.651.285 byte, khoá cũ) được lưu ở `dist/backup/PDFOffice.apk` (gitignore) — tải lên lại bằng `gh release upload android-latest dist/backup/PDFOffice.apk --clobber` nếu cần quay lại.
+- Máy đã có `gh` (người dùng tự đăng nhập): tải lên Release bằng `gh release upload <tag> <file> --clobber`, kiểm bằng `gh release view <tag> --json assets` (trường `digest` là SHA-256 để đối chiếu).

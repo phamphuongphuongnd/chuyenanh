@@ -51,3 +51,18 @@ Liên quan: [[0001-flutter-android-truoc]], [[build-song-song-agent]].
   ([[co-so-du-lieu]]) + `shared_preferences`; hoàn toàn offline.
 - Thêm plugin → build lại: `url_launcher` (L1) build sạch lần đầu (438 s), không cần vá Gradle.
 - Font Noto **không commit**: `bash app/tool/fetch_fonts.sh` ([[xuat-chu-ra-pdf]]).
+
+## Môi trường đổi — build Android 29/10/2026 (đã gặp, tạm xử lý)
+Chỉ dẫn "Môi trường" ở trên đã cũ: **không còn** JDK 21 và `C:/Android/sdk`. Hiện có JDK 17 (`C:/Program Files/Eclipse Adoptium/jdk-17.0.20.101-hotspot`, đặt `JAVA_HOME`),
+Android SDK ở `%LOCALAPPDATA%/Android/Sdk` (đúng `local.properties`), Android Studio JBR. Gradle 9.3.1-all (dự án ghim) **không có trong cache**.
+- **Tải Gradle từ GitHub CDN chỉ ~41 KB/s** (~80 phút cho 200 MB; file `.part` đứng ở 0 byte), còn `dl.google.com` ~560 KB/s. Máy có sẵn `gradle-9.4.1-bin` → tạm đổi
+  `gradle-wrapper.properties` sang `gradle-9.4.1-bin.zip` (chỉ cục bộ, KHÔNG commit, khôi phục sau).
+- **Gói `:jni` (phụ thuộc gián tiếp) tự đòi NDK 28.2** (`flutter.ndkVersion`) bất kể `ndkVersion` của app; thư mục NDK 28.2 rỗng do tải dở → lỗi `CXX1101 ... did not have a source.properties`.
+  Đã xử lý tạm: chép NDK 27.1 vào thư mục `ndk/28.2.13676358` (trong SDK) và sửa `Pkg.Revision`/`Pkg.BaseRevision` trong `source.properties` (xoá thư mục đó là về như cũ).
+- Flutter chỉ in `Gradle task assembleRelease failed with exit code 1` mà không nói lý do → chạy `flutter build apk --release -v` rồi `grep "What went wrong|Caused by"`.
+- **`integration_test` trong `pubspec.yaml` làm hỏng build APK release** (`package dev.flutter.plugins.integration_test does not exist` trong `GeneratedPluginRegistrant.java`):
+  registrant Android liệt kê plugin dev mà bản release không có. Vì vậy gói này KHÔNG nằm trong pubspec; workflow `ios-sim.yml` chạy `flutter pub add --dev integration_test --sdk=flutter` ngay trên CI.
+  `analysis_options.yaml` loại `integration_test/**` và `test_driver/**`. Test chặn hồi quy: `test/core/ios_simulation_test.dart`.
+- **Khoá ký debug đã đổi (29/10/2026):** `~/.android/debug.keystore` được tạo mới lúc build (máy bị đặt lại môi trường) → APK ký bằng khoá MỚI (SHA-256 cert `fa9b88c7…`), khác bản cũ (`865ee5c7…`).
+  Người đã cài bản cũ phải gỡ rồi cài lại. **Hãy sao lưu `~/.android/debug.keystore` ra nơi an toàn** để các bản sau cài đè được (không đọc/chép nội dung file này vào chat).
+- Hai thay đổi tạm (đổi Gradle sang 9.4.1-bin và `ndkVersion`) đã khôi phục bằng `git checkout`; thư mục `ndk/28.2.13676358` trong SDK (bản chép từ NDK 27.1) VẪN CÒN và cần giữ nếu build lại. Build mới cần đặt lại 2 thay đổi tạm nếu mạng tới GitHub vẫn chậm.
