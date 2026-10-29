@@ -212,7 +212,13 @@ void main() {
     // Bước drive phải có thời hạn riêng và log phải được in cả khi bị huỷ.
     test('Workflow ios-sim.yml: bước drive có timeout riêng, log in cả khi huỷ', () {
       final yml = File('../.github/workflows/ios-sim.yml').readAsStringSync();
-      expect(yml, contains('timeout-minutes: 50'));
+      expect(yml, contains('timeout-minutes: 25'));
+      expect(yml, contains('timeout-minutes: 40'));
+      // Hai bo test chay o hai buoc rieng: bo 2 treo/loi khong lam mat ket qua bo 1.
+      expect(RegExp('--driver=').allMatches(yml).length, 2);
+      // Loi kich ban chi bao do sau khi da dang anh.
+      expect(yml, contains('SCENARIO FAIL'));
+      expect(yml.indexOf('SCENARIO FAIL'), greaterThan(yml.indexOf('ios-sim-latest')));
       expect(yml, contains('if: failure() || cancelled()'));
     });
 

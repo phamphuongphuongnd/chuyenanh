@@ -17,6 +17,10 @@ import 'support/steps.dart';
 
 /// Đợt 2: xem file + chuyển đổi (không quét camera/OCR). Bộ chọn file hệ thống không điều khiển
 /// được trên simulator nên mở thẳng route bằng đường dẫn file mẫu do test tự sinh.
+///
+/// Lỗi từng kịch bản KHÔNG làm test ném lỗi: `flutter drive` treo (không kết thúc, mất hết ảnh) khi
+/// test thất bại. Thay vào đó mỗi kịch bản bắt lỗi, chụp `FAIL-<tên>`, in `SCENARIO FAIL` ra log rồi chạy
+/// tiếp; workflow đọc log sau khi đã đăng ảnh để báo đỏ.
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -29,6 +33,8 @@ void main() {
     final router = ProviderScope.containerOf(
       tester.element(find.byType(PdfOfficeApp)),
     ).read(appRouterProvider);
+
+    final failures = <String>[];
 
     Future<void> open(String route, Object? extra, String label) async {
       unawaited(router.push<Object?>(route, extra: extra));
@@ -50,59 +56,88 @@ void main() {
       await pumpFor(tester, binding, 'home');
     }
 
+    /// Chạy một kịch bản; lỗi thì ghi nhận và quay về Trang chủ để kịch bản sau chạy tiếp.
+    Future<void> scenario(String name, Future<void> Function() body) async {
+      try {
+        await body();
+        // ignore: avoid_print
+        print('SCENARIO OK $name');
+      } catch (e) {
+        failures.add(name);
+        // ignore: avoid_print
+        print('SCENARIO FAIL $name: $e');
+        try {
+          await binding.takeScreenshot('FAIL-$name');
+        } catch (_) {}
+      }
+      try {
+        await home();
+      } catch (_) {}
+    }
+
     // ---------- Xem file ----------
-    await open(Routes.pdfReader, OpenFileArgs(fx.pdf), 'view-pdf');
-    await snap('20-view-pdf');
-    await home();
-
-    await open(Routes.docxViewer, fx.docx, 'view-docx');
-    await snap('21-view-docx');
-    await home();
-
-    await open(Routes.xlsxViewer, fx.xlsx, 'view-xlsx');
-    await snap('22-view-xlsx');
-    await home();
-
-    await open(Routes.txtViewer, fx.txt, 'view-txt');
-    await snap('23-view-txt');
-    await home();
+    await scenario('20-view-pdf', () async {
+      await open(Routes.pdfReader, OpenFileArgs(fx.pdf), 'view-pdf');
+      await snap('20-view-pdf');
+    });
+    await scenario('21-view-docx', () async {
+      await open(Routes.docxViewer, fx.docx, 'view-docx');
+      await snap('21-view-docx');
+    });
+    await scenario('22-view-xlsx', () async {
+      await open(Routes.xlsxViewer, fx.xlsx, 'view-xlsx');
+      await snap('22-view-xlsx');
+    });
+    await scenario('23-view-txt', () async {
+      await open(Routes.txtViewer, fx.txt, 'view-txt');
+      await snap('23-view-txt');
+    });
 
     // ---------- Ảnh -> PDF ----------
-    await open(Routes.imageToPdf, [fx.png, fx.jpg], 'img2pdf-open');
-    await snap('30-img-to-pdf-edit');
-    final create = find.byKey(const ValueKey('create_button'));
-    await waitFor(tester, binding, create, 'img2pdf-create-button');
-    await tester.ensureVisible(create);
-    await tester.tap(create);
-    await waitFor(
-      tester,
-      binding,
-      find.byKey(const ValueKey('result_name')),
-      'img2pdf-result',
-    );
-    await snap('31-img-to-pdf-result');
-    await home();
-
-    // ---------- Chuyển đổi (có đường dẫn đầu vào) ----------
-    Future<void> convert(String route, String input, String name) async {
-      await open(route, input, '$name-open');
-      await snap('$name-1-before');
-      final button = find
-          .descendant(
-            of: find.byType(ConvertScreen),
-            matching: find.byType(FilledButton),
-          )
-          .first;
-      await tester.tap(button);
+    await scenario('30-img-to-pdf', () async {
+      await open(Routes.imageToPdf, [fx.png, fx.jpg], 'img2pdf-open');
+      await snap('30-img-to-pdf-1-edit');
+      final create = find.byKey(const ValueKey('create_button'));
+      await waitFor(tester, binding, create, 'img2pdf-create-button');
+      await tester.ensureVisible(create);
+      await tester.tap(create);
+      // Bấm "Tạo PDF" mở bảng tuỳ chọn (tên file, khổ giấy); phải xác nhận mới tạo.
+      final confirm = find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.byType(FilledButton),
+      );
+      await waitFor(tester, binding, confirm, 'img2pdf-options-sheet');
+      await snap('30-img-to-pdf-2-options');
+      await tester.tap(confirm.last);
       await waitFor(
         tester,
         binding,
-        find.byIcon(Icons.check_circle),
-        '$name-done',
+        find.byKey(const ValueKey('result_name')),
+        'img2pdf-result',
       );
-      await snap('$name-2-done');
-      await home();
-    }
+      await snap('30-img-to-pdf-3-result');
+    });
+
+    // ---------- Chuyển đổi (có đường dẫn đầu vào) ----------
+    Future<void> convert(String route, String input, String name) =>
+        scenario(name, () async {
+          await open(route, input, '$name-open');
+          await snap('$name-1-before');
+          final button = find
+              .descendant(
+                of: find.byType(ConvertScreen),
+                matching: find.byType(FilledButton),
+              )
+              .first;
+          await tester.tap(button);
+          await waitFor(
+            tester,
+            binding,
+            find.byIcon(Icons.check_circle),
+            '$name-done',
+          );
+          await snap('$name-2-done');
+        });
 
     await convert(Routes.wordToPdf, fx.docx, '32-word-to-pdf');
     await convert(Routes.excelToPdf, fx.xlsx, '33-excel-to-pdf');
@@ -112,18 +147,27 @@ void main() {
     await convert(Routes.pdfToExcel, fx.pdf, '37-pdf-to-excel');
 
     // ---------- PDF -> ảnh ----------
-    await open(Routes.pdfToImage, fx.pdf, 'pdf2img-open');
-    await snap('38-pdf-to-image-1-before');
-    final convertButton = find.byKey(const Key('p2i_convert'));
-    await waitFor(tester, binding, convertButton, 'pdf2img-button');
-    await tester.ensureVisible(convertButton);
-    await tester.tap(convertButton);
-    await waitFor(
-      tester,
-      binding,
-      find.byKey(const Key('p2i_resultPath')),
-      'pdf2img-done',
+    await scenario('38-pdf-to-image', () async {
+      await open(Routes.pdfToImage, fx.pdf, 'pdf2img-open');
+      await snap('38-pdf-to-image-1-before');
+      final convertButton = find.byKey(const Key('p2i_convert'));
+      await waitFor(tester, binding, convertButton, 'pdf2img-button');
+      await tester.ensureVisible(convertButton);
+      await tester.tap(convertButton);
+      await waitFor(
+        tester,
+        binding,
+        find.byKey(const Key('p2i_resultPath')),
+        'pdf2img-done',
+      );
+      await snap('38-pdf-to-image-2-done');
+    });
+
+    // ignore: avoid_print
+    print(
+      failures.isEmpty
+          ? 'SCENARIOS ALL OK'
+          : 'SCENARIOS FAILED ${failures.length}: ${failures.join(', ')}',
     );
-    await snap('38-pdf-to-image-2-done');
   });
 }

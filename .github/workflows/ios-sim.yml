@@ -50,16 +50,20 @@ jobs:
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b
           echo "UDID=$UDID" >> "$GITHUB_ENV"
-      - name: Chạy integration_test và chụp ảnh
-        # Thời hạn riêng: nếu treo thì step bị huỷ, các step sau (in log, đăng ảnh) vẫn chạy.
-        timeout-minutes: 50
+      - name: Chạy bộ test 1 (5 tab, Cài đặt)
+        # Thời hạn riêng: nếu treo thì step bị huỷ, các step sau vẫn chạy.
+        timeout-minutes: 25
         run: |
           set -o pipefail
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/app_test.dart \
             -d "$UDID" 2>&1 | tee drive.log
-          # Đợt 2: xem file + chuyển đổi (dùng lại bản build, nhanh hơn lần đầu).
+      - name: Chạy bộ test 2 (xem file, chuyển đổi)
+        if: always()
+        timeout-minutes: 40
+        run: |
+          set -o pipefail
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/app_features_test.dart \
@@ -89,3 +93,12 @@ jobs:
           gh release view ios-sim-latest >/dev/null 2>&1 || gh release create ios-sim-latest --title "iOS simulator screenshots" --notes "Ảnh chụp từ integration_test trên iPhone simulator (ghi đè mỗi lần chạy)."
           for a in $(gh release view ios-sim-latest --json assets -q '.assets[].name'); do gh release delete-asset ios-sim-latest "$a" -y; done
           gh release upload ios-sim-latest screenshots/*.png drive.log --clobber
+      # Lỗi từng kịch bản của bộ test 2 được in ra log (không làm test ném lỗi vì drive sẽ treo),
+      # nên báo đỏ ở đây, SAU khi đã đăng ảnh.
+      - name: Kiểm tra kết quả kịch bản
+        if: always()
+        run: |
+          if grep -n 'SCENARIO FAIL' drive.log; then
+            echo '::error::Có kịch bản thất bại, xem ảnh FAIL-* trên Release ios-sim-latest'
+            exit 1
+          fi
