@@ -40,6 +40,7 @@ updated: 2026-10-30
 - [[tinh-nang-t1-t10]] — **trạng thái 10 tính năng (đã ghép)**: từng tính năng làm được gì, hạn chế, việc còn lại (font, thử máy thật).
 - [[viec-con-lai]] — **việc còn lại / làm tiếp** (chốt 27/10): thay file Release, tối ưu khởi động, lỗi đã biết chưa sửa.
 - [[documents]] — T1 Trang chủ Tài liệu: màn, provider quét + quyền, quyết định thiết kế, phần chưa kiểm trên máy thật.
+- [[tinh-nang-offline]] — **11 tính năng offline mới (30/10)**: nén, số trang, chèn trang, ảnh chữ ký, PPT↔PDF, thẻ ID, QR, tìm nội dung, đọc to, dàn chữ, dịch, mở file từ app khác, khoá app; gotcha `local_auth`, hạn chế, whitebox dở.
 - [[giao-dien-phiotron]] — **giao diện mới Phiotron PDF (30/10)**: quy trình Claude Design → `design-mobile/`, tên/logo, token, `app_sheet.dart`, AppBar sáng, tablet, gotcha icon iOS/Material Symbols.
 
 ## Entities
