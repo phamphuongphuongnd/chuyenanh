@@ -16,7 +16,7 @@
 | **Nền tảng** | Điện thoại Android (chính) và iPhone. Màn dọc, rộng 360–412dp |
 | **Ngôn ngữ giao diện** | 6: Tiếng Việt · English · 中文 · 日本語 · 한국어 · Bahasa Indonesia (chữ dài ngắn khác nhau → thiết kế phải chịu được chữ dài) |
 | **Chế độ sáng / tối** | Có cả hai + "Theo máy" |
-| **Ứng dụng tham chiếu** | "Image to PDF: PDF Converter" (Google Play) — app này mô phỏng bố cục của nó |
+| **Ứng dụng tham chiếu** | Một app chuyển đổi PDF phổ biến trên Google Play — chỉ tham khảo các luồng chức năng phổ biến của nhóm app chuyển đổi PDF; giao diện, logo, icon và tài nguyên do dự án tự thiết kế |
 | **Quy mô** | 5 mục điều hướng chính · 19 công cụ · 5 trình xem · 8 màn cài đặt |
 
 ### Cái designer được đổi

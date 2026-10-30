@@ -9,7 +9,8 @@ sources:
 
 # ADR 0001 — Flutter, Android trước, dùng cá nhân
 
-**Bối cảnh:** clone app "Image to PDF: PDF Converter" (TrustedOffice) — xem [[0004-pham-vi-bam-app-goc]].
+**Bối cảnh:** app có các nhóm chức năng phổ biến của app chuyển đổi PDF (tham khảo một app phổ biến trên Google Play;
+giao diện, logo, icon và tài nguyên do dự án tự thiết kế) — xem [[0004-pham-vi-bam-app-goc]].
 
 **Quyết định:**
 - **Flutter** (Dart). Người dùng chọn sau khi so sánh Kotlin native / Flutter / React Native / PWA.
@@ -20,6 +21,6 @@ sources:
 - 6 ngôn ngữ UI: vi, en, zh, ja, ko, id.
 - Thiết bị test thật: **Samsung Galaxy A13** qua cáp USB (Android SDK dạng dòng lệnh ở `C:\Android\sdk`, không cần emulator).
 
-**Hệ quả:** iOS cần Mac/CI khi muốn làm. Thương hiệu (logo, icon) tự vẽ, không chép app mẫu.
+**Hệ quả:** iOS cần Mac/CI khi muốn làm. Thương hiệu (logo, icon) do dự án tự thiết kế.
 
 Liên quan: [[0002-syncfusion-community]], [[0003-kien-truc-riverpod]], [[build-song-song-agent]].

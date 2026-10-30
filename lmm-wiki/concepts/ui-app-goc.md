@@ -1,15 +1,16 @@
 ---
-title: UI App gốc — cấu trúc giao diện app mẫu (com.readpdf.pdfreader.pdfviewer)
+title: UI app tham khảo — khảo sát luồng chức năng (lịch sử)
 type: concept
 updated: 2026-10-27
 sources:
   - lmm-wiki/decisions/0004-pham-vi-bam-app-goc.md
 ---
 
-# UI App gốc — Giao diện app mẫu
+# UI app tham khảo — Khảo sát luồng chức năng
 
-App mẫu: **"Image to PDF Converter"** (TrustedOffice, `com.readpdf.pdfreader.pdfviewer`, v4.0.3, Android 7.0+).
-Khảo sát trực tiếp qua ADB screencap trên Samsung Galaxy A13, 27/10/2026.
+App tham khảo: một app chuyển đổi PDF phổ biến trên Google Play (Android 7.0+). Trang này ghi luồng chức năng phổ biến
+để đối chiếu phạm vi; giao diện, logo, icon và tài nguyên của app mình do dự án tự thiết kế.
+Khảo sát luồng chức năng (nhóm tính năng, thứ tự màn hình) ngày 27/10/2026; không dùng hình ảnh hay tài nguyên của app đó.
 
 ## Cấu trúc điều hướng tổng thể
 
@@ -104,7 +105,7 @@ Menu ⋮: các chức năng bổ sung (in, chia sẻ, thông tin, ...).
 
 ## So sánh nhanh với app mình
 
-| Điểm | App mẫu | App mình (hiện tại) |
+| Điểm | App tham khảo | App mình (hiện tại) |
 |---|---|---|
 | Điều hướng | Bottom nav 5 item | Hamburger drawer + tab |
 | Trang chủ | Tile tính năng + gần đây | Danh sách file có tab |
@@ -117,12 +118,12 @@ Menu ⋮: các chức năng bổ sung (in, chia sẻ, thông tin, ...).
 
 Liên quan: [[0004-pham-vi-bam-app-goc]], [[tinh-nang-t1-t10]], [[documents]].
 
-## Cập nhật 30/10: KHÔNG còn bám giao diện app mẫu
-Giao diện đã thiết kế lại riêng (Phiotron PDF, Claude Design) để tránh giống app TrustedOffice — xem [[giao-dien-phiotron]]. Trang này chỉ còn giá trị
+## Cập nhật 30/10: giao diện tự thiết kế riêng
+Giao diện đã thiết kế lại riêng (Phiotron PDF, Claude Design), logo/icon/tài nguyên do dự án tự thiết kế — xem [[giao-dien-phiotron]]. Trang này chỉ còn giá trị
 tham khảo phạm vi chức năng; nội dung bên dưới là lịch sử.
 
-## Cập nhật 27/10: đã làm giao diện giống app mẫu
-Bottom nav 5 mục + 3 ô tính năng + Yêu thích/Gần đây đã làm xong (xem [[documents]]). **Cài đặt app mẫu** (chụp qua ADB): nhóm
+## Cập nhật 27/10: đã đổi sang điều hướng bottom nav
+Bottom nav 5 mục + 3 ô tính năng + Yêu thích/Gần đây đã làm xong (xem [[documents]]). **Cài đặt của app tham khảo**: nhóm
 *Chung* (Ngôn ngữ, Màu chủ đề) và *Về ứng dụng* (Thêm tiện ích, Chia sẻ ứng dụng, Phản hồi, Chính sách bảo mật, Ứng dụng khác,
 Quản lý Đăng ký) + biểu ngữ nâng cấp. App mình làm: Chia sẻ (gửi link Release), Phản hồi (mailto), Chính sách bảo mật (màn tĩnh),
 chia 2 nhóm. **Bỏ** biểu ngữ/Ứng dụng khác/Quản lý Đăng ký (không quảng cáo, không đăng ký, không store); **chưa làm** "Thêm tiện ích".

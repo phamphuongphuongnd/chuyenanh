@@ -8,7 +8,7 @@
   "settings_themeLight": "Terang",
   "settings_themeDark": "Gelap",
   "settings_outputDir": "Folder penyimpanan",
-  "settings_outputDirDefault": "Bawaan (Documents/PDF Office)",
+  "settings_outputDirDefault": "Bawaan (Documents/Phiotron PDF)",
   "settings_outputDirChoose": "Pilih folder",
   "settings_outputDirReset": "Gunakan folder bawaan",
   "settings_outputDirNotWritable": "Tidak dapat menulis ke folder ini. Pilih folder lain.",

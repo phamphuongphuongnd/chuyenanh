@@ -46,7 +46,7 @@ OS báo `Displayed +0,75–1,2s`; chụp màn hình lúc 1,5s đã thấy đủ 
    XLSX→PDF `mergeCovering` O(ô×vùng gộp); PPTX/DOCX một phần XML hỏng làm hỏng cả file (nên bắt theo slide/phần); `_fieldStack` DOCX không reset giữa đoạn;
    watermark/gộp/tách **mất mật khẩu** file gốc không cảnh báo; chọn font watermark một font cho cả chuỗi (Việt+CJK); `pdfLockedProvider` cache vĩnh viễn (biểu tượng khoá sai sau khi khoá/mở khoá);
    ảnh quét `scan_pages` đã có dọn theo tuổi (12h) nhưng chưa dọn ngay khi bấm Huỷ; `ImagePicker` camera không `retrieveLostData`.
-- **Giới hạn đã biết khác:** "Thêm tiện ích" (widget màn hình chính) của app mẫu chưa làm; `composeVietnamese` còn nhân đôi (T4 `vi_nfc.dart`, T6 `vietnamese_nfc.dart`) → gom vào `core/utils`;
+- **Giới hạn đã biết khác:** "Thêm tiện ích" (widget màn hình chính, có ở app tham khảo) chưa làm; `composeVietnamese` còn nhân đôi (T4 `vi_nfc.dart`, T6 `vietnamese_nfc.dart`) → gom vào `core/utils`;
   OCR tiếng Việt dấu chồng chưa đo trên máy thật; các cảnh báo Kotlin Gradle Plugin của `pdfx`/`photo_manager` sẽ làm build hỏng ở bản Flutter tương lai.
 
 ## 3. Lưu ý khi làm tiếp

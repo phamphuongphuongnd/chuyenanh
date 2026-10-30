@@ -8,7 +8,7 @@
   "settings_themeLight": "Light",
   "settings_themeDark": "Dark",
   "settings_outputDir": "Save folder",
-  "settings_outputDirDefault": "Default (Documents/PDF Office)",
+  "settings_outputDirDefault": "Default (Documents/Phiotron PDF)",
   "settings_outputDirChoose": "Choose folder",
   "settings_outputDirReset": "Use default folder",
   "settings_outputDirNotWritable": "Cannot write to this folder. Please choose another one.",

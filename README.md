@@ -1,8 +1,9 @@
-# PDF Office
+# Phiotron PDF
 
-App di động dùng cá nhân (`com.phuong.pdfoffice`), mô phỏng app Google Play "Image to PDF: PDF Converter"
-(TrustedOffice): ảnh ↔ PDF, đọc PDF / Word / Excel / PowerPoint / TXT, công cụ PDF, chỉnh sửa, chuyển đổi,
-máy quét + OCR. **Chạy offline, không quảng cáo, không lên store.** Android làm trước, iOS để sau.
+App di động **Phiotron PDF** (`com.phuong.pdfoffice`): ảnh ↔ PDF, đọc PDF / Word / Excel / PowerPoint / TXT,
+công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR. **Miễn phí, không quảng cáo, không mua trong ứng dụng, không cần
+tài khoản; tệp được xử lý ngay trên máy.** Chạy trên Android và iOS; dự kiến phát hành lên Google Play và App Store.
+Giao diện, logo, icon và tài nguyên do dự án tự thiết kế. Bản quyền: xem [mục 11](#11-bản-quyền--giấy-phép) và [`LICENSE`](LICENSE).
 
 > Thiết kế đầy đủ: [`docs/superpowers/specs/2026-10-25-pdf-office-design.md`](docs/superpowers/specs/2026-10-25-pdf-office-design.md).
 > Mục lục kiến thức dự án: [`lmm-wiki/index.md`](lmm-wiki/index.md).
@@ -165,7 +166,7 @@ Máy thử mục tiêu: Samsung Galaxy A13. Hai cách:
 
 - **Cắm cáp** (khuyên dùng — đọc được log lỗi): cài Samsung USB Driver, bật Gỡ lỗi USB, chọn Truyền tệp, bấm Cho phép; kiểm `adb devices`, rồi `flutter run`.
 - **Không cáp:** chép `app/build/app/outputs/flutter-apk/app-debug.apk` (~261 MB, **không nằm trong git**) sang điện thoại, cho phép cài từ nguồn
-  không rõ, rồi bật "Truy cập tất cả tệp" cho PDF Office.
+  không rõ, rồi bật "Truy cập tất cả tệp" cho Phiotron PDF.
 
 Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đặc biệt cần đo trên máy thật: quyền đọc file, camera, máy quét tự nhận viền,
 **OCR tiếng Việt dấu chồng (ặ ỗ ữ ẫ ậ ề ở)**, lối tắt màn hình chính, tốc độ với file lớn.
@@ -180,3 +181,25 @@ Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đ�
 - OCR dùng Google ML Kit (Latin gồm tiếng Việt, Trung, Nhật, Hàn); độ chính xác tiếng Việt dấu chồng chưa đo.
 - PDF từ máy quét có lớp chữ trong suốt để tìm kiếm / bôi chọn — chưa thử trên trình đọc ngoài.
 - Ghi chú build Android thay đổi theo bản AGP / plugin — đọc `lmm-wiki/concepts/build-android.md` trước khi nâng cấp hoặc thêm plugin.
+
+## 11. Bản quyền & giấy phép
+
+- **Mã nguồn, logo, tên "Phiotron PDF":** độc quyền của tác giả — xem [`LICENSE`](LICENSE). Repo sẽ chuyển sang
+  **riêng tư (private)** sau khi app có mặt trên store (GitHub → Settings → General → Danger Zone → Change visibility),
+  vì lúc đó link tải APK/IPA trên GitHub Release không còn dùng. Lưu ý: repo private chỉ có 2.000 phút GitHub Actions
+  miễn phí/tháng và runner macOS tính ×10 (≈200 phút) → build iOS trên CI bị giới hạn.
+- **Thư viện bên thứ ba:** danh sách đầy đủ + mã SPDX ở [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md), sinh lại
+  bằng `dart run tool/license_report.dart` (trong `app/`) **mỗi khi thêm/đổi thư viện**. Lệnh báo lỗi nếu có thư viện
+  GPL / AGPL / LGPL hoặc chưa rõ giấy phép — không đưa những thư viện đó vào app phát hành trên store.
+- **Trang "Giấy phép mã nguồn mở" trong app** (Cài đặt → Giới thiệu): Flutter tự liệt kê gói pub; phần không tự có
+  (font Be Vietnam Pro, font Noto, thư viện Android uCrop) khai ở `app/lib/core/licenses/bundled_licenses.dart`.
+  Thêm font hoặc thư viện native mới thì khai thêm ở đó.
+- **Font:** Be Vietnam Pro (`app/assets/ui_fonts/OFL.txt`) và Noto Sans / SC / JP / KR (`app/assets/fonts/OFL-Noto.txt`)
+  theo SIL Open Font License 1.1 — file giấy phép **phải đi kèm** font khi phát hành. Không dùng font của Windows/macOS
+  (Arial, SimSun, Yu Gothic…) trong app hay trong repo.
+- **Syncfusion Flutter (PDF, PDF Viewer, XlsIO, Signature Pad):** chỉ được dùng khi có Syncfusion Community License
+  (miễn phí: doanh thu < 1 triệu USD/năm, ≤ 5 lập trình viên, ≤ 10 nhân viên). **Đã nộp đơn 30/10/2026 (cá nhân /
+  Hobbyist), đang chờ duyệt.** Giữ email duyệt + chụp trang *License & Downloads* làm bằng chứng; gia hạn nếu
+  Syncfusion yêu cầu. Bản Flutter **không cần** license key — không dán key vào code hay commit.
+- **Trước khi phát hành:** tự tra tên "Phiotron" trên WIPO Global Brand Database và cổng Cục Sở hữu trí tuệ Việt Nam;
+  tên, mô tả, icon và ảnh chụp trên store phải tự làm, không chép chữ / ảnh / tên của app khác.

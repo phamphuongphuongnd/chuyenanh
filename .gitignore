@@ -90,3 +90,7 @@ app/assets/fonts/*.ttf
 
 # Ảnh chụp từ integration_test trên simulator iOS (CI tạo)
 app/screenshots/
+
+# Kết quả spike PDF: có nhúng font Windows (bản quyền Microsoft) → không commit, chạy lại spike để tạo
+spikes/pdf_text/out/*.pdf
+spikes/pdf_text/out/*.png

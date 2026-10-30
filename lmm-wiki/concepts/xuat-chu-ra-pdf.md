@@ -7,13 +7,11 @@ sources:
   - app/test/spikes/pdf_text_fallback_test.dart
   - app/test/spikes/pdf_password_spike_test.dart
   - app/test/spikes/vi_nfc.dart
-  - spikes/pdf_text/out/vi_cjk_page1.png
-  - spikes/pdf_text/out/vi_arial_page1.png
 ---
 
 # Xuất chữ Việt / Trung / Nhật / Hàn ra PDF bằng Syncfusion
 
-Kết quả spike S1 (26/10/2026), đã **nhìn tận mắt** ảnh render (`spikes/pdf_text/out/*.png`). Người làm convert/văn bản→PDF
+Kết quả spike S1 (26/10/2026), đã **nhìn tận mắt** ảnh render (`spikes/pdf_text/out/*.png` — đã xoá khỏi repo 30/10/2026 vì PDF/ảnh nhúng font Windows bản quyền Microsoft; muốn xem lại thì chạy lại spike, file ra bị gitignore). Người làm convert/văn bản→PDF
 ([[0002-syncfusion-community]]) bắt buộc đọc.
 
 ## Tiếng Việt

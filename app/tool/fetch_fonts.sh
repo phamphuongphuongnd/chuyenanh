@@ -2,6 +2,7 @@
 # Tải font Noto (giấy phép OFL 1.1) vào app/assets/fonts/ — cần cho chữ Việt có dấu + Trung/Nhật/Hàn khi xuất PDF.
 # Chạy trong thư mục app/:  bash tool/fetch_fonts.sh
 # Font KHÔNG nằm trong git (~39 MB). Thiếu font thì app vẫn chạy nhưng PDF xuất ra lỗi chữ có dấu và CJK.
+# Giấy phép Noto (OFL-1.1) đã commit sẵn ở assets/fonts/OFL-Noto.txt — bắt buộc đi kèm font khi phát hành.
 # Ghi chú: NotoSansSC/JP/KR là bản biến thiên (variable) — Syncfusion vẽ được nhưng nét hơi mảnh.
 set -euo pipefail
 cd "$(dirname "$0")/../assets/fonts"

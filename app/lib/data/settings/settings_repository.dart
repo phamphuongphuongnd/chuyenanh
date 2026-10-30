@@ -18,7 +18,7 @@ class AppSettings {
   final ThemeMode themeMode;
   final PageSizeOption defaultPageSize;
 
-  /// `null` = thư mục mặc định (`Documents/PDF Office`).
+  /// `null` = thư mục mặc định (`Documents/Phiotron PDF`).
   final String? outputDir;
 
   AppSettings copyWith({

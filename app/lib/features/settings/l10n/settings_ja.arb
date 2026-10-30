@@ -8,7 +8,7 @@
   "settings_themeLight": "ライト",
   "settings_themeDark": "ダーク",
   "settings_outputDir": "保存フォルダ",
-  "settings_outputDirDefault": "既定 (Documents/PDF Office)",
+  "settings_outputDirDefault": "既定 (Documents/Phiotron PDF)",
   "settings_outputDirChoose": "フォルダを選択",
   "settings_outputDirReset": "既定のフォルダを使う",
   "settings_outputDirNotWritable": "このフォルダには書き込めません。別のフォルダを選択してください。",

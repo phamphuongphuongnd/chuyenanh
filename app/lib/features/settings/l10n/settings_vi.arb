@@ -8,7 +8,7 @@
   "settings_themeLight": "Sáng",
   "settings_themeDark": "Tối",
   "settings_outputDir": "Thư mục lưu",
-  "settings_outputDirDefault": "Mặc định (Documents/PDF Office)",
+  "settings_outputDirDefault": "Mặc định (Documents/Phiotron PDF)",
   "settings_outputDirChoose": "Chọn thư mục",
   "settings_outputDirReset": "Dùng thư mục mặc định",
   "settings_outputDirNotWritable": "Không ghi được vào thư mục này. Hãy chọn thư mục khác.",

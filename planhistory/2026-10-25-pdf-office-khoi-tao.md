@@ -5,8 +5,8 @@
 > `docs/superpowers/plans/2026-10-25-parallel-build-contract.md` · Wiki: `lmm-wiki/index.md`.
 
 ## Yêu cầu gốc
-Làm app giống app Google Play "Chuyển đổi hình ảnh sang PDF" (TrustedOffice, `com.readpdf.pdfreader.pdfviewer`),
-**y hệt chức năng và bố cục**, bám đúng app gốc này. Người dùng cần gấp → tách tối đa agent song song.
+Làm app có **đủ nhóm chức năng** của app tham khảo (một app chuyển đổi PDF phổ biến trên Google Play), tham khảo các
+luồng chức năng phổ biến của nhóm app chuyển đổi PDF; giao diện, logo, icon và tài nguyên do dự án tự thiết kế. Người dùng cần gấp → tách tối đa agent song song.
 Phải test trước khi commit; test trên điện thoại thật (Samsung Galaxy A13) để sau.
 
 ## Quyết định đã chốt

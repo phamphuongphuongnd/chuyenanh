@@ -11,8 +11,8 @@ updated: 2026-10-30
 
 ## Tổng quan dự án
 - **Tên:** Phiotron PDF (đổi từ "PDF Office" ngày 30/10/2026; package id vẫn `com.phuong.pdfoffice`, thư mục lưu vẫn `Documents/PDF Office`)
-- **Mục đích:** app dùng cá nhân, giống app mẫu Google Play "Image to PDF: PDF Converter" (TrustedOffice,
-  `com.readpdf.pdfreader.pdfviewer`): ảnh↔PDF, đọc PDF/Office, công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR.
+- **Mục đích:** app dùng cá nhân, có các nhóm chức năng phổ biến của app chuyển đổi PDF (tham khảo luồng chức năng
+  phổ biến; giao diện, logo, icon và tài nguyên do dự án tự thiết kế): ảnh↔PDF, đọc PDF/Office, công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR.
   Offline, không quảng cáo, không lên store. Thiết kế: `docs/superpowers/specs/2026-10-25-pdf-office-design.md`.
 - **Loại dự án:** app di động (Android trước, iOS sau)
 - **Ngôn ngữ & stack:** Dart · Flutter · Riverpod · go_router · drift · Syncfusion Flutter PDF (Community) · pdfx
@@ -51,7 +51,7 @@ updated: 2026-10-30
 - [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
 - [[trinh-xem-dong-bo]] — 5 định dạng cùng thanh tìm kiếm + zoom, tô vàng chữ tìm, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách.
-- [[ui-app-goc]] — cấu trúc giao diện app mẫu (lịch sử; từ 30/10 không còn bám, xem [[giao-dien-phiotron]]).
+- [[ui-app-goc]] — khảo sát luồng chức năng app tham khảo (lịch sử; từ 30/10 giao diện tự thiết kế, xem [[giao-dien-phiotron]]).
 - [[loi-chi-hien-tren-may-that]] — 3 lỗi chỉ lộ trên máy thật (R8/ML Kit, provider autoDispose khi `read`), cách tái hiện bằng ADB, quy tắc rút ra.
 - [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
 - [[ios]] — chạy trên iPhone: khác Android, build bằng CI macOS, cài bằng Sideloadly (7 ngày), việc chưa kiểm.
@@ -60,4 +60,4 @@ updated: 2026-10-30
 - [[0001-flutter-android-truoc]] — Flutter, Android trước, dùng cá nhân, test trên Samsung A13.
 - [[0002-syncfusion-community]] — Syncfusion cho PDF + các gotcha đã kiểm.
 - [[0003-kien-truc-riverpod]] — feature-first + Riverpod + drift + engine interface.
-- [[0004-pham-vi-bam-app-goc]] — phạm vi: toàn bộ chức năng, chỉ theo app gốc.
+- [[0004-pham-vi-bam-app-goc]] — phạm vi: toàn bộ nhóm chức năng, chỉ theo app tham khảo.

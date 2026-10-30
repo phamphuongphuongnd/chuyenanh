@@ -2,13 +2,14 @@
 
 - **Ngày:** 2026-10-25
 - **Trạng thái:** đã duyệt qua brainstorming (4 mục), chờ người dùng xem lại bản viết
-- **App mẫu:** "Chuyển đổi hình ảnh sang PDF" / "Image to PDF: PDF Converter" — TrustedOffice,
-  `com.readpdf.pdfreader.pdfviewer`, v4.0.3, Android 7.0+, phát hành 11/2020.
-  **Nguyên tắc: bám đúng app gốc này**, không lấy tính năng từ các app khác cùng nhà phát triển.
+- **App tham khảo:** một app chuyển đổi PDF phổ biến trên Google Play (Android 7.0+).
+  **Nguyên tắc:** tham khảo các luồng chức năng phổ biến của nhóm app chuyển đổi PDF; giao diện, logo, icon và tài
+  nguyên do dự án tự thiết kế. Phạm vi chức năng giới hạn theo app tham khảo, không lấy thêm tính năng từ app khác.
 
 ## 1. Mục tiêu & phạm vi
 
-App Flutter **PDF Office** (`com.phuong.pdfoffice`) có chức năng, bố cục, luồng màn hình và màu chủ đạo giống app mẫu.
+App Flutter **PDF Office** (`com.phuong.pdfoffice`) có các nhóm chức năng và luồng màn hình phổ biến của nhóm app
+chuyển đổi PDF (tham khảo app tham khảo); giao diện, logo, icon và tài nguyên do dự án tự thiết kế.
 
 | Hạng mục | Quyết định |
 |---|---|
@@ -17,10 +18,10 @@ App Flutter **PDF Office** (`com.phuong.pdfoffice`) có chức năng, bố cục
 | Mạng | Không dùng — chạy offline hoàn toàn |
 | Nền tảng | Android trước (minSdk 24, compileSdk 36). Code sẵn cho iOS nhưng chưa build/test (máy phát triển là Windows) |
 | Ngôn ngữ UI | Việt, Anh, Trung, Nhật, Hàn, Indonesia (6) — mặc định theo máy, đổi tức thì trong app |
-| Thương hiệu | Tên, logo, biểu tượng file, hình minh hoạ **tự vẽ**, không chép tài nguyên của app mẫu |
-| Ngoài app mẫu | Chỉ thêm **chọn thư mục lưu file** (người dùng app mẫu phàn nàn thiếu) |
+| Thương hiệu | Tên, logo, biểu tượng file, hình minh hoạ **tự vẽ**, không dùng tài nguyên của app khác |
+| Ngoài phạm vi tham khảo | Chỉ thêm **chọn thư mục lưu file** (đánh giá người dùng của app tham khảo phàn nàn thiếu) |
 
-**Không làm:** quảng cáo, thanh toán, đăng nhập, đồng bộ đám mây, bottom navigation (app gốc không có),
+**Không làm:** quảng cáo, thanh toán, đăng nhập, đồng bộ đám mây, bottom navigation (app tham khảo không có),
 đọc EPUB/RTF/ODT/ZIP, bộ lọc màu cho PDF.
 
 ## 2. Chức năng — 7 phần, làm lần lượt
@@ -137,7 +138,7 @@ app/test/
 
 ## 4. Giao diện chung
 
-- **Điều hướng** đúng ảnh app gốc: ☰ (menu bên) + tab loại file + lưới loại/công cụ + nút ＋. Không có bottom nav.
+- **Điều hướng** theo luồng phổ biến của nhóm app chuyển đổi PDF: ☰ (menu bên) + tab loại file + lưới loại/công cụ + nút ＋. Không có bottom nav.
 - **Hộp thoại:** thẻ bo góc giữa màn hình, tiêu đề đậm, ô nhập nền vàng nhạt, nút **CANCEL** (viền) và nút đỏ đặc
   (OK / Merge / Accept).
 - **Màu:** chủ đạo đỏ `#E5393B`. Theo loại file: PDF `#E53935`, DOC `#1E88E5`, XLS `#43A047`, PPT `#F4511E`,
@@ -194,11 +195,8 @@ Flutter SDK stable; Android Studio (Android SDK 36, emulator Android 14, JDK 17 
 
 ## 9. Nguồn
 
-- App mẫu: [Google Play (vi)](https://play.google.com/store/apps/details?id=com.readpdf.pdfreader.pdfviewer&hl=vi),
-  [Google Play (en)](https://play.google.com/store/apps/details?id=com.readpdf.pdfreader.pdfviewer&hl=en_US)
-  (mô tả, 8 ảnh chụp màn hình, danh sách quyền, đánh giá người dùng),
-  [Uptodown](https://com-readpdf-pdfreader-pdfviewer.en.uptodown.com/android),
-  [AppGoblin](https://www.appgoblin.info/apps/com.readpdf.pdfreader.pdfviewer).
+- App tham khảo: trang giới thiệu công khai của một app chuyển đổi PDF phổ biến trên Google Play (mô tả chức năng,
+  danh sách quyền, đánh giá người dùng) — chỉ dùng để xác định phạm vi chức năng.
 - Thư viện: [syncfusion_flutter_pdf](https://pub.dev/packages/syncfusion_flutter_pdf),
   [syncfusion_flutter_pdfviewer](https://pub.dev/packages/syncfusion_flutter_pdfviewer),
   [Syncfusion Community License](https://www.syncfusion.com/products/communitylicense),

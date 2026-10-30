@@ -6,9 +6,13 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../data/settings/settings_providers.dart';
 
-const String appFolderName = 'PDF Office';
+const String appFolderName = 'Phiotron PDF';
 
-/// Thư mục mặc định trên Android: `/storage/emulated/0/Documents/PDF Office`.
+/// Tên thư mục lưu cũ (trước 30/10/2026). Không ghi vào nữa nhưng file cũ vẫn nằm ở đó: Android hiện quét
+/// toàn bộ bộ nhớ, iOS quét cả `Documents` nên vẫn thấy; khi thôi quét toàn máy phải đưa thư mục này vào danh sách quét.
+const String legacyAppFolderName = 'PDF Office';
+
+/// Thư mục mặc định trên Android: `/storage/emulated/0/Documents/Phiotron PDF`.
 const String defaultAndroidOutputDir =
     '/storage/emulated/0/Documents/$appFolderName';
 
@@ -22,7 +26,7 @@ final outputDirectoryProvider = FutureProvider<String>((ref) async {
 });
 
 /// Không tạo được thư mục cấu hình (thiếu quyền, thẻ nhớ bị rút…) → rơi về
-/// `<app documents>/PDF Office`.
+/// `<app documents>/Phiotron PDF`.
 Future<String> resolveOutputDirectory(String? configured) async {
   final candidates = <String>[
     if (configured != null && configured.isNotEmpty) configured,

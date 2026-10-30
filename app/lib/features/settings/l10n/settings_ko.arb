@@ -8,7 +8,7 @@
   "settings_themeLight": "라이트",
   "settings_themeDark": "다크",
   "settings_outputDir": "저장 폴더",
-  "settings_outputDirDefault": "기본값 (Documents/PDF Office)",
+  "settings_outputDirDefault": "기본값 (Documents/Phiotron PDF)",
   "settings_outputDirChoose": "폴더 선택",
   "settings_outputDirReset": "기본 폴더 사용",
   "settings_outputDirNotWritable": "이 폴더에 쓸 수 없습니다. 다른 폴더를 선택하세요.",

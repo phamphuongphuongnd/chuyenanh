@@ -1,0 +1,12 @@
+Phiotron PDF
+Copyright (c) 2026 Phạm Phương (Phiotron). All rights reserved.
+
+This repository and the Phiotron PDF application (Android and iOS) are proprietary.
+No permission is granted to copy, modify, distribute or publish the source code,
+graphics, logo or name, in whole or in part, without prior written permission
+from the copyright holder.
+
+Third-party components used by the app keep their own licenses (MIT, BSD,
+Apache-2.0, MPL-2.0, SIL Open Font License 1.1, Syncfusion Community License).
+See THIRD_PARTY_LICENSES.md and the in-app page
+"Settings > About > Open-source licenses".
