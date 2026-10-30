@@ -20,7 +20,7 @@
   "settings_version": "バージョン {version}",
   "settings_tagline": "PDF、Office、画像の閲覧・作成・変換。",
   "settings_licenses": "オープンソースライセンス",
-  "settings_aboutOffline": "Phiotron PDF は完全オフラインで動作します。データを収集せず、ネットワークも使用しません。",
+  "settings_aboutOffline": "Phiotron PDF はオフラインで動作し、ファイルやデータを外部に送信することはありません。ネットワークを使うのは、翻訳用の言語パック（Google ML Kit）をご自身でダウンロードするときだけです。",
   "settings_aboutSyncfusion": "PDF 機能は Syncfusion Community License のもとで Syncfusion Flutter コンポーネントを使用しています。",
   "settings_sectionGeneral": "一般",
   "settings_sectionAbout": "アプリについて",
@@ -30,5 +30,15 @@
   "settings_feedbackSubject": "Phiotron PDF へのフィードバック",
   "settings_feedbackFailed": "メールアプリを開けませんでした",
   "settings_privacy": "プライバシーポリシー",
-  "settings_privacyBody": "Phiotron PDF は完全にオフラインで動作し、データの収集・送信・共有は行いません。\n\nファイルは表示と変換のためにこの端末上でのみ読み込まれます。新しいファイルは選択したフォルダに保存され、元のファイルは上書きされません。\n\nネットワークは使用せず、広告もアプリ内課金もありません。ファイルへのアクセスは端末内の文書を探すためだけに使います。"
+  "settings_privacyBody": "Phiotron PDF はオフラインで動作し、ファイルやデータの収集・送信・共有は行いません。\n\nファイルは表示と変換のためにこの端末上でのみ読み込まれます。新しいファイルは選択したフォルダに保存され、元のファイルは上書きされません。\n\nネットワークを使うのは、翻訳用の言語パック（Google ML Kit 提供）をご自身でダウンロードするときだけです。文書がアップロードされることはなく、翻訳は端末上で行われます。広告もアプリ内課金もありません。ファイルへのアクセスは端末内の文書を探すためだけに使います。",
+  "settings_appLock": "アプリのロック",
+  "settings_appLockSubtitle": "端末の指紋・顔・PIN を使用",
+  "settings_appLockReasonEnable": "アプリのロックをオンにするには認証してください",
+  "settings_appLockReasonDisable": "アプリのロックをオフにするには認証してください",
+  "settings_appLockReasonUnlock": "Phiotron PDF のロックを解除",
+  "settings_appLockUnavailableTitle": "アプリのロックをオンにできません",
+  "settings_appLockUnavailableBody": "この端末には画面ロックが設定されていないか、対応していません。端末の設定で指紋・顔・PIN・パターン・パスワードを設定してから、もう一度お試しください。",
+  "settings_appLockLocked": "Phiotron PDF はロックされています",
+  "settings_appLockLockedHint": "指紋・顔・端末の PIN で続行してください。",
+  "settings_appLockUnlock": "ロックを解除"
 }

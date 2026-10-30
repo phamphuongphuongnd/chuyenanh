@@ -57,5 +57,12 @@
   "core_toolWatermark": "添加水印",
   "core_toolAnnotate": "批注",
   "core_toolSign": "签署 PDF",
-  "core_toolFillForm": "填写表单"
+  "core_toolFillForm": "填写表单",
+  "core_toolIdCard": "扫描证件",
+  "core_toolQrScan": "扫描二维码",
+  "core_toolPptToPdf": "PowerPoint 转 PDF",
+  "core_toolPdfToPpt": "PDF 转 PowerPoint",
+  "core_toolCompress": "压缩 PDF",
+  "core_toolPageNumbers": "添加页码",
+  "core_toolInsertPages": "插入页面"
 }

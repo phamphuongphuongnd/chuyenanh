@@ -20,7 +20,7 @@
   "settings_version": "버전 {version}",
   "settings_tagline": "PDF, Office, 이미지를 읽고 만들고 변환합니다.",
   "settings_licenses": "오픈소스 라이선스",
-  "settings_aboutOffline": "Phiotron PDF는 완전히 오프라인으로 작동합니다. 데이터를 수집하지 않으며 네트워크를 사용하지 않습니다.",
+  "settings_aboutOffline": "Phiotron PDF는 오프라인으로 작동하며 파일이나 데이터를 어디에도 보내지 않습니다. 네트워크는 번역 언어 팩(Google ML Kit)을 직접 다운로드할 때만 사용합니다.",
   "settings_aboutSyncfusion": "PDF 기능은 Syncfusion Community License에 따라 Syncfusion Flutter 구성요소를 사용합니다.",
   "settings_sectionGeneral": "일반",
   "settings_sectionAbout": "앱 정보",
@@ -30,5 +30,15 @@
   "settings_feedbackSubject": "Phiotron PDF 의견",
   "settings_feedbackFailed": "이메일 앱을 열 수 없습니다",
   "settings_privacy": "개인정보 처리방침",
-  "settings_privacyBody": "Phiotron PDF는 완전히 오프라인으로 작동하며 데이터를 수집, 전송, 공유하지 않습니다.\n\n파일은 표시와 변환을 위해 이 기기에서만 읽습니다. 새 파일은 선택한 폴더에 저장되며 원본은 덮어쓰지 않습니다.\n\n네트워크를 사용하지 않고 광고와 인앱 결제도 없습니다. 파일 접근 권한은 기기의 문서를 찾는 데만 사용됩니다."
+  "settings_privacyBody": "Phiotron PDF는 오프라인으로 작동하며 파일이나 데이터를 수집, 전송, 공유하지 않습니다.\n\n파일은 표시와 변환을 위해 이 기기에서만 읽습니다. 새 파일은 선택한 폴더에 저장되며 원본은 덮어쓰지 않습니다.\n\n네트워크는 번역 언어 팩(Google ML Kit 제공)을 직접 다운로드할 때만 사용하며, 문서는 업로드되지 않고 번역은 기기에서 이루어집니다. 광고와 인앱 결제는 없습니다. 파일 접근 권한은 기기의 문서를 찾는 데만 사용됩니다.",
+  "settings_appLock": "앱 잠금",
+  "settings_appLockSubtitle": "기기의 지문, 얼굴 또는 PIN 사용",
+  "settings_appLockReasonEnable": "앱 잠금을 켜려면 인증하세요",
+  "settings_appLockReasonDisable": "앱 잠금을 끄려면 인증하세요",
+  "settings_appLockReasonUnlock": "Phiotron PDF 잠금 해제",
+  "settings_appLockUnavailableTitle": "앱 잠금을 켤 수 없음",
+  "settings_appLockUnavailableBody": "이 기기에 화면 잠금이 설정되어 있지 않거나 지원되지 않습니다. 기기 설정에서 지문, 얼굴, PIN, 패턴 또는 비밀번호를 설정한 후 다시 시도하세요.",
+  "settings_appLockLocked": "Phiotron PDF가 잠겨 있습니다",
+  "settings_appLockLockedHint": "지문, 얼굴 또는 기기 PIN으로 계속하세요.",
+  "settings_appLockUnlock": "잠금 해제"
 }

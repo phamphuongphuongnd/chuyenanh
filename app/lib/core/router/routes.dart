@@ -27,6 +27,9 @@ abstract final class Routes {
   static const unlock = '/tools/unlock';
   static const watermark = '/tools/watermark';
   static const createBlank = '/tools/create-blank';
+  static const compress = '/tools/compress';
+  static const pageNumbers = '/tools/page-numbers';
+  static const insertPages = '/tools/insert-pages';
 
   // --- editor — `extra: String` (path PDF) ---
   static const annotate = '/edit/annotate';
@@ -41,6 +44,14 @@ abstract final class Routes {
   static const pdfToWord = '/convert/pdf-to-word';
   static const pdfToExcel = '/convert/pdf-to-excel';
 
+  // --- ppt_convert — `extra: String?` (path đầu vào, null = chọn file) ---
+  static const pptToPdf = '/convert/ppt-to-pdf';
+  static const pdfToPpt = '/convert/pdf-to-ppt';
+
+  // --- reading — `extra: OpenFileArgs` (PDF đang đọc) ---
+  /// Chế độ đọc dàn lại chữ (+ đọc to, dịch).
+  static const reflow = '/reader/reflow';
+
   // --- office_viewer — `extra: String` (path) ---
   static const docxViewer = '/view/docx';
   static const xlsxViewer = '/view/xlsx';
@@ -51,6 +62,11 @@ abstract final class Routes {
 
   // --- scanner ---
   static const scanner = '/scanner';
+
+  // --- id_card / qr — không `extra` ---
+  /// Quét 2 mặt thẻ (CCCD, danh thiếp…) lên 1 trang.
+  static const idCard = '/scanner/id-card';
+  static const qrScan = '/qr';
 
   // --- settings ---
   static const settings = '/settings';

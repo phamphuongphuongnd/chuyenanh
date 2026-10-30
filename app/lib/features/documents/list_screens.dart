@@ -9,6 +9,10 @@ import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/widgets.dart';
+import '../../data/db/app_database.dart' show ContentHit;
+import '../content_index/content_index_providers.dart';
+import '../content_index/logic/search_text.dart';
+import '../content_index/widgets/content_search_widgets.dart';
 import 'documents_logic.dart';
 import 'documents_providers.dart';
 import 'widgets/document_list.dart';
@@ -143,11 +147,37 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     });
   }
 
+  /// Tên file đã chuẩn hoá (bỏ dấu) — tính một lần cho mỗi tên.
+  final _foldedNames = <String, String>{};
+
+  /// Khớp tên: như cũ (chứa từ khoá, không phân biệt hoa thường) hoặc khớp khi bỏ dấu
+  /// (gõ "hop dong" ra "Hợp đồng.pdf").
+  List<DocItem> _matchByName(List<DocItem> items, String normalized) {
+    final plain = filterDocuments(items, query: _query);
+    if (normalized.isEmpty) return plain;
+    final hit = {for (final d in plain) d.path};
+    return [
+      for (final d in items)
+        if (hit.contains(d.path) ||
+            _foldedNames
+                .putIfAbsent(d.name, () => normalizeForSearch(d.name))
+                .contains(normalized))
+          d,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
     final sort = ref.watch(docSortProvider);
     final docs = ref.watch(documentsProvider);
+    // Điểm khởi động bộ lập chỉ mục nội dung (sống suốt phiên, chạy nền từng file một).
+    final index = ref.watch(contentIndexProvider);
+    final normalized = normalizeQuery(_query);
+    final hits = normalized.length >= minContentQueryLength
+        ? ref.watch(contentSearchProvider(normalized)).value ??
+              const <ContentHit>[]
+        : const <ContentHit>[];
     return Scaffold(
       backgroundColor: context.tokens.bg,
       // Ô tìm kiếm chữ trắng → thanh tiêu đề giữ nền đỏ (AppBar mặc định của app là nền sáng).
@@ -177,19 +207,96 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           title: appErrorMessage(context, AppError.from(e)),
         ),
         data: (items) {
-          final result = sortDocuments(
-            filterDocuments(items, query: _query),
-            sort,
-          );
-          if (result.isEmpty) {
+          if (normalized.isEmpty) {
+            final all = sortDocuments(items, sort);
+            if (all.isEmpty) {
+              return EmptyState(
+                icon: Symbols.search_off_rounded,
+                title: l.docs_emptySearch,
+              );
+            }
+            return _DocCardList(all);
+          }
+          final byName = sortDocuments(_matchByName(items, normalized), sort);
+          // Nhóm "Trong nội dung": file có chữ khớp, bỏ file đã khớp tên / không còn trong danh sách.
+          final namePaths = {for (final d in byName) d.path};
+          final itemByPath = {for (final d in items) d.path: d};
+          final hitByPath = <String, ContentHit>{
+            for (final h in hits)
+              if (!namePaths.contains(h.path) && itemByPath.containsKey(h.path))
+                h.path: h,
+          };
+          final byContent = sortDocuments([
+            for (final p in hitByPath.keys) itemByPath[p]!,
+          ], sort);
+          if (byName.isEmpty && byContent.isEmpty) {
             return EmptyState(
               icon: Symbols.search_off_rounded,
               title: l.docs_emptySearch,
+              message: index.isIndexing
+                  ? l.cindex_indexing(index.done, index.total)
+                  : null,
             );
           }
-          return _DocCardList(result);
+          return _SearchResults(
+            byName: byName,
+            byContent: [
+              for (final d in byContent)
+                (d, excerptFor(hitByPath[d.path]!, normalized)),
+            ],
+            index: index,
+          );
         },
       ),
+    );
+  }
+}
+
+/// Kết quả tìm: dòng trạng thái lập chỉ mục · nhóm khớp tên · nhóm "Trong nội dung".
+class _SearchResults extends StatelessWidget {
+  const _SearchResults({
+    required this.byName,
+    required this.byContent,
+    required this.index,
+  });
+
+  final List<DocItem> byName;
+  final List<(DocItem, Excerpt)> byContent;
+  final ContentIndexState index;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    // Dựng lười từng dòng: danh sách tên có thể rất dài.
+    final rows = <Widget Function()>[
+      if (index.isIndexing) () => ContentIndexStatusLine(index),
+      if (byContent.isNotEmpty && byName.isNotEmpty)
+        () => SearchGroupHeader(l.cindex_inNames),
+      for (var i = 0; i < byName.length; i++)
+        () => CardRow(
+          first: i == 0,
+          last: i == byName.length - 1,
+          child: DocumentTile(byName[i]),
+        ),
+      if (byContent.isNotEmpty)
+        () => SearchGroupHeader(
+          l.cindex_inContent,
+          key: const ValueKey('search-group-content'),
+        ),
+      for (var i = 0; i < byContent.length; i++)
+        () => CardRow(
+          first: i == 0,
+          last: i == byContent.length - 1,
+          child: ContentHitTile(
+            item: byContent[i].$1,
+            excerpt: byContent[i].$2,
+          ),
+        ),
+    ];
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+      itemCount: rows.length,
+      itemBuilder: (_, i) => rows[i](),
     );
   }
 }

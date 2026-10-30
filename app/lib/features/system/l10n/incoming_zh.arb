@@ -1,0 +1,7 @@
+{
+  "@@locale": "zh",
+  "incoming_unsupported": "不支持此文件类型。",
+  "incoming_failed": "有 {count} 个文件未能接收（读取错误或大于 200 MB）。",
+  "incoming_openFailed": "没有可以打开此文件的应用。",
+  "incoming_savedOthers": "已将另外 {count} 个文件保存到 Imported 文件夹。"
+}

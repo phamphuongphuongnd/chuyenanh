@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "pdfppt_quality": "Image quality",
+  "pdfppt_qualityStandard": "Standard (150 dpi)",
+  "pdfppt_qualityHigh": "High (200 dpi)",
+  "pdfppt_slidesToCreate": "{count, plural, =1{1 slide will be created} other{{count} slides will be created}}",
+  "@pdfppt_slidesToCreate": {"placeholders": {"count": {"type": "int"}}},
+  "pdfppt_sizeInfo": "Slide size follows page 1. Pages of a different size are fitted and centered on a white background.",
+  "pdfppt_note": "Each page becomes a picture slide, so text cannot be edited in PowerPoint.",
+  "pdfppt_convert": "Convert to PowerPoint",
+  "pdfppt_converting": "Converting pages…"
+}

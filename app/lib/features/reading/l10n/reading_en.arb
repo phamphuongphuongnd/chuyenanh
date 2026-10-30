@@ -1,0 +1,31 @@
+{
+  "@@locale": "en",
+  "reading_menuReflow": "Reading mode",
+  "reading_menuReadAloud": "Read aloud",
+  "reading_menuTranslate": "Translate",
+  "reading_pageMarker": "— Page {page} —",
+  "@reading_pageMarker": {
+    "placeholders": {
+      "page": {"type": "int"}
+    }
+  },
+  "reading_noTextTitle": "This page is an image, no text yet",
+  "reading_noTextMessage": "Use PDF to text (with OCR) to recognise the text.",
+  "reading_openPdfToText": "Open PDF to text",
+  "reading_loading": "Reflowing text…",
+  "reading_display": "Display",
+  "reading_fontSize": "Text size",
+  "reading_fontSmaller": "Smaller text",
+  "reading_fontLarger": "Larger text",
+  "reading_background": "Background",
+  "reading_themeLight": "Light",
+  "reading_themeSepia": "Sepia",
+  "reading_themeDark": "Dark",
+  "reading_lineSpacing": "Line spacing",
+  "reading_spacingCompact": "Compact",
+  "reading_spacingNormal": "Normal",
+  "reading_spacingWide": "Wide",
+  "reading_hideReadAloud": "Hide read aloud",
+  "reading_translateVisible": "Translate visible text",
+  "reading_translateAll": "Translate whole document"
+}

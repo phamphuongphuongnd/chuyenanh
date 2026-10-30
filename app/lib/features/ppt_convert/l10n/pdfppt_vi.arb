@@ -1,0 +1,11 @@
+{
+  "@@locale": "vi",
+  "pdfppt_quality": "Chất lượng ảnh",
+  "pdfppt_qualityStandard": "Tiêu chuẩn (150 dpi)",
+  "pdfppt_qualityHigh": "Cao (200 dpi)",
+  "pdfppt_slidesToCreate": "{count, plural, other{Sẽ tạo {count} slide}}",
+  "pdfppt_sizeInfo": "Cỡ slide theo trang 1. Trang khác cỡ được thu vừa, đặt giữa slide trên nền trắng.",
+  "pdfppt_note": "Mỗi trang thành một slide dạng ảnh, nên không sửa được chữ trong PowerPoint.",
+  "pdfppt_convert": "Chuyển sang PowerPoint",
+  "pdfppt_converting": "Đang chuyển các trang…"
+}

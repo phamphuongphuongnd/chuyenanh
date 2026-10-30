@@ -1,0 +1,11 @@
+{
+  "@@locale": "id",
+  "pdfppt_quality": "Kualitas gambar",
+  "pdfppt_qualityStandard": "Standar (150 dpi)",
+  "pdfppt_qualityHigh": "Tinggi (200 dpi)",
+  "pdfppt_slidesToCreate": "{count, plural, =1{1 slide akan dibuat} other{{count} slide akan dibuat}}",
+  "pdfppt_sizeInfo": "Ukuran slide mengikuti halaman 1. Halaman berukuran lain disesuaikan dan diletakkan di tengah dengan latar putih.",
+  "pdfppt_note": "Setiap halaman menjadi slide gambar, jadi teks tidak dapat diedit di PowerPoint.",
+  "pdfppt_convert": "Ubah ke PowerPoint",
+  "pdfppt_converting": "Mengonversi halaman…"
+}

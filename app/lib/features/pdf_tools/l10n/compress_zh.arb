@@ -1,0 +1,20 @@
+{
+  "@@locale": "zh",
+  "compress_levelLabel": "压缩级别",
+  "compress_levelLight": "轻度",
+  "compress_levelMedium": "中度",
+  "compress_levelStrong": "强力",
+  "compress_levelLightDesc": "保留文字、链接和注释，仅优化文件结构。压缩幅度较小。",
+  "compress_levelMediumDesc": "将每页转为约 150 dpi 的图片。压缩明显，仍清晰易读。",
+  "compress_levelStrongDesc": "将每页转为约 100 dpi 的图片。文件最小，画质较低。",
+  "compress_rasterWarning": "页面将变为图片：文字无法再选择或搜索，链接和注释将丢失。",
+  "compress_passwordNote": "原文件受密码保护。压缩后的文件将不再有密码。",
+  "compress_action": "压缩",
+  "compress_resultSummary": "从 {from} → {to}（减小 {percent}%）",
+  "compress_resultNoGain": "从 {from} → {to}（未减小）",
+  "compress_notSmallerTitle": "压缩后的文件没有变小",
+  "compress_notSmallerBody": "从 {from} → {to}。此文件可能已经压缩过。保留还是删除新文件？",
+  "compress_keep": "保留文件",
+  "compress_deleteNew": "删除新文件",
+  "compress_deleted": "已删除压缩文件。"
+}

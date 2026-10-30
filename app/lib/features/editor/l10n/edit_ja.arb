@@ -44,5 +44,12 @@
   "edit_applySignatures": "署名して保存",
   "edit_deleteSignatureTitle": "この署名を削除しますか？",
   "edit_deleteSignatureMessage": "保存済みの署名がこの端末から削除されます。",
-  "edit_signHere": "ここに署名"
+  "edit_signHere": "ここに署名",
+  "edit_importSignature": "写真から",
+  "edit_importSignatureTitle": "写真から署名を取り込む",
+  "edit_importSignatureHint": "線がはっきりして背景が消えるまで感度を調整してください。",
+  "edit_pickFromGallery": "ギャラリーから選択",
+  "edit_takePhoto": "写真を撮る",
+  "edit_sensitivity": "感度",
+  "edit_importNoInk": "画像から署名の線が見つかりません。明るい場所で白い紙に書いた署名を撮影してください。"
 }

@@ -44,5 +44,12 @@
   "edit_applySignatures": "签署并保存",
   "edit_deleteSignatureTitle": "删除此签名？",
   "edit_deleteSignatureMessage": "已保存的签名将从此设备中删除。",
-  "edit_signHere": "在此签名"
+  "edit_signHere": "在此签名",
+  "edit_importSignature": "从图片",
+  "edit_importSignatureTitle": "从图片导入签名",
+  "edit_importSignatureHint": "调整灵敏度，直到笔画清晰且背景消失。",
+  "edit_pickFromGallery": "从相册选择",
+  "edit_takePhoto": "拍摄照片",
+  "edit_sensitivity": "灵敏度",
+  "edit_importNoInk": "未在图片中找到签名笔画。请在光线充足处拍摄白纸上的签名。"
 }

@@ -40,4 +40,33 @@ void main() {
     expect(SettingsRepository(prefs).load().locale, isNull);
     expect(SettingsRepository(prefs).load().outputDir, isNull);
   });
+
+  test('khoá app: mặc định tắt, lưu và đọc lại', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final repo = SettingsRepository(prefs);
+    expect(repo.load().appLock, isFalse);
+
+    await repo.setAppLock(true);
+    expect(prefs.getBool(SettingsRepository.kAppLock), isTrue);
+    expect(SettingsRepository(prefs).load().appLock, isTrue);
+
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+    expect(container.read(settingsProvider).appLock, isTrue);
+    await container.read(settingsProvider.notifier).setAppLock(false);
+    expect(container.read(settingsProvider).appLock, isFalse);
+    expect(SettingsRepository(prefs).load().appLock, isFalse);
+  });
+
+  test('appLock tham gia copyWith, == và hashCode', () {
+    const a = AppSettings();
+    final b = a.copyWith(appLock: true);
+    expect(b.appLock, isTrue);
+    expect(b == a, isFalse);
+    expect(b.copyWith(appLock: false), a);
+    expect(b.copyWith().hashCode, b.hashCode);
+  });
 }

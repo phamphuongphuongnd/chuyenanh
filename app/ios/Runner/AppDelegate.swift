@@ -12,5 +12,9 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    // Kênh "Mở trong" (file từ app khác) — xem IncomingFilesBridge trong SceneDelegate.swift.
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "PdfOfficeIncomingFiles") {
+      IncomingFilesBridge.shared.attach(messenger: registrar.messenger())
+    }
   }
 }

@@ -10,10 +10,10 @@ updated: 2026-10-30
 > Wiki vận hành theo phương pháp Karpathy "LLM Wiki". Quy tắc đầy đủ ở [[SCHEMA]].
 
 ## Tổng quan dự án
-- **Tên:** Phiotron PDF (đổi từ "PDF Office" ngày 30/10/2026; package id vẫn `com.phuong.pdfoffice`, thư mục lưu vẫn `Documents/PDF Office`)
+- **Tên:** Phiotron PDF (đổi từ "PDF Office" ngày 30/10/2026; package id vẫn `com.phuong.pdfoffice`, thư mục lưu đổi thành `Documents/Phiotron PDF`, file cũ ở `Documents/PDF Office` vẫn đọc được)
 - **Mục đích:** app dùng cá nhân, có các nhóm chức năng phổ biến của app chuyển đổi PDF (tham khảo luồng chức năng
   phổ biến; giao diện, logo, icon và tài nguyên do dự án tự thiết kế): ảnh↔PDF, đọc PDF/Office, công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR.
-  Offline, không quảng cáo, không lên store. Thiết kế: `docs/superpowers/specs/2026-10-25-pdf-office-design.md`.
+  Miễn phí, không quảng cáo, không mua trong app; **dự kiến lên Google Play + App Store** (xem [[0005-len-store-mien-phi]]). Thiết kế: `docs/superpowers/specs/2026-10-25-pdf-office-design.md`.
 - **Loại dự án:** app di động (Android trước, iOS sau)
 - **Ngôn ngữ & stack:** Dart · Flutter · Riverpod · go_router · drift · Syncfusion Flutter PDF (Community) · pdfx
 - **Thư mục chính:** `app/` (dự án Flutter), `docs/superpowers/specs/`, `docs/superpowers/plans/`
@@ -53,6 +53,7 @@ updated: 2026-10-30
 - [[trinh-xem-dong-bo]] — 5 định dạng cùng thanh tìm kiếm + zoom, tô vàng chữ tìm, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách.
 - [[ui-app-goc]] — khảo sát luồng chức năng app tham khảo (lịch sử; từ 30/10 giao diện tự thiết kế, xem [[giao-dien-phiotron]]).
 - [[loi-chi-hien-tren-may-that]] — 3 lỗi chỉ lộ trên máy thật (R8/ML Kit, provider autoDispose khi `read`), cách tái hiện bằng ADB, quy tắc rút ra.
+- [[ban-quyen-giay-phep]] — **bản quyền & giấy phép (30/10)**: trang Giấy phép trong app (Noto, uCrop), `THIRD_PARTY_LICENSES.md` + script, đổi tên "PDF Office", Syncfusion đang chờ duyệt (#886739), khoá repo.
 - [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
 - [[ios]] — chạy trên iPhone: khác Android, build bằng CI macOS, cài bằng Sideloadly (7 ngày), việc chưa kiểm.
 
@@ -61,3 +62,4 @@ updated: 2026-10-30
 - [[0002-syncfusion-community]] — Syncfusion cho PDF + các gotcha đã kiểm.
 - [[0003-kien-truc-riverpod]] — feature-first + Riverpod + drift + engine interface.
 - [[0004-pham-vi-bam-app-goc]] — phạm vi: toàn bộ nhóm chức năng, chỉ theo app tham khảo.
+- [[0005-len-store-mien-phi]] — lên Play + App Store miễn phí; bản quyền xong, chính sách store (bỏ All files access, Photo Picker, PRIVACY.md, ký release, xcprivacy…) đã chốt cách làm.

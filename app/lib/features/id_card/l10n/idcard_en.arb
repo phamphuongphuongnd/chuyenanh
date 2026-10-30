@@ -1,0 +1,38 @@
+{
+  "@@locale": "en",
+  "idcard_hint": "Scan or pick both sides of the card (ID card, driving licence, student card, business card). Both sides are placed on one A4 page.",
+  "idcard_front": "Front",
+  "idcard_back": "Back",
+  "idcard_tapToAdd": "Tap to scan or pick a photo",
+  "idcard_scan": "Scan with camera",
+  "idcard_gallery": "Choose from gallery",
+  "idcard_retake": "Retake",
+  "idcard_rotate": "Rotate",
+  "idcard_format": "Format",
+  "idcard_size": "Card size on the page",
+  "idcard_sizeActual": "Actual size",
+  "idcard_sizeLarge": "Enlarged",
+  "idcard_watermark": "Add a watermark",
+  "idcard_watermarkHint": "Purpose, e.g. bank application",
+  "idcard_watermarkText": "For {purpose} only",
+  "@idcard_watermarkText": {
+    "placeholders": {
+      "purpose": {
+        "type": "String"
+      }
+    }
+  },
+  "idcard_preview": "Preview",
+  "idcard_previewEmpty": "Add both sides to preview the page.",
+  "idcard_exportPdf": "Export PDF",
+  "idcard_exportJpg": "Save JPG",
+  "idcard_needBoth": "Add photos of both sides first",
+  "idcard_savedTo": "Saved to {folder}",
+  "@idcard_savedTo": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
+}

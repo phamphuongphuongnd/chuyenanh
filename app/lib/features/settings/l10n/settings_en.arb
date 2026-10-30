@@ -27,7 +27,7 @@
   },
   "settings_tagline": "Read, create and convert PDF, Office and images.",
   "settings_licenses": "Open-source licenses",
-  "settings_aboutOffline": "Phiotron PDF works entirely offline. It does not collect any data and does not use the network.",
+  "settings_aboutOffline": "Phiotron PDF works offline and never sends your files or data anywhere. The network is only used when you choose to download a translation language pack (Google ML Kit).",
   "settings_aboutSyncfusion": "PDF features use Syncfusion Flutter components under the Syncfusion Community License.",
   "settings_sectionGeneral": "General",
   "settings_sectionAbout": "About the app",
@@ -37,5 +37,15 @@
   "settings_feedbackSubject": "Phiotron PDF feedback",
   "settings_feedbackFailed": "Could not open an email app",
   "settings_privacy": "Privacy policy",
-  "settings_privacyBody": "Phiotron PDF works entirely offline. It does not collect, send or share your data.\n\nYour files are only read on this device to display and convert them. New files are saved to the folder you choose; originals are never overwritten.\n\nThe app does not use the network, has no ads and no in-app purchases. File access is only used to find documents on your device."
+  "settings_privacyBody": "Phiotron PDF works offline. It does not collect, send or share your files or data.\n\nYour files are only read on this device to display and convert them. New files are saved to the folder you choose; originals are never overwritten.\n\nThe app only uses the network when you choose to download a translation language pack (provided by Google ML Kit); your documents are never uploaded and translation runs on the device. There are no ads and no in-app purchases. File access is only used to find documents on your device.",
+  "settings_appLock": "App lock",
+  "settings_appLockSubtitle": "Use your device's fingerprint, face or PIN",
+  "settings_appLockReasonEnable": "Verify to turn on app lock",
+  "settings_appLockReasonDisable": "Verify to turn off app lock",
+  "settings_appLockReasonUnlock": "Unlock Phiotron PDF",
+  "settings_appLockUnavailableTitle": "Can't turn on app lock",
+  "settings_appLockUnavailableBody": "This device has no screen lock set up, or doesn't support it. Set up a fingerprint, face, PIN, pattern or password in your device settings, then try again.",
+  "settings_appLockLocked": "Phiotron PDF is locked",
+  "settings_appLockLockedHint": "Use your fingerprint, face or device PIN to continue.",
+  "settings_appLockUnlock": "Unlock"
 }

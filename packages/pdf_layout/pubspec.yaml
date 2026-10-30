@@ -15,4 +15,7 @@ dependencies:
 
 dev_dependencies:
   lints: ^6.0.0
+  # Chỉ để test đọc lại file .pptx vừa ghi.
+  pptx_reader:
+    path: ../pptx_reader
   test: ^1.25.0

@@ -1,0 +1,7 @@
+{
+  "@@locale": "id",
+  "incoming_unsupported": "Jenis file ini tidak didukung.",
+  "incoming_failed": "{count} file tidak dapat diterima (gagal dibaca atau lebih dari 200 MB).",
+  "incoming_openFailed": "Tidak ada aplikasi yang dapat membuka file ini.",
+  "incoming_savedOthers": "{count} file lainnya disimpan ke folder Imported."
+}

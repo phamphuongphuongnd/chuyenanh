@@ -62,3 +62,8 @@ Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].
   Phiotron PDF (120.000.714 byte, sha256 `3f719ff0…aa517`). Bản 29/10 lưu `dist/backup/PDFOffice-2026-10-29.apk`. Quy trình: kiểm sha của bản
   online = `dist/PDFOffice.apk` → sao lưu → chép bản mới → `gh release upload --clobber` → `curl -sIL` thấy đúng `Content-Length`.
 - Người dùng cho phép thay link khi nói rõ ("thay cho tôi", "Thay link tải"); mỗi lần build mới vẫn hỏi lại. Xem [[giao-dien-phiotron]].
+
+## Cập nhật 30/10/2026 — lên store
+- Sắp lên Google Play + App Store ([[0005-len-store-mien-phi]]): Play nhận **`.aab`** (`flutter build appbundle --release`), không phải APK; release phải ký bằng keystore riêng (đang ký khoá debug).
+- Các APK/IPA đã đăng trên Release **thiếu giấy phép font Noto** và còn tên "PDF Office" → thay bằng bản mới hoặc gỡ ([[ban-quyen-giay-phep]]).
+- Khi khoá repo (private) thì link `kAppDownloadUrl` / `kIosDownloadUrl` trong nút Chia sẻ chết với người khác → đổi sang link store trước.

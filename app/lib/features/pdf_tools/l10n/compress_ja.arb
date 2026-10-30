@@ -1,0 +1,20 @@
+{
+  "@@locale": "ja",
+  "compress_levelLabel": "圧縮レベル",
+  "compress_levelLight": "弱",
+  "compress_levelMedium": "中",
+  "compress_levelStrong": "強",
+  "compress_levelLightDesc": "文字・リンク・注釈をそのまま残し、ファイル構造だけを最適化します。削減は少なめです。",
+  "compress_levelMediumDesc": "各ページを約 150 dpi の画像に変換します。大きく削減でき、読みやすさも保てます。",
+  "compress_levelStrongDesc": "各ページを約 100 dpi の画像に変換します。最小サイズですが画質は下がります。",
+  "compress_rasterWarning": "ページが画像になります：文字の選択・検索ができなくなり、リンクと注釈は失われます。",
+  "compress_passwordNote": "元のファイルはパスワードで保護されています。圧縮後のファイルにはパスワードがかかりません。",
+  "compress_action": "圧縮",
+  "compress_resultSummary": "{from} → {to}（{percent}% 削減）",
+  "compress_resultNoGain": "{from} → {to}（削減なし）",
+  "compress_notSmallerTitle": "圧縮後のファイルが小さくなりませんでした",
+  "compress_notSmallerBody": "{from} → {to}。このファイルはすでに圧縮されている可能性があります。新しいファイルを残しますか、削除しますか？",
+  "compress_keep": "残す",
+  "compress_deleteNew": "新しいファイルを削除",
+  "compress_deleted": "圧縮ファイルを削除しました。"
+}

@@ -1,0 +1,16 @@
+{
+  "@@locale": "vi",
+  "cindex_inNames": "Theo tên",
+  "cindex_inContent": "Trong nội dung",
+  "cindex_indexing": "Đang lập chỉ mục {done}/{total} file",
+  "@cindex_indexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}

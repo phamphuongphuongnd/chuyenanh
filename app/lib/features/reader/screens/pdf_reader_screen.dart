@@ -17,6 +17,7 @@ import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../data/db/app_database.dart';
 import '../../../engines/pdf/pdf_security.dart';
+import '../../reading/reflow_args.dart';
 import '../logic/bookmark_logic.dart';
 import '../logic/outline.dart';
 import '../logic/reader_prefs.dart';
@@ -38,6 +39,9 @@ enum _Menu {
   print,
   shortcut,
   toImages,
+  reflow,
+  readAloud,
+  translate,
 }
 
 /// Trình đọc PDF (`Routes.pdfReader`).
@@ -59,6 +63,9 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
 
   /// Bytes đã giải mã (PDF có mật khẩu). null = mở thẳng từ file.
   Uint8List? _bytes;
+
+  /// Mật khẩu đã mở được file (truyền cho chế độ đọc dàn chữ để khỏi hỏi lại).
+  String? _password;
   bool _unlocking = false;
   AppError? _error;
 
@@ -167,6 +174,7 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
         if (!mounted) return;
         setState(() {
           _bytes = plain;
+          _password = pw;
           _error = null;
           _unlocking = false;
           _generation++;
@@ -311,8 +319,23 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
         await _addShortcut();
       case _Menu.toImages:
         await context.push(Routes.pdfToImage, extra: _path);
+      case _Menu.reflow:
+        await _openReflow(ReflowMode.read);
+      case _Menu.readAloud:
+        await _openReflow(ReflowMode.readAloud);
+      case _Menu.translate:
+        await _openReflow(ReflowMode.translate);
     }
   }
+
+  /// Mở chế độ đọc dàn chữ ở trang đang đọc (kèm mật khẩu đã nhập nếu có).
+  Future<void> _openReflow(ReflowMode mode) => context.push(
+    Routes.reflow,
+    extra: ReflowArgs(
+      OpenFileArgs(_path, password: _password, initialPage: _page - 1),
+      mode: mode,
+    ),
+  );
 
   // --- Giao diện ---------------------------------------------------------------
 
@@ -489,6 +512,22 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
               _Menu.toImages,
               Symbols.image_rounded,
               l.core_toolPdfToImage,
+            ),
+            const PopupMenuDivider(),
+            item(
+              _Menu.reflow,
+              Symbols.chrome_reader_mode_rounded,
+              l.reading_menuReflow,
+            ),
+            item(
+              _Menu.readAloud,
+              Symbols.record_voice_over_rounded,
+              l.reading_menuReadAloud,
+            ),
+            item(
+              _Menu.translate,
+              Symbols.translate_rounded,
+              l.reading_menuTranslate,
             ),
           ],
         ),

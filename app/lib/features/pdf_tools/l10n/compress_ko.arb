@@ -1,0 +1,20 @@
+{
+  "@@locale": "ko",
+  "compress_levelLabel": "압축 수준",
+  "compress_levelLight": "약하게",
+  "compress_levelMedium": "보통",
+  "compress_levelStrong": "강하게",
+  "compress_levelLightDesc": "텍스트, 링크, 주석을 그대로 두고 파일 구조만 최적화합니다. 줄어드는 양이 적습니다.",
+  "compress_levelMediumDesc": "각 페이지를 약 150dpi 이미지로 바꿉니다. 많이 줄어들고 읽기에도 충분합니다.",
+  "compress_levelStrongDesc": "각 페이지를 약 100dpi 이미지로 바꿉니다. 가장 작지만 화질이 낮아집니다.",
+  "compress_rasterWarning": "페이지가 이미지로 바뀝니다. 텍스트를 선택하거나 검색할 수 없고 링크와 주석이 사라집니다.",
+  "compress_passwordNote": "원본 파일에 암호가 걸려 있습니다. 압축된 파일에는 암호가 없습니다.",
+  "compress_action": "압축",
+  "compress_resultSummary": "{from} → {to} ({percent}% 감소)",
+  "compress_resultNoGain": "{from} → {to} (감소 없음)",
+  "compress_notSmallerTitle": "압축한 파일이 더 작지 않습니다",
+  "compress_notSmallerBody": "{from} → {to}. 이미 압축된 파일일 수 있습니다. 새 파일을 유지할까요, 삭제할까요?",
+  "compress_keep": "파일 유지",
+  "compress_deleteNew": "새 파일 삭제",
+  "compress_deleted": "압축 파일을 삭제했습니다."
+}

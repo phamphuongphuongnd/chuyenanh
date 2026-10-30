@@ -1,0 +1,21 @@
+{
+  "@@locale": "id",
+  "tts_progress": "Paragraf {current} / {total}",
+  "tts_play": "Bacakan",
+  "tts_pause": "Jeda",
+  "tts_prev": "Paragraf sebelumnya",
+  "tts_next": "Paragraf berikutnya",
+  "tts_stop": "Berhenti",
+  "tts_speed": "Kecepatan baca",
+  "tts_voice": "Suara",
+  "tts_voiceDefault": "Bawaan perangkat",
+  "tts_voiceN": "Suara {n}",
+  "tts_checking": "Memeriksa suara…",
+  "tts_noVoice": "Perangkat belum punya suara {language}",
+  "tts_howToInstall": "Cara memasang",
+  "tts_installTitle": "Pasang suara pembaca",
+  "tts_installAndroid": "Buka Setelan → Sistem (atau Manajemen umum) → Bahasa & masukan → Keluaran text-to-speech. Pilih Layanan Ucapan oleh Google, ketuk ikon setelan → Instal data suara, lalu unduh bahasa yang diperlukan. Di ponsel Samsung, mesin pilihan bisa diganti ke Layanan Ucapan oleh Google. Setelah diunduh, suara dapat dipakai tanpa internet.",
+  "tts_installIos": "Buka Pengaturan → Aksesibilitas → Konten Lisan → Suara, pilih bahasa lalu unduh suara. Setelah diunduh, suara dapat dipakai tanpa internet.",
+  "tts_recheck": "Periksa lagi",
+  "tts_error": "Tidak bisa membacakan paragraf ini"
+}

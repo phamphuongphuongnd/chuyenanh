@@ -48,4 +48,10 @@ class SettingsNotifier extends Notifier<AppSettings> {
     state = state.copyWith(outputDir: () => dir);
     await _repo.setOutputDir(dir);
   }
+
+  /// Bật/tắt khoá app. Chỉ lưu — việc xác thực trước khi đổi do màn Cài đặt lo.
+  Future<void> setAppLock(bool enabled) async {
+    state = state.copyWith(appLock: enabled);
+    await _repo.setAppLock(enabled);
+  }
 }

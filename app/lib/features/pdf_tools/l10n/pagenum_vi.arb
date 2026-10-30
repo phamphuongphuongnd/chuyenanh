@@ -1,0 +1,22 @@
+{
+  "@@locale": "vi",
+  "pagenum_style": "Kiểu số",
+  "pagenum_pageWord": "Trang {n}",
+  "pagenum_position": "Vị trí",
+  "pagenum_fontSize": "Cỡ chữ",
+  "pagenum_color": "Màu",
+  "pagenum_margin": "Cách mép",
+  "pagenum_startAt": "Bắt đầu từ số",
+  "pagenum_pages": "Trang cần đánh số",
+  "pagenum_allPages": "Tất cả trang",
+  "pagenum_customRange": "Khoảng trang",
+  "pagenum_rangeLabel": "Trang",
+  "pagenum_rangeHint": "VD: 1-3, 5, 7-9",
+  "pagenum_invalidRange": "Khoảng trang không hợp lệ. Dùng trang từ 1 đến {max}, VD: 1-3, 5.",
+  "pagenum_invalidStart": "Nhập một số nguyên từ 1 đến 99999.",
+  "pagenum_skipFirst": "Bỏ qua trang đầu (bìa)",
+  "pagenum_skipFirstHint": "Trang bìa không có số; đánh số bắt đầu từ trang kế tiếp.",
+  "pagenum_noPages": "Không còn trang nào để đánh số.",
+  "pagenum_summary": "{count, plural, other{Sẽ đánh số {count} trang}}",
+  "pagenum_action": "Đánh số trang"
+}

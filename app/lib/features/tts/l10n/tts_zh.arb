@@ -1,0 +1,21 @@
+{
+  "@@locale": "zh",
+  "tts_progress": "第 {current} / {total} 段",
+  "tts_play": "朗读",
+  "tts_pause": "暂停",
+  "tts_prev": "上一段",
+  "tts_next": "下一段",
+  "tts_stop": "停止",
+  "tts_speed": "朗读速度",
+  "tts_voice": "语音",
+  "tts_voiceDefault": "设备默认",
+  "tts_voiceN": "语音 {n}",
+  "tts_checking": "正在检查语音…",
+  "tts_noVoice": "本机没有{language}语音",
+  "tts_howToInstall": "安装方法",
+  "tts_installTitle": "安装朗读语音",
+  "tts_installAndroid": "打开 设置 → 系统（或常规管理）→ 语言和输入法 → 文字转语音输出。选择 Google 语音服务，点击其设置图标 → 安装语音数据，然后下载所需语言。三星手机可将首选引擎改为 Google 语音服务。下载后无需联网即可使用。",
+  "tts_installIos": "打开 设置 → 辅助功能 → 朗读内容 → 声音，选择语言并下载语音。下载后无需联网即可使用。",
+  "tts_recheck": "重新检查",
+  "tts_error": "无法朗读此段"
+}

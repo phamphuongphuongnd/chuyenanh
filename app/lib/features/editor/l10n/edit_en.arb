@@ -61,5 +61,12 @@
   "edit_applySignatures": "Sign and save",
   "edit_deleteSignatureTitle": "Delete this signature?",
   "edit_deleteSignatureMessage": "The saved signature will be removed from this device.",
-  "edit_signHere": "Sign here"
+  "edit_signHere": "Sign here",
+  "edit_importSignature": "From photo",
+  "edit_importSignatureTitle": "Signature from photo",
+  "edit_importSignatureHint": "Adjust the sensitivity until the strokes are clear and the background disappears.",
+  "edit_pickFromGallery": "Choose from gallery",
+  "edit_takePhoto": "Take a photo",
+  "edit_sensitivity": "Sensitivity",
+  "edit_importNoInk": "No signature strokes found in this image. Photograph your signature on white paper in good light."
 }

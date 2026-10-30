@@ -1,0 +1,20 @@
+{
+  "@@locale": "vi",
+  "compress_levelLabel": "Mức nén",
+  "compress_levelLight": "Nhẹ",
+  "compress_levelMedium": "Vừa",
+  "compress_levelStrong": "Mạnh",
+  "compress_levelLightDesc": "Giữ nguyên chữ, liên kết và chú thích; chỉ tối ưu cấu trúc tệp. Giảm ít.",
+  "compress_levelMediumDesc": "Chuyển mỗi trang thành ảnh khoảng 150 dpi. Giảm nhiều, vẫn đọc rõ.",
+  "compress_levelStrongDesc": "Chuyển mỗi trang thành ảnh khoảng 100 dpi. Tệp nhỏ nhất, chất lượng thấp hơn.",
+  "compress_rasterWarning": "Trang sẽ thành ảnh: chữ không còn chọn hay tìm được, liên kết và chú thích sẽ bị mất.",
+  "compress_passwordNote": "Tệp gốc có mật khẩu. Tệp nén sẽ không có mật khẩu.",
+  "compress_action": "Nén",
+  "compress_resultSummary": "Từ {from} → {to} (giảm {percent}%)",
+  "compress_resultNoGain": "Từ {from} → {to} (không giảm)",
+  "compress_notSmallerTitle": "Tệp nén không nhỏ hơn tệp gốc",
+  "compress_notSmallerBody": "Từ {from} → {to}. Tệp này có thể đã được nén sẵn. Giữ hay xoá tệp mới?",
+  "compress_keep": "Giữ tệp",
+  "compress_deleteNew": "Xoá tệp mới",
+  "compress_deleted": "Đã xoá tệp nén."
+}

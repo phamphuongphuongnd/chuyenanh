@@ -1,0 +1,16 @@
+{
+  "@@locale": "zh",
+  "cindex_inNames": "按名称",
+  "cindex_inContent": "在内容中",
+  "cindex_indexing": "正在建立索引 {done}/{total} 个文件",
+  "@cindex_indexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}

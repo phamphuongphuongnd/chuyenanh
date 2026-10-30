@@ -1,0 +1,21 @@
+{
+  "@@locale": "id",
+  "pptpdf_pickHint": "Pilih presentasi PowerPoint (.pptx) untuk diubah ke PDF",
+  "pptpdf_pickFile": "Pilih file PowerPoint",
+  "pptpdf_legacyPpt": "Format .ppt lama tidak didukung. Simpan sebagai .pptx lalu coba lagi.",
+  "pptpdf_notPptx": "Hanya file .pptx yang didukung",
+  "pptpdf_slideCount": "{count, plural, other{{count} slide}}",
+  "@pptpdf_slideCount": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_quality": "Kualitas",
+  "pptpdf_qualityStandard": "Standar (150 dpi)",
+  "pptpdf_qualityHigh": "Tinggi (200 dpi)",
+  "pptpdf_skipHidden": "Lewati slide tersembunyi",
+  "pptpdf_hiddenInfo": "{count, plural, other{Presentasi ini punya {count} slide tersembunyi}}",
+  "@pptpdf_hiddenInfo": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_pagesToExport": "{count, plural, other{Akan dibuat {count} halaman PDF}}",
+  "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_noSlides": "Tidak ada slide untuk diekspor",
+  "pptpdf_note": "Setiap slide menjadi halaman gambar, jadi teks di PDF tidak bisa dipilih atau dicari. Tampilan sama dengan penampil PowerPoint di aplikasi dan bisa sedikit berbeda dari PowerPoint (font, efek, grafik).",
+  "pptpdf_convert": "Ubah ke PDF",
+  "pptpdf_converting": "Mengubah slide…"
+}

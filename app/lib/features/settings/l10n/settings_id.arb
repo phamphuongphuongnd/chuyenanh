@@ -20,7 +20,7 @@
   "settings_version": "Versi {version}",
   "settings_tagline": "Baca, buat, dan konversi PDF, Office, dan gambar.",
   "settings_licenses": "Lisensi sumber terbuka",
-  "settings_aboutOffline": "Phiotron PDF bekerja sepenuhnya secara luring. Aplikasi tidak mengumpulkan data dan tidak menggunakan jaringan.",
+  "settings_aboutOffline": "Phiotron PDF bekerja secara offline dan tidak pernah mengirim berkas atau data Anda ke mana pun. Jaringan hanya dipakai saat Anda sendiri mengunduh paket bahasa terjemahan (Google ML Kit).",
   "settings_aboutSyncfusion": "Fitur PDF menggunakan komponen Syncfusion Flutter di bawah Syncfusion Community License.",
   "settings_sectionGeneral": "Umum",
   "settings_sectionAbout": "Tentang aplikasi",
@@ -30,5 +30,15 @@
   "settings_feedbackSubject": "Masukan Phiotron PDF",
   "settings_feedbackFailed": "Tidak dapat membuka aplikasi email",
   "settings_privacy": "Kebijakan privasi",
-  "settings_privacyBody": "Phiotron PDF bekerja sepenuhnya offline. Aplikasi tidak mengumpulkan, mengirim, atau membagikan data Anda.\n\nBerkas Anda hanya dibaca di perangkat ini untuk ditampilkan dan dikonversi. Berkas baru disimpan ke folder pilihan Anda; berkas asli tidak pernah ditimpa.\n\nAplikasi tidak memakai jaringan, tanpa iklan, dan tanpa pembelian dalam aplikasi. Akses berkas hanya dipakai untuk mencari dokumen di perangkat."
+  "settings_privacyBody": "Phiotron PDF bekerja secara offline. Aplikasi tidak mengumpulkan, mengirim, atau membagikan berkas maupun data Anda.\n\nBerkas Anda hanya dibaca di perangkat ini untuk ditampilkan dan dikonversi. Berkas baru disimpan ke folder pilihan Anda; berkas asli tidak pernah ditimpa.\n\nAplikasi hanya memakai jaringan saat Anda sendiri mengunduh paket bahasa terjemahan (disediakan oleh Google ML Kit); dokumen Anda tidak pernah diunggah dan terjemahan berjalan di perangkat. Tanpa iklan dan tanpa pembelian dalam aplikasi. Akses berkas hanya dipakai untuk mencari dokumen di perangkat.",
+  "settings_appLock": "Kunci aplikasi",
+  "settings_appLockSubtitle": "Gunakan sidik jari, wajah, atau PIN perangkat",
+  "settings_appLockReasonEnable": "Verifikasi untuk mengaktifkan kunci aplikasi",
+  "settings_appLockReasonDisable": "Verifikasi untuk menonaktifkan kunci aplikasi",
+  "settings_appLockReasonUnlock": "Buka kunci Phiotron PDF",
+  "settings_appLockUnavailableTitle": "Kunci aplikasi tidak dapat diaktifkan",
+  "settings_appLockUnavailableBody": "Perangkat ini belum memasang kunci layar atau tidak mendukungnya. Atur sidik jari, wajah, PIN, pola, atau kata sandi di pengaturan perangkat, lalu coba lagi.",
+  "settings_appLockLocked": "Phiotron PDF terkunci",
+  "settings_appLockLockedHint": "Gunakan sidik jari, wajah, atau PIN perangkat untuk melanjutkan.",
+  "settings_appLockUnlock": "Buka kunci"
 }

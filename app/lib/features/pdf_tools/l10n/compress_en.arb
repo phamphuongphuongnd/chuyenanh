@@ -1,0 +1,53 @@
+{
+  "@@locale": "en",
+  "compress_levelLabel": "Compression level",
+  "compress_levelLight": "Light",
+  "compress_levelMedium": "Medium",
+  "compress_levelStrong": "Strong",
+  "compress_levelLightDesc": "Keeps text, links and annotations; only optimizes the file structure. Smaller savings.",
+  "compress_levelMediumDesc": "Turns each page into an image at about 150 dpi. Good savings, still easy to read.",
+  "compress_levelStrongDesc": "Turns each page into an image at about 100 dpi. Smallest file, lower quality.",
+  "compress_rasterWarning": "Pages become images: text can no longer be selected or searched, and links and annotations will be lost.",
+  "compress_passwordNote": "The original file is password protected. The compressed file will not have a password.",
+  "compress_action": "Compress",
+  "compress_resultSummary": "From {from} → {to} ({percent}% smaller)",
+  "@compress_resultSummary": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "compress_resultNoGain": "From {from} → {to} (no reduction)",
+  "@compress_resultNoGain": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "compress_notSmallerTitle": "The compressed file is not smaller",
+  "compress_notSmallerBody": "From {from} → {to}. This file may already be compressed. Keep or delete the new file?",
+  "@compress_notSmallerBody": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "compress_keep": "Keep file",
+  "compress_deleteNew": "Delete new file",
+  "compress_deleted": "The compressed file was deleted."
+}

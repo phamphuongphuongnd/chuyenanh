@@ -1,7 +1,10 @@
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/routes.dart';
+import 'ui/compress_screen.dart';
 import 'ui/create_blank_screen.dart';
+import 'ui/insert_pages_screen.dart';
+import 'ui/page_numbers_screen.dart';
 import 'ui/lock_screen.dart';
 import 'ui/merge_screen.dart';
 import 'ui/organize_screen.dart';
@@ -17,6 +20,18 @@ String? _pathOf(GoRouterState state) {
 
 /// Route của feature `pdf_tools` (gộp trong `core/router/app_router.dart`).
 final List<RouteBase> pdfToolsRoutes = [
+  GoRoute(
+    path: Routes.compress,
+    builder: (_, state) => CompressScreen(path: _pathOf(state)),
+  ),
+  GoRoute(
+    path: Routes.pageNumbers,
+    builder: (_, state) => PageNumbersScreen(path: _pathOf(state)),
+  ),
+  GoRoute(
+    path: Routes.insertPages,
+    builder: (_, state) => InsertPagesScreen(path: _pathOf(state)),
+  ),
   GoRoute(
     path: Routes.merge,
     builder: (context, state) => MergeScreen(path: _pathOf(state)),

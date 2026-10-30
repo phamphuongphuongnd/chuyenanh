@@ -44,5 +44,12 @@
   "edit_applySignatures": "서명하고 저장",
   "edit_deleteSignatureTitle": "이 서명을 삭제할까요?",
   "edit_deleteSignatureMessage": "저장된 서명이 이 기기에서 삭제됩니다.",
-  "edit_signHere": "여기에 서명"
+  "edit_signHere": "여기에 서명",
+  "edit_importSignature": "사진에서",
+  "edit_importSignatureTitle": "사진에서 서명 가져오기",
+  "edit_importSignatureHint": "획이 선명하고 배경이 사라질 때까지 감도를 조절하세요.",
+  "edit_pickFromGallery": "갤러리에서 선택",
+  "edit_takePhoto": "사진 촬영",
+  "edit_sensitivity": "감도",
+  "edit_importNoInk": "이미지에서 서명 획을 찾지 못했습니다. 밝은 곳에서 흰 종이에 한 서명을 촬영하세요."
 }

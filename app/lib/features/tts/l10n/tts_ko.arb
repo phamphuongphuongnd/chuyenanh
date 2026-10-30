@@ -1,0 +1,21 @@
+{
+  "@@locale": "ko",
+  "tts_progress": "{current} / {total} 문단",
+  "tts_play": "소리 내어 읽기",
+  "tts_pause": "일시정지",
+  "tts_prev": "이전 문단",
+  "tts_next": "다음 문단",
+  "tts_stop": "정지",
+  "tts_speed": "읽기 속도",
+  "tts_voice": "음성",
+  "tts_voiceDefault": "기기 기본값",
+  "tts_voiceN": "음성 {n}",
+  "tts_checking": "음성 확인 중…",
+  "tts_noVoice": "이 기기에 {language} 음성이 없습니다",
+  "tts_howToInstall": "설치 방법",
+  "tts_installTitle": "읽기 음성 설치",
+  "tts_installAndroid": "설정 → 시스템(또는 일반) → 언어 및 입력 → 텍스트 음성 변환 출력을 엽니다. Google 음성 서비스를 선택하고 설정 아이콘 → 음성 데이터 설치에서 필요한 언어를 다운로드하세요. 삼성 기기에서는 기본 엔진을 Google 음성 서비스로 바꿀 수 있습니다. 다운로드 후에는 오프라인으로 사용할 수 있습니다.",
+  "tts_installIos": "설정 → 손쉬운 사용 → 콘텐츠 말하기 → 음성에서 언어를 선택하고 음성을 다운로드하세요. 다운로드 후에는 오프라인으로 사용할 수 있습니다.",
+  "tts_recheck": "다시 확인",
+  "tts_error": "이 문단을 읽을 수 없습니다"
+}

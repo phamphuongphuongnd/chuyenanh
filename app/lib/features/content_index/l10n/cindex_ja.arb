@@ -1,0 +1,16 @@
+{
+  "@@locale": "ja",
+  "cindex_inNames": "名前",
+  "cindex_inContent": "本文内",
+  "cindex_indexing": "インデックス作成中 {done}/{total} ファイル",
+  "@cindex_indexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "@@locale": "ko",
+  "cindex_inNames": "이름",
+  "cindex_inContent": "내용에서",
+  "cindex_indexing": "색인 생성 중 {done}/{total}개 파일",
+  "@cindex_indexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}

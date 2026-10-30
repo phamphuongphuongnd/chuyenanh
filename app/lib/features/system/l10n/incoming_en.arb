@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "incoming_unsupported": "This file type is not supported.",
+  "incoming_failed": "Could not receive {count} file(s) (read error or larger than 200 MB).",
+  "@incoming_failed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "incoming_openFailed": "No app can open this file.",
+  "incoming_savedOthers": "Saved {count} more file(s) to the Imported folder.",
+  "@incoming_savedOthers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
+}

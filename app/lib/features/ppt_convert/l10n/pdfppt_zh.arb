@@ -1,0 +1,11 @@
+{
+  "@@locale": "zh",
+  "pdfppt_quality": "图片质量",
+  "pdfppt_qualityStandard": "标准 (150 dpi)",
+  "pdfppt_qualityHigh": "高 (200 dpi)",
+  "pdfppt_slidesToCreate": "{count, plural, other{将创建 {count} 张幻灯片}}",
+  "pdfppt_sizeInfo": "幻灯片尺寸与第 1 页相同。尺寸不同的页面会缩放并居中放在白色背景上。",
+  "pdfppt_note": "每页都会成为一张图片幻灯片，因此无法在 PowerPoint 中编辑文字。",
+  "pdfppt_convert": "转换为 PowerPoint",
+  "pdfppt_converting": "正在转换页面…"
+}

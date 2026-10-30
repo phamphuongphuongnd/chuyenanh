@@ -1,0 +1,7 @@
+{
+  "@@locale": "ja",
+  "incoming_unsupported": "このファイル形式には対応していません。",
+  "incoming_failed": "{count} 件のファイルを受け取れませんでした（読み込みエラーまたは 200 MB 超）。",
+  "incoming_openFailed": "このファイルを開けるアプリがありません。",
+  "incoming_savedOthers": "ほかの {count} 件のファイルを Imported フォルダに保存しました。"
+}

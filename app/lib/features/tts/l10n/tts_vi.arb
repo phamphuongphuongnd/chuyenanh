@@ -1,0 +1,21 @@
+{
+  "@@locale": "vi",
+  "tts_progress": "Đoạn {current} / {total}",
+  "tts_play": "Đọc to",
+  "tts_pause": "Tạm dừng",
+  "tts_prev": "Đoạn trước",
+  "tts_next": "Đoạn sau",
+  "tts_stop": "Dừng",
+  "tts_speed": "Tốc độ đọc",
+  "tts_voice": "Giọng đọc",
+  "tts_voiceDefault": "Mặc định của máy",
+  "tts_voiceN": "Giọng {n}",
+  "tts_checking": "Đang kiểm tra giọng đọc…",
+  "tts_noVoice": "Máy chưa có giọng đọc {language}",
+  "tts_howToInstall": "Cách cài",
+  "tts_installTitle": "Cài giọng đọc",
+  "tts_installAndroid": "Mở Cài đặt → Hệ thống (hoặc Quản lý chung) → Ngôn ngữ và bàn phím → Đầu ra chuyển văn bản thành giọng nói. Chọn Dịch vụ lời nói của Google, bấm biểu tượng cài đặt → Cài đặt dữ liệu giọng nói rồi tải ngôn ngữ cần đọc. Máy Samsung có thể đổi công cụ ưu tiên sang Dịch vụ lời nói của Google. Tải xong giọng đọc dùng được không cần mạng.",
+  "tts_installIos": "Mở Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói, chọn ngôn ngữ rồi tải một giọng. Tải xong giọng đọc dùng được không cần mạng.",
+  "tts_recheck": "Kiểm tra lại",
+  "tts_error": "Không đọc được đoạn này"
+}

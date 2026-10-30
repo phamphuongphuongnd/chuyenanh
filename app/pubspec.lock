@@ -472,6 +472,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_tts:
+    dependency: "direct main"
+    description:
+      name: flutter_tts
+      sha256: ce5eb209b40e95f2f4a1397116c87ab2fcdff32257d04ed7a764e75894c03775
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.5"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -493,6 +501,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "18.1.1"
+  google_mlkit_barcode_scanning:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_barcode_scanning
+      sha256: aaefc95e35f3caea5b6d4745fabab4b8a877a39360ee77e1daab5b9d4e8be4e9
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.1"
   google_mlkit_commons:
     dependency: transitive
     description:
@@ -509,6 +525,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.17.1"
+  google_mlkit_translation:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_translation
+      sha256: "7404d9401ee3e5d60644da84244ba81a4a037d7857e6d849fb1bda4ae8ac5d98"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.1"
   graphs:
     dependency: transitive
     description:
@@ -756,6 +780,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  local_auth:
+    dependency: "direct main"
+    description:
+      name: local_auth
+      sha256: ecf24edf2283c509ecd217e3595f6f71034b68888d28ad1dae6bfa0857b816ac
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
+  local_auth_android:
+    dependency: transitive
+    description:
+      name: local_auth_android
+      sha256: e2ceb84cdecefe1bc0ddd4ac308b0f6525bbfa0a60d0e552082b2970e1fb38c2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
+  local_auth_darwin:
+    dependency: transitive
+    description:
+      name: local_auth_darwin
+      sha256: "45a9db01b57082bc9d6115cb25eb8fc0b72f43e5f330819bdd8352ecdae87589"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
+  local_auth_platform_interface:
+    dependency: transitive
+    description:
+      name: local_auth_platform_interface
+      sha256: f98b8e388588583d3f781f6806e4f4c9f9e189d898d27f0c249b93a1973dd122
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  local_auth_windows:
+    dependency: transitive
+    description:
+      name: local_auth_windows
+      sha256: d72b8a441e5e6a679902f87c51529fcce65f442d77598484cf35454c3d733eda
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   logging:
     dependency: transitive
     description:
@@ -1129,14 +1193,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  receive_sharing_intent:
-    dependency: "direct main"
-    description:
-      name: receive_sharing_intent
-      sha256: "72f229a38f2910029c11d840770c173b27072e348ef3376130b37514bc4556f6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.9.0"
   record_use:
     dependency: transitive
     description:

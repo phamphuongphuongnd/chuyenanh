@@ -12,6 +12,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/link_opener.dart';
 import '../../core/widgets/widgets.dart';
 import '../../data/settings/settings_providers.dart';
+import '../system/app_authenticator.dart';
 import 'language_screen.dart';
 import 'output_dir_screen.dart';
 import 'page_size_screen.dart';
@@ -20,7 +21,7 @@ import 'settings_logic.dart';
 import 'theme_screen.dart';
 
 /// Màn Cài đặt gốc (tab thứ 4): tiêu đề lớn, nhóm "Chung" (Ngôn ngữ, Giao diện, Thư mục lưu,
-/// Khổ giấy mặc định) và nhóm "Về ứng dụng" (Chia sẻ, Phản hồi, Chính sách, Giới thiệu);
+/// Khổ giấy mặc định, Khoá ứng dụng) và nhóm "Về ứng dụng" (Chia sẻ, Phản hồi, Chính sách, Giới thiệu);
 /// phụ đề hiện giá trị đang chọn. Ngôn ngữ / Giao diện / Khổ giấy mở bảng chọn tại chỗ.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -92,6 +93,19 @@ class SettingsScreen extends ConsumerWidget {
         title: l.settings_pageSize,
         subtitle: pageSizeLabel(context, s.defaultPageSize),
         onTap: () => showPageSizeSheet(context, ref),
+      ),
+      _SettingsRow(
+        key: const ValueKey('settings_appLock'),
+        icon: Symbols.fingerprint_rounded,
+        title: l.settings_appLock,
+        subtitle: l.settings_appLockSubtitle,
+        subtitleMaxLines: 2,
+        onTap: () => toggleAppLock(context, ref, enable: !s.appLock),
+        trailing: Switch(
+          key: const ValueKey('settings_appLock_switch'),
+          value: s.appLock,
+          onChanged: (v) => toggleAppLock(context, ref, enable: v),
+        ),
       ),
     ];
 
@@ -202,7 +216,56 @@ class _SettingsGroup extends StatelessWidget {
   );
 }
 
-/// Một dòng cài đặt: ô icon đỏ nhạt 38 · tiêu đề (+ phụ đề) · mũi tên ›.
+/// Bật/tắt khoá ứng dụng: luôn xác thực bằng khoá của máy trước khi đổi (cho phép PIN máy).
+/// Bật mà máy không có khoá màn hình / không hỗ trợ → hộp thoại giải thích, không bật.
+Future<void> toggleAppLock(
+  BuildContext context,
+  WidgetRef ref, {
+  required bool enable,
+}) async {
+  final l = context.l10n;
+  final service = ref.read(appAuthServiceProvider);
+  final notifier = ref.read(settingsProvider.notifier);
+  // Chạm liên tiếp khi hộp thoại hệ thống đang mở: bỏ qua.
+  if (service.isAuthenticating) return;
+
+  Future<void> explainUnavailable() async {
+    if (!context.mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AppDialog(
+        title: l.settings_appLockUnavailableTitle,
+        content: Text(l.settings_appLockUnavailableBody),
+        showCancel: false,
+        onConfirm: () => Navigator.of(ctx).pop(),
+      ),
+    );
+  }
+
+  if (enable && !await service.isSupported()) {
+    await explainUnavailable();
+    return;
+  }
+  final result = await service.authenticate(
+    enable ? l.settings_appLockReasonEnable : l.settings_appLockReasonDisable,
+  );
+  switch (result) {
+    case AppAuthResult.success:
+      await notifier.setAppLock(enable);
+    case AppAuthResult.unavailable:
+      if (enable) {
+        await explainUnavailable();
+      } else if (!await service.isSupported()) {
+        // Máy đã gỡ khoá màn hình: không xác thực được nữa, cho tắt để khỏi kẹt.
+        await notifier.setAppLock(false);
+      }
+    case AppAuthResult.failed:
+      break;
+  }
+}
+
+/// Một dòng cài đặt: ô icon đỏ nhạt 38 · tiêu đề (+ phụ đề) · mũi tên › (hoặc [trailing],
+/// vd. công tắc).
 class _SettingsRow extends StatelessWidget {
   const _SettingsRow({
     super.key,
@@ -211,6 +274,7 @@ class _SettingsRow extends StatelessWidget {
     required this.onTap,
     this.subtitle,
     this.subtitleMaxLines = 1,
+    this.trailing,
   });
 
   final IconData icon;
@@ -218,6 +282,9 @@ class _SettingsRow extends StatelessWidget {
   final String? subtitle;
   final int subtitleMaxLines;
   final VoidCallback onTap;
+
+  /// Thay cho mũi tên › ở cuối dòng (vd. [Switch]).
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -268,11 +335,12 @@ class _SettingsRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              Icon(
-                Symbols.chevron_right_rounded,
-                size: 22,
-                color: t.textMuted,
-              ),
+              trailing ??
+                  Icon(
+                    Symbols.chevron_right_rounded,
+                    size: 22,
+                    color: t.textMuted,
+                  ),
             ],
           ),
         ),

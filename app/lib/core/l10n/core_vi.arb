@@ -57,5 +57,12 @@
   "core_toolWatermark": "Thêm hình mờ",
   "core_toolAnnotate": "Chú thích",
   "core_toolSign": "Ký PDF",
-  "core_toolFillForm": "Điền biểu mẫu"
+  "core_toolFillForm": "Điền biểu mẫu",
+  "core_toolIdCard": "Quét thẻ 2 mặt",
+  "core_toolQrScan": "Quét mã QR",
+  "core_toolPptToPdf": "PowerPoint sang PDF",
+  "core_toolPdfToPpt": "PDF sang PowerPoint",
+  "core_toolCompress": "Nén PDF",
+  "core_toolPageNumbers": "Đánh số trang",
+  "core_toolInsertPages": "Chèn trang"
 }

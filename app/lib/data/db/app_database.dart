@@ -3,12 +3,14 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'daos/bookmarks_dao.dart';
+import 'daos/document_texts_dao.dart';
 import 'daos/documents_dao.dart';
 import 'daos/favorites_dao.dart';
 import 'daos/recents_dao.dart';
 import 'tables.dart';
 
 export 'daos/bookmarks_dao.dart';
+export 'daos/document_texts_dao.dart';
 export 'daos/documents_dao.dart';
 export 'daos/favorites_dao.dart';
 export 'daos/recents_dao.dart';
@@ -17,8 +19,14 @@ export 'tables.dart';
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Documents, Favorites, Recents, Bookmarks],
-  daos: [DocumentsDao, FavoritesDao, RecentsDao, BookmarksDao],
+  tables: [Documents, Favorites, Recents, Bookmarks, DocumentTexts],
+  daos: [
+    DocumentsDao,
+    FavoritesDao,
+    RecentsDao,
+    BookmarksDao,
+    DocumentTextsDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   /// Mặc định: file `pdf_office.sqlite` trong thư mục app. Test: truyền executor riêng.
@@ -26,7 +34,17 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'pdf_office'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  /// v1 → v2: thêm bảng `document_texts` (tìm theo nội dung). Không đụng bảng cũ nên Yêu thích /
+  /// Gần đây / Đánh dấu giữ nguyên.
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await m.createTable(documentTexts);
+    },
+  );
 
   /// Đổi tên/di chuyển file: cập nhật path trong mọi bảng (một transaction).
   Future<void> renamePath(
@@ -52,6 +70,10 @@ class AppDatabase extends _$AppDatabase {
       await (update(bookmarks)..where((t) => t.path.equals(oldPath))).write(
         BookmarksCompanion(path: Value(newPath)),
       );
+      // Nội dung không đổi khi đổi tên → giữ chữ đã trích, chỉ đổi khoá.
+      await (update(documentTexts)..where((t) => t.path.equals(oldPath))).write(
+        DocumentTextsCompanion(path: Value(newPath)),
+      );
     });
   }
 
@@ -62,6 +84,8 @@ class AppDatabase extends _$AppDatabase {
       await (delete(favorites)..where((t) => t.path.equals(path))).go();
       await (delete(recents)..where((t) => t.path.equals(path))).go();
       await (delete(bookmarks)..where((t) => t.path.equals(path))).go();
+      await (delete(documentTexts)..where((t) => t.path.equals(path))).go();
+      await (delete(documentTexts)..where((t) => t.path.equals(path))).go();
     });
   }
 }

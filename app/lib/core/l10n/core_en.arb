@@ -23,21 +23,27 @@
   "core_passwordDialogMessage": "\"{name}\" is password protected.",
   "@core_passwordDialogMessage": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "core_confirmDeleteTitle": "Delete file?",
   "core_confirmDeleteMessage": "\"{name}\" will be permanently deleted.",
   "@core_confirmDeleteMessage": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "core_processing": "Processing…",
   "core_progressPercent": "{percent}%",
   "@core_progressPercent": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "core_comingSoon": "Coming soon",
@@ -72,5 +78,12 @@
   "core_toolWatermark": "Add watermark",
   "core_toolAnnotate": "Annotate",
   "core_toolSign": "Sign PDF",
-  "core_toolFillForm": "Fill form"
+  "core_toolFillForm": "Fill form",
+  "core_toolIdCard": "Scan ID card",
+  "core_toolQrScan": "Scan QR code",
+  "core_toolPptToPdf": "PowerPoint to PDF",
+  "core_toolPdfToPpt": "PDF to PowerPoint",
+  "core_toolCompress": "Compress PDF",
+  "core_toolPageNumbers": "Page numbers",
+  "core_toolInsertPages": "Insert pages"
 }

@@ -20,6 +20,7 @@ Test: `AppDatabase(NativeDatabase.memory())` (import `package:drift/native.dart`
 | `favorites` | `path` (PK), `addedAtMs` | ⭐ yêu thích |
 | `recents` | `path` (PK), `openedAtMs` | file mở gần đây (`openDocument` tự ghi) |
 | `bookmarks` | `id` (PK tự tăng), `path`, `page`, `createdAtMs` | `page` **0-based**; `wholeDocumentPage = -1` là đánh dấu cả tài liệu |
+| `document_texts` (từ 30/10, **schemaVersion 2**) | `path`, chữ đã chuẩn hoá bỏ dấu, `sourceModifiedMs`, size | chỉ mục "Tìm trong nội dung"; `DocumentTextsDao` tìm bằng `LIKE`; migration v1→v2 giữ bảng cũ — xem [[tinh-nang-offline]] |
 
 **DAO** (`db.documentsDao`…): `DocumentsDao` (`watchAll/getAll({exts})`, `getByPath`, `upsert`, `upsertAll`, `deleteByPath`,
 `deleteNotSeenSince(scanStartedMs)`, `clear`), `FavoritesDao` (`watchAll`, `watchPaths`, `isFavorite`, `add`, `remove`, `toggle`),

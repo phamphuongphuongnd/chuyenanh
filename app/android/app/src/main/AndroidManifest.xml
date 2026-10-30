@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Khoa app bang van tay / khuon mat / PIN may (local_auth) -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Chi dung de tai goi ngon ngu dich (ML Kit Translation) khi nguoi dung chu dong tai -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -63,6 +67,7 @@
                 <data android:mimeType="application/vnd.ms-excel" />
                 <data android:mimeType="application/vnd.ms-powerpoint" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="image/*" />
             </intent-filter>
 
             <!-- Nhan file chia se (ACTION_SEND) -->
@@ -137,6 +142,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="tel" />
+        </intent>
+        <!-- flutter_tts: tim bo doc (Android 11+) -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
     </queries>
 </manifest>

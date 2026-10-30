@@ -1,0 +1,44 @@
+{
+  "@@locale": "en",
+  "pagenum_style": "Number style",
+  "pagenum_pageWord": "Page {n}",
+  "@pagenum_pageWord": {
+    "description": "Page label; {n} is the page number. Also drawn into the PDF.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "pagenum_position": "Position",
+  "pagenum_fontSize": "Font size",
+  "pagenum_color": "Color",
+  "pagenum_margin": "Margin from edge",
+  "pagenum_startAt": "Start at number",
+  "pagenum_pages": "Pages to number",
+  "pagenum_allPages": "All pages",
+  "pagenum_customRange": "Page range",
+  "pagenum_rangeLabel": "Pages",
+  "pagenum_rangeHint": "e.g. 1-3, 5, 7-9",
+  "pagenum_invalidRange": "Invalid range. Use pages from 1 to {max}, e.g. 1-3, 5.",
+  "@pagenum_invalidRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "pagenum_invalidStart": "Enter a whole number from 1 to 99999.",
+  "pagenum_skipFirst": "Skip the first page (cover)",
+  "pagenum_skipFirstHint": "The cover gets no number; numbering starts on the next page.",
+  "pagenum_noPages": "There are no pages left to number.",
+  "pagenum_summary": "{count, plural, =1{1 page will be numbered} other{{count} pages will be numbered}}",
+  "@pagenum_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pagenum_action": "Add page numbers"
+}

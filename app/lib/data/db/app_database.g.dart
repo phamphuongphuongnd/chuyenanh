@@ -1191,6 +1191,446 @@ class BookmarksCompanion extends UpdateCompanion<Bookmark> {
   }
 }
 
+class $DocumentTextsTable extends DocumentTexts
+    with TableInfo<$DocumentTextsTable, DocumentText> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DocumentTextsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _normalizedMeta = const VerificationMeta(
+    'normalized',
+  );
+  @override
+  late final GeneratedColumn<String> normalized = GeneratedColumn<String>(
+    'normalized',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceModifiedMsMeta = const VerificationMeta(
+    'sourceModifiedMs',
+  );
+  @override
+  late final GeneratedColumn<int> sourceModifiedMs = GeneratedColumn<int>(
+    'source_modified_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceSizeMeta = const VerificationMeta(
+    'sourceSize',
+  );
+  @override
+  late final GeneratedColumn<int> sourceSize = GeneratedColumn<int>(
+    'source_size',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _extractedAtMsMeta = const VerificationMeta(
+    'extractedAtMs',
+  );
+  @override
+  late final GeneratedColumn<int> extractedAtMs = GeneratedColumn<int>(
+    'extracted_at_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    path,
+    content,
+    normalized,
+    sourceModifiedMs,
+    sourceSize,
+    extractedAtMs,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'document_texts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DocumentText> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('path')) {
+      context.handle(
+        _pathMeta,
+        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('normalized')) {
+      context.handle(
+        _normalizedMeta,
+        normalized.isAcceptableOrUnknown(data['normalized']!, _normalizedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_normalizedMeta);
+    }
+    if (data.containsKey('source_modified_ms')) {
+      context.handle(
+        _sourceModifiedMsMeta,
+        sourceModifiedMs.isAcceptableOrUnknown(
+          data['source_modified_ms']!,
+          _sourceModifiedMsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceModifiedMsMeta);
+    }
+    if (data.containsKey('source_size')) {
+      context.handle(
+        _sourceSizeMeta,
+        sourceSize.isAcceptableOrUnknown(data['source_size']!, _sourceSizeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceSizeMeta);
+    }
+    if (data.containsKey('extracted_at_ms')) {
+      context.handle(
+        _extractedAtMsMeta,
+        extractedAtMs.isAcceptableOrUnknown(
+          data['extracted_at_ms']!,
+          _extractedAtMsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_extractedAtMsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {path};
+  @override
+  DocumentText map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DocumentText(
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      normalized: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}normalized'],
+      )!,
+      sourceModifiedMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}source_modified_ms'],
+      )!,
+      sourceSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}source_size'],
+      )!,
+      extractedAtMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}extracted_at_ms'],
+      )!,
+    );
+  }
+
+  @override
+  $DocumentTextsTable createAlias(String alias) {
+    return $DocumentTextsTable(attachedDatabase, alias);
+  }
+}
+
+class DocumentText extends DataClass implements Insertable<DocumentText> {
+  final String path;
+
+  /// Chữ gốc đã gộp NFC + gọn khoảng trắng, tối đa ~200k ký tự.
+  final String content;
+
+  /// [content] chữ thường, bỏ dấu (`đ→d`), khoảng trắng → dấu cách; dài đúng bằng [content]
+  /// (từng ký tự đổi 1:1) nên vị trí khớp trong cột này cũng là vị trí trong [content].
+  final String normalized;
+
+  /// `modifiedMs` / `size` của file lúc trích (khác bảng `documents` ⇒ trích lại).
+  final int sourceModifiedMs;
+  final int sourceSize;
+  final int extractedAtMs;
+  const DocumentText({
+    required this.path,
+    required this.content,
+    required this.normalized,
+    required this.sourceModifiedMs,
+    required this.sourceSize,
+    required this.extractedAtMs,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['path'] = Variable<String>(path);
+    map['content'] = Variable<String>(content);
+    map['normalized'] = Variable<String>(normalized);
+    map['source_modified_ms'] = Variable<int>(sourceModifiedMs);
+    map['source_size'] = Variable<int>(sourceSize);
+    map['extracted_at_ms'] = Variable<int>(extractedAtMs);
+    return map;
+  }
+
+  DocumentTextsCompanion toCompanion(bool nullToAbsent) {
+    return DocumentTextsCompanion(
+      path: Value(path),
+      content: Value(content),
+      normalized: Value(normalized),
+      sourceModifiedMs: Value(sourceModifiedMs),
+      sourceSize: Value(sourceSize),
+      extractedAtMs: Value(extractedAtMs),
+    );
+  }
+
+  factory DocumentText.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DocumentText(
+      path: serializer.fromJson<String>(json['path']),
+      content: serializer.fromJson<String>(json['content']),
+      normalized: serializer.fromJson<String>(json['normalized']),
+      sourceModifiedMs: serializer.fromJson<int>(json['sourceModifiedMs']),
+      sourceSize: serializer.fromJson<int>(json['sourceSize']),
+      extractedAtMs: serializer.fromJson<int>(json['extractedAtMs']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'path': serializer.toJson<String>(path),
+      'content': serializer.toJson<String>(content),
+      'normalized': serializer.toJson<String>(normalized),
+      'sourceModifiedMs': serializer.toJson<int>(sourceModifiedMs),
+      'sourceSize': serializer.toJson<int>(sourceSize),
+      'extractedAtMs': serializer.toJson<int>(extractedAtMs),
+    };
+  }
+
+  DocumentText copyWith({
+    String? path,
+    String? content,
+    String? normalized,
+    int? sourceModifiedMs,
+    int? sourceSize,
+    int? extractedAtMs,
+  }) => DocumentText(
+    path: path ?? this.path,
+    content: content ?? this.content,
+    normalized: normalized ?? this.normalized,
+    sourceModifiedMs: sourceModifiedMs ?? this.sourceModifiedMs,
+    sourceSize: sourceSize ?? this.sourceSize,
+    extractedAtMs: extractedAtMs ?? this.extractedAtMs,
+  );
+  DocumentText copyWithCompanion(DocumentTextsCompanion data) {
+    return DocumentText(
+      path: data.path.present ? data.path.value : this.path,
+      content: data.content.present ? data.content.value : this.content,
+      normalized: data.normalized.present
+          ? data.normalized.value
+          : this.normalized,
+      sourceModifiedMs: data.sourceModifiedMs.present
+          ? data.sourceModifiedMs.value
+          : this.sourceModifiedMs,
+      sourceSize: data.sourceSize.present
+          ? data.sourceSize.value
+          : this.sourceSize,
+      extractedAtMs: data.extractedAtMs.present
+          ? data.extractedAtMs.value
+          : this.extractedAtMs,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentText(')
+          ..write('path: $path, ')
+          ..write('content: $content, ')
+          ..write('normalized: $normalized, ')
+          ..write('sourceModifiedMs: $sourceModifiedMs, ')
+          ..write('sourceSize: $sourceSize, ')
+          ..write('extractedAtMs: $extractedAtMs')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    path,
+    content,
+    normalized,
+    sourceModifiedMs,
+    sourceSize,
+    extractedAtMs,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DocumentText &&
+          other.path == this.path &&
+          other.content == this.content &&
+          other.normalized == this.normalized &&
+          other.sourceModifiedMs == this.sourceModifiedMs &&
+          other.sourceSize == this.sourceSize &&
+          other.extractedAtMs == this.extractedAtMs);
+}
+
+class DocumentTextsCompanion extends UpdateCompanion<DocumentText> {
+  final Value<String> path;
+  final Value<String> content;
+  final Value<String> normalized;
+  final Value<int> sourceModifiedMs;
+  final Value<int> sourceSize;
+  final Value<int> extractedAtMs;
+  final Value<int> rowid;
+  const DocumentTextsCompanion({
+    this.path = const Value.absent(),
+    this.content = const Value.absent(),
+    this.normalized = const Value.absent(),
+    this.sourceModifiedMs = const Value.absent(),
+    this.sourceSize = const Value.absent(),
+    this.extractedAtMs = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DocumentTextsCompanion.insert({
+    required String path,
+    required String content,
+    required String normalized,
+    required int sourceModifiedMs,
+    required int sourceSize,
+    required int extractedAtMs,
+    this.rowid = const Value.absent(),
+  }) : path = Value(path),
+       content = Value(content),
+       normalized = Value(normalized),
+       sourceModifiedMs = Value(sourceModifiedMs),
+       sourceSize = Value(sourceSize),
+       extractedAtMs = Value(extractedAtMs);
+  static Insertable<DocumentText> custom({
+    Expression<String>? path,
+    Expression<String>? content,
+    Expression<String>? normalized,
+    Expression<int>? sourceModifiedMs,
+    Expression<int>? sourceSize,
+    Expression<int>? extractedAtMs,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (path != null) 'path': path,
+      if (content != null) 'content': content,
+      if (normalized != null) 'normalized': normalized,
+      if (sourceModifiedMs != null) 'source_modified_ms': sourceModifiedMs,
+      if (sourceSize != null) 'source_size': sourceSize,
+      if (extractedAtMs != null) 'extracted_at_ms': extractedAtMs,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DocumentTextsCompanion copyWith({
+    Value<String>? path,
+    Value<String>? content,
+    Value<String>? normalized,
+    Value<int>? sourceModifiedMs,
+    Value<int>? sourceSize,
+    Value<int>? extractedAtMs,
+    Value<int>? rowid,
+  }) {
+    return DocumentTextsCompanion(
+      path: path ?? this.path,
+      content: content ?? this.content,
+      normalized: normalized ?? this.normalized,
+      sourceModifiedMs: sourceModifiedMs ?? this.sourceModifiedMs,
+      sourceSize: sourceSize ?? this.sourceSize,
+      extractedAtMs: extractedAtMs ?? this.extractedAtMs,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (normalized.present) {
+      map['normalized'] = Variable<String>(normalized.value);
+    }
+    if (sourceModifiedMs.present) {
+      map['source_modified_ms'] = Variable<int>(sourceModifiedMs.value);
+    }
+    if (sourceSize.present) {
+      map['source_size'] = Variable<int>(sourceSize.value);
+    }
+    if (extractedAtMs.present) {
+      map['extracted_at_ms'] = Variable<int>(extractedAtMs.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentTextsCompanion(')
+          ..write('path: $path, ')
+          ..write('content: $content, ')
+          ..write('normalized: $normalized, ')
+          ..write('sourceModifiedMs: $sourceModifiedMs, ')
+          ..write('sourceSize: $sourceSize, ')
+          ..write('extractedAtMs: $extractedAtMs, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1198,10 +1638,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $FavoritesTable favorites = $FavoritesTable(this);
   late final $RecentsTable recents = $RecentsTable(this);
   late final $BookmarksTable bookmarks = $BookmarksTable(this);
+  late final $DocumentTextsTable documentTexts = $DocumentTextsTable(this);
   late final DocumentsDao documentsDao = DocumentsDao(this as AppDatabase);
   late final FavoritesDao favoritesDao = FavoritesDao(this as AppDatabase);
   late final RecentsDao recentsDao = RecentsDao(this as AppDatabase);
   late final BookmarksDao bookmarksDao = BookmarksDao(this as AppDatabase);
+  late final DocumentTextsDao documentTextsDao = DocumentTextsDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1211,6 +1655,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     favorites,
     recents,
     bookmarks,
+    documentTexts,
   ];
 }
 
@@ -1925,6 +2370,242 @@ typedef $$BookmarksTableProcessedTableManager =
       Bookmark,
       PrefetchHooks Function()
     >;
+typedef $$DocumentTextsTableCreateCompanionBuilder =
+    DocumentTextsCompanion Function({
+      required String path,
+      required String content,
+      required String normalized,
+      required int sourceModifiedMs,
+      required int sourceSize,
+      required int extractedAtMs,
+      Value<int> rowid,
+    });
+typedef $$DocumentTextsTableUpdateCompanionBuilder =
+    DocumentTextsCompanion Function({
+      Value<String> path,
+      Value<String> content,
+      Value<String> normalized,
+      Value<int> sourceModifiedMs,
+      Value<int> sourceSize,
+      Value<int> extractedAtMs,
+      Value<int> rowid,
+    });
+
+class $$DocumentTextsTableFilterComposer
+    extends Composer<_$AppDatabase, $DocumentTextsTable> {
+  $$DocumentTextsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sourceModifiedMs => $composableBuilder(
+    column: $table.sourceModifiedMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sourceSize => $composableBuilder(
+    column: $table.sourceSize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get extractedAtMs => $composableBuilder(
+    column: $table.extractedAtMs,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DocumentTextsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DocumentTextsTable> {
+  $$DocumentTextsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sourceModifiedMs => $composableBuilder(
+    column: $table.sourceModifiedMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sourceSize => $composableBuilder(
+    column: $table.sourceSize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get extractedAtMs => $composableBuilder(
+    column: $table.extractedAtMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DocumentTextsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DocumentTextsTable> {
+  $$DocumentTextsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sourceModifiedMs => $composableBuilder(
+    column: $table.sourceModifiedMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sourceSize => $composableBuilder(
+    column: $table.sourceSize,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get extractedAtMs => $composableBuilder(
+    column: $table.extractedAtMs,
+    builder: (column) => column,
+  );
+}
+
+class $$DocumentTextsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DocumentTextsTable,
+          DocumentText,
+          $$DocumentTextsTableFilterComposer,
+          $$DocumentTextsTableOrderingComposer,
+          $$DocumentTextsTableAnnotationComposer,
+          $$DocumentTextsTableCreateCompanionBuilder,
+          $$DocumentTextsTableUpdateCompanionBuilder,
+          (
+            DocumentText,
+            BaseReferences<_$AppDatabase, $DocumentTextsTable, DocumentText>,
+          ),
+          DocumentText,
+          PrefetchHooks Function()
+        > {
+  $$DocumentTextsTableTableManager(_$AppDatabase db, $DocumentTextsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DocumentTextsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DocumentTextsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DocumentTextsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> path = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String> normalized = const Value.absent(),
+                Value<int> sourceModifiedMs = const Value.absent(),
+                Value<int> sourceSize = const Value.absent(),
+                Value<int> extractedAtMs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DocumentTextsCompanion(
+                path: path,
+                content: content,
+                normalized: normalized,
+                sourceModifiedMs: sourceModifiedMs,
+                sourceSize: sourceSize,
+                extractedAtMs: extractedAtMs,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String path,
+                required String content,
+                required String normalized,
+                required int sourceModifiedMs,
+                required int sourceSize,
+                required int extractedAtMs,
+                Value<int> rowid = const Value.absent(),
+              }) => DocumentTextsCompanion.insert(
+                path: path,
+                content: content,
+                normalized: normalized,
+                sourceModifiedMs: sourceModifiedMs,
+                sourceSize: sourceSize,
+                extractedAtMs: extractedAtMs,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DocumentTextsTable, DocumentText>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $DocumentTextsTable,
+                    DocumentText
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DocumentTextsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DocumentTextsTable,
+      DocumentText,
+      $$DocumentTextsTableFilterComposer,
+      $$DocumentTextsTableOrderingComposer,
+      $$DocumentTextsTableAnnotationComposer,
+      $$DocumentTextsTableCreateCompanionBuilder,
+      $$DocumentTextsTableUpdateCompanionBuilder,
+      (
+        DocumentText,
+        BaseReferences<_$AppDatabase, $DocumentTextsTable, DocumentText>,
+      ),
+      DocumentText,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1937,4 +2618,6 @@ class $AppDatabaseManager {
       $$RecentsTableTableManager(_db, _db.recents);
   $$BookmarksTableTableManager get bookmarks =>
       $$BookmarksTableTableManager(_db, _db.bookmarks);
+  $$DocumentTextsTableTableManager get documentTexts =>
+      $$DocumentTextsTableTableManager(_db, _db.documentTexts);
 }

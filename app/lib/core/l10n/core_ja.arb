@@ -57,5 +57,12 @@
   "core_toolWatermark": "透かしを追加",
   "core_toolAnnotate": "注釈",
   "core_toolSign": "PDF に署名",
-  "core_toolFillForm": "フォームに入力"
+  "core_toolFillForm": "フォームに入力",
+  "core_toolIdCard": "身分証をスキャン",
+  "core_toolQrScan": "QRコードをスキャン",
+  "core_toolPptToPdf": "PowerPointをPDFに",
+  "core_toolPdfToPpt": "PDFをPowerPointに",
+  "core_toolCompress": "PDFを圧縮",
+  "core_toolPageNumbers": "ページ番号",
+  "core_toolInsertPages": "ページを挿入"
 }

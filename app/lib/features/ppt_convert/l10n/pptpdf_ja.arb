@@ -1,0 +1,21 @@
+{
+  "@@locale": "ja",
+  "pptpdf_pickHint": "PDF に変換する PowerPoint プレゼンテーション（.pptx）を選択してください",
+  "pptpdf_pickFile": "PowerPoint ファイルを選択",
+  "pptpdf_legacyPpt": "古い .ppt 形式には対応していません。.pptx で保存し直してからお試しください。",
+  "pptpdf_notPptx": ".pptx ファイルのみ対応しています",
+  "pptpdf_slideCount": "{count, plural, other{{count} 枚のスライド}}",
+  "@pptpdf_slideCount": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_quality": "画質",
+  "pptpdf_qualityStandard": "標準（150 dpi）",
+  "pptpdf_qualityHigh": "高画質（200 dpi）",
+  "pptpdf_skipHidden": "非表示スライドを除く",
+  "pptpdf_hiddenInfo": "{count, plural, other{このプレゼンテーションには非表示スライドが {count} 枚あります}}",
+  "@pptpdf_hiddenInfo": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_pagesToExport": "{count, plural, other{PDF {count} ページを作成します}}",
+  "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_noSlides": "書き出すスライドがありません",
+  "pptpdf_note": "各スライドは画像のページになるため、PDF 内の文字は選択・検索できません。表示はアプリの PowerPoint ビューアと同じで、PowerPoint とは多少異なる場合があります（フォント、効果、グラフ）。",
+  "pptpdf_convert": "PDF に変換",
+  "pptpdf_converting": "スライドを変換しています…"
+}

@@ -1,0 +1,22 @@
+{
+  "@@locale": "id",
+  "pagenum_style": "Gaya nomor",
+  "pagenum_pageWord": "Halaman {n}",
+  "pagenum_position": "Posisi",
+  "pagenum_fontSize": "Ukuran huruf",
+  "pagenum_color": "Warna",
+  "pagenum_margin": "Jarak dari tepi",
+  "pagenum_startAt": "Mulai dari nomor",
+  "pagenum_pages": "Halaman yang diberi nomor",
+  "pagenum_allPages": "Semua halaman",
+  "pagenum_customRange": "Rentang halaman",
+  "pagenum_rangeLabel": "Halaman",
+  "pagenum_rangeHint": "mis. 1-3, 5, 7-9",
+  "pagenum_invalidRange": "Rentang tidak valid. Gunakan halaman 1 sampai {max}, mis. 1-3, 5.",
+  "pagenum_invalidStart": "Masukkan bilangan bulat dari 1 sampai 99999.",
+  "pagenum_skipFirst": "Lewati halaman pertama (sampul)",
+  "pagenum_skipFirstHint": "Sampul tidak diberi nomor; penomoran dimulai dari halaman berikutnya.",
+  "pagenum_noPages": "Tidak ada halaman yang tersisa untuk diberi nomor.",
+  "pagenum_summary": "{count, plural, =1{1 halaman akan diberi nomor} other{{count} halaman akan diberi nomor}}",
+  "pagenum_action": "Tambahkan nomor halaman"
+}

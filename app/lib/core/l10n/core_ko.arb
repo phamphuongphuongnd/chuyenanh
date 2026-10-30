@@ -57,5 +57,12 @@
   "core_toolWatermark": "워터마크 추가",
   "core_toolAnnotate": "주석",
   "core_toolSign": "PDF 서명",
-  "core_toolFillForm": "양식 작성"
+  "core_toolFillForm": "양식 작성",
+  "core_toolIdCard": "신분증 스캔",
+  "core_toolQrScan": "QR 코드 스캔",
+  "core_toolPptToPdf": "PowerPoint를 PDF로",
+  "core_toolPdfToPpt": "PDF를 PowerPoint로",
+  "core_toolCompress": "PDF 압축",
+  "core_toolPageNumbers": "페이지 번호",
+  "core_toolInsertPages": "페이지 삽입"
 }

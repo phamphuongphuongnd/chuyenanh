@@ -1,0 +1,39 @@
+{
+  "@@locale": "en",
+  "qr_takePhoto": "Take photo",
+  "qr_pickImage": "Choose image",
+  "qr_introTitle": "Scan QR codes and barcodes",
+  "qr_introMessage": "Take or choose a photo that contains a QR code or barcode. Images are processed on your device, no internet needed.",
+  "qr_scanning": "Reading codes…",
+  "qr_noCodeTitle": "No code found",
+  "qr_noCodeMessage": "Move closer, make sure there is enough light, hold the phone steady and keep the whole code inside the photo.",
+  "qr_found": "{count, plural, =1{1 code found} other{{count} codes found}}",
+  "@qr_found": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qr_copy": "Copy",
+  "qr_copied": "Copied",
+  "qr_openFailed": "Couldn't open this link",
+  "qr_kindUrl": "Link",
+  "qr_kindWifi": "Wi‑Fi",
+  "qr_kindContact": "Contact",
+  "qr_kindEmail": "Email",
+  "qr_kindPhone": "Phone number",
+  "qr_kindSms": "SMS",
+  "qr_kindGeo": "Location",
+  "qr_kindEvent": "Event",
+  "qr_kindProduct": "Product code",
+  "qr_kindText": "Text",
+  "qr_wifiNetwork": "Network name",
+  "qr_wifiPassword": "Password",
+  "qr_wifiSecurity": "Security",
+  "qr_wifiNoPassword": "Open network (no password)",
+  "qr_content": "Content",
+  "qr_history": "Recent",
+  "qr_clearHistory": "Clear history",
+  "qr_clearHistoryConfirm": "Delete all recently scanned codes?"
+}

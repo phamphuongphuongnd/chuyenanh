@@ -1,0 +1,16 @@
+{
+  "@@locale": "id",
+  "cindex_inNames": "Di nama",
+  "cindex_inContent": "Di dalam isi",
+  "cindex_indexing": "Mengindeks {done}/{total} file",
+  "@cindex_indexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}

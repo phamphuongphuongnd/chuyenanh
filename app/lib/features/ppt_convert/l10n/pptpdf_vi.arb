@@ -1,0 +1,21 @@
+{
+  "@@locale": "vi",
+  "pptpdf_pickHint": "Chọn bản trình chiếu PowerPoint (.pptx) để chuyển sang PDF",
+  "pptpdf_pickFile": "Chọn tệp PowerPoint",
+  "pptpdf_legacyPpt": "Chưa hỗ trợ định dạng .ppt cũ. Hãy lưu lại thành .pptx rồi thử lại.",
+  "pptpdf_notPptx": "Chỉ hỗ trợ tệp .pptx",
+  "pptpdf_slideCount": "{count, plural, other{{count} slide}}",
+  "@pptpdf_slideCount": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_quality": "Chất lượng",
+  "pptpdf_qualityStandard": "Tiêu chuẩn (150 dpi)",
+  "pptpdf_qualityHigh": "Cao (200 dpi)",
+  "pptpdf_skipHidden": "Bỏ slide ẩn",
+  "pptpdf_hiddenInfo": "{count, plural, other{Bản trình chiếu có {count} slide ẩn}}",
+  "@pptpdf_hiddenInfo": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_pagesToExport": "{count, plural, other{Sẽ tạo {count} trang PDF}}",
+  "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_noSlides": "Không có slide nào để xuất",
+  "pptpdf_note": "Mỗi slide thành một trang ảnh nên chữ trong PDF không chọn hay tìm được. Slide hiển thị giống trình xem PowerPoint của app, có thể khác PowerPoint đôi chút (phông chữ, hiệu ứng, biểu đồ).",
+  "pptpdf_convert": "Chuyển sang PDF",
+  "pptpdf_converting": "Đang chuyển các slide…"
+}

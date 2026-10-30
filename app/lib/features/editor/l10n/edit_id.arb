@@ -44,5 +44,12 @@
   "edit_applySignatures": "Tanda tangani dan simpan",
   "edit_deleteSignatureTitle": "Hapus tanda tangan ini?",
   "edit_deleteSignatureMessage": "Tanda tangan tersimpan akan dihapus dari perangkat ini.",
-  "edit_signHere": "Tanda tangan di sini"
+  "edit_signHere": "Tanda tangan di sini",
+  "edit_importSignature": "Dari foto",
+  "edit_importSignatureTitle": "Tanda tangan dari foto",
+  "edit_importSignatureHint": "Atur sensitivitas sampai goresan jelas dan latar belakang hilang.",
+  "edit_pickFromGallery": "Pilih dari galeri",
+  "edit_takePhoto": "Ambil foto",
+  "edit_sensitivity": "Sensitivitas",
+  "edit_importNoInk": "Goresan tanda tangan tidak ditemukan di gambar. Foto tanda tangan Anda di kertas putih dengan cahaya cukup."
 }

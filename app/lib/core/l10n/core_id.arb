@@ -57,5 +57,12 @@
   "core_toolWatermark": "Tambah tanda air",
   "core_toolAnnotate": "Anotasi",
   "core_toolSign": "Tanda tangani PDF",
-  "core_toolFillForm": "Isi formulir"
+  "core_toolFillForm": "Isi formulir",
+  "core_toolIdCard": "Pindai kartu ID",
+  "core_toolQrScan": "Pindai kode QR",
+  "core_toolPptToPdf": "PowerPoint ke PDF",
+  "core_toolPdfToPpt": "PDF ke PowerPoint",
+  "core_toolCompress": "Kompres PDF",
+  "core_toolPageNumbers": "Nomor halaman",
+  "core_toolInsertPages": "Sisipkan halaman"
 }

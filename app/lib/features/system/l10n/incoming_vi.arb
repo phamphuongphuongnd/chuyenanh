@@ -1,0 +1,7 @@
+{
+  "@@locale": "vi",
+  "incoming_unsupported": "Định dạng file này không được hỗ trợ.",
+  "incoming_failed": "Không nhận được {count} file (lỗi đọc hoặc lớn hơn 200 MB).",
+  "incoming_openFailed": "Không có ứng dụng nào mở được file này.",
+  "incoming_savedOthers": "Đã lưu thêm {count} file vào thư mục Imported."
+}

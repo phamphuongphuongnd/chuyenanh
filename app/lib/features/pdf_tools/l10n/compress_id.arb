@@ -1,0 +1,20 @@
+{
+  "@@locale": "id",
+  "compress_levelLabel": "Tingkat kompresi",
+  "compress_levelLight": "Ringan",
+  "compress_levelMedium": "Sedang",
+  "compress_levelStrong": "Kuat",
+  "compress_levelLightDesc": "Teks, tautan, dan anotasi tetap utuh; hanya struktur file yang dioptimalkan. Pengurangan kecil.",
+  "compress_levelMediumDesc": "Setiap halaman diubah menjadi gambar sekitar 150 dpi. Pengurangan besar, tetap mudah dibaca.",
+  "compress_levelStrongDesc": "Setiap halaman diubah menjadi gambar sekitar 100 dpi. File terkecil, kualitas lebih rendah.",
+  "compress_rasterWarning": "Halaman menjadi gambar: teks tidak bisa dipilih atau dicari lagi, tautan dan anotasi akan hilang.",
+  "compress_passwordNote": "File asli dilindungi kata sandi. File hasil kompresi tidak akan memiliki kata sandi.",
+  "compress_action": "Kompres",
+  "compress_resultSummary": "Dari {from} → {to} ({percent}% lebih kecil)",
+  "compress_resultNoGain": "Dari {from} → {to} (tidak berkurang)",
+  "compress_notSmallerTitle": "File hasil kompresi tidak lebih kecil",
+  "compress_notSmallerBody": "Dari {from} → {to}. File ini mungkin sudah terkompresi. Simpan atau hapus file baru?",
+  "compress_keep": "Simpan file",
+  "compress_deleteNew": "Hapus file baru",
+  "compress_deleted": "File hasil kompresi sudah dihapus."
+}

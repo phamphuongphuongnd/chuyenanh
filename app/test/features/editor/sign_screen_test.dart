@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image/image.dart' as img;
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
@@ -33,18 +35,26 @@ void main() {
     storeDir.deleteSync(recursive: true);
   });
 
-  List<Override> overrides({PdfRenderEngine? renderEngine}) => [
+  List<Override> overrides({
+    PdfRenderEngine? renderEngine,
+    SignaturePhotoPicker? photoPicker,
+  }) => [
     outputDirectoryProvider.overrideWith((ref) async => outDir.path),
     signatureStoreProvider.overrideWith((ref) async => store),
     pdfRenderEngineProvider.overrideWithValue(renderEngine ?? render),
     pdfSignEngineProvider.overrideWithValue(sign),
+    if (photoPicker != null)
+      signaturePhotoPickerProvider.overrideWithValue(photoPicker),
   ];
 
-  Future<void> open(WidgetTester tester) async {
+  Future<void> open(
+    WidgetTester tester, {
+    SignaturePhotoPicker? photoPicker,
+  }) async {
     await pumpEditorScreen(
       tester,
       screen: const SignScreen(path: '/x/Hop dong.pdf'),
-      overrides: overrides(),
+      overrides: overrides(photoPicker: photoPicker),
     );
     await settle(
       tester,
@@ -71,6 +81,60 @@ void main() {
           find.textContaining('No saved signatures yet').evaluate().isNotEmpty,
     );
     expect(find.textContaining('No saved signatures yet'), findsOneWidget);
+  });
+
+  testWidgets('o nhap chu ky tu anh hien canh o chu ky moi', (tester) async {
+    await open(tester);
+    expect(find.byKey(const Key('importSignature')), findsOneWidget);
+    expect(find.text('From photo'), findsOneWidget);
+    expect(find.byIcon(Symbols.add_photo_alternate_rounded), findsOneWidget);
+  });
+
+  testWidgets('nhap tu anh: xem truoc, dung chu ky -> luu kho va dat len trang', (
+    tester,
+  ) async {
+    final picker = _FakePhotoPicker(_paperPhoto(stroke: true));
+    await open(tester, photoPicker: picker);
+
+    await tester.tap(find.byKey(const Key('importSignature')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('importFromCamera')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('importFromGallery')));
+    await settle(
+      tester,
+      until: () => find.byKey(const Key('useImported')).evaluate().isNotEmpty,
+    );
+    expect(picker.sources, [SignaturePhotoSource.gallery]);
+    expect(find.byKey(const Key('importPreview')), findsOneWidget);
+    expect(find.byKey(const Key('importThreshold')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('useImported')));
+    await settle(
+      tester,
+      until: () => find.byKey(const Key('placed_1')).evaluate().isNotEmpty,
+    );
+    expect(find.byKey(const Key('placed_1')), findsOneWidget);
+    final saved = await tester.runAsync(store.list);
+    expect(saved, hasLength(1));
+  });
+
+  testWidgets('nhap tu anh trang tinh -> bao khong tach duoc net', (
+    tester,
+  ) async {
+    await open(tester, photoPicker: _FakePhotoPicker(_paperPhoto()));
+    await tester.tap(find.byKey(const Key('importSignature')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('importFromGallery')));
+    await settle(
+      tester,
+      until: () => find
+          .textContaining('No signature strokes found')
+          .evaluate()
+          .isNotEmpty,
+    );
+    expect(find.textContaining('No signature strokes found'), findsOneWidget);
+    expect(find.byKey(const Key('useImported')), findsNothing);
+    expect(find.byKey(const Key('placed_1')), findsNothing);
   });
 
   testWidgets('chon chu ky da luu: dat giua trang, ky va luu dung toa do', (
@@ -291,6 +355,36 @@ void main() {
       findsOneWidget,
     );
   });
+}
+
+/// Ảnh "chụp" giấy trắng 240x120; [stroke] = có một nét đen đặc ở giữa.
+Uint8List _paperPhoto({bool stroke = false}) {
+  final image = img.Image(width: 240, height: 120);
+  img.fill(image, color: img.ColorRgb8(252, 252, 250));
+  if (stroke) {
+    img.fillRect(
+      image,
+      x1: 40,
+      y1: 50,
+      x2: 199,
+      y2: 69,
+      color: img.ColorRgb8(15, 15, 20),
+    );
+  }
+  return Uint8List.fromList(img.encodePng(image));
+}
+
+class _FakePhotoPicker implements SignaturePhotoPicker {
+  _FakePhotoPicker(this.bytes);
+
+  final Uint8List bytes;
+  final List<SignaturePhotoSource> sources = [];
+
+  @override
+  Future<Uint8List?> pick(SignaturePhotoSource source) async {
+    sources.add(source);
+    return bytes;
+  }
 }
 
 class _BrokenRenderEngine extends FakeRenderEngine {

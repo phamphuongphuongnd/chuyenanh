@@ -56,3 +56,5 @@ Skill nằm trong project này, **không cài toàn cục** — xem `.claude/ski
 - **`phuong-review-loop`** — `/phuong-review-loop [mức]`: `/code-review` (mặc định `high`) rồi sửa lỗi MỚI, tự lặp tới khi
   một lượt review không còn lỗi MỚI (lỗi CŨ chỉ ghi nhận).
 - **`phuong-whitebox-test`** — kiểm thử hộp trắng mức điều kiện: CFG, V(G), đường cơ sở, dữ liệu thử, (Bước 6) chạy test ghi PASS/FAIL.
+
+Thư mục kết quả whitebox: D:\chuyenanh\test-output\whitebox\

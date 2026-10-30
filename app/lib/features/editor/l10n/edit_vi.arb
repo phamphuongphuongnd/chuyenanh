@@ -44,5 +44,12 @@
   "edit_applySignatures": "Ký và lưu",
   "edit_deleteSignatureTitle": "Xoá chữ ký này?",
   "edit_deleteSignatureMessage": "Chữ ký đã lưu sẽ bị xoá khỏi thiết bị.",
-  "edit_signHere": "Ký tại đây"
+  "edit_signHere": "Ký tại đây",
+  "edit_importSignature": "Từ ảnh",
+  "edit_importSignatureTitle": "Chữ ký từ ảnh",
+  "edit_importSignatureHint": "Kéo độ nhạy tới khi nét ký rõ và nền biến mất.",
+  "edit_pickFromGallery": "Chọn ảnh trong máy",
+  "edit_takePhoto": "Chụp ảnh chữ ký",
+  "edit_sensitivity": "Độ nhạy",
+  "edit_importNoInk": "Không tách được nét ký trong ảnh. Hãy chụp chữ ký trên giấy trắng, đủ sáng."
 }

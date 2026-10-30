@@ -109,3 +109,10 @@ sources: []
 - Người dùng "chả thấy thay đổi gì" khi chỉ đổi nền (font/màu) → ưu tiên làm thay đổi nhìn thấy được (bố cục) sớm, báo rõ nhóm nào đổi gì.
 - Hỏi "đã lưu wiki, commit, push, merge chưa" → làm nốt trước khi sang việc mới; trong phiên này được phép commit + push + merge `master`.
 - Hỏi ưu/nhược điểm trước khi chọn (vd. font + bộ icon) → bảng so sánh rồi mới hỏi.
+
+## Bổ sung 30/10/2026 (bản quyền / lên store)
+- Người dùng hay **chạy chat khác song song trên cùng repo** ("cẩn thận khỏi xung khắc"): chỉ sửa file không trùng; file trùng thì sửa đúng dòng và khi commit **stage riêng dòng của mình** (xem [[ban-quyen-giay-phep]]); không commit phần của chat kia. Khi họ nói "nó chỉ làm test thôi" thì được sửa file trùng.
+- `/dispatching-parallel-agents cho nhanh nhất` → chia agent theo nhóm file rời nhau ngay, mình làm phần còn lại, rồi tự kiểm lại (test/grep) kết quả từng agent.
+- Thao tác trên web (đăng ký Syncfusion, Xing…): người dùng **tự làm**, gửi ảnh chụp từng màn; mình chỉ **đúng ô nào điền gì, bấm nút nào**, cảnh báo nút trả tiền (Upgrade/Premium), cookie chọn từ chối khi có thể. Họ từ chối mở trang trong trình duyệt của mình.
+- Hỏi kiểu "còn chỗ nào vướng" → bảng: vướng / tự làm / nhỏ, kèm mức; nói rõ đây là rà kỹ thuật, không phải tư vấn pháp lý.
+- Plan mode: người dùng hay **từ chối ExitPlanMode để hỏi tiếp** — trả lời câu hỏi trước, chỉ gọi lại khi họ bảo "làm đi".

@@ -58,7 +58,6 @@ dependencies:
   file_picker: ^13.2.0
   share_plus: ^13.3.1
   open_filex: ^5.0.0
-  receive_sharing_intent: ^1.9.0
   docx_file_viewer: ^1.0.5
   archive: ^4.5.2
   xml: ^7.1.0
@@ -77,6 +76,10 @@ dependencies:
     path: ../packages/image_ops
   url_launcher: ^6.3.3
   material_symbols_icons: ^4.2960.0
+  flutter_tts: ^4.2.5
+  local_auth: ^3.0.2
+  google_mlkit_barcode_scanning: ^0.16.1
+  google_mlkit_translation: ^0.15.1
 
 dev_dependencies:
   flutter_test:

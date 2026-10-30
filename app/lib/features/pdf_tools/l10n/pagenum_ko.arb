@@ -1,0 +1,22 @@
+{
+  "@@locale": "ko",
+  "pagenum_style": "번호 스타일",
+  "pagenum_pageWord": "{n} 페이지",
+  "pagenum_position": "위치",
+  "pagenum_fontSize": "글자 크기",
+  "pagenum_color": "색상",
+  "pagenum_margin": "가장자리 여백",
+  "pagenum_startAt": "시작 번호",
+  "pagenum_pages": "번호를 매길 페이지",
+  "pagenum_allPages": "모든 페이지",
+  "pagenum_customRange": "페이지 범위",
+  "pagenum_rangeLabel": "페이지",
+  "pagenum_rangeHint": "예: 1-3, 5, 7-9",
+  "pagenum_invalidRange": "범위가 올바르지 않습니다. 1~{max} 페이지를 입력하세요(예: 1-3, 5).",
+  "pagenum_invalidStart": "1~99999 사이의 정수를 입력하세요.",
+  "pagenum_skipFirst": "첫 페이지(표지) 건너뛰기",
+  "pagenum_skipFirstHint": "표지에는 번호를 넣지 않고 다음 페이지부터 번호를 매깁니다.",
+  "pagenum_noPages": "번호를 매길 페이지가 없습니다.",
+  "pagenum_summary": "{count, plural, other{{count}개 페이지에 번호를 매깁니다}}",
+  "pagenum_action": "페이지 번호 추가"
+}

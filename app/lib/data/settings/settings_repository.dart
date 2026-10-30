@@ -11,6 +11,7 @@ class AppSettings {
     this.themeMode = ThemeMode.system,
     this.defaultPageSize = PageSizeOption.a4,
     this.outputDir,
+    this.appLock = false,
   });
 
   /// `null` = theo ngôn ngữ máy.
@@ -21,16 +22,21 @@ class AppSettings {
   /// `null` = thư mục mặc định (`Documents/Phiotron PDF`).
   final String? outputDir;
 
+  /// Khoá app bằng vân tay / khuôn mặt / PIN của máy (mặc định tắt).
+  final bool appLock;
+
   AppSettings copyWith({
     Locale? Function()? locale,
     ThemeMode? themeMode,
     PageSizeOption? defaultPageSize,
     String? Function()? outputDir,
+    bool? appLock,
   }) => AppSettings(
     locale: locale != null ? locale() : this.locale,
     themeMode: themeMode ?? this.themeMode,
     defaultPageSize: defaultPageSize ?? this.defaultPageSize,
     outputDir: outputDir != null ? outputDir() : this.outputDir,
+    appLock: appLock ?? this.appLock,
   );
 
   @override
@@ -39,11 +45,12 @@ class AppSettings {
       other.locale == locale &&
       other.themeMode == themeMode &&
       other.defaultPageSize == defaultPageSize &&
-      other.outputDir == outputDir;
+      other.outputDir == outputDir &&
+      other.appLock == appLock;
 
   @override
   int get hashCode =>
-      Object.hash(locale, themeMode, defaultPageSize, outputDir);
+      Object.hash(locale, themeMode, defaultPageSize, outputDir, appLock);
 }
 
 /// Đọc/ghi [AppSettings] bằng shared_preferences.
@@ -56,6 +63,7 @@ class SettingsRepository {
   static const kThemeMode = 'settings.themeMode';
   static const kDefaultPageSize = 'settings.defaultPageSize';
   static const kOutputDir = 'settings.outputDir';
+  static const kAppLock = 'settings.appLock';
 
   AppSettings load() {
     final code = _prefs.getString(kLocale);
@@ -69,6 +77,7 @@ class SettingsRepository {
         _prefs.getString(kDefaultPageSize),
       ),
       outputDir: _prefs.getString(kOutputDir),
+      appLock: _prefs.getBool(kAppLock) ?? false,
     );
   }
 
@@ -85,4 +94,6 @@ class SettingsRepository {
   Future<void> setOutputDir(String? dir) => dir == null || dir.isEmpty
       ? _prefs.remove(kOutputDir)
       : _prefs.setString(kOutputDir, dir);
+
+  Future<void> setAppLock(bool enabled) => _prefs.setBool(kAppLock, enabled);
 }

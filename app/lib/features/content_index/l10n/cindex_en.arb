@@ -1,0 +1,16 @@
+{
+  "@@locale": "en",
+  "cindex_inNames": "In names",
+  "cindex_inContent": "In content",
+  "cindex_indexing": "Indexing {done}/{total} files",
+  "@cindex_indexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}

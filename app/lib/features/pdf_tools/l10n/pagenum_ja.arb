@@ -1,0 +1,22 @@
+{
+  "@@locale": "ja",
+  "pagenum_style": "番号のスタイル",
+  "pagenum_pageWord": "{n} ページ",
+  "pagenum_position": "位置",
+  "pagenum_fontSize": "文字サイズ",
+  "pagenum_color": "色",
+  "pagenum_margin": "端からの余白",
+  "pagenum_startAt": "開始番号",
+  "pagenum_pages": "番号を付けるページ",
+  "pagenum_allPages": "すべてのページ",
+  "pagenum_customRange": "ページ範囲",
+  "pagenum_rangeLabel": "ページ",
+  "pagenum_rangeHint": "例: 1-3, 5, 7-9",
+  "pagenum_invalidRange": "範囲が無効です。1〜{max} のページを指定してください（例: 1-3, 5）。",
+  "pagenum_invalidStart": "1〜99999 の整数を入力してください。",
+  "pagenum_skipFirst": "最初のページ（表紙）を除く",
+  "pagenum_skipFirstHint": "表紙には番号を付けず、次のページから番号を付けます。",
+  "pagenum_noPages": "番号を付けるページがありません。",
+  "pagenum_summary": "{count, plural, other{{count} ページに番号を付けます}}",
+  "pagenum_action": "ページ番号を追加"
+}

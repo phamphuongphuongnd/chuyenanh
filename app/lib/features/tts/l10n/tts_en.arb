@@ -1,0 +1,45 @@
+{
+  "@@locale": "en",
+  "tts_progress": "Paragraph {current} / {total}",
+  "@tts_progress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "tts_play": "Read aloud",
+  "tts_pause": "Pause",
+  "tts_prev": "Previous paragraph",
+  "tts_next": "Next paragraph",
+  "tts_stop": "Stop",
+  "tts_speed": "Reading speed",
+  "tts_voice": "Voice",
+  "tts_voiceDefault": "Device default",
+  "tts_voiceN": "Voice {n}",
+  "@tts_voiceN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tts_checking": "Checking voices…",
+  "tts_noVoice": "No {language} voice on this device",
+  "@tts_noVoice": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_howToInstall": "How to install",
+  "tts_installTitle": "Install a reading voice",
+  "tts_installAndroid": "Open Settings → System (or General management) → Languages & input → Text-to-speech output. Choose Speech Services by Google, tap its settings icon → Install voice data, then download the language you need. On Samsung phones you can switch the preferred engine to Speech Services by Google. Voices work offline once downloaded.",
+  "tts_installIos": "Open Settings → Accessibility → Spoken Content → Voices, choose the language and download a voice. Voices work offline once downloaded.",
+  "tts_recheck": "Check again",
+  "tts_error": "Couldn't read this passage"
+}

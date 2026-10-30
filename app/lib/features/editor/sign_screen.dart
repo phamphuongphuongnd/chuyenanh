@@ -1,8 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 
@@ -50,6 +52,64 @@ class SignatureEntry {
   final SavedSignature saved;
   final Uint8List png;
 }
+
+/// Nguồn ảnh chữ ký chụp trên giấy.
+enum SignaturePhotoSource { gallery, camera }
+
+/// Lấy ảnh chữ ký (byte JPG/PNG). Tách interface để test không cần hộp thoại hệ thống.
+abstract interface class SignaturePhotoPicker {
+  /// Huỷ → `null`. Ném [PermissionDenied] nếu bị từ chối quyền ảnh / camera.
+  Future<Uint8List?> pick(SignaturePhotoSource source);
+}
+
+/// Dùng `image_picker` (thư viện ảnh hoặc camera). Giới hạn cạnh 2400 px để plugin thu nhỏ sẵn
+/// (đồng thời đổi HEIC → JPG trên iOS), đỡ tốn RAM khi giải mã.
+class ImagePickerSignaturePhotoPicker implements SignaturePhotoPicker {
+  const ImagePickerSignaturePhotoPicker();
+
+  @override
+  Future<Uint8List?> pick(SignaturePhotoSource source) async {
+    try {
+      final x = await ImagePicker().pickImage(
+        source: source == SignaturePhotoSource.camera
+            ? ImageSource.camera
+            : ImageSource.gallery,
+        maxWidth: 2400,
+        maxHeight: 2400,
+        requestFullMetadata: false,
+      );
+      return x == null ? null : await x.readAsBytes();
+    } on PlatformException catch (e) {
+      if (e.code == 'camera_access_denied' || e.code == 'photo_access_denied') {
+        throw const PermissionDenied();
+      }
+      throw AppError.from(e);
+    }
+  }
+}
+
+final signaturePhotoPickerProvider = Provider<SignaturePhotoPicker>(
+  (ref) => const ImagePickerSignaturePhotoPicker(),
+);
+
+/// Giải mã ảnh + tách nét lần đầu (ngưỡng Otsu) trong isolate riêng. Hàm cấp cao nhất để
+/// closure của `Isolate.run` chỉ mang theo tham số (không dính `State`/`ref`).
+Future<({SignaturePhoto photo, Uint8List? png})> _decodeSignaturePhoto(
+  Uint8List bytes,
+  Color ink,
+) => Isolate.run(() {
+  final photo = decodeSignaturePhoto(bytes);
+  return (photo: photo, png: signaturePngFromDecodedPhoto(photo, ink: ink));
+});
+
+/// Tách nét lại với ngưỡng / màu mực mới (khi kéo thanh độ nhạy hoặc đổi màu).
+Future<Uint8List?> _extractSignature(
+  SignaturePhoto photo,
+  int threshold,
+  Color ink,
+) => Isolate.run(
+  () => signaturePngFromDecodedPhoto(photo, threshold: threshold, ink: ink),
+);
 
 class _PageData {
   const _PageData(this.image, this.size);
@@ -199,15 +259,93 @@ class _SignScreenState extends ConsumerState<SignScreen> {
   Future<void> _drawNew() async {
     final png = await showSignaturePadSheet(context);
     if (png == null || !mounted) return;
+    await _saveAndAdd(png);
+  }
+
+  /// Lưu chữ ký mới vào kho rồi đặt lên trang hiện tại.
+  Future<void> _saveAndAdd(Uint8List png) async {
     try {
       final store = await ref.read(signatureStoreProvider.future);
       await store.save(png);
       ref.invalidate(savedSignaturesProvider);
     } catch (e) {
-      // Không lưu được thì vẫn cho dùng chữ ký vừa vẽ trong phiên này.
+      // Không lưu được thì vẫn cho dùng chữ ký vừa tạo trong phiên này.
       if (mounted) showEditorError(context, e);
     }
     if (mounted) await _addFromBytes(png);
+  }
+
+  /// Nhập chữ ký từ ảnh chụp: chọn nguồn → lấy ảnh → tách nét (isolate) → xem trước, chỉnh độ
+  /// nhạy / màu mực → lưu + đặt lên trang như chữ ký vừa vẽ.
+  Future<void> _importFromPhoto() async {
+    final l = context.l10n;
+    final source = await showAppSheet<SignaturePhotoSource>(
+      context,
+      builder: (ctx) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SheetTitle(l.edit_importSignatureTitle),
+          SheetOption(
+            key: const Key('importFromGallery'),
+            icon: Symbols.photo_library_rounded,
+            label: l.edit_pickFromGallery,
+            onTap: () =>
+                Navigator.of(ctx).pop(SignaturePhotoSource.gallery),
+          ),
+          SheetOption(
+            key: const Key('importFromCamera'),
+            icon: Symbols.photo_camera_rounded,
+            label: l.edit_takePhoto,
+            onTap: () => Navigator.of(ctx).pop(SignaturePhotoSource.camera),
+          ),
+        ],
+      ),
+    );
+    if (source == null || !mounted) return;
+    final Uint8List? bytes;
+    try {
+      bytes = await ref.read(signaturePhotoPickerProvider).pick(source);
+    } catch (e) {
+      if (mounted) showEditorError(context, e);
+      return;
+    }
+    if (bytes == null || !mounted) return;
+
+    final ink = kPenColors.first;
+    final progress = showProgressDialog(context, cancellable: false);
+    ({SignaturePhoto photo, Uint8List? png}) first;
+    try {
+      first = await _decodeSignaturePhoto(bytes, ink);
+    } catch (e) {
+      progress.close();
+      if (mounted) showEditorError(context, e);
+      return;
+    }
+    progress.close();
+    if (!mounted) return;
+    final firstPng = first.png;
+    final threshold = first.photo.autoThreshold;
+    if (firstPng == null || threshold == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.edit_importNoInk)));
+      return;
+    }
+    final png = await showModalBottomSheet<Uint8List>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => _SignatureImportSheet(
+        photo: first.photo,
+        initialPng: firstPng,
+        initialThreshold: threshold,
+        initialInk: ink,
+      ),
+    );
+    if (png == null || !mounted) return;
+    await _saveAndAdd(png);
   }
 
   Future<void> _deleteSaved(SignatureEntry s) async {
@@ -347,7 +485,12 @@ class _SignScreenState extends ConsumerState<SignScreen> {
               ? () => _goToPage(_pageIndex + 1)
               : null,
         ),
-        _SignatureBar(onNew: _drawNew, onPick: _addSaved, onDelete: _deleteSaved),
+        _SignatureBar(
+          onNew: _drawNew,
+          onImport: _importFromPhoto,
+          onPick: _addSaved,
+          onDelete: _deleteSaved,
+        ),
       ],
     );
   }
@@ -499,15 +642,17 @@ class _PageNavigator extends StatelessWidget {
   }
 }
 
-/// Dải chữ ký đã lưu + ô "chữ ký mới".
+/// Dải chữ ký đã lưu + ô "chữ ký mới" + ô "từ ảnh".
 class _SignatureBar extends ConsumerWidget {
   const _SignatureBar({
     required this.onNew,
+    required this.onImport,
     required this.onPick,
     required this.onDelete,
   });
 
   final VoidCallback onNew;
+  final VoidCallback onImport;
   final ValueChanged<SignatureEntry> onPick;
   final ValueChanged<SignatureEntry> onDelete;
 
@@ -533,32 +678,19 @@ class _SignatureBar extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
             children: [
-              _Tile(
+              _actionTile(
+                context,
                 key: const Key('newSignature'),
+                icon: Symbols.draw_rounded,
+                label: l.edit_newSignature,
                 onTap: onNew,
-                background: t.primarySoft,
-                borderColor: t.primaryText.withValues(alpha: 0.35),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Symbols.draw_rounded, color: t.primaryText),
-                      const SizedBox(height: 4),
-                      Text(
-                        l.edit_newSignature,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: t.primaryText,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
+              ),
+              _actionTile(
+                context,
+                key: const Key('importSignature'),
+                icon: Symbols.add_photo_alternate_rounded,
+                label: l.edit_importSignature,
+                onTap: onImport,
               ),
               if (list.isEmpty && saved.hasValue)
                 Padding(
@@ -611,6 +743,319 @@ class _SignatureBar extends ConsumerWidget {
                   ),
                 ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Ô hành động nền `primarySoft`: icon + nhãn (chữ ký mới / từ ảnh).
+  Widget _actionTile(
+    BuildContext context, {
+    required Key key,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final t = context.tokens;
+    return _Tile(
+      key: key,
+      onTap: onTap,
+      background: t.primarySoft,
+      borderColor: t.primaryText.withValues(alpha: 0.35),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: t.primaryText),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: t.primaryText,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Khoảng ngưỡng cho thanh độ nhạy (thang sáng 0–255; cao hơn = giữ thêm nét nhạt).
+const double _kMinThreshold = 10;
+const double _kMaxThreshold = 250;
+
+/// Bảng xem trước chữ ký tách từ ảnh: nền caro (thấy rõ phần trong suốt), thanh độ nhạy
+/// (ngưỡng), 4 màu mực như bảng vẽ chữ ký. Đóng với PNG đã cắt sát khi bấm "Dùng chữ ký".
+class _SignatureImportSheet extends StatefulWidget {
+  const _SignatureImportSheet({
+    required this.photo,
+    required this.initialPng,
+    required this.initialThreshold,
+    required this.initialInk,
+  });
+
+  final SignaturePhoto photo;
+  final Uint8List initialPng;
+  final int initialThreshold;
+  final Color initialInk;
+
+  @override
+  State<_SignatureImportSheet> createState() => _SignatureImportSheetState();
+}
+
+class _SignatureImportSheetState extends State<_SignatureImportSheet> {
+  late double _threshold = widget.initialThreshold.toDouble().clamp(
+    _kMinThreshold,
+    _kMaxThreshold,
+  );
+  late Color _ink = widget.initialInk;
+  late Uint8List? _png = widget.initialPng;
+  bool _busy = false;
+
+  /// Lượt xử lý mới nhất — kết quả của lượt cũ về muộn thì bỏ.
+  int _generation = 0;
+
+  Future<void> _reprocess() async {
+    final gen = ++_generation;
+    setState(() => _busy = true);
+    Uint8List? png;
+    Object? error;
+    try {
+      png = await _extractSignature(widget.photo, _threshold.round(), _ink);
+    } catch (e) {
+      error = e;
+    }
+    if (!mounted || gen != _generation) return;
+    setState(() {
+      _busy = false;
+      if (error == null) _png = png;
+    });
+    if (error != null) showEditorError(context, error);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final t = context.tokens;
+    final labelStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: t.text,
+    );
+    final png = _png;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l.edit_importSignatureTitle,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: t.text,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l.edit_importSignatureHint,
+            style: TextStyle(fontSize: 13, height: 1.4, color: t.textMuted),
+          ),
+          const SizedBox(height: 14),
+          // Ô xem trước: nền caro sáng ở cả giao diện tối (mực tối vẫn thấy rõ), bo 16.
+          Container(
+            key: const Key('importPreview'),
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: t.line),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CustomPaint(
+                painter: const _CheckerPainter(),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: png == null
+                            ? Center(
+                                child: Text(
+                                  l.edit_importNoInk,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.4,
+                                    color: AppTokens.light.textMuted,
+                                  ),
+                                ),
+                              )
+                            : Image.memory(
+                                png,
+                                fit: BoxFit.contain,
+                                gaplessPlayback: true,
+                              ),
+                      ),
+                    ),
+                    if (_busy)
+                      const Positioned(
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        child: LinearProgressIndicator(
+                          minHeight: 3,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Text(l.edit_penColor, style: labelStyle),
+              const SizedBox(width: 10),
+              for (final c in kPenColors)
+                _InkDot(
+                  key: Key('ink_${c.toARGB32()}'),
+                  color: c,
+                  selected: _ink == c,
+                  onTap: () {
+                    if (_ink == c) return;
+                    setState(() => _ink = c);
+                    _reprocess();
+                  },
+                ),
+            ],
+          ),
+          Row(
+            children: [
+              Text(l.edit_sensitivity, style: labelStyle),
+              Expanded(
+                child: Slider(
+                  key: const Key('importThreshold'),
+                  value: _threshold,
+                  min: _kMinThreshold,
+                  max: _kMaxThreshold,
+                  activeColor: AppColors.primary,
+                  inactiveColor: t.surface2,
+                  onChanged: (v) => setState(() => _threshold = v),
+                  // Xử lý lại khi thả tay — kéo liên tục không dựng isolate mỗi khung hình.
+                  onChangeEnd: (_) => _reprocess(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      key: const Key('cancelImport'),
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(l.core_cancel),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FilledButton(
+                      key: const Key('useImported'),
+                      onPressed: _busy || png == null
+                          ? null
+                          : () => Navigator.of(context).pop(png),
+                      child: Text(l.edit_useSignature),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Nền caro trắng / xám nhạt — kiểu nền "trong suốt" của trình sửa ảnh.
+class _CheckerPainter extends CustomPainter {
+  const _CheckerPainter();
+
+  static const double _cell = 12;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(Offset.zero & size, Paint()..color = Colors.white);
+    final grey = Paint()..color = const Color(0xFFECECEC);
+    for (var y = 0; y * _cell < size.height; y++) {
+      for (var x = (y.isEven ? 0 : 1); x * _cell < size.width; x += 2) {
+        canvas.drawRect(Rect.fromLTWH(x * _cell, y * _cell, _cell, _cell), grey);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_CheckerPainter oldDelegate) => false;
+}
+
+/// Chấm màu mực tròn 32 (cùng kiểu chấm màu bút ở bảng vẽ chữ ký).
+class _InkDot extends StatelessWidget {
+  const _InkDot({
+    super.key,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: InkResponse(
+        onTap: onTap,
+        radius: 24,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? AppColors.primary : t.lineStrong,
+                width: selected ? 3 : 1,
+              ),
+            ),
+            child: selected
+                ? const Icon(
+                    Symbols.check_rounded,
+                    size: 16,
+                    weight: 700,
+                    color: Colors.white,
+                  )
+                : null,
           ),
         ),
       ),

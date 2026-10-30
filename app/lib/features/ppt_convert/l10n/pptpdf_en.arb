@@ -1,0 +1,21 @@
+{
+  "@@locale": "en",
+  "pptpdf_pickHint": "Choose a PowerPoint presentation (.pptx) to convert to PDF",
+  "pptpdf_pickFile": "Choose PowerPoint file",
+  "pptpdf_legacyPpt": "The old .ppt format is not supported. Save it as .pptx and try again.",
+  "pptpdf_notPptx": "Only .pptx files are supported",
+  "pptpdf_slideCount": "{count, plural, =1{1 slide} other{{count} slides}}",
+  "@pptpdf_slideCount": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_quality": "Quality",
+  "pptpdf_qualityStandard": "Standard (150 dpi)",
+  "pptpdf_qualityHigh": "High (200 dpi)",
+  "pptpdf_skipHidden": "Skip hidden slides",
+  "pptpdf_hiddenInfo": "{count, plural, =1{This presentation has 1 hidden slide} other{This presentation has {count} hidden slides}}",
+  "@pptpdf_hiddenInfo": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_pagesToExport": "{count, plural, =1{1 PDF page will be created} other{{count} PDF pages will be created}}",
+  "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_noSlides": "There are no slides to export",
+  "pptpdf_note": "Each slide becomes an image page, so text in the PDF cannot be selected or searched. Slides look the same as in the app's PowerPoint viewer and may differ slightly from PowerPoint (fonts, effects, charts).",
+  "pptpdf_convert": "Convert to PDF",
+  "pptpdf_converting": "Converting slides…"
+}

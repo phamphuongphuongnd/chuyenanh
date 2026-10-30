@@ -131,7 +131,8 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('nav-tools')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('tool-split')), findsOneWidget);
+    // Công cụ ở nhóm đầu (nhóm Công cụ PDF nằm dưới màn 800×600, danh sách dựng lười).
+    expect(find.byKey(const ValueKey('tool-scanner')), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('nav-settings')));
     await tester.pumpAndSettle();

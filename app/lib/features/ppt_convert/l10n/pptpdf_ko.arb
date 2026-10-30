@@ -1,0 +1,21 @@
+{
+  "@@locale": "ko",
+  "pptpdf_pickHint": "PDF로 변환할 PowerPoint 프레젠테이션(.pptx)을 선택하세요",
+  "pptpdf_pickFile": "PowerPoint 파일 선택",
+  "pptpdf_legacyPpt": "이전 .ppt 형식은 지원되지 않습니다. .pptx로 저장한 후 다시 시도하세요.",
+  "pptpdf_notPptx": ".pptx 파일만 지원됩니다",
+  "pptpdf_slideCount": "{count, plural, other{슬라이드 {count}장}}",
+  "@pptpdf_slideCount": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_quality": "품질",
+  "pptpdf_qualityStandard": "표준(150dpi)",
+  "pptpdf_qualityHigh": "높음(200dpi)",
+  "pptpdf_skipHidden": "숨긴 슬라이드 제외",
+  "pptpdf_hiddenInfo": "{count, plural, other{이 프레젠테이션에 숨긴 슬라이드가 {count}장 있습니다}}",
+  "@pptpdf_hiddenInfo": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_pagesToExport": "{count, plural, other{PDF {count}페이지가 만들어집니다}}",
+  "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_noSlides": "내보낼 슬라이드가 없습니다",
+  "pptpdf_note": "각 슬라이드가 이미지 페이지가 되므로 PDF의 글자는 선택하거나 검색할 수 없습니다. 앱의 PowerPoint 뷰어와 같게 보이며 PowerPoint와 약간 다를 수 있습니다(글꼴, 효과, 차트).",
+  "pptpdf_convert": "PDF로 변환",
+  "pptpdf_converting": "슬라이드 변환 중…"
+}

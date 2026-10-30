@@ -1,0 +1,7 @@
+{
+  "@@locale": "ko",
+  "incoming_unsupported": "지원하지 않는 파일 형식입니다.",
+  "incoming_failed": "파일 {count}개를 받지 못했습니다(읽기 오류 또는 200MB 초과).",
+  "incoming_openFailed": "이 파일을 열 수 있는 앱이 없습니다.",
+  "incoming_savedOthers": "다른 파일 {count}개를 Imported 폴더에 저장했습니다."
+}

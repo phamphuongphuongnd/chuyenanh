@@ -1,0 +1,43 @@
+{
+  "@@locale": "en",
+  "insert_position": "Insert position",
+  "insert_atStart": "At the beginning",
+  "insert_afterPage": "After page…",
+  "insert_atEnd": "At the end",
+  "insert_afterPageLabel": "Insert after page",
+  "insert_afterPageInvalid": "Enter a page from 1 to {max}.",
+  "@insert_afterPageInvalid": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "insert_afterPageHint": "Tap a page to choose it.",
+  "insert_content": "Content to insert",
+  "insert_typeBlank": "Blank pages",
+  "insert_typeImages": "Images",
+  "insert_typePdf": "Pages from another PDF",
+  "insert_blankCount": "Number of blank pages",
+  "insert_fewer": "One fewer",
+  "insert_more": "One more",
+  "insert_blankSizeNote": "Blank pages use the size of the neighbouring page.",
+  "insert_addImage": "Add image",
+  "insert_imagesEmpty": "No images yet. Each image becomes one page.",
+  "insert_needImage": "Choose a PNG or JPG image.",
+  "insert_imageFit": "Page size for images",
+  "insert_fitA4": "A4, fit image",
+  "insert_fitNeighbor": "Same as neighbouring page",
+  "insert_pdfNeedFile": "Choose the PDF that contains the pages to insert.",
+  "insert_pdfAll": "All pages",
+  "insert_pdfRange": "Page range",
+  "insert_resultPages": "{count, plural, =1{The new file will have 1 page} other{The new file will have {count} pages}}",
+  "@insert_resultPages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insert_action": "Insert pages"
+}

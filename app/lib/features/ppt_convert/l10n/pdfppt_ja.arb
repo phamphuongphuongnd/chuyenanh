@@ -1,0 +1,11 @@
+{
+  "@@locale": "ja",
+  "pdfppt_quality": "画像の品質",
+  "pdfppt_qualityStandard": "標準 (150 dpi)",
+  "pdfppt_qualityHigh": "高画質 (200 dpi)",
+  "pdfppt_slidesToCreate": "{count, plural, other{{count} 枚のスライドを作成します}}",
+  "pdfppt_sizeInfo": "スライドのサイズは 1 ページ目に合わせます。サイズの異なるページは白い背景の中央に収めます。",
+  "pdfppt_note": "各ページは画像のスライドになるため、PowerPoint で文字を編集することはできません。",
+  "pdfppt_convert": "PowerPoint に変換",
+  "pdfppt_converting": "ページを変換しています…"
+}

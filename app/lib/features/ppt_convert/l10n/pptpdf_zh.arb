@@ -1,0 +1,21 @@
+{
+  "@@locale": "zh",
+  "pptpdf_pickHint": "选择要转换为 PDF 的 PowerPoint 演示文稿（.pptx）",
+  "pptpdf_pickFile": "选择 PowerPoint 文件",
+  "pptpdf_legacyPpt": "不支持旧版 .ppt 格式。请另存为 .pptx 后重试。",
+  "pptpdf_notPptx": "仅支持 .pptx 文件",
+  "pptpdf_slideCount": "{count, plural, other{{count} 张幻灯片}}",
+  "@pptpdf_slideCount": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_quality": "质量",
+  "pptpdf_qualityStandard": "标准（150 dpi）",
+  "pptpdf_qualityHigh": "高（200 dpi）",
+  "pptpdf_skipHidden": "跳过隐藏的幻灯片",
+  "pptpdf_hiddenInfo": "{count, plural, other{此演示文稿有 {count} 张隐藏的幻灯片}}",
+  "@pptpdf_hiddenInfo": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_pagesToExport": "{count, plural, other{将生成 {count} 页 PDF}}",
+  "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
+  "pptpdf_noSlides": "没有可导出的幻灯片",
+  "pptpdf_note": "每张幻灯片都会成为一页图片，因此 PDF 中的文字无法选择或搜索。显示效果与应用内的 PowerPoint 查看器相同，可能与 PowerPoint 略有差异（字体、效果、图表）。",
+  "pptpdf_convert": "转换为 PDF",
+  "pptpdf_converting": "正在转换幻灯片…"
+}

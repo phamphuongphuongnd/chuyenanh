@@ -1,0 +1,98 @@
+{
+  "@@locale": "en",
+  "translate_title": "Translate",
+  "translate_source": "From",
+  "translate_target": "To",
+  "translate_auto": "Detect language",
+  "translate_autoDetected": "Detect · {language}",
+  "@translate_autoDetected": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
+  "translate_swap": "Swap languages",
+  "translate_start": "Translate",
+  "translate_stop": "Stop",
+  "translate_progress": "Translating {done}/{total}…",
+  "@translate_progress": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "translate_paragraphCount": "Paragraphs: {count}. Translation runs on this device.",
+  "@translate_paragraphCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "translate_sameLanguage": "Source and target languages are the same.",
+  "translate_empty": "No text to translate",
+  "translate_emptyHint": "This document has no text that can be translated.",
+  "translate_paragraphFailed": "Couldn't translate this paragraph.",
+  "translate_copyAll": "Copy all",
+  "translate_copied": "Copied",
+  "translate_downloadTitle": "Download translation pack",
+  "translate_downloadMessage": "You need the {languages} translation pack (~{size} MB each). This needs the internet once; after that, translation works offline.",
+  "@translate_downloadMessage": {
+    "placeholders": {
+      "languages": {"type": "String"},
+      "size": {"type": "int"}
+    }
+  },
+  "translate_download": "Download",
+  "translate_downloading": "Downloading translation pack…",
+  "translate_downloadFailedTitle": "Download failed",
+  "translate_downloadFailed": "Couldn't download the {language} translation pack. Check your internet connection and try again.",
+  "@translate_downloadFailed": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
+  "translate_checkFailed": "Couldn't check translation packs. Please try again.",
+  "translate_models": "Downloaded packs",
+  "translate_modelsHint": "Each pack is about {size} MB. Downloaded packs translate without internet.",
+  "@translate_modelsHint": {
+    "placeholders": {
+      "size": {"type": "int"}
+    }
+  },
+  "translate_modelDownloaded": "Downloaded · works offline",
+  "translate_modelNotDownloaded": "Not downloaded",
+  "translate_modelBuiltIn": "Built in",
+  "translate_deleteModelTitle": "Delete {language} pack?",
+  "@translate_deleteModelTitle": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
+  "translate_deleteModelMessage": "Translating {language} again will need to download it (~{size} MB).",
+  "@translate_deleteModelMessage": {
+    "placeholders": {
+      "language": {"type": "String"},
+      "size": {"type": "int"}
+    }
+  },
+  "translate_modelDeleted": "Pack deleted",
+  "translate_moreTitle": "Continue translating?",
+  "translate_moreMessage": "Translated {done} paragraphs. {remaining} more remain — continue?",
+  "@translate_moreMessage": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "remaining": {"type": "int"}
+    }
+  },
+  "translate_continue": "Continue",
+  "translate_continueButton": "Translate {count} more paragraphs",
+  "@translate_continueButton": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "translate_langVi": "Vietnamese",
+  "translate_langEn": "English",
+  "translate_langZh": "Chinese",
+  "translate_langJa": "Japanese",
+  "translate_langKo": "Korean",
+  "translate_langId": "Indonesian"
+}

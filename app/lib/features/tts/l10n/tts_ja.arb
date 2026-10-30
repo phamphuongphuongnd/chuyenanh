@@ -1,0 +1,21 @@
+{
+  "@@locale": "ja",
+  "tts_progress": "段落 {current} / {total}",
+  "tts_play": "読み上げ",
+  "tts_pause": "一時停止",
+  "tts_prev": "前の段落",
+  "tts_next": "次の段落",
+  "tts_stop": "停止",
+  "tts_speed": "読み上げ速度",
+  "tts_voice": "音声",
+  "tts_voiceDefault": "端末の既定",
+  "tts_voiceN": "音声 {n}",
+  "tts_checking": "音声を確認中…",
+  "tts_noVoice": "この端末には{language}の音声がありません",
+  "tts_howToInstall": "インストール方法",
+  "tts_installTitle": "読み上げ音声のインストール",
+  "tts_installAndroid": "設定 → システム（または一般管理）→ 言語と入力 → テキスト読み上げの出力 を開きます。Google の音声サービスを選び、設定アイコン → 音声データのインストール から必要な言語をダウンロードします。Samsung 端末では優先エンジンを Google の音声サービスに変更できます。ダウンロード後はオフラインで使えます。",
+  "tts_installIos": "設定 → アクセシビリティ → 読み上げコンテンツ → 声 を開き、言語を選んで音声をダウンロードします。ダウンロード後はオフラインで使えます。",
+  "tts_recheck": "再確認",
+  "tts_error": "この段落を読み上げられません"
+}
