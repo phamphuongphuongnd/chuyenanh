@@ -18,7 +18,7 @@
   "docs_emptyFavoritesHint": "ファイルの星をタップするとここに追加されます",
   "docs_emptySearch": "一致するファイルがありません",
   "docs_permissionTitle": "ファイルへのアクセスを許可",
-  "docs_permissionMessage": "PDF Office は端末内のドキュメントを探すため、すべてのファイルへのアクセスが必要です。",
+  "docs_permissionMessage": "Phiotron PDF は端末内のドキュメントを探すため、すべてのファイルへのアクセスが必要です。",
   "docs_grantPermission": "アクセスを許可",
   "docs_pickFileInstead": "代わりにファイルを選択",
   "docs_permissionBanner": "すべてのドキュメントを探すにはファイルへのアクセスを許可してください",
@@ -56,5 +56,7 @@
   "docs_lockedPdf": "パスワード付き PDF",
   "docs_navHome": "ホーム",
   "docs_navFiles": "ファイル",
-  "docs_viewAll": "すべて表示"
+  "docs_viewAll": "すべて表示",
+  "docs_shortcuts": "ショートカット",
+  "docs_countDocs": "{count} 件のドキュメント"
 }

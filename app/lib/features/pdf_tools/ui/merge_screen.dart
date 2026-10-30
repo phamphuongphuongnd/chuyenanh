@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
-import '../../../core/utils/file_format.dart';
-import '../../../core/widgets/widgets.dart';
+import '../../../core/theme/app_theme.dart';
 import '../logic/tool_rules.dart';
 import '../pdf_tools_providers.dart';
 import 'pdf_file_picker.dart';
@@ -112,32 +112,34 @@ class _MergeScreenState extends ConsumerState<MergeScreen> {
             : PickPdfPrompt(onPick: _pickMore),
       );
     }
-    final locale = Localizations.localeOf(context).toString();
+    final t = context.tokens;
     return ToolScaffold(
       title: title,
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l.tools_mergeHint),
-                const SizedBox(height: 8),
+                ToolHintText(l.tools_mergeHint),
+                const SizedBox(height: 10),
                 NoteBanner(l.tools_noteLosesFeatures),
                 if (_items.length < 2) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    l.tools_mergeNeedTwo,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
+                  const SizedBox(height: 10),
+                  ToolHintText(l.tools_mergeNeedTwo, color: t.primaryText),
                 ],
               ],
             ),
           ),
           Expanded(
             child: ReorderableListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               buildDefaultDragHandles: false,
+              // Thẻ đang kéo: không vẽ bóng chữ nhật mặc định (thẻ bo góc, không bóng).
+              proxyDecorator: (child, _, _) =>
+                  Material(type: MaterialType.transparency, child: child),
               itemCount: _items.length,
               onReorderItem: (from, to) => setState(() {
                 final item = _items.removeAt(from);
@@ -145,40 +147,37 @@ class _MergeScreenState extends ConsumerState<MergeScreen> {
               }),
               itemBuilder: (context, index) {
                 final item = _items[index];
-                final info = [
-                  l.tools_pages(item.pageCount),
-                  if (item.sizeBytes != null)
-                    formatFileSize(item.sizeBytes!, locale),
-                ].join(' • ');
-                return Card(
+                return Padding(
                   key: ObjectKey(item),
-                  child: ListTile(
-                    leading: FileTypeIcon.forPath(
-                      item.path,
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ToolCard(
+                    padding: EdgeInsets.zero,
+                    child: ToolFileRow(
+                      path: item.path,
+                      info: pdfInputInfo(context, item),
                       locked: item.password != null,
-                    ),
-                    title: Text(
-                      item.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(info),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          tooltip: l.tools_remove,
-                          icon: const Icon(Icons.close),
-                          onPressed: () => setState(() => _items.removeAt(index)),
-                        ),
-                        ReorderableDragStartListener(
-                          index: index,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(Icons.drag_handle),
+                      padding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: l.tools_remove,
+                            icon: Icon(Symbols.close_rounded, color: t.textMuted),
+                            onPressed: () =>
+                                setState(() => _items.removeAt(index)),
                           ),
-                        ),
-                      ],
+                          ReorderableDragStartListener(
+                            index: index,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Icon(
+                                Symbols.drag_indicator_rounded,
+                                color: t.textMuted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -190,17 +189,17 @@ class _MergeScreenState extends ConsumerState<MergeScreen> {
       bottom: Row(
         children: [
           Expanded(
-            child: OutlinedButton.icon(
+            child: SecondaryActionButton(
+              label: l.tools_addFiles,
+              icon: Symbols.add_rounded,
               onPressed: _busy ? null : _pickMore,
-              icon: const Icon(Icons.add),
-              label: Text(l.tools_addFiles.toUpperCase()),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: FilledButton(
+            child: PrimaryActionButton(
+              label: l.tools_mergeAction,
               onPressed: _busy || _items.length < 2 ? null : _merge,
-              child: Text(l.tools_mergeAction.toUpperCase()),
             ),
           ),
         ],

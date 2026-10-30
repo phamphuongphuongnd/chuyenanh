@@ -117,6 +117,10 @@ Menu ⋮: các chức năng bổ sung (in, chia sẻ, thông tin, ...).
 
 Liên quan: [[0004-pham-vi-bam-app-goc]], [[tinh-nang-t1-t10]], [[documents]].
 
+## Cập nhật 30/10: KHÔNG còn bám giao diện app mẫu
+Giao diện đã thiết kế lại riêng (Phiotron PDF, Claude Design) để tránh giống app TrustedOffice — xem [[giao-dien-phiotron]]. Trang này chỉ còn giá trị
+tham khảo phạm vi chức năng; nội dung bên dưới là lịch sử.
+
 ## Cập nhật 27/10: đã làm giao diện giống app mẫu
 Bottom nav 5 mục + 3 ô tính năng + Yêu thích/Gần đây đã làm xong (xem [[documents]]). **Cài đặt app mẫu** (chụp qua ADB): nhóm
 *Chung* (Ngôn ngữ, Màu chủ đề) và *Về ứng dụng* (Thêm tiện ích, Chia sẻ ứng dụng, Phản hồi, Chính sách bảo mật, Ứng dụng khác,

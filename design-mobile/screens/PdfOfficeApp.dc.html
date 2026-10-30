@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&amp;display=block"><style>*::-webkit-scrollbar{display:none}*{scrollbar-width:none}@keyframes pdfo-indet{0%{left:-40%}100%{left:100%}}</style></helmet>
+<div style="{{ bezelStyle }}">
+<div style="{{ screenStyle }}">
+<div style="{{ statusStyle }}">
+  <span>{{ clock }}</span>
+  <sc-if value="{{ isIOS }}"><span style="position:absolute;left:50%;top:11px;transform:translateX(-50%);width:122px;height:35px;border-radius:18px;background:#000"></span></sc-if>
+  <sc-if value="{{ isAndroid }}"><span style="position:absolute;left:50%;top:8px;transform:translateX(-50%);width:18px;height:18px;border-radius:9px;background:#000"></span></sc-if>
+  <span style="display:flex;align-items:center;gap:3px;font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1"><span>signal_cellular_alt</span><span>wifi</span><span>battery_full</span></span>
+</div>
+<div style="{{ themeVars }}">
+<div style="position:relative;width:100%;height:100%;overflow:hidden;background:var(--bg,#F5F3F1);color:var(--fg,#1C1918);font-family:'Be Vietnam Pro',system-ui,sans-serif;-webkit-font-smoothing:antialiased">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:var(--navh,88px);overflow-y:auto;scrollbar-width:none;padding:calc(var(--top,44px) + 16px) 16px 28px;display:grid;align-content:start;grid-template-columns:minmax(0,1fr);gap:18px;box-sizing:border-box">
+  <div style="display:flex;align-items:center;gap:10px;padding:0 4px">
+    <img src="assets/logo-3-color.svg" alt="" style="width:34px;height:34px;border-radius:10px;display:block">
+    <div style="font-size:24px;font-weight:800;letter-spacing:-0.02em">Phiotron PDF</div>
+  </div>
+  <button onClick="{{ goSearch }}" style="display:flex;align-items:center;gap:10px;height:50px;padding:0 18px;border-radius:25px;border:1px solid var(--ln,rgba(28,25,24,.08));background:var(--sf,#fff);color:var(--mu,#6F6865);font:500 15px 'Be Vietnam Pro',sans-serif;cursor:pointer;text-align:left">
+    <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">search</span>Tìm tài liệu
+  </button>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <button onClick="{{ openImg2Pdf }}" style="display:flex;align-items:center;gap:14px;border:0;border-radius:22px;padding:14px 14px 14px 16px;background:#E5393B;color:#fff;text-align:left;cursor:pointer;box-shadow:0 10px 24px rgba(229,57,59,.28)">
+      <span style="flex:none;display:flex;align-items:center;gap:6px">
+        <span style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">photo_library</span>
+        <span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;opacity:.8">arrow_forward</span>
+        <span style="width:30px;height:38px;border-radius:5px;background:#fff;color:#E5393B;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;box-sizing:border-box;font:800 8.5px/1 'Be Vietnam Pro',sans-serif;clip-path:polygon(0 0,68% 0,100% 28%,100% 100%,0 100%)">PDF</span>
+      </span>
+      <span style="flex:1;min-width:0;font:700 18px/1.25 'Be Vietnam Pro',sans-serif">Ảnh sang PDF</span>
+      <span style="flex:none;width:40px;height:40px;border-radius:20px;background:#fff;color:#E5393B;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">add</span>
+    </button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button onClick="{{ openScan }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;border:1px solid var(--ln,rgba(28,25,24,.08));border-radius:20px;padding:14px;background:var(--sf,#fff);color:var(--fg,#1C1918);text-align:left;cursor:pointer">
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--bt,#E3F0FD);color:#1E88E5;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">document_scanner</span>
+        <span style="font:700 14.5px/1.25 'Be Vietnam Pro',sans-serif">Quét tài liệu</span>
+      </button>
+      <button onClick="{{ openPdf2Img }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;border:1px solid var(--ln,rgba(28,25,24,.08));border-radius:20px;padding:14px;background:var(--sf,#fff);color:var(--fg,#1C1918);text-align:left;cursor:pointer">
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--ot,#FEEDE4);color:#F4511E;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">imagesmode</span>
+        <span style="font:700 14.5px/1.25 'Be Vietnam Pro',sans-serif">PDF sang ảnh</span>
+      </button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+      <div style="font-size:17px;font-weight:700">Yêu thích</div>
+      <button onClick="{{ seeAllFav }}" style="border:0;background:none;color:var(--rf,#C62828);font:600 13.5px 'Be Vietnam Pro',sans-serif;cursor:pointer;padding:10px 0">Xem tất cả ›</button>
+    </div>
+    <sc-if value="{{ hasFav }}" hint-placeholder-val="{{ true }}">
+    <div style="background:var(--sf,#fff);border-radius:20px;padding:4px 0;display:flex;flex-direction:column;overflow:hidden">
+      <sc-for list="{{ favRows }}" as="d" hint-placeholder-count="3">
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 2px 8px 14px;border-top:1px solid var(--ln,rgba(28,25,24,.08));margin-top:-1px">
+        <div onClick="{{ d.onOpen }}" style="flex:none;position:relative;width:32px;height:40px;cursor:pointer">
+          <div style="{{ d.pageStyle }}"></div>
+          <div style="position:absolute;top:0;right:0;width:10px;height:11px;background:rgba(255,255,255,.5);clip-path:polygon(0 0,100% 100%,0 100%)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:5px;text-align:center;color:#fff;font:800 8.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.03em">{{ d.label }}</div>
+          <sc-if value="{{ d.locked }}"><div style="position:absolute;right:-5px;bottom:-4px;width:17px;height:17px;border-radius:9px;background:var(--sf,#fff);display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:12px;line-height:1;color:var(--fg,#1C1918);font-variation-settings:'FILL' 1">lock</div></sc-if>
+        </div>
+        <div onClick="{{ d.onOpen }}" style="flex:1;min-width:0;cursor:pointer">
+          <div style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.name }}</div>
+          <div style="font-size:12.5px;color:var(--mu,#6F6865);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.subtitle }}</div>
+        </div>
+        <button onClick="{{ d.onStar }}" style="{{ d.starStyle }}">star</button>
+        <button onClick="{{ d.onMore }}" style="flex:none;width:36px;height:44px;border:0;background:none;color:var(--mu,#6F6865);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;padding:0">more_vert</button>
+      </div>
+      </sc-for>
+    </div>
+    </sc-if>
+    <sc-if value="{{ noFav }}">
+    <div style="background:var(--sf,#fff);border-radius:20px;padding:22px 16px;display:flex;align-items:center;gap:14px">
+      <div style="flex:none;position:relative;width:56px;height:56px;border-radius:28px;background:var(--sf2,#EEEBE8)">
+        <div style="position:absolute;left:17px;top:11px;width:22px;height:28px;border-radius:4px;background:var(--sf,#fff);border:1.5px solid var(--ln2,rgba(28,25,24,.18))"></div>
+        <div style="position:absolute;right:6px;bottom:6px;width:22px;height:22px;border-radius:11px;background:#F9A825;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:14px;line-height:1;font-variation-settings:'FILL' 1">star</div>
+      </div>
+      <div style="font-size:14px;font-weight:500;color:var(--mu,#6F6865)">Chưa có file yêu thích</div>
+    </div>
+    </sc-if>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+      <div style="font-size:17px;font-weight:700">Gần đây</div>
+      <button onClick="{{ seeAllRecent }}" style="border:0;background:none;color:var(--rf,#C62828);font:600 13.5px 'Be Vietnam Pro',sans-serif;cursor:pointer;padding:10px 0">Xem tất cả ›</button>
+    </div>
+    <sc-if value="{{ hasRecent }}" hint-placeholder-val="{{ true }}">
+    <div style="background:var(--sf,#fff);border-radius:20px;padding:4px 0;display:flex;flex-direction:column;overflow:hidden">
+      <sc-for list="{{ recentRows }}" as="d" hint-placeholder-count="4">
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 2px 8px 14px;border-top:1px solid var(--ln,rgba(28,25,24,.08));margin-top:-1px">
+        <div onClick="{{ d.onOpen }}" style="flex:none;position:relative;width:32px;height:40px;cursor:pointer">
+          <div style="{{ d.pageStyle }}"></div>
+          <div style="position:absolute;top:0;right:0;width:10px;height:11px;background:rgba(255,255,255,.5);clip-path:polygon(0 0,100% 100%,0 100%)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:5px;text-align:center;color:#fff;font:800 8.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.03em">{{ d.label }}</div>
+          <sc-if value="{{ d.locked }}"><div style="position:absolute;right:-5px;bottom:-4px;width:17px;height:17px;border-radius:9px;background:var(--sf,#fff);display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:12px;line-height:1;color:var(--fg,#1C1918);font-variation-settings:'FILL' 1">lock</div></sc-if>
+        </div>
+        <div onClick="{{ d.onOpen }}" style="flex:1;min-width:0;cursor:pointer">
+          <div style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.name }}</div>
+          <div style="font-size:12.5px;color:var(--mu,#6F6865);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.subtitle }}</div>
+        </div>
+        <button onClick="{{ d.onStar }}" style="{{ d.starStyle }}">star</button>
+        <button onClick="{{ d.onMore }}" style="flex:none;width:36px;height:44px;border:0;background:none;color:var(--mu,#6F6865);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;padding:0">more_vert</button>
+      </div>
+      </sc-for>
+    </div>
+    </sc-if>
+    <sc-if value="{{ noRecent }}">
+    <div style="background:var(--sf,#fff);border-radius:20px;padding:22px 16px;display:flex;align-items:center;gap:14px">
+      <div style="flex:none;position:relative;width:56px;height:56px;border-radius:28px;background:var(--sf2,#EEEBE8)">
+        <div style="position:absolute;left:17px;top:11px;width:22px;height:28px;border-radius:4px;background:var(--sf,#fff);border:1.5px solid var(--ln2,rgba(28,25,24,.18))"></div>
+        <div style="position:absolute;right:6px;bottom:6px;width:22px;height:22px;border-radius:11px;background:var(--mu,#6F6865);color:var(--sf,#fff);display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:14px;line-height:1">schedule</div>
+      </div>
+      <div style="font-size:14px;font-weight:500;color:var(--mu,#6F6865)">Chưa mở file nào gần đây</div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isFiles }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:var(--navh,88px);display:flex;flex-direction:column">
+  <div style="{{ filesHeaderStyle }}">
+    <div style="display:flex;align-items:center;gap:2px;padding:0 6px">
+      <button onClick="{{ openDrawer }}" style="width:44px;height:44px;border:0;background:none;color:#fff;cursor:pointer;font-family:'Material Symbols Rounded';font-size:24px;line-height:1">menu</button>
+      <div style="flex:1;min-width:0;font-size:21px;font-weight:700;letter-spacing:-0.01em;padding-left:2px">Tập tin</div>
+      <button onClick="{{ seeAllFav }}" style="width:40px;height:44px;border:0;background:none;color:#fff;cursor:pointer;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">star</button>
+      <button onClick="{{ seeAllRecent }}" style="width:40px;height:44px;border:0;background:none;color:#fff;cursor:pointer;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">history</button>
+      <button onClick="{{ goSearch }}" style="width:40px;height:44px;border:0;background:none;color:#fff;cursor:pointer;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">search</button>
+      <button onClick="{{ toggleSort }}" style="width:40px;height:44px;border:0;background:none;color:#fff;cursor:pointer;font-family:'Material Symbols Rounded';font-size:23px;line-height:1">swap_vert</button>
+    </div>
+    <div style="display:flex;gap:6px;overflow-x:auto;padding:8px 16px 14px;scrollbar-width:none">
+      <sc-for list="{{ fileTabs }}" as="t" hint-placeholder-count="6">
+        <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <sc-if value="{{ showThinBar }}"><div style="padding:0 0 0 0">{{ thinBar }}</div></sc-if>
+  <div style="flex:1;overflow-y:auto;scrollbar-width:none;padding:14px 16px 24px;display:grid;align-content:start;grid-template-columns:minmax(0,1fr);gap:14px">
+    <sc-if value="{{ showBanner }}">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:16px;background:var(--rs,#FDECEC)">
+      <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--rf,#C62828);font-variation-settings:'FILL' 1">lock</span>
+      <div style="flex:1;font-size:13px;line-height:1.35;font-weight:500">Cấp quyền truy cập file để tìm tất cả tài liệu</div>
+      <button onClick="{{ grant }}" style="flex:none;height:36px;padding:0 14px;border:0;border-radius:18px;background:#E5393B;color:#fff;font:600 13px 'Be Vietnam Pro',sans-serif;cursor:pointer">Cấp quyền</button>
+    </div>
+    </sc-if>
+    <sc-if value="{{ showTypeGrid }}">
+    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;background:var(--sf,#fff);border-radius:20px;padding:12px 6px">
+      <sc-for list="{{ typeTiles }}" as="x" hint-placeholder-count="6">
+      <button onClick="{{ x.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:7px;border:0;background:none;cursor:pointer;padding:4px 0;color:var(--fg,#1C1918)">
+        <div style="position:relative;width:32px;height:40px">
+          <div style="{{ x.pageStyle }}"></div>
+          <div style="position:absolute;top:0;right:0;width:10px;height:11px;background:rgba(255,255,255,.5);clip-path:polygon(0 0,100% 100%,0 100%)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:5px;text-align:center;color:#fff;font:800 8.5px/1 'Be Vietnam Pro',sans-serif">{{ x.label }}</div>
+        </div>
+        <span style="font:600 12px 'Be Vietnam Pro',sans-serif">{{ x.name }}</span>
+      </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showScanning }}">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;flex-direction:column;gap:8px;padding:4px 4px 0">
+        {{ thickBar }}
+        <div style="font-size:13px;color:var(--mu,#6F6865);font-weight:500">Đang quét… đã tìm thấy 0 file</div>
+      </div>
+      <div style="background:var(--sf,#fff);border-radius:20px;padding:6px 0">
+        <sc-for list="{{ skeleton }}" as="s" hint-placeholder-count="8">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px">
+          <div style="width:32px;height:40px;border-radius:6px;background:var(--sf2,#EEEBE8)"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+            <div style="{{ s.w1 }}"></div>
+            <div style="{{ s.w2 }}"></div>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showNoPerm }}">
+    <div style="min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px 16px 40px">
+      <div style="position:relative;width:120px;height:120px;border-radius:60px;background:var(--sf2,#EEEBE8);margin-bottom:10px">
+        <div style="position:absolute;left:28px;top:40px;width:64px;height:46px;border-radius:8px;background:var(--rs,#FDECEC);border:2px solid #E5393B;box-sizing:border-box"></div>
+        <div style="position:absolute;left:28px;top:32px;width:28px;height:12px;border-radius:6px 6px 0 0;background:#E5393B"></div>
+        <div style="position:absolute;left:58px;top:24px;width:4px;height:74px;border-radius:2px;background:var(--fg,#1C1918);transform:rotate(-45deg)"></div>
+      </div>
+      <div style="font-size:19px;font-weight:700">Cho phép truy cập file</div>
+      <div style="font-size:14px;line-height:1.5;color:var(--mu,#6F6865);max-width:290px;text-wrap:pretty">Phiotron PDF cần quyền truy cập tất cả file để tìm tài liệu trên thiết bị.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;margin-top:12px">
+        <button onClick="{{ grant }}" style="height:50px;border:0;border-radius:25px;background:#E5393B;color:#fff;font:600 15px 'Be Vietnam Pro',sans-serif;cursor:pointer">Cấp quyền</button>
+        <button onClick="{{ pickManual }}" style="height:50px;border:1.5px solid var(--ln2,rgba(28,25,24,.18));border-radius:25px;background:none;color:var(--fg,#1C1918);font:600 15px 'Be Vietnam Pro',sans-serif;cursor:pointer">Chọn file thủ công</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showError }}">
+    <div style="min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px 16px 40px">
+      <div style="position:relative;width:120px;height:120px;border-radius:60px;background:var(--sf2,#EEEBE8);margin-bottom:10px">
+        <div style="position:absolute;left:38px;top:26px;width:44px;height:58px;border-radius:7px;background:var(--sf,#fff);border:2px solid var(--ln2,rgba(28,25,24,.18));box-sizing:border-box"></div>
+        <div style="position:absolute;left:46px;top:40px;width:22px;height:4px;border-radius:2px;background:var(--ln2,rgba(28,25,24,.18))"></div>
+        <div style="position:absolute;left:46px;top:50px;width:28px;height:4px;border-radius:2px;background:var(--ln2,rgba(28,25,24,.18))"></div>
+        <div style="position:absolute;right:22px;bottom:20px;width:34px;height:34px;border-radius:17px;background:#E5393B;color:#fff;display:flex;align-items:center;justify-content:center;font:800 20px/1 'Be Vietnam Pro',sans-serif">!</div>
+      </div>
+      <div style="font-size:19px;font-weight:700">Đã xảy ra lỗi</div>
+      <button onClick="{{ retry }}" style="margin-top:12px;height:50px;padding:0 32px;border:0;border-radius:25px;background:#E5393B;color:#fff;font:600 15px 'Be Vietnam Pro',sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">refresh</span>Thử lại</button>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showList }}">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+        <div style="font-size:13px;font-weight:600;color:var(--mu,#6F6865)">{{ countLabel }}</div>
+        <button onClick="{{ toggleSort }}" style="display:flex;align-items:center;gap:4px;border:0;background:none;color:var(--fg,#1C1918);font:600 13px 'Be Vietnam Pro',sans-serif;cursor:pointer;padding:6px 0">{{ sortLabel }}<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></button>
+      </div>
+      <div style="background:var(--sf,#fff);border-radius:20px;padding:4px 0;display:flex;flex-direction:column;overflow:hidden">
+        <sc-for list="{{ fileRows }}" as="d" hint-placeholder-count="6">
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 2px 8px 14px;border-top:1px solid var(--ln,rgba(28,25,24,.08));margin-top:-1px">
+          <div onClick="{{ d.onOpen }}" style="flex:none;position:relative;width:32px;height:40px;cursor:pointer">
+            <div style="{{ d.pageStyle }}"></div>
+            <div style="position:absolute;top:0;right:0;width:10px;height:11px;background:rgba(255,255,255,.5);clip-path:polygon(0 0,100% 100%,0 100%)"></div>
+            <div style="position:absolute;left:0;right:0;bottom:5px;text-align:center;color:#fff;font:800 8.5px/1 'Be Vietnam Pro',sans-serif;letter-spacing:.03em">{{ d.label }}</div>
+            <sc-if value="{{ d.locked }}"><div style="position:absolute;right:-5px;bottom:-4px;width:17px;height:17px;border-radius:9px;background:var(--sf,#fff);display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:12px;line-height:1;color:var(--fg,#1C1918);font-variation-settings:'FILL' 1">lock</div></sc-if>
+          </div>
+          <div onClick="{{ d.onOpen }}" style="flex:1;min-width:0;cursor:pointer">
+            <div style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.name }}</div>
+            <div style="font-size:12.5px;color:var(--mu,#6F6865);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.subtitle }}</div>
+          </div>
+          <button onClick="{{ d.onStar }}" style="{{ d.starStyle }}">star</button>
+          <button onClick="{{ d.onMore }}" style="flex:none;width:36px;height:44px;border:0;background:none;color:var(--mu,#6F6865);cursor:pointer;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;padding:0">more_vert</button>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showEmpty }}">
+    <div style="min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:30px 16px 40px">
+      <div style="position:relative;width:120px;height:120px;border-radius:60px;background:var(--sf2,#EEEBE8);margin-bottom:10px">
+        <div style="position:absolute;left:30px;top:30px;width:40px;height:52px;border-radius:7px;background:var(--sf,#fff);border:2px dashed var(--ln2,rgba(28,25,24,.18));box-sizing:border-box;transform:rotate(-10deg)"></div>
+        <div style="position:absolute;left:52px;top:34px;width:40px;height:50px">
+          <div style="{{ emptyPageStyle }}"></div>
+          <div style="position:absolute;top:0;right:0;width:13px;height:14px;background:rgba(255,255,255,.5);clip-path:polygon(0 0,100% 100%,0 100%)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:7px;text-align:center;color:#fff;font:800 10px/1 'Be Vietnam Pro',sans-serif">{{ emptyLabel }}</div>
+        </div>
+      </div>
+      <div style="font-size:17px;font-weight:700">Không tìm thấy tài liệu</div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTools }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:var(--navh,88px);overflow-y:auto;scrollbar-width:none;padding:calc(var(--top,44px) + 16px) 16px 28px;display:grid;align-content:start;grid-template-columns:minmax(0,1fr);gap:22px;box-sizing:border-box">
+  <div style="font-size:30px;font-weight:800;letter-spacing:-0.02em;padding:0 4px">Công cụ</div>
+  <sc-for list="{{ toolGroups }}" as="g" hint-placeholder-count="4">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px;padding:0 4px">
+      <div style="font-size:14px;font-weight:700;color:var(--rf,#C62828)">{{ g.title }}</div>
+      <div style="flex:1;height:1px;background:var(--ln,rgba(28,25,24,.08))"></div>
+      <div style="font-size:12px;font-weight:600;color:var(--mu,#6F6865)">{{ g.count }}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 2px;background:var(--sf,#fff);border-radius:22px;padding:12px 6px">
+      <sc-for list="{{ g.tools }}" as="t" hint-placeholder-count="4">
+      <button onClick="{{ t.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:none;cursor:pointer;padding:6px 2px;color:var(--fg,#1C1918);border-radius:14px">
+        <span style="{{ t.iconStyle }}">{{ t.icon }}</span>
+        <span style="font:500 12px/1.3 'Be Vietnam Pro',sans-serif;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:31px;text-wrap:balance">{{ t.label }}</span>
+      </button>
+      </sc-for>
+    </div>
+  </div>
+  </sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:var(--navh,88px);overflow-y:auto;scrollbar-width:none;padding:calc(var(--top,44px) + 16px) 16px 28px;display:grid;align-content:start;grid-template-columns:minmax(0,1fr);gap:22px;box-sizing:border-box">
+  <div style="font-size:30px;font-weight:800;letter-spacing:-0.02em;padding:0 4px">Cài đặt</div>
+  <sc-for list="{{ settingGroups }}" as="g" hint-placeholder-count="2">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:13px;font-weight:700;color:var(--mu,#6F6865);padding:0 6px">{{ g.title }}</div>
+    <div style="background:var(--sf,#fff);border-radius:22px;padding:4px 0;overflow:hidden">
+      <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+      <button onClick="{{ r.onClick }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:11px 12px 11px 14px;border:0;border-top:1px solid var(--ln,rgba(28,25,24,.08));margin-top:-1px;background:none;color:var(--fg,#1C1918);text-align:left;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif">
+        <span style="flex:none;width:38px;height:38px;border-radius:12px;background:var(--rs,#FDECEC);color:var(--rf,#C62828);display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:21px;line-height:1">{{ r.icon }}</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:15px;font-weight:600">{{ r.title }}</span>
+          <sc-if value="{{ r.sub }}"><span style="font-size:13px;color:var(--mu,#6F6865);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.sub }}</span></sc-if>
+        </span>
+        <span style="flex:none;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--mu,#6F6865)">chevron_right</span>
+      </button>
+      </sc-for>
+    </div>
+  </div>
+  </sc-for>
+</div>
+</sc-if>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:var(--navh,88px);padding:0 6px var(--navpb,26px);box-sizing:border-box;background:var(--sf,#fff);border-top:1px solid var(--ln,rgba(28,25,24,.08));display:flex;align-items:stretch;z-index:5">
+  <button onClick="{{ goHome }}" style="{{ nav.home }}"><span style="{{ navIcon.home }}">home</span>Trang chủ</button>
+  <button onClick="{{ goFiles }}" style="{{ nav.files }}"><span style="{{ navIcon.files }}">folder</span>Tập tin</button>
+  <div style="flex:1;display:flex;justify-content:center">
+    <button onClick="{{ openImg2Pdf }}" aria-label="Ảnh sang PDF" style="width:58px;height:58px;margin-top:-20px;border-radius:29px;border:4px solid var(--bg,#F5F3F1);background:#E5393B;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(229,57,59,.35);font-family:'Material Symbols Rounded';font-size:28px;line-height:1">swap_horiz</button>
+  </div>
+  <button onClick="{{ goTools }}" style="{{ nav.tools }}"><span style="{{ navIcon.tools }}">widgets</span>Công cụ</button>
+  <button onClick="{{ goSettings }}" style="{{ nav.settings }}"><span style="{{ navIcon.settings }}">settings</span>Cài đặt</button>
+</div>
+
+<sc-if value="{{ sortOpen }}">
+<div onClick="{{ closeSort }}" style="position:absolute;inset:0;z-index:20"></div>
+<div style="position:absolute;top:calc(var(--top,44px) + 60px);right:12px;z-index:21;width:230px;background:var(--sf,#fff);border-radius:18px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.22);border:1px solid var(--ln,rgba(28,25,24,.08))">
+  <div style="font-size:12px;font-weight:700;color:var(--mu,#6F6865);padding:8px 12px 6px">Sắp xếp</div>
+  <sc-for list="{{ sortItems }}" as="o" hint-placeholder-count="6">
+  <button onClick="{{ o.onClick }}" style="width:100%;display:flex;align-items:center;gap:10px;height:44px;padding:0 12px;border:0;border-radius:12px;background:none;color:var(--fg,#1C1918);font:500 14.5px 'Be Vietnam Pro',sans-serif;cursor:pointer;text-align:left">
+    <span style="flex:1">{{ o.label }}</span>
+    <sc-if value="{{ o.checked }}"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#E5393B">check</span></sc-if>
+  </button>
+  </sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ drawerOpen }}">
+<div onClick="{{ closeDrawer }}" style="position:absolute;inset:0;z-index:30;background:var(--sc,rgba(20,16,15,.38))"></div>
+<div style="position:absolute;top:0;bottom:0;left:0;width:300px;z-index:31;background:var(--sf,#fff);border-radius:0 28px 28px 0;padding:calc(var(--top,44px) + 18px) 12px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px">
+  <div style="display:flex;align-items:center;gap:12px;padding:0 10px 18px">
+    <img src="assets/logo-3-color.svg" alt="" style="width:40px;height:40px;border-radius:12px">
+    <div style="font-size:19px;font-weight:800">Phiotron PDF</div>
+  </div>
+  <sc-for list="{{ drawerItems }}" as="o" hint-placeholder-count="6">
+  <button onClick="{{ o.onClick }}" style="display:flex;align-items:center;gap:14px;height:50px;padding:0 14px;border:0;border-radius:25px;background:none;color:var(--fg,#1C1918);font:500 15px 'Be Vietnam Pro',sans-serif;cursor:pointer;text-align:left">
+    <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--mu,#6F6865)">{{ o.icon }}</span>{{ o.label }}
+  </button>
+  </sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetOpen }}">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;z-index:40;background:var(--sc,rgba(20,16,15,.38))"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;z-index:41;background:var(--sf,#fff);border-radius:28px 28px 0 0;padding:10px 12px calc(var(--navpb,26px) + 10px);display:flex;flex-direction:column;gap:2px">
+  <div style="width:38px;height:5px;border-radius:3px;background:var(--ln2,rgba(28,25,24,.18));align-self:center;margin-bottom:10px"></div>
+  <sc-if value="{{ isDocSheet }}">
+    <div style="display:flex;align-items:center;gap:12px;padding:4px 12px 14px;border-bottom:1px solid var(--ln,rgba(28,25,24,.08));margin-bottom:6px">
+      <div style="flex:none;position:relative;width:32px;height:40px">
+        <div style="{{ sheetDoc.pageStyle }}"></div>
+        <div style="position:absolute;top:0;right:0;width:10px;height:11px;background:rgba(255,255,255,.5);clip-path:polygon(0 0,100% 100%,0 100%)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:5px;text-align:center;color:#fff;font:800 8.5px/1 'Be Vietnam Pro',sans-serif">{{ sheetDoc.label }}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sheetDoc.name }}</div>
+        <div style="font-size:12.5px;color:var(--mu,#6F6865);margin-top:2px">{{ sheetDoc.subtitle }}</div>
+      </div>
+    </div>
+    <sc-for list="{{ docActions }}" as="a" hint-placeholder-count="6">
+    <button onClick="{{ a.onClick }}" style="{{ a.style }}"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ a.icon }}</span>{{ a.label }}</button>
+    </sc-for>
+  </sc-if>
+  <sc-if value="{{ isChoiceSheet }}">
+    <div style="font-size:18px;font-weight:700;padding:2px 14px 10px">{{ choiceTitle }}</div>
+    <sc-for list="{{ choiceItems }}" as="o" hint-placeholder-count="3">
+    <button onClick="{{ o.onClick }}" style="display:flex;align-items:center;gap:12px;height:52px;padding:0 14px;border:0;border-radius:16px;background:none;color:var(--fg,#1C1918);font:500 15.5px 'Be Vietnam Pro',sans-serif;cursor:pointer;text-align:left">
+      <span style="flex:1">{{ o.label }}</span>
+      <sc-if value="{{ o.checked }}"><span style="width:26px;height:26px;border-radius:13px;background:#E5393B;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:18px;line-height:1">check</span></sc-if>
+    </button>
+    </sc-for>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ dialogOpen }}">
+<div style="position:absolute;inset:0;z-index:50;background:var(--sc,rgba(20,16,15,.38));display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;background:var(--sf,#fff);border-radius:26px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
+    <sc-if value="{{ isRename }}">
+      <div style="font-size:19px;font-weight:700">Đổi tên</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <input value="{{ renameValue }}" onChange="{{ onRenameInput }}" style="{{ renameInputStyle }}">
+        <sc-if value="{{ renameError }}"><div style="font-size:12.5px;color:var(--rf,#C62828);font-weight:500;padding-left:4px">{{ renameError }}</div></sc-if>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onClick="{{ closeDialog }}" style="height:46px;border:1.5px solid var(--ln2,rgba(28,25,24,.18));border-radius:23px;background:none;color:var(--fg,#1C1918);font:600 14.5px 'Be Vietnam Pro',sans-serif;cursor:pointer">Huỷ</button>
+        <button onClick="{{ confirmRename }}" style="height:46px;border:0;border-radius:23px;background:#E5393B;color:#fff;font:600 14.5px 'Be Vietnam Pro',sans-serif;cursor:pointer">OK</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isInfo }}">
+      <div style="font-size:19px;font-weight:700">Thông tin</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ infoRows }}" as="i" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="font-size:12px;font-weight:600;color:var(--mu,#6F6865)">{{ i.k }}</div>
+          <div style="font-size:14.5px;font-weight:500;word-break:break-all">{{ i.v }}</div>
+        </div>
+        </sc-for>
+      </div>
+      <button onClick="{{ closeDialog }}" style="height:46px;border:0;border-radius:23px;background:#E5393B;color:#fff;font:600 14.5px 'Be Vietnam Pro',sans-serif;cursor:pointer">OK</button>
+    </sc-if>
+    <sc-if value="{{ isDelete }}">
+      <div style="font-size:19px;font-weight:700">Xoá file?</div>
+      <div style="font-size:14.5px;line-height:1.5;color:var(--mu,#6F6865);word-break:break-word">{{ deleteMsg }}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onClick="{{ closeDialog }}" style="height:46px;border:1.5px solid var(--ln2,rgba(28,25,24,.18));border-radius:23px;background:none;color:var(--fg,#1C1918);font:600 14.5px 'Be Vietnam Pro',sans-serif;cursor:pointer">Huỷ</button>
+        <button onClick="{{ confirmDelete }}" style="height:46px;border:0;border-radius:23px;background:#E5393B;color:#fff;font:600 14.5px 'Be Vietnam Pro',sans-serif;cursor:pointer">Xoá</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ snack }}">
+<div style="position:absolute;left:12px;right:12px;bottom:calc(var(--navh,88px) + 12px);z-index:60;background:var(--snb,#2B2726);color:var(--snf,#fff);border-radius:16px;padding:13px 16px;font-size:14px;font-weight:500;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.25)">{{ snack }}</div>
+</sc-if>
+
+</div>
+</div>
+<div style="{{ homeBarStyle }}"></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:410,&quot;height&quot;:864},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;device&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ios&quot;,&quot;android&quot;],&quot;default&quot;:&quot;ios&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:390,&quot;tsType&quot;:&quot;number&quot;},&quot;height&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:844,&quot;tsType&quot;:&quot;number&quot;},&quot;initialTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;files&quot;,&quot;tools&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;filesState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;list&quot;,&quot;scanning&quot;,&quot;scanningWithFiles&quot;,&quot;noPermission&quot;,&quot;permissionBanner&quot;,&quot;empty&quot;,&quot;error&quot;],&quot;default&quot;:&quot;list&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;homeEmpty&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showSaveFolder&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const TYPES = {
+  pdf: { label: 'PDF', name: 'PDF', c: '#E53935', h: '#D32F2F' },
+  doc: { label: 'DOC', name: 'DOC', c: '#1E88E5', h: '#1565C0' },
+  xls: { label: 'XLS', name: 'XLS', c: '#43A047', h: '#2E7D32' },
+  ppt: { label: 'PPT', name: 'PPT', c: '#F4511E', h: '#D84315' },
+  txt: { label: 'TXT', name: 'TXT', c: '#78909C', h: '#546E7A' },
+  other: { label: 'FILE', name: 'Khác', c: '#9E9E9E', h: '#757575' },
+};
+const DOCS = [
+  { id: 1, name: 'Hop-dong-thue-nha.pdf', type: 'pdf', size: '2,4 MB', bytes: 2400, time: '09:12', ts: 10, folder: 'Download', fav: true, locked: true, date: '30/10/2026 09:12' },
+  { id: 2, name: 'Bao-cao-quy-3.xlsx', type: 'xls', size: '856 KB', bytes: 856, time: 'Hôm qua', ts: 9, folder: 'Documents', fav: true, date: '29/10/2026 17:40' },
+  { id: 3, name: 'De-xuat-du-an.docx', type: 'doc', size: '1,1 MB', bytes: 1100, time: '28/10', ts: 8, folder: 'Documents', fav: true, date: '28/10/2026 14:05' },
+  { id: 4, name: 'Slide-ra-mat-san-pham.pptx', type: 'ppt', size: '12,8 MB', bytes: 12800, time: '27/10', ts: 7, folder: 'Download', date: '27/10/2026 10:21' },
+  { id: 5, name: 'Ghi-chu-hop-nhom.txt', type: 'txt', size: '4 KB', bytes: 4, time: '26/10', ts: 6, folder: 'Notes', date: '26/10/2026 08:47' },
+  { id: 6, name: 'Scan-giay-to-tuy-than.pdf', type: 'pdf', size: '640 KB', bytes: 640, time: '25/10', ts: 5, folder: 'Phiotron PDF', fav: true, date: '25/10/2026 19:30' },
+  { id: 7, name: 'Hoa-don-dien-thang-10.pdf', type: 'pdf', size: '310 KB', bytes: 310, time: '24/10', ts: 4, folder: 'Download', date: '24/10/2026 12:02' },
+  { id: 8, name: 'Ke-hoach-hoc-tap-hoc-ky-1-nam-hoc-2026-2027.docx', type: 'doc', size: '92 KB', bytes: 92, time: '20/10', ts: 3, folder: 'Documents', date: '20/10/2026 21:15' },
+  { id: 9, name: 'Danh-sach-khach-moi.xlsx', type: 'xls', size: '48 KB', bytes: 48, time: '18/10', ts: 2, folder: 'Download', date: '18/10/2026 16:33' },
+  { id: 10, name: 'Huong-dan-su-dung-may-giat.pdf', type: 'pdf', size: '5,6 MB', bytes: 5600, time: '12/10', ts: 1, folder: 'Download', date: '12/10/2026 09:58' },
+  { id: 11, name: 'Danh-sach-viec-can-lam.txt', type: 'txt', size: '2 KB', bytes: 2, time: '10/10', ts: 0, folder: 'Notes', date: '10/10/2026 07:20' },
+];
+const RECENT = [1, 2, 4, 5, 6];
+const SORTS = [
+  ['az', 'Tên A–Z'], ['za', 'Tên Z–A'], ['new', 'Mới nhất trước'], ['old', 'Cũ nhất trước'], ['big', 'Lớn nhất trước'], ['small', 'Nhỏ nhất trước'],
+];
+const LANGS = ['Theo máy', 'Tiếng Việt', 'English', '中文', '日本語', '한국어', 'Bahasa Indonesia'];
+const THEMES = ['Theo máy', 'Sáng', 'Tối'];
+const PAPERS = ['A4', 'Letter', 'Vừa khít ảnh'];
+const VARS = {
+  light: { '--bg': '#F5F3F1', '--sf': '#FFFFFF', '--sf2': '#EEEBE8', '--fg': '#1C1918', '--mu': '#6B6461', '--ln': 'rgba(28,25,24,0.08)', '--ln2': 'rgba(28,25,24,0.18)', '--rs': '#FDECEC', '--rf': '#C62828', '--snb': '#2B2726', '--snf': '#FFFFFF', '--sc': 'rgba(20,16,15,0.38)', '--in': '#FFF8E1', '--bt': '#E3F0FD', '--ot': '#FEEDE4' },
+  dark: { '--bg': '#121111', '--sf': '#1E1C1B', '--sf2': '#2A2726', '--fg': '#F4F0EE', '--mu': '#A8A09C', '--ln': 'rgba(255,255,255,0.08)', '--ln2': 'rgba(255,255,255,0.2)', '--rs': '#3A1E1E', '--rf': '#FF7B76', '--snb': '#F4F0EE', '--snf': '#1C1918', '--sc': 'rgba(0,0,0,0.6)', '--in': '#2C2A22', '--bt': '#14283D', '--ot': '#3A2117' },
+};
+const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const ICON = { fontFamily: "'Material Symbols Rounded'", lineHeight: 1 };
+
+class Component extends DCLogic {
+  state = {
+    tab: this.props.initialTab || 'home', docs: DOCS.map(d => ({ ...d })), fileTab: 'all', sort: 'new',
+    sortOpen: false, drawerOpen: false, sheet: null, sheetDocId: null, dialog: null,
+    renameValue: '', renameError: '', snack: '', themePick: 'Theo máy', lang: 'Tiếng Việt', paper: 'A4', permGranted: false,
+  };
+  toast(t) { clearTimeout(this._t); this.setState({ snack: t }); this._t = setTimeout(() => this.setState({ snack: '' }), 2600); }
+  componentWillUnmount() { clearTimeout(this._t); }
+  pageStyle(type, w) { return { position: 'absolute', inset: 0, background: TYPES[type].c, borderRadius: w ? 7 : 5, clipPath: 'polygon(0 0,68% 0,100% 28%,100% 100%,0 100%)' }; }
+  row(d) {
+    const t = TYPES[d.type];
+    return {
+      ...d, label: t.label, pageStyle: this.pageStyle(d.type), subtitle: `${d.size} • ${d.time} • ${d.folder}`,
+      starStyle: { flex: 'none', width: 36, height: 44, border: 0, background: 'none', cursor: 'pointer', padding: 0, ...ICON, fontSize: 22, color: d.fav ? '#F9A825' : 'var(--ln2,rgba(28,25,24,.18))', fontVariationSettings: d.fav ? "'FILL' 1" : "'FILL' 0" },
+      onStar: () => this.toggleFav(d.id), onMore: () => this.setState({ sheet: 'doc', sheetDocId: d.id }),
+      onOpen: () => this.openDoc(d),
+    };
+  }
+  openDoc(d) {
+    const ext = d.name.split('.').pop();
+    const v = { pdf: 'trình đọc PDF', docx: 'trình xem DOCX', xlsx: 'trình xem XLSX', pptx: 'trình xem PPTX', txt: 'trình xem TXT' }[ext];
+    this.toast(v ? `Mở "${d.name}" bằng ${v}` : `Mở "${d.name}" bằng app ngoài`);
+  }
+  toggleFav(id) {
+    let now;
+    this.setState(s => ({ docs: s.docs.map(d => d.id === id ? (now = !d.fav, { ...d, fav: now }) : d) }), () => this.toast(now ? 'Đã thêm vào yêu thích' : 'Đã bỏ yêu thích'));
+  }
+  sorted(list) {
+    const k = this.state.sort, c = (a, b) => a.name.localeCompare(b.name, 'vi');
+    const f = { az: c, za: (a, b) => -c(a, b), new: (a, b) => b.ts - a.ts, old: (a, b) => a.ts - b.ts, big: (a, b) => b.bytes - a.bytes, small: (a, b) => a.bytes - b.bytes }[k];
+    return [...list].sort(f);
+  }
+  renderVals() {
+    const s = this.state, p = this.props;
+    const sysTheme = p.theme === 'dark' ? 'dark' : 'light';
+    const theme = s.themePick === 'Sáng' ? 'light' : s.themePick === 'Tối' ? 'dark' : sysTheme;
+    const dark = theme === 'dark';
+    const ios = (p.device || 'ios') !== 'android', W = p.width ?? (ios ? 390 : 360), H = p.height ?? (ios ? 844 : 800), top = ios ? 50 : 32;
+    const fs = s.permGranted && (p.filesState === 'noPermission' || p.filesState === 'permissionBanner') ? 'list' : (p.filesState || 'list');
+    const homeEmpty = !!p.homeEmpty;
+    const favs = homeEmpty ? [] : s.docs.filter(d => d.fav).slice(0, 5);
+    const recents = homeEmpty ? [] : RECENT.map(id => s.docs.find(d => d.id === id)).filter(Boolean).slice(0, 5);
+    const headC = s.fileTab === 'all' ? (dark ? '#2C2833' : '#25212B') : TYPES[s.fileTab].h;
+    const filtered = this.sorted(s.docs.filter(d => s.fileTab === 'all' || d.type === s.fileTab));
+    const listMode = ['list', 'scanningWithFiles', 'permissionBanner'].includes(fs);
+    const hasFiles = listMode && filtered.length > 0;
+    const navBtn = (k) => ({ flex: 1, border: 0, background: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, font: "600 11px 'Be Vietnam Pro',sans-serif", color: s.tab === k ? (dark ? '#FF7B76' : '#E5393B') : 'var(--mu,#6B6461)', paddingTop: 4 });
+    const navIc = (k) => ({ ...ICON, fontSize: 24, fontVariationSettings: s.tab === k ? "'FILL' 1" : "'FILL' 0", width: 56, height: 30, borderRadius: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', background: s.tab === k ? (dark ? '#3A1E1E' : '#FDECEC') : 'transparent' });
+    const bar = (h) => React.createElement('div', { style: { height: h, background: hexA('#E5393B', 0.16), overflow: 'hidden', position: 'relative', borderRadius: h } },
+      React.createElement('div', { style: { position: 'absolute', top: 0, bottom: 0, width: '40%', background: '#E5393B', borderRadius: h, animation: 'pdfo-indet 1.3s ease-in-out infinite' } }));
+    const tool = (label, icon, color, msg) => ({ label, icon, onClick: () => this.toast(msg || `Mở "${label}"`), iconStyle: { ...ICON, fontSize: 24, width: 50, height: 50, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', background: hexA(color, dark ? 0.2 : 0.11), color: dark ? '#fff' : color } });
+    const R = '#E5393B', needPdf = (l) => `Chọn file PDF để mở "${l}"`;
+    const groups = [
+      { title: 'Tạo PDF', tools: [tool('Ảnh sang PDF', 'photo_library', R), tool('Quét tài liệu', 'document_scanner', R), tool('Văn bản sang PDF', 'text_fields', R), tool('Tạo PDF trắng', 'note_add', R)] },
+      { title: 'Chuyển đổi', tools: [tool('Word sang PDF', 'description', TYPES.doc.c), tool('Excel sang PDF', 'table_chart', TYPES.xls.c), tool('PDF sang ảnh', 'imagesmode', '#8E24AA'), tool('PDF sang văn bản', 'notes', TYPES.txt.h), tool('PDF sang Word', 'article', TYPES.doc.c), tool('PDF sang Excel', 'grid_on', TYPES.xls.c)] },
+      { title: 'Công cụ PDF', tools: [tool('Gộp PDF', 'call_merge', R), tool('Tách PDF', 'call_split', R), tool('Sắp xếp trang', 'view_module', R), tool('Khoá PDF', 'lock', R), tool('Mở khoá PDF', 'lock_open', R), tool('Thêm hình mờ', 'branding_watermark', R)] },
+      { title: 'Chỉnh sửa PDF', tools: [tool('Chú thích', 'ink_highlighter', R, needPdf('Chú thích')), tool('Ký PDF', 'signature', R, needPdf('Ký PDF')), tool('Điền biểu mẫu', 'edit_note', R, needPdf('Điền biểu mẫu'))] },
+    ].map(g => ({ ...g, count: `${g.tools.length}` }));
+    const choice = (kind) => this.setState({ sheet: 'choice', choiceKind: kind });
+    const general = [
+      { icon: 'translate', title: 'Ngôn ngữ', sub: s.lang, onClick: () => choice('lang') },
+      { icon: 'contrast', title: 'Giao diện', sub: s.themePick, onClick: () => choice('theme') },
+      ...(p.showSaveFolder ? [{ icon: 'folder_open', title: 'Thư mục lưu', sub: 'Documents/Phiotron PDF', onClick: () => this.toast('Mở "Thư mục lưu"') }] : []),
+      { icon: 'description', title: 'Khổ giấy mặc định', sub: s.paper, onClick: () => choice('paper') },
+    ];
+    const about = [
+      { icon: 'share', title: 'Chia sẻ ứng dụng', onClick: () => this.toast('Mở bảng chia sẻ của hệ thống') },
+      { icon: 'mail', title: 'Phản hồi', onClick: () => this.toast('Mở app email: "Phản hồi về Phiotron PDF"') },
+      { icon: 'shield', title: 'Chính sách bảo mật', onClick: () => this.toast('Mở "Chính sách bảo mật"') },
+      { icon: 'info', title: 'Giới thiệu', sub: 'Phiên bản 1.0.0', onClick: () => this.toast('Mở "Giới thiệu"') },
+    ];
+    const ck = s.choiceKind;
+    const cfg = { lang: ['Ngôn ngữ', LANGS, 'lang'], theme: ['Giao diện', THEMES, 'themePick'], paper: ['Khổ giấy mặc định', PAPERS, 'paper'] }[ck] || ['', [], ''];
+    const sd = s.docs.find(d => d.id === s.sheetDocId);
+    const close = { sheet: null };
+    const act = (icon, label, fn, danger) => ({ icon, label, onClick: fn, style: { display: 'flex', alignItems: 'center', gap: 14, height: 50, padding: '0 14px', border: 0, borderRadius: 16, background: 'none', color: danger ? 'var(--rf,#C62828)' : 'var(--fg,#1C1918)', font: "500 15.5px 'Be Vietnam Pro',sans-serif", cursor: 'pointer', textAlign: 'left' } });
+    const docActions = sd ? [
+      act('open_in_new', 'Mở', () => { this.setState(close); this.openDoc(sd); }),
+      act('edit', 'Đổi tên', () => this.setState({ sheet: null, dialog: 'rename', renameValue: sd.name.replace(/\.[^.]+$/, ''), renameError: '' })),
+      act('share', 'Chia sẻ', () => { this.setState(close); this.toast('Mở bảng chia sẻ của hệ thống'); }),
+      act('star', sd.fav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích', () => { this.setState(close); this.toggleFav(sd.id); }),
+      act('info', 'Thông tin', () => this.setState({ sheet: null, dialog: 'info' })),
+      act('delete', 'Xoá', () => this.setState({ sheet: null, dialog: 'delete' }), true),
+    ] : [];
+    return {
+      themeVars: { ...VARS[theme], '--top': top + 'px', '--navh': (ios ? 88 : 68) + 'px', '--navpb': (ios ? 26 : 8) + 'px', width: W, height: H },
+      isIOS: ios, isAndroid: !ios, clock: ios ? '9:41' : '9:30',
+      bezelStyle: { width: W + 20, padding: 10, boxSizing: 'border-box', background: '#141212', borderRadius: ios ? 64 : 40, boxShadow: '0 30px 60px rgba(0,0,0,0.22), inset 0 0 0 1.5px #2c2a29' },
+      screenStyle: { position: 'relative', width: W, height: H, borderRadius: ios ? 54 : 30, overflow: 'hidden', background: VARS[theme]['--bg'] },
+      statusStyle: { position: 'absolute', top: 0, left: 0, right: 0, height: top, zIndex: 70, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: ios ? '4px 30px 0 36px' : '0 18px', boxSizing: 'border-box', color: (dark || s.tab === 'files') ? '#fff' : '#1C1918', font: ios ? "600 15.5px 'Be Vietnam Pro',sans-serif" : "500 13.5px 'Be Vietnam Pro',sans-serif" },
+      homeBarStyle: { position: 'absolute', left: '50%', bottom: ios ? 8 : 6, transform: 'translateX(-50%)', width: ios ? 134 : 108, height: ios ? 5 : 4, borderRadius: 3, background: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.3)', zIndex: 70, pointerEvents: 'none' },
+      isHome: s.tab === 'home', isFiles: s.tab === 'files', isTools: s.tab === 'tools', isSettings: s.tab === 'settings',
+      goHome: () => this.setState({ tab: 'home' }), goFiles: () => this.setState({ tab: 'files' }), goTools: () => this.setState({ tab: 'tools' }), goSettings: () => this.setState({ tab: 'settings' }),
+      nav: { home: navBtn('home'), files: navBtn('files'), tools: navBtn('tools'), settings: navBtn('settings') },
+      navIcon: { home: navIc('home'), files: navIc('files'), tools: navIc('tools'), settings: navIc('settings') },
+      goSearch: () => this.toast('Mở màn "Tìm kiếm"'), seeAllFav: () => this.toast('Mở màn "Yêu thích"'), seeAllRecent: () => this.toast('Mở màn "Gần đây"'),
+      openImg2Pdf: () => this.toast('Mở "Ảnh sang PDF" — bước 1: Chọn ảnh'), openScan: () => this.toast('Mở "Quét tài liệu" — camera quét tự bật'), openPdf2Img: () => this.toast('Mở "PDF sang ảnh"'),
+      favRows: favs.map(d => this.row(d)), recentRows: recents.map(d => this.row(d)),
+      hasFav: favs.length > 0, noFav: favs.length === 0, hasRecent: recents.length > 0, noRecent: recents.length === 0,
+      filesHeaderStyle: { background: headC, color: '#fff', padding: `${top + 6}px 0 0`, borderRadius: '0 0 26px 26px', transition: 'background .25s', flex: 'none' },
+      fileTabs: ['all', 'pdf', 'doc', 'xls', 'ppt', 'txt'].map(k => ({ label: k === 'all' ? 'Tất cả' : TYPES[k].label, onClick: () => this.setState({ fileTab: k }),
+        style: { flex: 'none', height: 36, padding: '0 16px', borderRadius: 18, border: 0, cursor: 'pointer', font: "600 13.5px 'Be Vietnam Pro',sans-serif", background: s.fileTab === k ? '#fff' : 'rgba(255,255,255,0.16)', color: s.fileTab === k ? headC : '#fff' } })),
+      showTypeGrid: s.fileTab === 'all' && listMode,
+      typeTiles: ['pdf', 'doc', 'xls', 'ppt', 'txt', 'other'].map(k => ({ label: TYPES[k].label, name: TYPES[k].name, pageStyle: this.pageStyle(k), onClick: () => k === 'other' ? this.toast('Mở bộ chọn file của hệ thống') : this.setState({ fileTab: k }) })),
+      showThinBar: fs === 'scanningWithFiles', thinBar: bar(3), thickBar: bar(4),
+      showScanning: fs === 'scanning', skeleton: Array.from({ length: 8 }, (_, i) => ({ w1: { height: 11, borderRadius: 6, width: `${[72, 58, 80, 64, 50, 76, 60, 68][i]}%`, background: 'var(--sf2,#EEEBE8)' }, w2: { height: 9, borderRadius: 5, width: `${[40, 34, 46, 30, 38, 42, 28, 36][i]}%`, background: 'var(--sf2,#EEEBE8)' } })),
+      showNoPerm: fs === 'noPermission', showBanner: fs === 'permissionBanner', showError: fs === 'error',
+      grant: () => { this.setState({ permGranted: true }); this.toast('Đã cấp quyền truy cập file'); }, pickManual: () => this.toast('Mở bộ chọn file của hệ thống'), retry: () => this.toast('Đang quét lại…'),
+      showList: hasFiles && fs !== 'empty', showEmpty: (listMode && !hasFiles) || fs === 'empty',
+      emptyPageStyle: this.pageStyle(s.fileTab === 'all' ? 'pdf' : s.fileTab, true), emptyLabel: s.fileTab === 'all' ? 'PDF' : TYPES[s.fileTab].label,
+      fileRows: filtered.map(d => this.row(d)), countLabel: `${filtered.length} tài liệu`, sortLabel: SORTS.find(x => x[0] === s.sort)[1],
+      sortOpen: s.sortOpen, toggleSort: () => this.setState({ sortOpen: !s.sortOpen }), closeSort: () => this.setState({ sortOpen: false }),
+      sortItems: SORTS.map(([k, l]) => ({ label: l, checked: s.sort === k, onClick: () => this.setState({ sort: k, sortOpen: false }) })),
+      drawerOpen: s.drawerOpen, openDrawer: () => this.setState({ drawerOpen: true }), closeDrawer: () => this.setState({ drawerOpen: false }),
+      drawerItems: [
+        { icon: 'history', label: 'Gần đây', onClick: () => { this.setState({ drawerOpen: false }); this.toast('Mở màn "Gần đây"'); } },
+        { icon: 'star', label: 'Yêu thích', onClick: () => { this.setState({ drawerOpen: false }); this.toast('Mở màn "Yêu thích"'); } },
+        { icon: 'translate', label: 'Ngôn ngữ', onClick: () => this.setState({ drawerOpen: false, sheet: 'choice', choiceKind: 'lang' }) },
+        { icon: 'contrast', label: 'Giao diện', onClick: () => this.setState({ drawerOpen: false, sheet: 'choice', choiceKind: 'theme' }) },
+        { icon: 'folder_open', label: 'Thư mục lưu', onClick: () => { this.setState({ drawerOpen: false }); this.toast('Mở "Thư mục lưu"'); } },
+        { icon: 'info', label: 'Giới thiệu', onClick: () => { this.setState({ drawerOpen: false }); this.toast('Mở "Giới thiệu"'); } },
+      ],
+      toolGroups: groups, settingGroups: [{ title: 'Chung', rows: general }, { title: 'Về ứng dụng', rows: about }],
+      sheetOpen: !!s.sheet, closeSheet: () => this.setState(close), isDocSheet: s.sheet === 'doc' && !!sd, isChoiceSheet: s.sheet === 'choice',
+      sheetDoc: sd ? this.row(sd) : {}, docActions,
+      choiceTitle: cfg[0], choiceItems: cfg[1].map(l => ({ label: l, checked: s[cfg[2]] === l, onClick: () => this.setState({ [cfg[2]]: l, sheet: null }) })),
+      dialogOpen: !!s.dialog && !!sd, closeDialog: () => this.setState({ dialog: null }),
+      isRename: s.dialog === 'rename', isInfo: s.dialog === 'info', isDelete: s.dialog === 'delete',
+      renameValue: s.renameValue, renameError: s.renameError, onRenameInput: (e) => this.setState({ renameValue: e.target.value, renameError: '' }),
+      renameInputStyle: { width: '100%', boxSizing: 'border-box', height: 50, padding: '0 14px', border: s.renameError ? '1.5px solid #E5393B' : '1.5px solid transparent', borderRadius: 14, background: 'var(--in,#FFF8E1)', color: 'var(--fg,#1C1918)', font: "500 15px 'Be Vietnam Pro',sans-serif", outline: 'none' },
+      confirmRename: () => {
+        const v = s.renameValue.trim(); if (!v) return this.setState({ renameError: 'Tên không được để trống' });
+        const ext = sd.name.slice(sd.name.lastIndexOf('.')), nn = v + ext;
+        if (s.docs.some(d => d.id !== sd.id && d.name.toLowerCase() === nn.toLowerCase())) return this.setState({ renameError: 'Đã có file trùng tên' });
+        this.setState({ docs: s.docs.map(d => d.id === sd.id ? { ...d, name: nn } : d), dialog: null });
+      },
+      infoRows: sd ? [{ k: 'Tên', v: sd.name }, { k: 'Đường dẫn', v: `/storage/emulated/0/${sd.folder}/${sd.name}` }, { k: 'Dung lượng', v: sd.size }, { k: 'Ngày sửa', v: sd.date }] : [],
+      deleteMsg: sd ? `"${sd.name}" sẽ bị xoá vĩnh viễn.` : '',
+      confirmDelete: () => { const n = sd.name; this.setState({ docs: s.docs.filter(d => d.id !== sd.id), dialog: null }); this.toast(`Đã xoá "${n}"`); },
+      snack: s.snack,
+    };
+  }
+}
+</script>
+</body>
+</html>

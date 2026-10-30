@@ -18,7 +18,7 @@
   "docs_emptyFavoritesHint": "Tap the star on a file to add it here",
   "docs_emptySearch": "No matching files",
   "docs_permissionTitle": "Allow access to your files",
-  "docs_permissionMessage": "PDF Office needs access to all files to find the documents on this device.",
+  "docs_permissionMessage": "Phiotron PDF needs access to all files to find the documents on this device.",
   "docs_grantPermission": "Grant access",
   "docs_pickFileInstead": "Choose a file instead",
   "docs_permissionBanner": "Grant file access to find all your documents",
@@ -56,5 +56,14 @@
   "docs_lockedPdf": "Password-protected PDF",
   "docs_navHome": "Home",
   "docs_navFiles": "Files",
-  "docs_viewAll": "See all"
+  "docs_viewAll": "See all",
+  "docs_shortcuts": "Shortcuts",
+  "docs_countDocs": "{count} documents",
+  "@docs_countDocs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

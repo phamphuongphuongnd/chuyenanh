@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../l10n/l10n.dart';
 import '../utils/cancel_token.dart';
@@ -95,7 +96,11 @@ class _PasswordDialogState extends State<_PasswordDialog> {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _submit(),
             suffixIcon: IconButton(
-              icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+              icon: Icon(
+                _obscure
+                    ? Symbols.visibility_rounded
+                    : Symbols.visibility_off_rounded,
+              ),
               onPressed: () => setState(() => _obscure = !_obscure),
             ),
           ),
@@ -166,22 +171,32 @@ ProgressDialogController showProgressDialog(
                   builder: (_, msg, _) =>
                       msg == null ? const SizedBox.shrink() : Text(msg),
                 ),
-                const SizedBox(height: 12),
-                LinearProgressIndicator(value: value),
+                const SizedBox(height: 14),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(value: value, minHeight: 4),
+                ),
                 const SizedBox(height: 8),
                 if (value != null)
                   Text(ctx.l10n.core_progressPercent((value * 100).round())),
               ],
             ),
           ),
+          actionsPadding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
           actions: [
             if (cancellable)
-              OutlinedButton(
-                onPressed: () {
-                  token.cancel();
-                  ctrl.close();
-                },
-                child: Text(ctx.l10n.core_cancel.toUpperCase()),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(64, 46),
+                  ),
+                  onPressed: () {
+                    token.cancel();
+                    ctrl.close();
+                  },
+                  child: Text(ctx.l10n.core_cancel),
+                ),
               ),
           ],
         ),

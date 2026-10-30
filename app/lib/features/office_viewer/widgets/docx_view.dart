@@ -1,13 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:office_reader/office_reader.dart' as rd;
 import 'package:path/path.dart' as p;
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/link_opener.dart';
 import '../../../core/router/routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/doc_type.dart';
 import '../logic/docx_table_grid.dart';
 import '../logic/text_search.dart';
 import 'office_common.dart';
@@ -98,29 +99,28 @@ class _DocxViewerPageState extends State<DocxViewerPage> {
     final cur = _hits.isEmpty ? null : _hits[_current];
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.doc,
-        foregroundColor: Colors.white,
-        title: Text(p.basename(widget.path), overflow: TextOverflow.ellipsis),
+      appBar: OfficeViewerAppBar(
+        category: DocCategory.doc,
+        title: p.basename(widget.path),
         actions: [
           IconButton(
             tooltip: l.office_search,
-            icon: const Icon(Icons.search),
+            icon: const Icon(Symbols.search_rounded),
             onPressed: () => setState(() => _searching = !_searching),
           ),
           IconButton(
             tooltip: l.office_zoomOut,
-            icon: const Icon(Icons.zoom_out),
+            icon: const Icon(Symbols.zoom_out_rounded),
             onPressed: () => _setScale(_scale - 0.2),
           ),
           IconButton(
             tooltip: l.office_zoomIn,
-            icon: const Icon(Icons.zoom_in),
+            icon: const Icon(Symbols.zoom_in_rounded),
             onPressed: () => _setScale(_scale + 0.2),
           ),
           IconButton(
             tooltip: l.office_convertToPdf,
-            icon: const Icon(Icons.picture_as_pdf_outlined),
+            icon: const Icon(Symbols.picture_as_pdf_rounded),
             onPressed: () =>
                 context.push(Routes.wordToPdf, extra: widget.path),
           ),
@@ -130,7 +130,7 @@ class _DocxViewerPageState extends State<DocxViewerPage> {
         children: [
           if (_searching)
             OfficeSearchBar(
-              color: AppColors.doc,
+              category: DocCategory.doc,
               controller: _searchCtrl,
               onChanged: _onQuery,
               current: _hits.isEmpty ? 0 : _current + 1,
@@ -446,7 +446,7 @@ class _ImageBlock extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                  const Icon(Symbols.broken_image_rounded, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
                     context.l10n.office_imageUnsupported,

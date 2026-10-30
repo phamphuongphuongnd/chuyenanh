@@ -27,15 +27,15 @@
   },
   "settings_tagline": "Read, create and convert PDF, Office and images.",
   "settings_licenses": "Open-source licenses",
-  "settings_aboutOffline": "PDF Office works entirely offline. It does not collect any data and does not use the network.",
+  "settings_aboutOffline": "Phiotron PDF works entirely offline. It does not collect any data and does not use the network.",
   "settings_aboutSyncfusion": "PDF features use Syncfusion Flutter components under the Syncfusion Community License.",
   "settings_sectionGeneral": "General",
   "settings_sectionAbout": "About the app",
   "settings_share": "Share app",
-  "settings_shareText": "I use PDF Office to read, convert and edit PDFs: fully offline and ad-free.",
+  "settings_shareText": "I use Phiotron PDF to read, convert and edit PDFs: fully offline and ad-free.",
   "settings_feedback": "Feedback",
-  "settings_feedbackSubject": "PDF Office feedback",
+  "settings_feedbackSubject": "Phiotron PDF feedback",
   "settings_feedbackFailed": "Could not open an email app",
   "settings_privacy": "Privacy policy",
-  "settings_privacyBody": "PDF Office works entirely offline. It does not collect, send or share your data.\n\nYour files are only read on this device to display and convert them. New files are saved to the folder you choose; originals are never overwritten.\n\nThe app does not use the network, has no ads and no in-app purchases. File access is only used to find documents on your device."
+  "settings_privacyBody": "Phiotron PDF works entirely offline. It does not collect, send or share your data.\n\nYour files are only read on this device to display and convert them. New files are saved to the folder you choose; originals are never overwritten.\n\nThe app does not use the network, has no ads and no in-app purchases. File access is only used to find documents on your device."
 }

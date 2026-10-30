@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/features/image_to_pdf/image_to_pdf_paths.dart';
 import 'package:pdf_office/features/image_to_pdf/services/export_service.dart';
@@ -64,7 +65,7 @@ void main() {
 
   testWidgets('nút đóng (X) về trang chủ', (tester) async {
     await open(tester);
-    await tester.tap(find.byIcon(Icons.close));
+    await tester.tap(find.byIcon(Symbols.close_rounded));
     await tester.pumpAndSettle();
     expect(find.text('HOME'), findsOneWidget);
   });

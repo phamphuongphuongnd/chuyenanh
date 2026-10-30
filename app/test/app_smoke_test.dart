@@ -48,7 +48,9 @@ void main() {
   testWidgets('app khởi động vào trang chủ Tài liệu', (tester) async {
     await _pumpApp(tester, locale: 'en');
     expect(find.byType(MainShell), findsOneWidget);
-    expect(find.byType(NavigationDestination), findsNWidgets(5));
+    for (final key in ['nav-home', 'nav-files', 'nav-convert', 'nav-tools', 'nav-settings']) {
+      expect(find.byKey(ValueKey(key)), findsOneWidget, reason: key);
+    }
     expect(find.text('Home'), findsWidgets);
   });
 

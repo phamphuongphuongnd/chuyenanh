@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../l10n/l10n.dart';
 import '../router/routes.dart';
@@ -62,7 +63,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'imageToPdf',
     route: Routes.imageToPdf,
-    icon: Icons.image_outlined,
+    icon: Symbols.photo_library_rounded,
     labelKey: 'core_toolImageToPdf',
     group: ToolGroup.create,
     inputType: ToolInputType.images,
@@ -70,7 +71,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'scanner',
     route: Routes.scanner,
-    icon: Icons.document_scanner_outlined,
+    icon: Symbols.document_scanner_rounded,
     labelKey: 'core_toolScanner',
     group: ToolGroup.create,
     inputType: ToolInputType.none,
@@ -78,7 +79,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'textToPdf',
     route: Routes.textToPdf,
-    icon: Icons.text_fields,
+    icon: Symbols.text_fields_rounded,
     labelKey: 'core_toolTextToPdf',
     group: ToolGroup.create,
     inputType: ToolInputType.text,
@@ -86,7 +87,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'createBlank',
     route: Routes.createBlank,
-    icon: Icons.note_add_outlined,
+    icon: Symbols.note_add_rounded,
     labelKey: 'core_toolCreateBlank',
     group: ToolGroup.create,
     inputType: ToolInputType.none,
@@ -95,7 +96,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'wordToPdf',
     route: Routes.wordToPdf,
-    icon: Icons.description_outlined,
+    icon: Symbols.description_rounded,
     labelKey: 'core_toolWordToPdf',
     group: ToolGroup.convert,
     inputType: ToolInputType.word,
@@ -103,7 +104,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'excelToPdf',
     route: Routes.excelToPdf,
-    icon: Icons.table_chart_outlined,
+    icon: Symbols.table_chart_rounded,
     labelKey: 'core_toolExcelToPdf',
     group: ToolGroup.convert,
     inputType: ToolInputType.excel,
@@ -111,7 +112,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'pdfToImage',
     route: Routes.pdfToImage,
-    icon: Icons.photo_library_outlined,
+    icon: Symbols.imagesmode_rounded,
     labelKey: 'core_toolPdfToImage',
     group: ToolGroup.convert,
     inputType: ToolInputType.pdf,
@@ -119,7 +120,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'pdfToText',
     route: Routes.pdfToText,
-    icon: Icons.notes,
+    icon: Symbols.notes_rounded,
     labelKey: 'core_toolPdfToText',
     group: ToolGroup.convert,
     inputType: ToolInputType.pdf,
@@ -127,7 +128,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'pdfToWord',
     route: Routes.pdfToWord,
-    icon: Icons.article_outlined,
+    icon: Symbols.article_rounded,
     labelKey: 'core_toolPdfToWord',
     group: ToolGroup.convert,
     inputType: ToolInputType.pdf,
@@ -135,7 +136,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'pdfToExcel',
     route: Routes.pdfToExcel,
-    icon: Icons.grid_on,
+    icon: Symbols.grid_on_rounded,
     labelKey: 'core_toolPdfToExcel',
     group: ToolGroup.convert,
     inputType: ToolInputType.pdf,
@@ -144,7 +145,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'merge',
     route: Routes.merge,
-    icon: Icons.merge_type,
+    icon: Symbols.call_merge_rounded,
     labelKey: 'core_toolMerge',
     group: ToolGroup.pdfTools,
     inputType: ToolInputType.multiplePdf,
@@ -152,7 +153,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'split',
     route: Routes.split,
-    icon: Icons.call_split,
+    icon: Symbols.call_split_rounded,
     labelKey: 'core_toolSplit',
     group: ToolGroup.pdfTools,
     inputType: ToolInputType.pdf,
@@ -160,7 +161,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'organize',
     route: Routes.organize,
-    icon: Icons.dashboard_customize_outlined,
+    icon: Symbols.view_module_rounded,
     labelKey: 'core_toolOrganize',
     group: ToolGroup.pdfTools,
     inputType: ToolInputType.pdf,
@@ -168,7 +169,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'lock',
     route: Routes.lock,
-    icon: Icons.lock_outline,
+    icon: Symbols.lock_rounded,
     labelKey: 'core_toolLock',
     group: ToolGroup.pdfTools,
     inputType: ToolInputType.pdf,
@@ -176,7 +177,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'unlock',
     route: Routes.unlock,
-    icon: Icons.lock_open_outlined,
+    icon: Symbols.lock_open_rounded,
     labelKey: 'core_toolUnlock',
     group: ToolGroup.pdfTools,
     inputType: ToolInputType.pdf,
@@ -184,7 +185,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'watermark',
     route: Routes.watermark,
-    icon: Icons.branding_watermark_outlined,
+    icon: Symbols.branding_watermark_rounded,
     labelKey: 'core_toolWatermark',
     group: ToolGroup.pdfTools,
     inputType: ToolInputType.pdf,
@@ -193,7 +194,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'annotate',
     route: Routes.annotate,
-    icon: Icons.border_color_outlined,
+    icon: Symbols.ink_highlighter_rounded,
     labelKey: 'core_toolAnnotate',
     group: ToolGroup.edit,
     inputType: ToolInputType.pdfRequired,
@@ -201,7 +202,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'sign',
     route: Routes.sign,
-    icon: Icons.draw_outlined,
+    icon: Symbols.signature_rounded,
     labelKey: 'core_toolSign',
     group: ToolGroup.edit,
     inputType: ToolInputType.pdfRequired,
@@ -209,7 +210,7 @@ const List<ToolSpec> allTools = [
   ToolSpec(
     id: 'fillForm',
     route: Routes.fillForm,
-    icon: Icons.edit_note,
+    icon: Symbols.edit_note_rounded,
     labelKey: 'core_toolFillForm',
     group: ToolGroup.edit,
     inputType: ToolInputType.pdfRequired,

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_tokens.dart';
 import '../utils/doc_type.dart';
 
-/// Biểu tượng loại file tự vẽ: trang giấy gập góc + nhãn màu (PDF/DOC/XLS/PPT/TXT…).
+/// Biểu tượng loại file tự vẽ: trang màu theo loại, cắt góc trên phải, nhãn chữ trắng
+/// (PDF/DOC/XLS/PPT/TXT…) ở dưới. PDF có mật khẩu → huy hiệu ổ khoá tròn góc dưới phải.
 class FileTypeIcon extends StatelessWidget {
   const FileTypeIcon(
     this.type, {
@@ -25,55 +28,69 @@ class FileTypeIcon extends StatelessWidget {
   /// Chiều cao; chiều rộng = 0.8 × size.
   final double size;
 
-  /// Vẽ ổ khoá nhỏ góc dưới (PDF có mật khẩu).
+  /// Vẽ huy hiệu ổ khoá (PDF có mật khẩu).
   final bool locked;
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final page = CustomPaint(
+      size: Size(size * 0.8, size),
+      painter: _FileTypePainter(
+        color: AppColors.forDocType(type),
+        label: type.label,
+      ),
+    );
+    if (!locked) return page;
+    final t = context.tokens;
+    final badge = size * 0.425;
     return SizedBox(
       width: size * 0.8,
       height: size,
-      child: CustomPaint(
-        painter: _FileTypePainter(
-          color: AppColors.forDocType(type),
-          label: type.label,
-          paper: dark ? const Color(0xFF2A2A2A) : Colors.white,
-          border: dark ? Colors.white24 : const Color(0xFFDDDDDD),
-          locked: locked,
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          page,
+          Positioned(
+            right: -size * 0.125,
+            bottom: -size * 0.1,
+            child: Container(
+              width: badge,
+              height: badge,
+              decoration: BoxDecoration(color: t.surface, shape: BoxShape.circle),
+              alignment: Alignment.center,
+              child: Icon(
+                Symbols.lock_rounded,
+                fill: 1,
+                size: badge * 0.7,
+                color: t.text,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _FileTypePainter extends CustomPainter {
-  _FileTypePainter({
-    required this.color,
-    required this.label,
-    required this.paper,
-    required this.border,
-    required this.locked,
-  });
+  _FileTypePainter({required this.color, required this.label});
 
   final Color color;
   final String label;
-  final Color paper;
-  final Color border;
-  final bool locked;
 
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    final fold = w * 0.3;
-    final r = w * 0.08;
+    final r = w * 0.16;
+    // Góc cắt: từ 68% cạnh trên xuống 28% cạnh phải (như thiết kế).
+    final cutX = w * 0.68;
+    final cutY = h * 0.28;
 
-    // Trang giấy gập góc trên phải.
     final page = Path()
       ..moveTo(r, 0)
-      ..lineTo(w - fold, 0)
-      ..lineTo(w, fold)
+      ..lineTo(cutX, 0)
+      ..lineTo(w, cutY)
       ..lineTo(w, h - r)
       ..quadraticBezierTo(w, h, w - r, h)
       ..lineTo(r, h)
@@ -81,89 +98,35 @@ class _FileTypePainter extends CustomPainter {
       ..lineTo(0, r)
       ..quadraticBezierTo(0, 0, r, 0)
       ..close();
-    canvas.drawPath(page, Paint()..color = paper);
-    canvas.drawPath(
-      page,
-      Paint()
-        ..color = border
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1,
-    );
+    canvas.drawPath(page, Paint()..color = color);
 
-    // Tam giác góc gập.
-    final corner = Path()
-      ..moveTo(w - fold, 0)
-      ..lineTo(w - fold, fold)
-      ..lineTo(w, fold)
+    // Mép gập: tam giác trắng mờ dưới đường cắt.
+    final fold = Path()
+      ..moveTo(cutX, 0)
+      ..lineTo(w, cutY)
+      ..lineTo(cutX, cutY)
       ..close();
-    canvas.drawPath(corner, Paint()..color = color.withValues(alpha: 0.45));
-
-    // Nhãn màu.
-    final bandTop = h * 0.52;
-    final bandHeight = h * 0.28;
-    final band = RRect.fromRectAndRadius(
-      Rect.fromLTWH(-w * 0.06, bandTop, w * 0.92, bandHeight),
-      Radius.circular(r),
-    );
-    canvas.drawRRect(band, Paint()..color = color);
+    canvas.drawPath(fold, Paint()..color = Colors.white.withValues(alpha: 0.5));
 
     final tp = TextPainter(
       text: TextSpan(
         text: label,
         style: TextStyle(
+          fontFamily: kUiFontFamily,
           color: Colors.white,
-          fontSize: bandHeight * 0.62,
+          fontSize: h * 0.2125,
           fontWeight: FontWeight.w800,
-          letterSpacing: 0.3,
+          letterSpacing: h * 0.2125 * 0.03,
+          height: 1,
         ),
       ),
       textDirection: TextDirection.ltr,
       maxLines: 1,
-    )..layout(maxWidth: w * 0.9);
-    tp.paint(
-      canvas,
-      Offset(
-        -w * 0.06 + (w * 0.92 - tp.width) / 2,
-        bandTop + (bandHeight - tp.height) / 2,
-      ),
-    );
-
-    if (locked) {
-      final s = w * 0.36;
-      final c = Offset(w - s * 0.55, h - s * 0.55);
-      canvas.drawCircle(c, s * 0.6, Paint()..color = paper);
-      final body = RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: c.translate(0, s * 0.12),
-          width: s * 0.7,
-          height: s * 0.5,
-        ),
-        Radius.circular(s * 0.08),
-      );
-      final lockPaint = Paint()..color = const Color(0xFF424242);
-      canvas.drawRRect(body, lockPaint);
-      canvas.drawArc(
-        Rect.fromCenter(
-          center: c.translate(0, -s * 0.12),
-          width: s * 0.44,
-          height: s * 0.5,
-        ),
-        3.14159,
-        3.14159,
-        false,
-        Paint()
-          ..color = const Color(0xFF424242)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = s * 0.1,
-      );
-    }
+    )..layout(maxWidth: w);
+    tp.paint(canvas, Offset((w - tp.width) / 2, h - h * 0.125 - tp.height));
   }
 
   @override
   bool shouldRepaint(_FileTypePainter old) =>
-      old.color != color ||
-      old.label != label ||
-      old.paper != paper ||
-      old.border != border ||
-      old.locked != locked;
+      old.color != color || old.label != label;
 }

@@ -8,8 +8,9 @@ import 'package:pdf_office/features/settings/app_logo.dart';
 void main() {
   const res = 'android/app/src/main/res';
 
-  test('màu nền logo trùng màu chủ đạo của app', () {
-    expect(AppLogoPainter.background, AppColors.primary);
+  test('thẻ trên cùng của logo trùng màu chủ đạo, các thẻ sau theo màu loại file', () {
+    expect(AppLogoPainter.front, AppColors.primary);
+    expect(AppLogoPainter.back, [AppColors.doc, AppColors.xls, AppColors.ppt]);
   });
 
   testWidgets('AppLogo vẽ đúng kích thước yêu cầu', (tester) async {
@@ -33,10 +34,10 @@ void main() {
       expect(text, contains('@drawable/ic_launcher_monochrome'));
     });
 
-    test('nền icon là đỏ #E5393B', () {
+    test('nền icon là kem #F4EEE6', () {
       final text = File('$res/values/ic_launcher_background.xml')
           .readAsStringSync();
-      expect(text.toUpperCase(), contains('#E5393B'));
+      expect(text.toUpperCase(), contains('#F4EEE6'));
     });
 
     test('foreground và monochrome tồn tại', () {

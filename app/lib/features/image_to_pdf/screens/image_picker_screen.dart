@@ -4,10 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../image_to_pdf_paths.dart';
 import '../image_to_pdf_providers.dart';
@@ -246,7 +247,7 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
           PopupMenuItem(value: a, child: Text('${a.name} (${a.count})')),
       ],
       child: Padding(
-        padding: const EdgeInsets.only(left: 16),
+        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -254,13 +255,11 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
               child: Text(
                 album.name,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).appBarTheme.titleTextStyle ??
-                    Theme.of(
-                      context,
-                    ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                style: Theme.of(context).appBarTheme.titleTextStyle,
               ),
             ),
-            const Icon(Icons.arrow_drop_down),
+            const SizedBox(width: 2),
+            Icon(Symbols.arrow_drop_down_rounded, color: context.tokens.text),
           ],
         ),
       ),
@@ -272,7 +271,7 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
       children: [
         Expanded(
           child: EmptyState(
-            icon: Icons.photo_library_outlined,
+            icon: Symbols.photo_library_rounded,
             title: l.img2pdf_permissionTitle,
             message: l.img2pdf_permissionMessage,
             actionLabel: l.img2pdf_allowAccess,
@@ -290,37 +289,61 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
 
   Widget _buildError() {
     return EmptyState(
-      icon: Icons.error_outline,
+      icon: Symbols.error_rounded,
       title: appErrorMessage(context, _error!),
       actionLabel: context.l10n.core_retry,
       onAction: _init,
     );
   }
 
+  /// Băng "quyền giới hạn": nền `primarySoft` bo 16, chữ + nút Mở cài đặt.
+  Widget _buildLimitedBanner(AppLocalizations l) {
+    final t = context.tokens;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
+      decoration: BoxDecoration(
+        color: t.primarySoft,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(Symbols.photo_library_rounded, size: 22, color: t.primaryText),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              l.img2pdf_limitedAccess,
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w500,
+                height: 1.35,
+                color: t.text,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => ref.read(galleryServiceProvider).openSettings(),
+            child: Text(l.img2pdf_openSettings),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGrid(AppLocalizations l, GalleryAccess access) {
     final children = <Widget>[];
     if (access == GalleryAccess.limited) {
-      children.add(
-        MaterialBanner(
-          content: Text(l.img2pdf_limitedAccess),
-          actions: [
-            TextButton(
-              onPressed: () => ref.read(galleryServiceProvider).openSettings(),
-              child: Text(l.img2pdf_openSettings),
-            ),
-          ],
-        ),
-      );
+      children.add(_buildLimitedBanner(l));
     }
     children.add(
       Expanded(
         child: GridView.builder(
           controller: _scroll,
-          padding: const EdgeInsets.all(2),
+          padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            mainAxisSpacing: 2,
-            crossAxisSpacing: 2,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
           ),
           itemCount: _assets.length + 1,
           itemBuilder: (context, index) {
@@ -338,7 +361,11 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
           child: Text(
             l.img2pdf_noImages,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: context.tokens.textMuted,
+            ),
           ),
         ),
       );
@@ -347,18 +374,45 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
   }
 
   Widget _cameraTile(AppLocalizations l) {
-    final colors = Theme.of(context).colorScheme;
-    return InkWell(
-      key: const ValueKey('camera_tile'),
-      onTap: _camera,
-      child: ColoredBox(
-        color: colors.surfaceContainerHighest,
+    final t = context.tokens;
+    return Material(
+      color: t.surface,
+      borderRadius: BorderRadius.circular(_tileRadius),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        key: const ValueKey('camera_tile'),
+        onTap: _camera,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.photo_camera_outlined, size: 36, color: colors.primary),
-            const SizedBox(height: 6),
-            Text(l.img2pdf_camera, style: Theme.of(context).textTheme.bodySmall),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: t.primarySoft,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Symbols.photo_camera_rounded,
+                size: 26,
+                fill: 1,
+                color: t.primaryText,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(
+                l.img2pdf_camera,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: t.text,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -368,60 +422,79 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
   Widget _assetTile(GalleryAsset asset) {
     final number = _selection.numberOf(PickedImage.fromAsset(asset));
     final selected = number != null;
+    final radius = BorderRadius.circular(_tileRadius);
     return GestureDetector(
       key: ValueKey('asset_${asset.id}'),
       onTap: () => _toggle(asset),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          GalleryThumb(asset: asset),
-          if (selected)
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.black26,
-                border: Border.all(color: AppColors.primary, width: 3),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            GalleryThumb(asset: asset),
+            if (selected)
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: radius,
+                  border: Border.all(color: AppColors.primary, width: 3),
+                ),
               ),
-            ),
-          Positioned(top: 6, right: 6, child: _NumberBadge(number: number)),
-        ],
+            Positioned(top: 6, right: 6, child: _NumberBadge(number: number)),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSelectionBar(AppLocalizations l) {
     final entries = _selection.items;
-    return Material(
-      elevation: 8,
-      color: Theme.of(context).colorScheme.surface,
+    final t = context.tokens;
+    // Thanh dưới: nền `surface`, kẻ trên `line`, không bóng.
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border(top: BorderSide(color: t.line)),
+      ),
       child: SafeArea(
         top: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 64,
+              height: 68,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 itemCount: entries.length,
                 separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (context, i) => _selectedThumb(entries[i], i + 1),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
                       l.img2pdf_selectedCount(entries.length),
-                      style: Theme.of(context).textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w700,
+                        color: t.text,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 12),
                   FilledButton(
                     key: const ValueKey('next_button'),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(120, 50),
+                    ),
                     onPressed: _resolving ? null : _next,
-                    child: Text(l.img2pdf_next.toUpperCase()),
+                    child: Text(l.img2pdf_next),
                   ),
                 ],
               ),
@@ -433,13 +506,17 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
   }
 
   Widget _selectedThumb(PickedImage entry, int number) {
+    final t = context.tokens;
     final Widget image = entry.asset != null
         ? GalleryThumb(asset: entry.asset!, size: 128)
         : Image.file(
             File(entry.filePath!),
             fit: BoxFit.cover,
             cacheWidth: 160,
-            errorBuilder: (_, _, _) => const Icon(Icons.broken_image_outlined),
+            errorBuilder: (_, _, _) => ColoredBox(
+              color: t.surface2,
+              child: Icon(Symbols.broken_image_rounded, color: t.textMuted),
+            ),
           );
     return GestureDetector(
       key: ValueKey('selected_${entry.key}'),
@@ -450,29 +527,43 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ClipRRect(borderRadius: BorderRadius.circular(6), child: image),
+            ClipRRect(borderRadius: BorderRadius.circular(10), child: image),
             Positioned(
-              right: 0,
-              top: 0,
+              right: 3,
+              top: 3,
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
-                padding: const EdgeInsets.all(1),
-                child: const Icon(Icons.close, size: 14, color: Colors.white),
+                padding: const EdgeInsets.all(2),
+                child: const Icon(
+                  Symbols.close_rounded,
+                  size: 13,
+                  weight: 700,
+                  color: Colors.white,
+                ),
               ),
             ),
             Positioned(
               left: 3,
-              bottom: 2,
-              child: Text(
-                '$number',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 3)],
+              bottom: 3,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 18),
+                height: 18,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Text(
+                  '$number',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -482,6 +573,9 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
     );
   }
 }
+
+/// Bo góc ô ảnh trong lưới.
+const double _tileRadius = 10;
 
 /// Vòng tròn góc ảnh: trống = chưa chọn, đỏ + số = đã chọn.
 class _NumberBadge extends StatelessWidget {
@@ -508,7 +602,7 @@ class _NumberBadge extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
               ),
             ),
     );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/features/documents/documents_logic.dart';
 import 'package:pdf_office/features/documents/documents_providers.dart';
@@ -72,14 +73,15 @@ void main() {
     await _settle(tester);
   }
 
-  Finder starOf(DocItem d) => find.descendant(
+  // Sao Material Symbols: đã thích = fill 1, chưa thích = fill 0 (cùng một glyph).
+  Finder starWithFill(DocItem d, double fill) => find.descendant(
     of: find.byKey(ValueKey(d.path)),
-    matching: find.byIcon(Icons.star),
+    matching: find.byWidgetPredicate(
+      (w) => w is Icon && w.icon == Symbols.star_rounded && w.fill == fill,
+    ),
   );
-  Finder starBorderOf(DocItem d) => find.descendant(
-    of: find.byKey(ValueKey(d.path)),
-    matching: find.byIcon(Icons.star_border),
-  );
+  Finder starOf(DocItem d) => starWithFill(d, 1);
+  Finder starBorderOf(DocItem d) => starWithFill(d, 0);
 
   testWidgets('sao đúng trạng thái theo favoritePathsProvider', (tester) async {
     await pumpTiles(tester);

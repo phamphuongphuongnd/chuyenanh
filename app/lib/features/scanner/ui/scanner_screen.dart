@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_ops/image_ops.dart' as ops;
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_document.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../data/settings/settings_providers.dart';
 import '../../../engines/ocr/ocr_engine.dart';
@@ -109,6 +111,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
         await showModalBottomSheet<({ops.ImageFilter filter, bool all})>(
           context: context,
           showDragHandle: true,
+          // Cao theo nội dung (mặc định bị giới hạn 9/16 màn), màn thấp thì cuộn.
+          isScrollControlled: true,
+          useSafeArea: true,
           builder: (_) => _FilterSheet(current: page.filter),
         );
     if (result == null || !mounted) return;
@@ -207,16 +212,19 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     final l = context.l10n;
     final pages = ref.watch(scanSessionProvider);
     final notifier = ref.read(scanSessionProvider.notifier);
+    final t = context.tokens;
     return PopScope(
       canPop: pages.isEmpty,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _confirmLeave();
       },
       child: Scaffold(
+        backgroundColor: t.bg,
+        // AppBar sáng theo theme mặc định (không đặt màu riêng).
         appBar: AppBar(title: Text(l.scan_title)),
         body: pages.isEmpty
             ? EmptyState(
-                icon: Icons.document_scanner_outlined,
+                icon: Symbols.document_scanner_rounded,
                 title: l.scan_emptyTitle,
                 message: l.scan_emptyMessage,
                 actionLabel: l.scan_scanButton,
@@ -224,7 +232,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
               )
             : ReorderableListView.builder(
                 buildDefaultDragHandles: false,
-                padding: const EdgeInsets.only(top: 6, bottom: 12),
+                padding: const EdgeInsets.only(top: 6, bottom: 16),
+                // Thẻ không đổ bóng kể cả khi đang kéo (thiết kế §1.6).
+                proxyDecorator: (child, _, _) =>
+                    Material(color: Colors.transparent, child: child),
                 itemCount: pages.length,
                 onReorderItem: (o, n) => notifier.reorder(o, n > o ? n + 1 : n),
                 itemBuilder: (context, i) {
@@ -242,27 +253,61 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
               ),
         bottomNavigationBar: pages.isEmpty
             ? null
-            : SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _addPages,
-                          icon: const Icon(Icons.add_a_photo_outlined),
-                          label: Text(l.scan_addMore),
+            : DecoratedBox(
+                // Thanh dưới: nền `surface`, kẻ trên `line`; 2 nút viên.
+                decoration: BoxDecoration(
+                  color: t.surface,
+                  border: Border(top: BorderSide(color: t.line)),
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(0, 50),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                            ),
+                            onPressed: _addPages,
+                            icon: const Icon(
+                              Symbols.add_a_photo_rounded,
+                              size: 20,
+                            ),
+                            label: Text(
+                              l.scan_addMore,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: _export,
-                          icon: const Icon(Icons.ios_share),
-                          label: Text(l.scan_export),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.icon(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(0, 50),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              shape: const StadiumBorder(),
+                            ),
+                            onPressed: _export,
+                            icon: const Icon(Symbols.ios_share_rounded, size: 20),
+                            label: Text(
+                              l.scan_export,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -284,33 +329,94 @@ class _FilterSheetState extends State<_FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
+    final t = context.tokens;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      top: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final f in ops.ImageFilter.values)
-                  ChoiceChip(
-                    label: Text(scanFilterLabel(context, f)),
-                    selected: f == widget.current,
-                    onSelected: (_) =>
-                        Navigator.of(context).pop((filter: f, all: _all)),
-                  ),
-              ],
+            SheetTitle(l.scan_filter),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final f in ops.ImageFilter.values)
+                    _FilterPill(
+                      label: scanFilterLabel(context, f),
+                      selected: f == widget.current,
+                      onTap: () =>
+                          Navigator.of(context).pop((filter: f, all: _all)),
+                    ),
+                ],
+              ),
             ),
+            const SizedBox(height: 10),
             CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
               controlAffinity: ListTileControlAffinity.leading,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              activeColor: AppColors.primary,
               value: _all,
               onChanged: (v) => setState(() => _all = v ?? false),
-              title: Text(context.l10n.scan_applyToAll),
+              title: Text(
+                l.scan_applyToAll,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: t.text,
+                ),
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Chip bộ lọc dạng viên cao 36: đang chọn = nền đỏ chữ trắng, chưa chọn = `surface2`.
+class _FilterPill extends StatelessWidget {
+  const _FilterPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Material(
+      color: selected ? AppColors.primary : t.surface2,
+      shape: const StadiumBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          alignment: Alignment.center,
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              color: selected ? Colors.white : t.text,
+            ),
+          ),
         ),
       ),
     );
@@ -345,57 +451,119 @@ class _ExportSheetState extends State<_ExportSheet> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final t = context.tokens;
     return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SwitchListTile(
-            secondary: const Icon(Icons.manage_search),
-            title: Text(l.scan_searchablePdf),
-            subtitle: Text(l.scan_searchablePdfHint),
-            value: _searchable,
-            onChanged: (v) => setState(() => _searchable = v),
-          ),
-          ListTile(
-            leading: const Icon(Icons.picture_as_pdf_outlined),
-            title: Text(l.scan_exportPdf),
-            onTap: () => _pick(_ExportKind.pdf),
-          ),
-          ListTile(
-            leading: const Icon(Icons.article_outlined),
-            title: Text(l.scan_exportDocx),
-            onTap: () => _pick(_ExportKind.docx),
-          ),
-          ListTile(
-            leading: const Icon(Icons.text_snippet_outlined),
-            title: Text(l.scan_exportTxt),
-            onTap: () => _pick(_ExportKind.txt),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-            child: Row(
-              children: [
-                Expanded(child: Text(l.scan_ocrLanguage)),
-                const SizedBox(width: 8),
-                DropdownButton<OcrScript>(
+      top: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SheetTitle(l.scan_export),
+            // Công tắc OCR trong khối nền `primarySoft` bo 16.
+            Material(
+              color: t.primarySoft,
+              borderRadius: BorderRadius.circular(16),
+              clipBehavior: Clip.antiAlias,
+              child: SwitchListTile(
+                contentPadding: const EdgeInsets.fromLTRB(14, 4, 10, 4),
+                secondary: Icon(
+                  Symbols.manage_search_rounded,
+                  color: t.primaryText,
+                ),
+                title: Text(
+                  l.scan_searchablePdf,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: t.text,
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    l.scan_searchablePdfHint,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      color: t.textMuted,
+                    ),
+                  ),
+                ),
+                value: _searchable,
+                onChanged: (v) => setState(() => _searchable = v),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SheetOption(
+              icon: Symbols.picture_as_pdf_rounded,
+              label: l.scan_exportPdf,
+              onTap: () => _pick(_ExportKind.pdf),
+            ),
+            SheetOption(
+              icon: Symbols.article_rounded,
+              label: l.scan_exportDocx,
+              onTap: () => _pick(_ExportKind.docx),
+            ),
+            SheetOption(
+              icon: Symbols.text_snippet_rounded,
+              label: l.scan_exportTxt,
+              onTap: () => _pick(_ExportKind.txt),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Text(
+                l.scan_ocrLanguage,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: t.textMuted,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Dropdown ngôn ngữ OCR: ô bo 14 nền `input`.
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: t.input,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<OcrScript>(
                   value: _script,
-                  isDense: true,
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(14),
+                  dropdownColor: t.surface,
+                  icon: Icon(
+                    Symbols.expand_more_rounded,
+                    color: t.textMuted,
+                  ),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: t.text,
+                  ),
                   items: [
                     for (final s in OcrScript.values)
                       DropdownMenuItem(
                         value: s,
                         child: Text(
                           _scriptName(s),
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                   ],
                   onChanged: (s) => setState(() => _script = s ?? _script),
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

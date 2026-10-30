@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_ops/image_ops.dart' as ops;
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 
 /// Tên hiển thị của bộ lọc theo ngôn ngữ hiện tại.
 String filterLabel(BuildContext context, ops.ImageFilter filter) {
@@ -16,7 +17,43 @@ String filterLabel(BuildContext context, ops.ImageFilter filter) {
   };
 }
 
-/// Bảng chọn bộ lọc. Trả về bộ lọc được chọn, `null` nếu đóng.
+/// Chip lựa chọn dạng viên theo thiết kế: bo 18, cao ~36; chọn = nền đỏ chữ trắng,
+/// chưa chọn = nền `surface2` chữ `text`. [onSelected] = null thì chip bị khoá (mờ đi).
+/// Vẫn là [ChoiceChip] để giữ ngữ nghĩa trợ năng và test dò `selected` / `onSelected`.
+Widget pillChoiceChip(
+  BuildContext context, {
+  required String label,
+  required bool selected,
+  required ValueChanged<bool>? onSelected,
+}) {
+  final t = context.tokens;
+  final enabled = onSelected != null;
+  final Color bg = selected ? AppColors.primary : t.surface2;
+  final Color fg = selected ? Colors.white : (enabled ? t.text : t.textMuted);
+  return Opacity(
+    opacity: enabled ? 1 : 0.5,
+    child: ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: onSelected,
+      showCheckmark: false,
+      elevation: 0,
+      pressElevation: 0,
+      color: WidgetStatePropertyAll(bg),
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      labelPadding: EdgeInsets.zero,
+      labelStyle: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: fg,
+      ),
+    ),
+  );
+}
+
+/// Bảng chọn bộ lọc (chọn chip là đóng ngay). Trả về bộ lọc được chọn, `null` nếu đóng.
 Future<ops.ImageFilter?> showFilterSheet(
   BuildContext context, {
   required ops.ImageFilter current,
@@ -26,23 +63,28 @@ Future<ops.ImageFilter?> showFilterSheet(
     showDragHandle: true,
     builder: (ctx) => SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               ctx.l10n.img2pdf_filter,
-              style: Theme.of(ctx).textTheme.titleLarge,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: ctx.tokens.text,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
                 for (final f in ops.ImageFilter.values)
-                  ChoiceChip(
-                    label: Text(filterLabel(ctx, f)),
+                  pillChoiceChip(
+                    ctx,
+                    label: filterLabel(ctx, f),
                     selected: f == current,
                     onSelected: (_) => Navigator.of(ctx).pop(f),
                   ),

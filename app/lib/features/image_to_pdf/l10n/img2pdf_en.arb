@@ -3,7 +3,7 @@
   "img2pdf_title": "Image to PDF",
   "img2pdf_pickTitle": "Select images",
   "img2pdf_permissionTitle": "Photo access needed",
-  "img2pdf_permissionMessage": "Allow PDF Office to read your photos so you can choose images to convert.",
+  "img2pdf_permissionMessage": "Allow Phiotron PDF to read your photos so you can choose images to convert.",
   "img2pdf_allowAccess": "Allow access",
   "img2pdf_openSettings": "Open settings",
   "img2pdf_limitedAccess": "Only some of your photos are accessible.",

@@ -18,7 +18,7 @@
   "docs_emptyFavoritesHint": "Ketuk bintang pada file untuk menambahkannya ke sini",
   "docs_emptySearch": "Tidak ada file yang cocok",
   "docs_permissionTitle": "Izinkan akses ke file",
-  "docs_permissionMessage": "PDF Office memerlukan akses ke semua file untuk menemukan dokumen di perangkat ini.",
+  "docs_permissionMessage": "Phiotron PDF memerlukan akses ke semua file untuk menemukan dokumen di perangkat ini.",
   "docs_grantPermission": "Beri izin",
   "docs_pickFileInstead": "Pilih file secara manual",
   "docs_permissionBanner": "Beri izin akses file untuk menemukan semua dokumen",
@@ -56,5 +56,7 @@
   "docs_lockedPdf": "PDF dengan kata sandi",
   "docs_navHome": "Beranda",
   "docs_navFiles": "Berkas",
-  "docs_viewAll": "Lihat semua"
+  "docs_viewAll": "Lihat semua",
+  "docs_shortcuts": "Pintasan",
+  "docs_countDocs": "{count} dokumen"
 }

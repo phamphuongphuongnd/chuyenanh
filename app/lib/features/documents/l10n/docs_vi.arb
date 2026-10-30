@@ -18,7 +18,7 @@
   "docs_emptyFavoritesHint": "Nhấn ngôi sao ở một file để thêm vào đây",
   "docs_emptySearch": "Không có file phù hợp",
   "docs_permissionTitle": "Cho phép truy cập file",
-  "docs_permissionMessage": "PDF Office cần quyền truy cập tất cả file để tìm tài liệu trên thiết bị.",
+  "docs_permissionMessage": "Phiotron PDF cần quyền truy cập tất cả file để tìm tài liệu trên thiết bị.",
   "docs_grantPermission": "Cấp quyền",
   "docs_pickFileInstead": "Chọn file thủ công",
   "docs_permissionBanner": "Cấp quyền truy cập file để tìm tất cả tài liệu",
@@ -56,5 +56,7 @@
   "docs_lockedPdf": "PDF có mật khẩu",
   "docs_navHome": "Trang chủ",
   "docs_navFiles": "Tập tin",
-  "docs_viewAll": "Xem tất cả"
+  "docs_viewAll": "Xem tất cả",
+  "docs_shortcuts": "Lối tắt",
+  "docs_countDocs": "{count} tài liệu"
 }

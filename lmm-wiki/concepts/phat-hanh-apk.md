@@ -1,7 +1,7 @@
 ---
 title: Phát hành APK — build release, link tải GitHub Release
 type: concept
-updated: 2026-10-27
+updated: 2026-10-30
 sources:
   - app/android/app/build.gradle.kts
   - app/android/app/proguard-rules.pro
@@ -54,3 +54,11 @@ Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].
 - APK trên Release `android-latest` đã được thay bằng bản build 29/10 (96.360.245 byte, SHA-256 `6ef26eb1…8d4917`, gồm hỗ trợ iPhone và sửa nhãn OCR), ký bằng khoá debug MỚI (xem [[build-android]]).
   Bản cũ (119.651.285 byte, khoá cũ) được lưu ở `dist/backup/PDFOffice.apk` (gitignore) — tải lên lại bằng `gh release upload android-latest dist/backup/PDFOffice.apk --clobber` nếu cần quay lại.
 - Máy đã có `gh` (người dùng tự đăng nhập): tải lên Release bằng `gh release upload <tag> <file> --clobber`, kiểm bằng `gh release view <tag> --json assets` (trường `digest` là SHA-256 để đối chiếu).
+
+## Cập nhật 30/10/2026
+- **Gotcha:** bản 29/10 (96MB) **thiếu font Noto** (máy build không có `app/assets/fonts/*.ttf` vì font bị gitignore) → PDF xuất lỗi chữ có dấu.
+  Luôn chạy `bash tool/fetch_fonts.sh` trước khi build release; bản có đủ Noto ≈ 114MB, không có ≈ 92MB — **nhìn dung lượng để biết thiếu font**.
+- Release `android-latest` thay 2 lần: bản Nhóm 1 (120.039.890 byte, `dist/backup/PDFOffice-2026-10-30-nhom1.apk`) rồi bản giao diện mới
+  Phiotron PDF (120.000.714 byte, sha256 `3f719ff0…aa517`). Bản 29/10 lưu `dist/backup/PDFOffice-2026-10-29.apk`. Quy trình: kiểm sha của bản
+  online = `dist/PDFOffice.apk` → sao lưu → chép bản mới → `gh release upload --clobber` → `curl -sIL` thấy đúng `Content-Length`.
+- Người dùng cho phép thay link khi nói rõ ("thay cho tôi", "Thay link tải"); mỗi lần build mới vẫn hỏi lại. Xem [[giao-dien-phiotron]].

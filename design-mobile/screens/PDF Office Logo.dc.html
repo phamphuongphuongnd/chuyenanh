@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap"><style>body{margin:0;background:#E8E5E1;font-family:'Be Vietnam Pro',system-ui,sans-serif}a{color:#C62828}a:hover{color:#E5393B}</style></helmet>
+<section id="t1" style="padding:44px 48px 36px;display:flex;flex-direction:column;gap:22px;color:#1C1918">
+  <div style="display:flex;align-items:baseline;gap:10px">
+    <a href="#t1" style="font:600 11px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1C1918;color:#fff;border-radius:4px;text-decoration:none">1</a>
+    <span style="font-size:20px;font-weight:800">Logo Phiotron PDF — 4 phương án có ký hiệu "P"</span><span style="font-size:13px;font-weight:600;color:#fff;background:#E5393B;padding:3px 10px;border-radius:12px">Đã chọn: 1c</span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+    <sc-if value="{{ ready }}"><sc-for list="{{ concepts }}" as="c" hint-placeholder-count="0">
+    <div id="{{ c.id }}" style="flex:none;width:520px;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <a href="{{ c.href }}" style="font:600 11px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1C1918;border-radius:5px;text-decoration:none">{{ c.id }}</a>
+        <span style="font-size:16px;font-weight:700">{{ c.name }}</span>
+      </div>
+      <div style="background:#fff;border-radius:14px;border:1px solid rgba(0,0,0,.08);box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;display:flex;flex-direction:column">
+        <div style="display:grid;grid-template-columns:1fr 1fr">
+          <div style="background:#F3F0EC;padding:28px 20px 18px;display:flex;flex-direction:column;align-items:center;gap:16px">
+            <img src="{{ c.color }}" alt="" style="width:148px;height:148px;display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.14))">
+            <div style="display:flex;align-items:center;gap:12px">
+              <img src="{{ c.color }}" alt="" style="flex:none;width:48px;height:48px;display:block">
+              <img src="{{ c.color }}" alt="" style="flex:none;width:32px;height:32px;display:block">
+              <span style="font-size:11.5px;color:#6B6461;font-weight:500">Nền sáng · 48 / 32px</span>
+            </div>
+          </div>
+          <div style="background:#151312;padding:28px 20px 18px;display:flex;flex-direction:column;align-items:center;gap:16px">
+            <img src="{{ c.color }}" alt="" style="width:148px;height:148px;display:block">
+            <div style="display:flex;align-items:center;gap:12px">
+              <img src="{{ c.color }}" alt="" style="flex:none;width:48px;height:48px;display:block">
+              <img src="{{ c.color }}" alt="" style="flex:none;width:32px;height:32px;display:block">
+              <span style="font-size:11.5px;color:#A8A09C;font-weight:500">Nền tối · 48 / 32px</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(0,0,0,.08)">
+          <div style="background:#FAF8F6;padding:18px 20px;display:flex;align-items:center;gap:14px">
+            <div style="flex:none;width:84px;height:84px;border-radius:42px;background:#E9DFD9;display:flex;align-items:center;justify-content:center"><img src="{{ c.mono }}" alt="" style="width:62px;height:62px;opacity:.82"></div>
+            <div style="flex:none;width:48px;height:48px;border-radius:24px;background:#E9DFD9;display:flex;align-items:center;justify-content:center"><img src="{{ c.mono }}" alt="" style="width:36px;height:36px;opacity:.82"></div>
+            <span style="font-size:11.5px;color:#6B6461;font-weight:500;line-height:1.35">1 màu · Android 13<br>giao diện sáng</span>
+          </div>
+          <div style="background:#1F1B1A;padding:18px 20px;display:flex;align-items:center;gap:14px">
+            <div style="flex:none;width:84px;height:84px;border-radius:42px;background:#3A3230;display:flex;align-items:center;justify-content:center"><img src="{{ c.mono }}" alt="" style="width:62px;height:62px;filter:invert(1);opacity:.9"></div>
+            <div style="flex:none;width:48px;height:48px;border-radius:24px;background:#3A3230;display:flex;align-items:center;justify-content:center"><img src="{{ c.mono }}" alt="" style="width:36px;height:36px;filter:invert(1);opacity:.9"></div>
+            <span style="font-size:11.5px;color:#A8A09C;font-weight:500;line-height:1.35">1 màu · Android 13<br>giao diện tối</span>
+          </div>
+        </div>
+        <div style="padding:14px 18px 16px;font-size:13.5px;line-height:1.55;color:#3B3634;border-top:1px solid rgba(0,0,0,.08);text-wrap:pretty">{{ c.desc }}</div>
+      </div>
+    </div>
+    </sc-for></sc-if>
+  </div>
+  <p style="margin:4px 0 0;font-size:12.5px;line-height:1.6;color:rgba(0,0,0,.55);max-width:1100px">Tất cả là hình vector tự vẽ (file SVG trong <b>assets/logo-*-color.svg</b> và <b>logo-*-mono.svg</b>), không dùng font. Chữ "P" dựng từ hình khối, không đặt chữ rời. Gợi ý tiếp: "phát triển <a href="#1d">1d</a> với nền tối" · "kết hợp góc gập của <a href="#1a">1a</a> với thẻ màu của <a href="#1c">1c</a>" · "áp logo đã chọn vào app"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const c = (n, name, desc) => ({ id: `1${'abcd'[n - 1]}`, href: `#1${'abcd'[n - 1]}`, name, desc, color: `assets/logo-${n}-color.svg`, mono: `assets/logo-${n}-mono.svg` });
+    return { ready: true, concepts: [
+      c(1, 'Trang gập chữ P', 'Chữ P chính là một trang tài liệu: góc gập màu đỏ nằm ở vai chữ P, còn lòng chữ P là khoảng trống trên trang.'),
+      c(2, 'Khung quét P', 'Bốn góc khung ngắm của máy quét ôm lấy chữ P, tia quét ngang chạy đúng theo nét bụng chữ, gợi ý quét và nhận dạng chữ.'),
+      c(3, 'Xấp định dạng', 'Bốn tấm thẻ màu theo loại file DOC, XLS, PPT, PDF xoè ra như quạt; chữ P được khoét rỗng trên tấm phía trước: nhiều định dạng trong một app.'),
+      c(4, 'Vòng chuyển P', 'Bụng chữ P là một vòng chuyển đổi tách làm hai nửa đỏ và xanh, như một file đi từ định dạng này sang định dạng khác.'),
+    ] };
+  }
+}
+</script>
+</body>
+</html>

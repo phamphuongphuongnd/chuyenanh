@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
@@ -10,6 +11,7 @@ import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/navigation/open_document.dart';
 import '../../core/platform/app_platform.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/file_paths.dart';
 import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
@@ -257,125 +259,141 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final mode = widget.mode;
-    final theme = Theme.of(context);
+    final t = context.tokens;
     final pageSize = _pageSize ?? ref.watch(settingsProvider).defaultPageSize;
     return Scaffold(
+      backgroundColor: t.bg,
       appBar: AppBar(title: Text(_modeTitle(context, mode))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          if (mode == ConvertMode.textToPdf) ...[
-            TextField(
-              controller: _text,
-              minLines: 8,
-              maxLines: 14,
-              decoration: InputDecoration(
-                hintText: l.conv_textHint,
-                border: const OutlineInputBorder(),
+          // 1. Đầu vào: ô gõ chữ (Văn bản sang PDF) hoặc thẻ chọn file.
+          if (mode == ConvertMode.textToPdf)
+            _Block(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _text,
+                    minLines: 8,
+                    maxLines: 14,
+                    style: TextStyle(fontSize: 15, height: 1.5, color: t.text),
+                    decoration: InputDecoration(
+                      hintText: l.conv_textHint,
+                      hintStyle: TextStyle(color: t.textMuted),
+                      filled: true,
+                      fillColor: t.input,
+                      contentPadding: const EdgeInsets.all(14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : _pick,
+                    icon: const Icon(Symbols.description_rounded, size: 20),
+                    label: Text(l.conv_loadTxt),
+                  ),
+                ],
               ),
+            )
+          else
+            _FileCard(
+              path: _inputPath,
+              placeholderExtension: mode.inputExtensions.single,
+              title: _inputPath == null
+                  ? l.conv_chooseFile
+                  : l.conv_chosenFile(p.basename(_inputPath!)),
+              changeTooltip: l.core_selectFile,
+              onTap: _busy ? null : _pick,
             ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton.icon(
-                onPressed: _busy ? null : _pick,
-                icon: const Icon(Icons.description_outlined),
-                label: Text(l.conv_loadTxt),
-              ),
-            ),
-          ] else ...[
-            Card(
-              child: ListTile(
-                leading: FileTypeIcon.forPath(_inputPath ?? 'x.${mode.inputExtensions.single}'),
-                title: Text(
-                  _inputPath == null ? l.conv_chooseFile : l.conv_chosenFile(p.basename(_inputPath!)),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const Icon(Icons.folder_open),
-                onTap: _busy ? null : _pick,
-              ),
-            ),
-          ],
+          // 2. Cảnh báo không giữ bố cục (PDF sang Word/Excel).
           if (mode.rebuildsLayout) ...[
             const SizedBox(height: 12),
             _Notice(text: l.conv_layoutNotice),
           ],
+          // 3. Mọi chế độ từ PDF: thông báo OCR + chọn ngôn ngữ chữ trên trang quét.
           if (mode.fromPdf) ...[
             const SizedBox(height: 12),
             _Notice(text: l.conv_ocrNotice),
-            const SizedBox(height: 8),
             // Nhãn trên, ô chọn dưới và giãn hết bề ngang: đặt chung một hàng thì ô chọn (chữ dài) chiếm gần hết
             // chiều rộng, nhãn bị ép thành cột dọc từng chữ trên điện thoại hẹp (thấy trên iPhone).
-            Text(l.conv_ocrLanguage),
-            DropdownButton<OcrScript>(
-              value: _ocrScript ?? _defaultOcrScript(),
-              isDense: true,
-              isExpanded: true,
-              items: [
-                for (final s in OcrScript.values)
-                  DropdownMenuItem(
-                    value: s,
-                    child: Text(_scriptName(s), overflow: TextOverflow.ellipsis),
-                  ),
-              ],
-              onChanged: _busy ? null : (s) => setState(() => _ocrScript = s),
-            ),
-          ],
-          if (mode.toPdf) ...[
-            const SizedBox(height: 16),
-            Text(l.conv_options, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(child: Text(l.conv_pageSize)),
-                SegmentedButton<PageSizeOption>(
-                  showSelectedIcon: false,
-                  segments: const [
-                    ButtonSegment(value: PageSizeOption.a4, label: Text('A4')),
-                    ButtonSegment(value: PageSizeOption.letter, label: Text('Letter')),
-                  ],
-                  selected: {pageSize == PageSizeOption.letter ? PageSizeOption.letter : PageSizeOption.a4},
-                  onSelectionChanged: (s) => setState(() => _pageSize = s.single),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(child: Text(l.conv_orientation)),
-                SegmentedButton<bool>(
-                  showSelectedIcon: false,
-                  segments: [
-                    ButtonSegment(value: false, label: Text(l.conv_portrait)),
-                    ButtonSegment(value: true, label: Text(l.conv_landscape)),
-                  ],
-                  selected: {_landscape},
-                  onSelectionChanged: (s) => setState(() => _landscape = s.single),
-                ),
-              ],
-            ),
-            if (mode == ConvertMode.textToPdf)
-              _SliderRow(
-                label: l.conv_fontSize,
-                value: _fontSize,
-                min: 8,
-                max: 24,
-                onChanged: (v) => setState(() => _fontSize = v),
+            _SectionLabel(l.conv_ocrLanguage),
+            _Block(
+              padding: const EdgeInsets.all(12),
+              child: _Dropdown<OcrScript>(
+                value: _ocrScript ?? _defaultOcrScript(),
+                items: [
+                  for (final s in OcrScript.values)
+                    DropdownMenuItem(
+                      value: s,
+                      child: Text(_scriptName(s), overflow: TextOverflow.ellipsis),
+                    ),
+                ],
+                onChanged: _busy ? null : (s) => setState(() => _ocrScript = s),
               ),
-            _SliderRow(
-              label: l.conv_margin,
-              value: _margin,
-              min: 0,
-              max: 72,
-              onChanged: (v) => setState(() => _margin = v),
             ),
           ],
-          const SizedBox(height: 20),
+          // 4. Mọi chế độ sang PDF: mục Tuỳ chọn.
+          if (mode.toPdf) ...[
+            _SectionLabel(l.conv_options),
+            CardSection(
+              children: [
+                _OptionRow(
+                  label: l.conv_pageSize,
+                  child: SegmentedButton<PageSizeOption>(
+                    style: _pillSegmentStyle(context),
+                    showSelectedIcon: false,
+                    segments: const [
+                      ButtonSegment(value: PageSizeOption.a4, label: Text('A4')),
+                      ButtonSegment(value: PageSizeOption.letter, label: Text('Letter')),
+                    ],
+                    selected: {pageSize == PageSizeOption.letter ? PageSizeOption.letter : PageSizeOption.a4},
+                    onSelectionChanged: (s) => setState(() => _pageSize = s.single),
+                  ),
+                ),
+                _OptionRow(
+                  label: l.conv_orientation,
+                  child: SegmentedButton<bool>(
+                    style: _pillSegmentStyle(context),
+                    showSelectedIcon: false,
+                    segments: [
+                      ButtonSegment(value: false, label: Text(l.conv_portrait)),
+                      ButtonSegment(value: true, label: Text(l.conv_landscape)),
+                    ],
+                    selected: {_landscape},
+                    onSelectionChanged: (s) => setState(() => _landscape = s.single),
+                  ),
+                ),
+                if (mode == ConvertMode.textToPdf)
+                  _SliderRow(
+                    label: l.conv_fontSize,
+                    value: _fontSize,
+                    min: 8,
+                    max: 24,
+                    onChanged: (v) => setState(() => _fontSize = v),
+                  ),
+                _SliderRow(
+                  label: l.conv_margin,
+                  value: _margin,
+                  min: 0,
+                  max: 72,
+                  onChanged: (v) => setState(() => _margin = v),
+                ),
+              ],
+            ),
+          ],
+          // 5. Nút chính.
+          const SizedBox(height: 24),
           FilledButton(
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
             onPressed: _busy ? null : _convert,
             child: Text(l.conv_convert),
           ),
+          // 6. Thẻ kết quả ngay trong màn.
           if (_resultPath != null) ...[
             const SizedBox(height: 20),
             _ResultCard(path: _resultPath!),
@@ -386,29 +404,203 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
   }
 }
 
+/// Kiểu viên cho [SegmentedButton]: đoạn đang chọn nền đỏ chủ đạo chữ trắng, còn lại nền `surface2`.
+ButtonStyle _pillSegmentStyle(BuildContext context) {
+  final t = context.tokens;
+  return SegmentedButton.styleFrom(
+    backgroundColor: t.surface2,
+    foregroundColor: t.text,
+    selectedBackgroundColor: AppColors.primary,
+    selectedForegroundColor: Colors.white,
+    side: BorderSide.none,
+    shape: const StadiumBorder(),
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+  );
+}
+
+/// Khối nền `surface` bo 20, không bóng.
+class _Block extends StatelessWidget {
+  const _Block({super.key, required this.child, this.padding = const EdgeInsets.all(16)});
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: padding,
+    decoration: BoxDecoration(
+      color: context.tokens.surface,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: child,
+  );
+}
+
+/// Nhãn mục 13/w700 màu phụ, đặt trên mỗi khối.
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(6, 22, 6, 8),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        color: context.tokens.textMuted,
+      ),
+    ),
+  );
+}
+
+/// Thẻ chọn file: icon loại file + tên + nút đổi file; bấm cả thẻ cũng mở bộ chọn.
+class _FileCard extends StatelessWidget {
+  const _FileCard({
+    required this.path,
+    required this.placeholderExtension,
+    required this.title,
+    required this.changeTooltip,
+    required this.onTap,
+  });
+
+  final String? path;
+  final String placeholderExtension;
+  final String title;
+  final String changeTooltip;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Material(
+      color: t.surface,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+          child: Row(
+            children: [
+              FileTypeIcon.forPath(path ?? 'x.$placeholderExtension', size: 40),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: t.text,
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: changeTooltip,
+                onPressed: onTap,
+                icon: Icon(Symbols.folder_open_rounded, color: t.textMuted),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dropdown bo 14 nền ô nhập.
+class _Dropdown<T> extends StatelessWidget {
+  const _Dropdown({required this.value, required this.items, required this.onChanged});
+
+  final T value;
+  final List<DropdownMenuItem<T>> items;
+  final ValueChanged<T?>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Container(
+      padding: const EdgeInsets.only(left: 14, right: 8),
+      decoration: BoxDecoration(
+        color: t.input,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<T>(
+          value: value,
+          isExpanded: true,
+          borderRadius: BorderRadius.circular(14),
+          dropdownColor: t.surface,
+          icon: Icon(Symbols.expand_more_rounded, color: t.textMuted),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: t.text),
+          items: items,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+}
+
+/// Khung thông báo: nền `surface2` bo 16, icon ⓘ màu phụ.
 class _Notice extends StatelessWidget {
   const _Notice({required this.text});
   final String text;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: scheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(8),
+        color: t.surface2,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, color: scheme.onSecondaryContainer),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text, style: TextStyle(color: scheme.onSecondaryContainer))),
+          Icon(Symbols.info_rounded, size: 20, color: t.textMuted),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 13.5, height: 1.45, color: t.text),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+/// Một dòng tuỳ chọn trong thẻ: nhãn bên trái, điều khiển bên phải.
+class _OptionRow extends StatelessWidget {
+  const _OptionRow({required this.label, required this.child});
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: context.tokens.text,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        child,
+      ],
+    ),
+  );
 }
 
 class _SliderRow extends StatelessWidget {
@@ -428,24 +620,47 @@ class _SliderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(width: 96, child: Text(label)),
-        Expanded(
-          child: Slider(
-            value: value.clamp(min, max),
-            min: min,
-            max: max,
-            divisions: (max - min).round(),
-            label: value.round().toString(),
-            onChanged: onChanged,
+    final t = context.tokens;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 96,
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: t.text),
+            ),
           ),
-        ),
-        SizedBox(width: 32, child: Text(value.round().toString(), textAlign: TextAlign.end)),
-      ],
+          Expanded(
+            child: Slider(
+              value: value.clamp(min, max),
+              min: min,
+              max: max,
+              divisions: (max - min).round(),
+              label: value.round().toString(),
+              activeColor: AppColors.primary,
+              inactiveColor: AppColors.primary.withValues(alpha: 0.16),
+              thumbColor: AppColors.primary,
+              onChanged: onChanged,
+            ),
+          ),
+          SizedBox(
+            width: 32,
+            child: Text(
+              value.round().toString(),
+              textAlign: TextAlign.end,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: t.textMuted),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
+
+/// Màu xanh "xong" của dấu ✓ (màu XLS trong bảng loại file).
+const _successGreen = Color(0xFF43A047);
 
 class _ResultCard extends StatelessWidget {
   const _ResultCard({required this.path});
@@ -454,28 +669,60 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final t = context.tokens;
     final canOpen = routeForDocument(path) != null;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.green),
-                const SizedBox(width: 8),
-                Text(l.conv_doneTitle, style: Theme.of(context).textTheme.titleMedium),
-              ],
+    final share = OutlinedButton.icon(
+      onPressed: () =>
+          SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(path)],
+              sharePositionOrigin: defaultShareOrigin(),
             ),
-            const SizedBox(height: 8),
-            Text(l.conv_savedAs(path)),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              children: [
-                if (canOpen)
-                  FilledButton.tonalIcon(
+          ),
+      icon: const Icon(Symbols.share_rounded, size: 20),
+      label: Text(l.core_share, overflow: TextOverflow.ellipsis),
+    );
+    return _Block(
+      key: const Key('conv_result'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: _successGreen.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Symbols.check_rounded, color: _successGreen, size: 26),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l.conv_doneTitle,
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: t.text),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // SelectionArea + Text (không dùng SelectableText): chọn được chữ mà vẫn là widget [Text],
+          // integration test đọc đường dẫn file kết quả qua `tester.widget<Text>`.
+          SelectionArea(
+            child: Text(
+              l.conv_savedAs(path),
+              style: TextStyle(fontSize: 13.5, height: 1.45, color: t.textMuted),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              if (canOpen) ...[
+                Expanded(
+                  child: FilledButton.icon(
                     onPressed: () async {
                       try {
                         await openDocument(context, path);
@@ -487,24 +734,16 @@ class _ResultCard extends StatelessWidget {
                         }
                       }
                     },
-                    icon: const Icon(Icons.open_in_new),
-                    label: Text(l.core_open),
+                    icon: const Icon(Symbols.open_in_new_rounded, size: 20),
+                    label: Text(l.core_open, overflow: TextOverflow.ellipsis),
                   ),
-                OutlinedButton.icon(
-                  onPressed: () =>
-                      SharePlus.instance.share(
-                        ShareParams(
-                          files: [XFile(path)],
-                          sharePositionOrigin: defaultShareOrigin(),
-                        ),
-                      ),
-                  icon: const Icon(Icons.share),
-                  label: Text(l.core_share),
                 ),
+                const SizedBox(width: 10),
               ],
-            ),
-          ],
-        ),
+              Expanded(child: share),
+            ],
+          ),
+        ],
       ),
     );
   }

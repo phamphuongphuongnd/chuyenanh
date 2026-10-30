@@ -48,7 +48,7 @@ void main() {
     for (final id in [0, 1, 2]) {
       expect(find.byKey(ValueKey('tile_$id')), findsOneWidget);
     }
-    expect(find.text('CREATE PDF (3)'), findsOneWidget);
+    expect(find.text('Create PDF (3)'), findsOneWidget);
     // ảnh xem trước lớn dùng đường dẫn ảnh đầu
     expect(h.processor.previews.any((e) => e.$1 == '/a.jpg' && e.$3 == 1400), isTrue);
   });
@@ -214,7 +214,7 @@ void main() {
 
     expect(find.text('Edit images'), findsOneWidget);
     expect(find.text('4 / 5'), findsOneWidget, reason: 'ảnh mới thêm đầu tiên được chọn xem');
-    expect(find.text('CREATE PDF (5)'), findsOneWidget);
+    expect(find.text('Create PDF (5)'), findsOneWidget);
     expect(h.gallery.resolved, ['all_0', 'all_5']);
   });
 
@@ -224,7 +224,7 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(find.text('Discard changes?'), findsOneWidget);
-      await tester.tap(find.text('NO'));
+      await tester.tap(find.text('No'));
       await tester.pumpAndSettle();
       expect(find.text('Edit images'), findsOneWidget);
     });
@@ -233,7 +233,7 @@ void main() {
       await open(tester);
       await tester.pageBack();
       await tester.pumpAndSettle();
-      await tester.tap(find.text('YES'));
+      await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
       expect(find.text('HOME'), findsOneWidget);
     });
@@ -290,7 +290,7 @@ void main() {
       await tester.tap(find.text('Large'));
       await tester.pump();
       await tester.enterText(find.byType(TextField), 'Hop dong.pdf');
-      await tester.tap(find.text('CREATE PDF').last);
+      await tester.tap(find.text('Create PDF').last);
       await tester.pump();
       await settleReal(tester);
 
@@ -319,7 +319,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('tool_rotate')));
       await tester.pump();
       await openOptions(tester);
-      await tester.tap(find.text('CREATE PDF').last);
+      await tester.tap(find.text('Create PDF').last);
       await tester.pump();
       await settleReal(tester);
 
@@ -335,7 +335,7 @@ void main() {
       final engine = FakeEngine()..error = const NoSpace();
       await open(tester, engine: engine);
       await openOptions(tester);
-      await tester.tap(find.text('CREATE PDF').last);
+      await tester.tap(find.text('Create PDF').last);
       await tester.pump();
       await settleReal(tester);
 

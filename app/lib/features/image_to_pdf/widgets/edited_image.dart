@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_ops/image_ops.dart' as ops;
+import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../image_to_pdf_providers.dart';
 import '../models/image_item.dart';
 
@@ -88,7 +90,13 @@ class _EditedImageState extends ConsumerState<EditedImage> {
             filterQuality: FilterQuality.medium,
           )
         else if (_failed)
-          const Center(child: Icon(Icons.broken_image_outlined, size: 32)),
+          Center(
+            child: Icon(
+              Symbols.broken_image_rounded,
+              size: 32,
+              color: context.tokens.textMuted,
+            ),
+          ),
         if (_loading)
           const Center(
             child: SizedBox(

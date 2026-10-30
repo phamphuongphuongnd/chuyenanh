@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../image_to_pdf_providers.dart';
 import '../services/gallery_service.dart';
 
@@ -57,7 +59,7 @@ class _GalleryThumbState extends ConsumerState<GalleryThumb> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return FutureBuilder<Uint8List?>(
       future: _future,
       builder: (context, snap) {
@@ -70,10 +72,11 @@ class _GalleryThumbState extends ConsumerState<GalleryThumb> {
             filterQuality: FilterQuality.low,
           );
         }
+        // Chờ tải / lỗi: nền `surface2` (giống skeleton), lỗi thì thêm icon ảnh hỏng.
         return ColoredBox(
-          color: colors.surfaceContainerHighest,
+          color: t.surface2,
           child: snap.connectionState == ConnectionState.done
-              ? Icon(Icons.broken_image_outlined, color: colors.outline)
+              ? Icon(Symbols.broken_image_rounded, color: t.textMuted)
               : null,
         );
       },

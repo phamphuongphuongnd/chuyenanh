@@ -32,6 +32,20 @@ abstract final class AppColors {
     DocType.other => other,
   };
 
+  /// Ngôi sao yêu thích.
+  static const Color favorite = Color(0xFFF9A825);
+
+  /// Thanh tiêu đề tab Tập tin theo thiết kế mới: đậm hơn màu icon để chữ trắng đủ tương phản.
+  /// null = tab Tất cả → dùng `AppTokens.filesAllHeader`.
+  static Color? headerForCategory(DocCategory? category) => switch (category) {
+    null => null,
+    DocCategory.pdf => const Color(0xFFD32F2F),
+    DocCategory.doc => const Color(0xFF1565C0),
+    DocCategory.xls => const Color(0xFF2E7D32),
+    DocCategory.ppt => const Color(0xFFD84315),
+    DocCategory.txt => const Color(0xFF546E7A),
+  };
+
   /// Màu thanh tiêu đề theo tab (null = tab All → đỏ chủ đạo).
   static Color forCategory(DocCategory? category) => switch (category) {
     null => primary,

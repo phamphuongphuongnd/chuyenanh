@@ -1,15 +1,19 @@
 // Màn xem PPTX: vuốt từng slide, dải thumbnail, ghi chú, tuỳ chọn hiện slide ẩn.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:pptx_reader/pptx_reader.dart';
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/utils/doc_type.dart';
+import '../../core/widgets/empty_state.dart';
 import 'office_pptx_providers.dart';
 import 'pptx_layout.dart';
-import '../office_viewer/widgets/office_common.dart' show OfficeSearchBar;
+import '../office_viewer/widgets/office_common.dart'
+    show OfficeBottomBar, OfficeSearchBar, OfficeViewerAppBar, officeHeaderColor;
 import 'pptx_search.dart';
 import 'slide_view.dart';
 
@@ -23,37 +27,20 @@ class PptxViewerScreen extends ConsumerWidget {
     final title = p.basename(path);
     return async.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          backgroundColor: AppColors.ppt,
-          foregroundColor: Colors.white,
+        appBar: OfficeViewerAppBar(category: DocCategory.ppt, title: title),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: officeHeaderColor(DocCategory.ppt),
+          ),
         ),
-        body: const Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          backgroundColor: AppColors.ppt,
-          foregroundColor: Colors.white,
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  appErrorMessage(context, AppError.from(e)),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () => ref.invalidate(pptxDeckProvider(path)),
-                  child: Text(context.l10n.core_retry),
-                ),
-              ],
-            ),
-          ),
+        appBar: OfficeViewerAppBar(category: DocCategory.ppt, title: title),
+        body: EmptyState(
+          icon: Symbols.error_rounded,
+          title: appErrorMessage(context, AppError.from(e)),
+          actionLabel: context.l10n.core_retry,
+          onAction: () => ref.invalidate(pptxDeckProvider(path)),
         ),
       ),
       data: (deck) => PptxDeckView(deck: deck, title: title),
@@ -171,32 +158,32 @@ class _PptxDeckViewState extends State<PptxDeckView> {
     final indexes = _indexes;
     final deck = widget.deck;
     final page = indexes.isEmpty ? 0 : _page.clamp(0, indexes.length - 1);
+    final t = context.tokens;
+    final accent = officeHeaderColor(DocCategory.ppt);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, overflow: TextOverflow.ellipsis),
-        backgroundColor: AppColors.ppt,
-        foregroundColor: Colors.white,
+      appBar: OfficeViewerAppBar(
+        category: DocCategory.ppt,
+        title: widget.title,
         actions: [
           IconButton(
             tooltip: l.office_search,
-            icon: const Icon(Icons.search),
+            icon: const Icon(Symbols.search_rounded),
             onPressed: () => setState(() => _searching = !_searching),
           ),
           IconButton(
             tooltip: l.office_zoomOut,
-            icon: const Icon(Icons.zoom_out),
+            icon: const Icon(Symbols.zoom_out_rounded),
             onPressed: () => _zoomBy(-_zoomStep),
           ),
           IconButton(
             tooltip: l.office_zoomIn,
-            icon: const Icon(Icons.zoom_in),
+            icon: const Icon(Symbols.zoom_in_rounded),
             onPressed: () => _zoomBy(_zoomStep),
           ),
           IconButton(
             tooltip: l.pptx_notes,
-            icon: Icon(
-              _showNotes ? Icons.sticky_note_2 : Icons.sticky_note_2_outlined,
-            ),
+            // Đang bật ghi chú: icon đặc (FILL 1).
+            icon: Icon(Symbols.sticky_note_2_rounded, fill: _showNotes ? 1 : 0),
             onPressed: () => setState(() {
               _showNotes = !_showNotes;
               if (_searching) _runSearch();
@@ -206,7 +193,9 @@ class _PptxDeckViewState extends State<PptxDeckView> {
             IconButton(
               tooltip: _showHidden ? l.pptx_hideHidden : l.pptx_showHidden,
               icon: Icon(
-                _showHidden ? Icons.visibility : Icons.visibility_off_outlined,
+                _showHidden
+                    ? Symbols.visibility_rounded
+                    : Symbols.visibility_off_rounded,
               ),
               onPressed: () => setState(() {
                 _showHidden = !_showHidden;
@@ -222,7 +211,7 @@ class _PptxDeckViewState extends State<PptxDeckView> {
         children: [
           if (_searching)
             OfficeSearchBar(
-              color: AppColors.ppt,
+              category: DocCategory.ppt,
               controller: _searchCtrl,
               onChanged: _onQuery,
               current: _hits.isEmpty ? 0 : _current + 1,
@@ -244,7 +233,10 @@ class _PptxDeckViewState extends State<PptxDeckView> {
               currentSlide: _hits.isEmpty ? -1 : _hits[_current].slideIndex,
               currentOccurrence: currentOccurrenceInSlide(_hits, _current),
               child: indexes.isEmpty
-                  ? Center(child: Text(l.pptx_emptyDeck))
+                  ? EmptyState(
+                      icon: Symbols.slideshow_rounded,
+                      title: l.pptx_emptyDeck,
+                    )
                   : Column(
                       children: [
                         Expanded(
@@ -275,68 +267,91 @@ class _PptxDeckViewState extends State<PptxDeckView> {
                         ),
                         if (_showNotes)
                           _NotesPanel(slide: deck.slides[indexes[page]]),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Text(
-                            l.pptx_slideOf(page + 1, indexes.length),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                        SizedBox(
-                          height: _thumbH + 16,
-                          child: ListView.separated(
-                            controller: _thumbs,
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            itemCount: indexes.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(width: _thumbGap),
-                            itemBuilder: (context, i) {
-                              final slide = deck.slides[indexes[i]];
-                              final selected = i == page;
-                              return Semantics(
-                                button: true,
-                                label: l.pptx_slideN(i + 1),
-                                child: GestureDetector(
-                                  onTap: () => _goTo(i),
-                                  child: Container(
-                                    height: _thumbH,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: selected
-                                            ? AppColors.ppt
-                                            : Colors.grey.shade400,
-                                        width: selected ? 2.5 : 1,
-                                      ),
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        RepaintBoundary(
-                                          child: SlideView(
-                                            deck: deck,
-                                            slide: slide,
-                                            renderScale: 0.4,
-                                          ),
-                                        ),
-                                        if (slide.hidden)
-                                          const Positioned(
-                                            right: 2,
-                                            top: 2,
-                                            child: Icon(
-                                              Icons.visibility_off,
-                                              size: 14,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
+                        OfficeBottomBar(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  l.pptx_slideOf(page + 1, indexes.length),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: t.textMuted,
                                   ),
                                 ),
-                              );
-                            },
+                              ),
+                              SizedBox(
+                                height: _thumbH + 16,
+                                child: ListView.separated(
+                                  controller: _thumbs,
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  itemCount: indexes.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(width: _thumbGap),
+                                  itemBuilder: (context, i) {
+                                    final slide = deck.slides[indexes[i]];
+                                    final selected = i == page;
+                                    return Semantics(
+                                      button: true,
+                                      label: l.pptx_slideN(i + 1),
+                                      child: GestureDetector(
+                                        onTap: () => _goTo(i),
+                                        // Bo 8; viền vẽ đè lên ảnh slide để không bị che.
+                                        child: Container(
+                                          height: _thumbH,
+                                          clipBehavior: Clip.antiAlias,
+                                          decoration: BoxDecoration(
+                                            color: t.surface2,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          foregroundDecoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            border: Border.all(
+                                              color: selected
+                                                  ? accent
+                                                  : t.lineStrong,
+                                              width: selected ? 2.5 : 1,
+                                            ),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              RepaintBoundary(
+                                                child: SlideView(
+                                                  deck: deck,
+                                                  slide: slide,
+                                                  renderScale: 0.4,
+                                                ),
+                                              ),
+                                              if (slide.hidden)
+                                                Positioned(
+                                                  right: 3,
+                                                  top: 3,
+                                                  child: Icon(
+                                                    Symbols
+                                                        .visibility_off_rounded,
+                                                    size: 14,
+                                                    color: t.textMuted,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -442,17 +457,26 @@ class _NotesPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final t = context.tokens;
     final text = slide.notesText?.trim();
     final has = text != null && text.isNotEmpty;
+    // Nền surface bo 16 hai góc trên, nối liền thanh đáy (số slide + thumbnail) bên dưới.
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(maxHeight: 140),
-      padding: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       child: SingleChildScrollView(
         child: Text(
           has ? text : l.pptx_noNotes,
-          style: has ? null : TextStyle(color: Theme.of(context).hintColor),
+          style: TextStyle(
+            fontSize: 14,
+            height: 1.5,
+            color: has ? t.text : t.textMuted,
+          ),
         ),
       ),
     );

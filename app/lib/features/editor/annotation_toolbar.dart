@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Màu chọn nhanh cho chú thích.
 const List<Color> kAnnotationColors = [
@@ -24,12 +26,12 @@ const List<PdfAnnotationMode> kAnnotationTools = [
 ];
 
 IconData annotationToolIcon(PdfAnnotationMode mode) => switch (mode) {
-  PdfAnnotationMode.highlight => Icons.border_color_outlined,
-  PdfAnnotationMode.underline => Icons.format_underlined,
-  PdfAnnotationMode.strikethrough => Icons.format_strikethrough,
-  PdfAnnotationMode.squiggly => Icons.waves,
-  PdfAnnotationMode.stickyNote => Icons.sticky_note_2_outlined,
-  PdfAnnotationMode.none => Icons.pan_tool_alt_outlined,
+  PdfAnnotationMode.highlight => Symbols.ink_highlighter_rounded,
+  PdfAnnotationMode.underline => Symbols.format_underlined_rounded,
+  PdfAnnotationMode.strikethrough => Symbols.format_strikethrough_rounded,
+  PdfAnnotationMode.squiggly => Symbols.waves_rounded,
+  PdfAnnotationMode.stickyNote => Symbols.sticky_note_2_rounded,
+  PdfAnnotationMode.none => Symbols.pan_tool_alt_rounded,
 };
 
 String annotationToolLabel(BuildContext context, PdfAnnotationMode mode) {
@@ -44,7 +46,8 @@ String annotationToolLabel(BuildContext context, PdfAnnotationMode mode) {
   };
 }
 
-/// Thanh công cụ dưới cùng: hàng màu + hàng công cụ. Không giữ trạng thái riêng.
+/// Thanh công cụ dưới cùng (nền `surface` bo trên 24, kẻ trên `line`): hàng chấm màu + hàng 5
+/// công cụ dạng ô viên dọc. Không giữ trạng thái riêng.
 class AnnotationToolbar extends StatelessWidget {
   const AnnotationToolbar({
     super.key,
@@ -64,17 +67,22 @@ class AnnotationToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return Material(
-      elevation: 8,
-      color: scheme.surface,
+      color: t.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: t.line),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: SafeArea(
         top: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 6),
             SizedBox(
-              height: 44,
+              height: 48,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -89,21 +97,27 @@ class AnnotationToolbar extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              children: [
-                for (final tool in kAnnotationTools)
-                  Expanded(
-                    child: _ToolButton(
-                      key: Key('tool_${tool.name}'),
-                      icon: annotationToolIcon(tool),
-                      label: annotationToolLabel(context, tool),
-                      active: mode == tool,
-                      onTap: () => onModeChanged(
-                        mode == tool ? PdfAnnotationMode.none : tool,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 2, 8, 10),
+              child: Row(
+                children: [
+                  for (final tool in kAnnotationTools)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        child: _ToolButton(
+                          key: Key('tool_${tool.name}'),
+                          icon: annotationToolIcon(tool),
+                          label: annotationToolLabel(context, tool),
+                          active: mode == tool,
+                          onTap: () => onModeChanged(
+                            mode == tool ? PdfAnnotationMode.none : tool,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -127,6 +141,8 @@ class _ColorDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
+    // Chấm tròn 30; đang chọn = viền 3 màu chữ chính. Vùng chạm 44×48.
     return Semantics(
       button: true,
       selected: selected,
@@ -135,17 +151,15 @@ class _ColorDot extends StatelessWidget {
         onTap: onTap,
         radius: 24,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 9),
           child: Container(
-            width: 28,
-            height: 28,
+            width: 30,
+            height: 30,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
               border: Border.all(
-                color: selected
-                    ? Theme.of(context).colorScheme.onSurface
-                    : Colors.black26,
+                color: selected ? t.text : t.lineStrong,
                 width: selected ? 3 : 1,
               ),
             ),
@@ -172,27 +186,35 @@ class _ToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final color = active ? scheme.primary : scheme.onSurfaceVariant;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: color,
-                fontWeight: active ? FontWeight.bold : FontWeight.normal,
+    final t = context.tokens;
+    final color = active ? t.primaryText : t.textMuted;
+    // Ô viên dọc (icon + nhãn); đang chọn = nền `primarySoft`, icon đặc, chữ `primaryText`.
+    return Material(
+      color: active ? t.primarySoft : Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 24, fill: active ? 1 : 0),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -64,8 +64,16 @@ Future<void> _pump(
   }
 }
 
-Color _appBarColor(WidgetTester tester) =>
-    tester.widget<AppBar>(find.byType(AppBar)).backgroundColor!;
+/// Màu nền khối tiêu đề Tập tin (thay cho AppBar cũ).
+Color _headerColor(WidgetTester tester) {
+  final header = tester.widget<AnimatedContainer>(
+    find.byKey(const ValueKey('files-header')),
+  );
+  return (header.decoration! as BoxDecoration).color!;
+}
+
+/// "Viên" tab thứ [index] (0 = All … 5 = TXT).
+Finder _tab(int index) => find.byKey(ValueKey('files-tab-$index'));
 
 void main() {
   testWidgets('hiện tab All/PDF/DOC/XLS/PPT/TXT và danh sách tài liệu', (
@@ -73,25 +81,29 @@ void main() {
   ) async {
     await _pump(tester, docs: [_doc('a.pdf'), _doc('b.docx')]);
 
-    for (final label in ['All', 'PDF', 'DOC', 'XLS', 'PPT', 'TXT']) {
-      expect(find.widgetWithText(Tab, label), findsOneWidget);
+    final labels = ['All', 'PDF', 'DOC', 'XLS', 'PPT', 'TXT'];
+    for (var i = 0; i < labels.length; i++) {
+      expect(
+        find.descendant(of: _tab(i), matching: find.text(labels[i])),
+        findsOneWidget,
+      );
     }
     expect(find.text('a.pdf'), findsOneWidget);
     expect(find.text('b.docx'), findsOneWidget);
   });
 
-  testWidgets('đổi tab lọc đúng loại và đổi màu AppBar', (tester) async {
+  testWidgets('đổi tab lọc đúng loại và đổi màu tiêu đề', (tester) async {
     await _pump(tester, docs: [_doc('a.pdf'), _doc('b.docx')]);
-    final allColor = _appBarColor(tester);
+    final allColor = _headerColor(tester);
 
-    await tester.tap(find.widgetWithText(Tab, 'PDF'));
+    await tester.tap(_tab(1)); // PDF
     await tester.pumpAndSettle();
 
     expect(find.text('a.pdf'), findsOneWidget);
     expect(find.text('b.docx'), findsNothing);
-    expect(_appBarColor(tester), isNot(allColor));
+    expect(_headerColor(tester), isNot(allColor));
 
-    await tester.tap(find.widgetWithText(Tab, 'DOC'));
+    await tester.tap(_tab(2)); // DOC
     await tester.pumpAndSettle();
     expect(find.text('a.pdf'), findsNothing);
     expect(find.text('b.docx'), findsOneWidget);
@@ -165,9 +177,12 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('sort-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(
-      find.widgetWithText(CheckedPopupMenuItem<DocSort>, 'Name (A–Z)'),
+    final nameAsc = find.byKey(const ValueKey('sort-nameAsc'));
+    expect(
+      find.descendant(of: nameAsc, matching: find.text('Name (A–Z)')),
+      findsOneWidget,
     );
+    await tester.tap(nameAsc);
     await tester.pumpAndSettle();
 
     expect(container.read(docSortProvider), DocSort.nameAsc);

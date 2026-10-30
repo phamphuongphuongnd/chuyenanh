@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_tokens.dart';
 
-/// Ô nhập nền vàng nhạt (`#FFF8E1`) dùng trong hộp thoại.
+/// Ô nhập nền vàng nhạt (`AppTokens.input`), bo 14; lỗi → viền đỏ 1.5.
 class AppTextField extends StatelessWidget {
   const AppTextField({
     super.key,
@@ -35,7 +36,8 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final t = context.tokens;
+    final radius = BorderRadius.circular(14);
     return TextField(
       controller: controller,
       obscureText: obscureText,
@@ -45,20 +47,29 @@ class AppTextField extends StatelessWidget {
       onSubmitted: onSubmitted,
       onChanged: onChanged,
       maxLines: obscureText ? 1 : maxLines,
+      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: t.text),
       decoration: InputDecoration(
         filled: true,
-        fillColor: dark ? AppColors.inputFillDark : AppColors.inputFill,
+        fillColor: t.input,
         hintText: hintText,
         labelText: labelText,
         errorText: errorText,
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: radius,
           borderSide: BorderSide.none,
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: radius,
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: radius,
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
+          horizontal: 14,
+          vertical: 14,
         ),
       ),
     );

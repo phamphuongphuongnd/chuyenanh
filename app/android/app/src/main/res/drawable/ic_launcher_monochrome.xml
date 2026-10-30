@@ -1,12 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ban don sac cho "themed icon" Android 13+: trang giay, mui ten khoet rong. -->
+<!-- Ban don sac cho "themed icon" Android 13+ (theo design-mobile/screens/assets/logo-3-mono.svg).
+     Monochrome chi dung alpha nen khong ve "xoa" duoc; thay vao do:
+     - 3 the phia sau bi cat boi clip-path = hinh chu nhat lon (chieu kim dong ho) tru di vien the tren cung
+       no rong 14 don vi, bo 44 (nguoc chieu kim dong ho) -> tao khe ho quanh the tren cung nhu mask "g" cua SVG.
+     - The tren cung + chu P la mot path fillType="evenOdd": vien the + vien ngoai net chu P + long chu P,
+       nen chu P thanh khoang trong (vien net P day 38, dau/khop tron da tinh san thanh duong bao).
+     Cung scale/vi tri voi ic_launcher_foreground.xml. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FF000000"
-        android:fillType="evenOdd"
-        android:pathData="M35,28 L59,28 L73,42 L73,80 L35,80 Z M51,48 L57,48 L57,60 L65,60 L54,73 L43,60 L51,60 Z" />
+    <group
+        android:scaleX="0.19"
+        android:scaleY="0.19"
+        android:translateX="5.968"
+        android:translateY="5.36">
+        <group
+            android:translateX="26"
+            android:translateY="-6">
+            <group android:name="backCards">
+                <clip-path
+                    android:pathData="M-200,-200 H800 V800 H-200 Z M186,116 A44,44 0 0 0 142,160 V364 A44,44 0 0 0 186,408 H326 A44,44 0 0 0 370,364 V160 A44,44 0 0 0 326,116 Z" />
+                <group
+                    android:rotation="-24"
+                    android:pivotX="256"
+                    android:pivotY="400">
+                    <path
+                        android:fillColor="#FFFFFFFF"
+                        android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+                </group>
+                <group
+                    android:rotation="-16"
+                    android:pivotX="256"
+                    android:pivotY="400">
+                    <path
+                        android:fillColor="#FFFFFFFF"
+                        android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+                </group>
+                <group
+                    android:rotation="-8"
+                    android:pivotX="256"
+                    android:pivotY="400">
+                    <path
+                        android:fillColor="#FFFFFFFF"
+                        android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+                </group>
+            </group>
+            <!-- The tren cung, chu P khoet rong -->
+            <path
+                android:fillColor="#FFFFFFFF"
+                android:fillType="evenOdd"
+                android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z M193,336 V196 A19,19 0 0 1 212,177 H260 A63,63 0 0 1 323,240 A63,63 0 0 1 260,303 H231 V336 A19,19 0 0 1 212,355 A19,19 0 0 1 193,336 Z M231,215 H260 A25,25 0 0 1 285,240 A25,25 0 0 1 260,265 H231 Z" />
+        </group>
+    </group>
 </vector>

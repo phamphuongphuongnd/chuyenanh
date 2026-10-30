@@ -1,7 +1,7 @@
 ---
 title: Preferences — Cách làm việc người dùng muốn
 type: preferences
-updated: 2026-10-28
+updated: 2026-10-30
 sources: []
 ---
 
@@ -100,3 +100,12 @@ sources: []
 - Người dùng muốn **mọi việc làm theo quy trình superpowers** (`/using-superpowers`): lỗi thì `systematic-debugging` (tìm nguyên nhân gốc, tái hiện, rồi mới sửa), tính năng mới thì `brainstorming` trước, xong thì `verification-before-completion`.
 - Mục tiêu iOS: **dùng được như Android** trên cả hai hệ điều hành; khi `/luu-wiki` kèm "không đẩy lên git" thì chỉ lưu file wiki, không commit/push.
 - Người dùng muốn **thấy kết quả cụ thể** (ảnh chụp màn hình, link, bước làm từng nút) và hay hỏi "xong chưa / bao nhiêu phút nữa": luôn báo trạng thái từng việc, ước lượng kèm độ chắc, nói rõ việc nào CHƯA kiểm chứng. Khi người dùng nói "làm hết phần chưa xong" thì làm tuần tự không hỏi lại từng bước, nhưng vẫn hỏi trước khi đè file công khai.
+
+## Bổ sung 30/10/2026
+- **Chia nhiều agent song song nhất có thể** ("mỗi con một app", "làm hết các nhóm đi"): mỗi agent một nhóm file/việc riêng; mình làm phần dùng chung trước, agent chỉ sửa code + `dart analyze`, mình ghép và chạy `flutter test` tuần tự. Khảo sát web: mỗi agent mở tab trình duyệt riêng.
+- **Khảo sát đối thủ**: chọn app nhiều lượt tải nhất, **tối thiểu 30 app**; báo cáo gồm tính năng mình chưa có + vấn đề trong bình luận 1–3★ có số đếm.
+- **Thiết kế**: dùng Claude Design (claude.ai/design), "Bước 8" = xuất `design-mobile/screens/` + README (token, khác biệt iOS/Android, danh sách màn, tab bar, hướng dẫn code). Thiết kế phải nguyên bản, không giống app khác.
+- **Tên/logo**: không trùng bất kỳ công ty nào, có ký hiệu cá nhân (chữ P/Ph của Phương) + ý nghĩa khoa học → tra web trước khi đề xuất.
+- Người dùng "chả thấy thay đổi gì" khi chỉ đổi nền (font/màu) → ưu tiên làm thay đổi nhìn thấy được (bố cục) sớm, báo rõ nhóm nào đổi gì.
+- Hỏi "đã lưu wiki, commit, push, merge chưa" → làm nốt trước khi sang việc mới; trong phiên này được phép commit + push + merge `master`.
+- Hỏi ưu/nhược điểm trước khi chọn (vd. font + bộ icon) → bảng so sánh rồi mới hỏi.

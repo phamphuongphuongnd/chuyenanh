@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../data/settings/settings_providers.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
@@ -136,9 +138,16 @@ class _CreateBlankScreenState extends ConsumerState<CreateBlankScreen> {
     return ToolScaffold(
       title: title,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
-          Center(
+          // Khối xem trước: nền phụ, trang mẫu ở giữa.
+          Container(
+            height: 240,
+            decoration: BoxDecoration(
+              color: context.tokens.surface2,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            alignment: Alignment.center,
             child: _BlankPreview(
               template: _template,
               landscape: _landscape,
@@ -147,129 +156,136 @@ class _CreateBlankScreenState extends ConsumerState<CreateBlankScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          _SectionLabel(l.tools_blankTemplate),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final t in BlankTemplate.values)
-                ChoiceChip(
-                  label: Text(_templateLabel(t)),
-                  selected: _template == t,
-                  onSelected: (_) => setState(() => _template = t),
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolSectionLabel(l.tools_blankTemplate),
+                ToolChipWrap(
+                  children: [
+                    for (final t in BlankTemplate.values)
+                      ToolChoiceChip(
+                        label: _templateLabel(t),
+                        selected: _template == t,
+                        onTap: () => setState(() => _template = t),
+                      ),
+                  ],
                 ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          AppTextField(
-            controller: _titleCtl,
-            labelText: l.tools_blankTitleLabel,
-            hintText: l.tools_blankTitleHint,
-          ),
-          const SizedBox(height: 12),
-          AppTextField(
-            controller: _nameCtl,
-            labelText: l.core_fileName,
-            hintText: l.tools_blankDefaultName,
+                const SizedBox(height: 16),
+                AppTextField(
+                  controller: _titleCtl,
+                  labelText: l.tools_blankTitleLabel,
+                  hintText: l.tools_blankTitleHint,
+                ),
+                const SizedBox(height: 12),
+                AppTextField(
+                  controller: _nameCtl,
+                  labelText: l.core_fileName,
+                  hintText: l.tools_blankDefaultName,
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
-          _SectionLabel(l.tools_blankPageSize),
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: const Text('A4'),
-                selected: _pageSize == PageSizeOption.a4,
-                onSelected: (_) => setState(() => _pageSize = PageSizeOption.a4),
-              ),
-              ChoiceChip(
-                label: const Text('Letter'),
-                selected: _pageSize == PageSizeOption.letter,
-                onSelected: (_) =>
-                    setState(() => _pageSize = PageSizeOption.letter),
-              ),
-            ],
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolSectionLabel(l.tools_blankPageSize),
+                ToolChipWrap(
+                  children: [
+                    ToolChoiceChip(
+                      label: 'A4',
+                      selected: _pageSize == PageSizeOption.a4,
+                      onTap: () => setState(() => _pageSize = PageSizeOption.a4),
+                    ),
+                    ToolChoiceChip(
+                      label: 'Letter',
+                      selected: _pageSize == PageSizeOption.letter,
+                      onTap: () =>
+                          setState(() => _pageSize = PageSizeOption.letter),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                ToolSectionLabel(l.tools_orientation),
+                ToolChipWrap(
+                  children: [
+                    ToolChoiceChip(
+                      label: l.tools_portrait,
+                      selected: !_landscape,
+                      onTap: () => setState(() => _landscape = false),
+                    ),
+                    ToolChoiceChip(
+                      label: l.tools_landscape,
+                      selected: _landscape,
+                      onTap: () => setState(() => _landscape = true),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                ToolSectionLabel(l.tools_blankBackground),
+                Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: [
+                    for (final c in _backgrounds)
+                      ToolColorDot(
+                        color: Color(c),
+                        selected: _background == c,
+                        onTap: () => setState(() => _background = c),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                ToolSectionLabel(l.tools_blankCategory),
+                ToolChipWrap(
+                  children: [
+                    for (final c in _categories)
+                      ToolChoiceChip(
+                        label: _categoryLabel(c),
+                        selected: _category == c,
+                        onTap: () => setState(() => _category = c),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          _SectionLabel(l.tools_orientation),
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: Text(l.tools_portrait),
-                selected: !_landscape,
-                onSelected: (_) => setState(() => _landscape = false),
-              ),
-              ChoiceChip(
-                label: Text(l.tools_landscape),
-                selected: _landscape,
-                onSelected: (_) => setState(() => _landscape = true),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SectionLabel(l.tools_blankBackground),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final c in _backgrounds)
-                GestureDetector(
-                  onTap: () => setState(() => _background = c),
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Color(c),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: _background == c
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.black26,
-                        width: _background == c ? 3 : 1,
+          const SizedBox(height: 16),
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolSectionLabel(l.tools_blankPages),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _StepButton(
+                      tooltip: '-',
+                      icon: Symbols.remove_rounded,
+                      onPressed: () => _stepPages(-1),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: 96,
+                      child: AppTextField(
+                        controller: _pagesCtl,
+                        keyboardType: TextInputType.number,
+                        errorText: pagesError,
+                        onChanged: (_) => setState(() {}),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    _StepButton(
+                      tooltip: '+',
+                      icon: Symbols.add_rounded,
+                      onPressed: () => _stepPages(1),
+                    ),
+                  ],
                 ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SectionLabel(l.tools_blankCategory),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final c in _categories)
-                ChoiceChip(
-                  label: Text(_categoryLabel(c)),
-                  selected: _category == c,
-                  onSelected: (_) => setState(() => _category = c),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SectionLabel(l.tools_blankPages),
-          Row(
-            children: [
-              IconButton.outlined(
-                tooltip: '-',
-                icon: const Icon(Icons.remove),
-                onPressed: () => _stepPages(-1),
-              ),
-              const SizedBox(width: 12),
-              SizedBox(
-                width: 96,
-                child: AppTextField(
-                  controller: _pagesCtl,
-                  keyboardType: TextInputType.number,
-                  errorText: pagesError,
-                  onChanged: (_) => setState(() {}),
-                ),
-              ),
-              const SizedBox(width: 12),
-              IconButton.outlined(
-                tooltip: '+',
-                icon: const Icon(Icons.add),
-                onPressed: () => _stepPages(1),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -278,15 +294,32 @@ class _CreateBlankScreenState extends ConsumerState<CreateBlankScreen> {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text);
-  final String text;
+/// Nút tròn 48 nền `surface2` của bộ đếm số trang (−/+).
+class _StepButton extends StatelessWidget {
+  const _StepButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 6),
-    child: Text(text, style: Theme.of(context).textTheme.labelLarge),
-  );
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return IconButton(
+      tooltip: tooltip,
+      style: IconButton.styleFrom(
+        backgroundColor: t.surface2,
+        foregroundColor: t.text,
+        fixedSize: const Size(48, 48),
+      ),
+      icon: Icon(icon),
+      onPressed: onPressed,
+    );
+  }
 }
 
 /// Xem trước trang: nền + mẫu dòng/ô.
@@ -315,8 +348,8 @@ class _BlankPreview extends StatelessWidget {
       height: h,
       decoration: BoxDecoration(
         color: Color(background),
-        border: Border.all(color: Colors.black26),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        border: Border.all(color: context.tokens.line),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: CustomPaint(painter: _TemplatePainter(template)),
     );

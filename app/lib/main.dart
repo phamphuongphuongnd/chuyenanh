@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +25,13 @@ void startupTrace(String m) {
 Future<void> main() async {
   startupTrace('main');
   WidgetsFlutterBinding.ensureInitialized();
+  // Font giao diện không đi kèm gói pub nên tự khai giấy phép cho trang "Giấy phép mã nguồn mở".
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(
+      const ['Be Vietnam Pro'],
+      await rootBundle.loadString('assets/ui_fonts/OFL.txt'),
+    );
+  });
   await Future.wait([
     for (final l in appLocales) initializeDateFormatting(l.languageCode),
   ]);

@@ -18,7 +18,7 @@
   "docs_emptyFavoritesHint": "点按文件上的星标即可添加到这里",
   "docs_emptySearch": "没有匹配的文件",
   "docs_permissionTitle": "允许访问文件",
-  "docs_permissionMessage": "PDF Office 需要访问所有文件才能找到设备上的文档。",
+  "docs_permissionMessage": "Phiotron PDF 需要访问所有文件才能找到设备上的文档。",
   "docs_grantPermission": "授予权限",
   "docs_pickFileInstead": "改为选择文件",
   "docs_permissionBanner": "授予文件访问权限以查找所有文档",
@@ -56,5 +56,7 @@
   "docs_lockedPdf": "受密码保护的 PDF",
   "docs_navHome": "首页",
   "docs_navFiles": "文件",
-  "docs_viewAll": "查看全部"
+  "docs_viewAll": "查看全部",
+  "docs_shortcuts": "快捷方式",
+  "docs_countDocs": "{count} 个文档"
 }

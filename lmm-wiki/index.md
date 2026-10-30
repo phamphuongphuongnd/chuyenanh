@@ -1,7 +1,7 @@
 ---
 title: Index — Mục lục wiki
 type: index
-updated: 2026-10-28
+updated: 2026-10-30
 ---
 
 # Index — Mục lục LLM Wiki
@@ -10,7 +10,7 @@ updated: 2026-10-28
 > Wiki vận hành theo phương pháp Karpathy "LLM Wiki". Quy tắc đầy đủ ở [[SCHEMA]].
 
 ## Tổng quan dự án
-- **Tên:** PDF Office (`com.phuong.pdfoffice`)
+- **Tên:** Phiotron PDF (đổi từ "PDF Office" ngày 30/10/2026; package id vẫn `com.phuong.pdfoffice`, thư mục lưu vẫn `Documents/PDF Office`)
 - **Mục đích:** app dùng cá nhân, giống app mẫu Google Play "Image to PDF: PDF Converter" (TrustedOffice,
   `com.readpdf.pdfreader.pdfviewer`): ảnh↔PDF, đọc PDF/Office, công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR.
   Offline, không quảng cáo, không lên store. Thiết kế: `docs/superpowers/specs/2026-10-25-pdf-office-design.md`.
@@ -40,6 +40,7 @@ updated: 2026-10-28
 - [[tinh-nang-t1-t10]] — **trạng thái 10 tính năng (đã ghép)**: từng tính năng làm được gì, hạn chế, việc còn lại (font, thử máy thật).
 - [[viec-con-lai]] — **việc còn lại / làm tiếp** (chốt 27/10): thay file Release, tối ưu khởi động, lỗi đã biết chưa sửa.
 - [[documents]] — T1 Trang chủ Tài liệu: màn, provider quét + quyền, quyết định thiết kế, phần chưa kiểm trên máy thật.
+- [[giao-dien-phiotron]] — **giao diện mới Phiotron PDF (30/10)**: quy trình Claude Design → `design-mobile/`, tên/logo, token, `app_sheet.dart`, AppBar sáng, tablet, gotcha icon iOS/Material Symbols.
 
 ## Entities
 - [[co-so-du-lieu]] — 4 bảng drift (`documents`, `favorites`, `recents`, `bookmarks`) + DAO + quy ước (page 0-based, -1 = cả tài liệu).
@@ -50,7 +51,7 @@ updated: 2026-10-28
 - [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
 - [[trinh-xem-dong-bo]] — 5 định dạng cùng thanh tìm kiếm + zoom, tô vàng chữ tìm, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách.
-- [[ui-app-goc]] — cấu trúc giao diện app mẫu (bottom nav 5 item, 3 tile, Cài đặt) và phần đã làm giống.
+- [[ui-app-goc]] — cấu trúc giao diện app mẫu (lịch sử; từ 30/10 không còn bám, xem [[giao-dien-phiotron]]).
 - [[loi-chi-hien-tren-may-that]] — 3 lỗi chỉ lộ trên máy thật (R8/ML Kit, provider autoDispose khi `read`), cách tái hiện bằng ADB, quy tắc rút ra.
 - [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
 - [[ios]] — chạy trên iPhone: khác Android, build bằng CI macOS, cài bằng Sideloadly (7 ngày), việc chưa kiểm.

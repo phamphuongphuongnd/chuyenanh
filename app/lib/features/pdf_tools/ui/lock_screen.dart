@@ -4,8 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../engines/pdf/pdf_security.dart';
@@ -101,50 +103,62 @@ class _LockScreenState extends ConsumerState<LockScreen>
       );
     }
     final toggle = IconButton(
-      icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+      icon: Icon(
+        _obscure ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
+        color: context.tokens.textMuted,
+      ),
       onPressed: () => setState(() => _obscure = !_obscure),
     );
     return ToolScaffold(
       title: title,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
           PdfInputCard(input: src, onChange: pickNew),
           const SizedBox(height: 16),
-          Text(l.tools_lockHint),
-          const SizedBox(height: 12),
-          AppTextField(
-            controller: _pwCtl,
-            obscureText: _obscure,
-            hintText: l.core_password,
-            suffixIcon: toggle,
-            textInputAction: TextInputAction.next,
-            errorText: _issue == PasswordIssue.empty ? l.tools_passwordEmpty : null,
-            onChanged: (_) {
-              if (_issue != null) setState(() => _issue = null);
-            },
-          ),
-          const SizedBox(height: 12),
-          AppTextField(
-            controller: _confirmCtl,
-            obscureText: _obscure,
-            hintText: l.tools_confirmPassword,
-            textInputAction: TextInputAction.done,
-            errorText: _issue == PasswordIssue.mismatch
-                ? l.tools_passwordMismatch
-                : null,
-            onChanged: (_) {
-              if (_issue != null) setState(() => _issue = null);
-            },
-            onSubmitted: (_) => _lock(),
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolHintText(l.tools_lockHint),
+                const SizedBox(height: 14),
+                AppTextField(
+                  controller: _pwCtl,
+                  obscureText: _obscure,
+                  hintText: l.core_password,
+                  suffixIcon: toggle,
+                  textInputAction: TextInputAction.next,
+                  errorText: _issue == PasswordIssue.empty
+                      ? l.tools_passwordEmpty
+                      : null,
+                  onChanged: (_) {
+                    if (_issue != null) setState(() => _issue = null);
+                  },
+                ),
+                const SizedBox(height: 12),
+                AppTextField(
+                  controller: _confirmCtl,
+                  obscureText: _obscure,
+                  hintText: l.tools_confirmPassword,
+                  textInputAction: TextInputAction.done,
+                  errorText: _issue == PasswordIssue.mismatch
+                      ? l.tools_passwordMismatch
+                      : null,
+                  onChanged: (_) {
+                    if (_issue != null) setState(() => _issue = null);
+                  },
+                  onSubmitted: (_) => _lock(),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
-          NoteBanner(l.tools_lockWarning, icon: Icons.warning_amber_outlined),
+          NoteBanner(l.tools_lockWarning, warning: true),
         ],
       ),
       bottom: PrimaryActionButton(
         label: l.tools_lockAction,
-        icon: Icons.lock_outline,
+        icon: Symbols.lock_rounded,
         onPressed: _lock,
       ),
     );

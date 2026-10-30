@@ -149,7 +149,7 @@ void main() {
       ]) {
         expect(plist, contains(k), reason: k);
       }
-      expect(plist, contains('<string>PDF Office</string>'));
+      expect(plist, contains('<string>Phiotron PDF</string>'));
     });
 
     test('Deployment target >= 15.5 ở mọi cấu hình', () {

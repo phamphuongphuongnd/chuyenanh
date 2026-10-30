@@ -18,7 +18,7 @@
   "docs_emptyFavoritesHint": "파일의 별을 누르면 여기에 추가됩니다",
   "docs_emptySearch": "일치하는 파일이 없습니다",
   "docs_permissionTitle": "파일 접근 허용",
-  "docs_permissionMessage": "PDF Office가 기기의 문서를 찾으려면 모든 파일에 접근할 수 있어야 합니다.",
+  "docs_permissionMessage": "Phiotron PDF가 기기의 문서를 찾으려면 모든 파일에 접근할 수 있어야 합니다.",
   "docs_grantPermission": "권한 허용",
   "docs_pickFileInstead": "대신 파일 선택",
   "docs_permissionBanner": "모든 문서를 찾으려면 파일 접근 권한을 허용하세요",
@@ -56,5 +56,7 @@
   "docs_lockedPdf": "비밀번호가 설정된 PDF",
   "docs_navHome": "홈",
   "docs_navFiles": "파일",
-  "docs_viewAll": "모두 보기"
+  "docs_viewAll": "모두 보기",
+  "docs_shortcuts": "바로가기",
+  "docs_countDocs": "문서 {count}개"
 }

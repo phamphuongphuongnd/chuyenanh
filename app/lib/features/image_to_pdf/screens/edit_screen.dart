@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_ops/image_ops.dart' as ops;
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/output_directory.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../data/db/app_database.dart';
@@ -295,9 +296,10 @@ class _EditScreenState extends ConsumerState<EditScreen> {
             IconButton(
               key: const ValueKey('add_button'),
               tooltip: l.img2pdf_add,
-              icon: const Icon(Icons.add_photo_alternate_outlined),
+              icon: const Icon(Symbols.add_photo_alternate_rounded),
               onPressed: _loading ? null : _add,
             ),
+            const SizedBox(width: 4),
           ],
         ),
         body: ListenableBuilder(
@@ -310,7 +312,14 @@ class _EditScreenState extends ConsumerState<EditScreen> {
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 16),
-                    Text(l.img2pdf_preparing),
+                    Text(
+                      l.img2pdf_preparing,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w500,
+                        color: context.tokens.textMuted,
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -320,9 +329,7 @@ class _EditScreenState extends ConsumerState<EditScreen> {
                 Column(
                   children: [
                     Expanded(child: _buildPreview()),
-                    _buildToolbar(l),
-                    _buildStrip(),
-                    _buildCreateButton(l),
+                    _buildBottomPanel(l),
                   ],
                 ),
                 if (_busy)
@@ -344,37 +351,76 @@ class _EditScreenState extends ConsumerState<EditScreen> {
     final item = _session.current;
     if (item == null) return const SizedBox.shrink();
     final l = context.l10n;
+    final t = context.tokens;
     final dark = Theme.of(context).brightness == Brightness.dark;
+    // Vùng xem trước: khối bo 20 trên nền màn; nền đen ở giao diện tối, `surface2` ở sáng.
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: ColoredBox(
+          color: dark ? Colors.black : t.surface2,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: EditedImage(
+                    key: ValueKey('preview_${item.id}'),
+                    path: item.path,
+                    edit: item.edit,
+                    maxSide: 1400,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    l.img2pdf_pageOf(
+                      _session.currentIndex + 1,
+                      _session.length,
+                    ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Khối dưới (nền `surface`, bo trên 28): thanh công cụ · dải ảnh · nút Tạo PDF.
+  Widget _buildBottomPanel(AppLocalizations l) {
+    final t = context.tokens;
     return Container(
-      color: dark ? Colors.black : const Color(0xFFE0E0E0),
-      child: Stack(
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.only(top: 6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: EditedImage(
-                key: ValueKey('preview_${item.id}'),
-                path: item.path,
-                edit: item.edit,
-                maxSide: 1400,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 8,
-            left: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                l.img2pdf_pageOf(_session.currentIndex + 1, _session.length),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-          ),
+          _buildToolbar(l),
+          Divider(height: 1, indent: 16, endIndent: 16, color: t.line),
+          _buildStrip(),
+          _buildCreateButton(l),
         ],
       ),
     );
@@ -383,44 +429,41 @@ class _EditScreenState extends ConsumerState<EditScreen> {
   Widget _buildToolbar(AppLocalizations l) {
     final item = _session.current;
     final canEdit = item != null && !_busy;
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            _ToolButton(
-              key: const ValueKey('tool_rotate'),
-              icon: Icons.rotate_right,
-              label: l.img2pdf_rotate,
-              onTap: canEdit ? _session.rotateCurrent : null,
-            ),
-            _ToolButton(
-              key: const ValueKey('tool_crop'),
-              icon: Icons.crop,
-              label: l.img2pdf_crop,
-              onTap: canEdit ? _crop : null,
-            ),
-            _ToolButton(
-              key: const ValueKey('tool_filter'),
-              icon: Icons.auto_fix_high_outlined,
-              label: l.img2pdf_filter,
-              onTap: canEdit ? _pickFilter : null,
-            ),
-            _ToolButton(
-              key: const ValueKey('tool_reset'),
-              icon: Icons.restart_alt,
-              label: l.img2pdf_reset,
-              onTap: canEdit && item.isEdited ? _session.resetCurrent : null,
-            ),
-            _ToolButton(
-              key: const ValueKey('tool_delete'),
-              icon: Icons.delete_outline,
-              label: l.core_delete,
-              onTap: canEdit ? _remove : null,
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Row(
+        children: [
+          _ToolButton(
+            key: const ValueKey('tool_rotate'),
+            icon: Symbols.rotate_right_rounded,
+            label: l.img2pdf_rotate,
+            onTap: canEdit ? _session.rotateCurrent : null,
+          ),
+          _ToolButton(
+            key: const ValueKey('tool_crop'),
+            icon: Symbols.crop_rounded,
+            label: l.img2pdf_crop,
+            onTap: canEdit ? _crop : null,
+          ),
+          _ToolButton(
+            key: const ValueKey('tool_filter'),
+            icon: Symbols.auto_fix_high_rounded,
+            label: l.img2pdf_filter,
+            onTap: canEdit ? _pickFilter : null,
+          ),
+          _ToolButton(
+            key: const ValueKey('tool_reset'),
+            icon: Symbols.restart_alt_rounded,
+            label: l.img2pdf_reset,
+            onTap: canEdit && item.isEdited ? _session.resetCurrent : null,
+          ),
+          _ToolButton(
+            key: const ValueKey('tool_delete'),
+            icon: Symbols.delete_rounded,
+            label: l.core_delete,
+            onTap: canEdit ? _remove : null,
+          ),
+        ],
       ),
     );
   }
@@ -428,61 +471,65 @@ class _EditScreenState extends ConsumerState<EditScreen> {
   Widget _buildStrip() {
     final items = _session.items;
     final l = context.l10n;
-    return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: SizedBox(
-        height: 88,
-        child: Row(
-          children: [
-            Expanded(
-              child: ReorderableListView.builder(
-                key: const ValueKey('strip'),
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
-                ),
-                itemCount: items.length,
-                onReorderItem: _session.reorder,
-                itemBuilder: (context, i) => _stripTile(items[i], i),
-              ),
+    final t = context.tokens;
+    return SizedBox(
+      height: 88,
+      child: Row(
+        children: [
+          Expanded(
+            child: ReorderableListView.builder(
+              key: const ValueKey('strip'),
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              itemCount: items.length,
+              onReorderItem: _session.reorder,
+              itemBuilder: (context, i) => _stripTile(items[i], i),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Material(
+              color: t.surface2,
+              borderRadius: BorderRadius.circular(10),
+              clipBehavior: Clip.antiAlias,
               child: InkWell(
                 key: const ValueKey('strip_add'),
                 onTap: _busy ? null : _add,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
+                child: SizedBox(
                   width: 56,
                   height: 72,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.add),
-                      Text(
-                        l.img2pdf_add,
-                        style: Theme.of(context).textTheme.labelSmall,
+                      Icon(Symbols.add_rounded, color: t.primaryText, size: 22),
+                      const SizedBox(height: 2),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Text(
+                          l.img2pdf_add,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: t.text,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _stripTile(ImageItem item, int index) {
     final selected = index == _session.currentIndex;
+    final t = context.tokens;
     return Padding(
       key: ValueKey('tile_${item.id}'),
       padding: const EdgeInsets.only(right: 8),
@@ -491,14 +538,15 @@ class _EditScreenState extends ConsumerState<EditScreen> {
         child: Container(
           width: 56,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            color: t.surface2,
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selected ? AppColors.primary : Colors.transparent,
               width: 2.5,
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -513,13 +561,22 @@ class _EditScreenState extends ConsumerState<EditScreen> {
                   bottom: 0,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
+                      horizontal: 6,
                       vertical: 1,
                     ),
-                    color: Colors.black54,
+                    decoration: BoxDecoration(
+                      color: selected ? AppColors.primary : Colors.black54,
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(8),
+                      ),
+                    ),
                     child: Text(
                       '${index + 1}',
-                      style: const TextStyle(color: Colors.white, fontSize: 11),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -532,21 +589,23 @@ class _EditScreenState extends ConsumerState<EditScreen> {
   }
 
   Widget _buildCreateButton(AppLocalizations l) {
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              key: const ValueKey('create_button'),
-              onPressed: _busy || _session.isEmpty ? null : _create,
-              child: Text(
-                '${l.img2pdf_createPdf.toUpperCase()} (${_session.length})',
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+        child: SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            key: const ValueKey('create_button'),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              textStyle: const TextStyle(
+                fontSize: 15.5,
+                fontWeight: FontWeight.w700,
               ),
             ),
+            onPressed: _busy || _session.isEmpty ? null : _create,
+            child: Text('${l.img2pdf_createPdf} (${_session.length})'),
           ),
         ),
       ),
@@ -568,30 +627,31 @@ class _ToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final enabled = onTap != null;
-    final color = enabled
-        ? Theme.of(context).colorScheme.onSurface
-        : Theme.of(context).disabledColor;
+    final color = enabled ? t.text : t.textMuted.withValues(alpha: 0.45);
     // Expanded: 5 nút chia đều bề rộng, vừa cả màn 320dp.
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(14),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: color),
-              const SizedBox(height: 2),
+              Icon(icon, color: color, size: 24),
+              const SizedBox(height: 4),
               Text(
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(color: color),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
               ),
             ],
           ),

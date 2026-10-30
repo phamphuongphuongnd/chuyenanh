@@ -132,7 +132,7 @@ void main() {
           await tester.ensureVisible(button);
       await tester.tap(button);
           // skipOffstage:false + ensureVisible: trên màn thấp thẻ kết quả nằm dưới màn hình (danh sách cuộn).
-          final done = find.byIcon(Icons.check_circle, skipOffstage: false);
+          final done = find.byKey(const Key('conv_result'), skipOffstage: false);
           await waitFor(tester, binding, done, '$name-done');
           await tester.ensureVisible(done.first);
           await snap('$name-2-done');
@@ -178,7 +178,7 @@ void main() {
       await waitFor(
         tester,
         binding,
-        find.byIcon(Icons.check_circle),
+        find.byKey(const Key('conv_result')),
         'ocr-done',
         timeout: const Duration(seconds: 180),
       );

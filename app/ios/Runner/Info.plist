@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>PDF Office uses the camera to scan documents and take photos for PDF.</string>
+	<string>Phiotron PDF uses the camera to scan documents and take photos for PDF.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>PDF Office reads your photos to convert them to PDF.</string>
+	<string>Phiotron PDF reads your photos to convert them to PDF.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>PDF Office saves exported images to your photo library.</string>
+	<string>Phiotron PDF saves exported images to your photo library.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>PDF Office</string>
+	<string>Phiotron PDF</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,7 +21,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>PDF Office</string>
+	<string>Phiotron PDF</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

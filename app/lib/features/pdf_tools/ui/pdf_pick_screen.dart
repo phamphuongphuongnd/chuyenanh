@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/file_format.dart';
 import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/widgets.dart';
@@ -86,9 +87,15 @@ class _PdfPickScreenState extends ConsumerState<PdfPickScreen> {
     final l = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final list = ref.watch(_pickablePdfsProvider(widget.mode));
+    final t = context.tokens;
     return Scaffold(
+      backgroundColor: t.bg,
+      // Ô tìm kiếm chữ trắng trên thanh tiêu đề → giữ nền đỏ chủ đạo, chữ/icon trắng.
       appBar: AppBar(
-        backgroundColor: AppColors.pdf,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.white),
         title: AppSearchField(
           controller: _controller,
           hintText: l.docs_searchHint,
@@ -98,43 +105,105 @@ class _PdfPickScreenState extends ConsumerState<PdfPickScreen> {
         actions: [
           IconButton(
             tooltip: l.core_open,
-            icon: const Icon(Icons.folder_open),
+            icon: const Icon(Symbols.folder_open_rounded),
             onPressed: _fromStorage,
           ),
         ],
       ),
       body: list.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) =>
-            EmptyState(title: appErrorMessage(context, AppError.from(e))),
+        error: (e, _) => EmptyState(
+          icon: Symbols.error_rounded,
+          title: appErrorMessage(context, AppError.from(e)),
+        ),
         data: (items) {
           final shown = filterDocuments(items, query: _controller.text);
           if (shown.isEmpty) {
             return EmptyState(
-              icon: Icons.picture_as_pdf_outlined,
+              illustration: const FileTypeIcon(DocType.pdf, size: 64),
               title: l.docs_emptySearch,
             );
           }
+          final locked = widget.mode == PdfPickMode.lockedOnly;
           return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             itemCount: shown.length,
             itemBuilder: (_, i) {
               final d = shown[i];
-              return ListTile(
-                leading: FileTypeIcon(
-                  d.type,
-                  locked: widget.mode == PdfPickMode.lockedOnly,
+              return CardRow(
+                first: i == 0,
+                last: i == shown.length - 1,
+                child: _PickRow(
+                  item: d,
+                  locked: locked,
+                  info: formatFileInfoLine(d.size, d.modified, d.folder, locale),
+                  onTap: () => Navigator.of(context).pop(d.path),
                 ),
-                title: Text(d.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                subtitle: Text(
-                  formatFileInfoLine(d.size, d.modified, d.folder, locale),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onTap: () => Navigator.of(context).pop(d.path),
               );
             },
           );
         },
+      ),
+    );
+  }
+}
+
+/// Một dòng PDF trong màn chọn: như dòng tài liệu nhưng không có ⭐ ⋮.
+/// Không có nền riêng — nền trắng bo góc do [CardRow] vẽ.
+class _PickRow extends StatelessWidget {
+  const _PickRow({
+    required this.item,
+    required this.locked,
+    required this.info,
+    required this.onTap,
+  });
+
+  final DocItem item;
+  final bool locked;
+  final String info;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          child: Row(
+            children: [
+              FileTypeIcon(item.type, size: 40, locked: locked),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w600,
+                        color: t.text,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      info,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12.5, color: t.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

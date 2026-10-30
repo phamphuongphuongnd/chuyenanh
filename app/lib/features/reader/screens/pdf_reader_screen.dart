@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -11,6 +12,8 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_file_args.dart';
 import '../../../core/router/routes.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../data/db/app_database.dart';
 import '../../../engines/pdf/pdf_security.dart';
@@ -363,38 +366,59 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
     final docMarked = isDocumentBookmarked(bookmarks);
     final shortcutOk = ref.watch(shortcutSupportedProvider).value ?? false;
 
-    PopupMenuItem<_Menu> item(_Menu m, IconData icon, String label) =>
-        PopupMenuItem<_Menu>(
-          value: m,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(icon),
-            title: Text(label),
-          ),
-        );
+    // Dòng menu ⋮: icon Symbols tròn màu phụ · nhãn 14.5/w500 · (✓ đỏ bên phải nếu là công tắc).
+    PopupMenuItem<_Menu> item(
+      _Menu m,
+      IconData icon,
+      String label, {
+      bool? checked,
+      double fill = 0,
+    }) => PopupMenuItem<_Menu>(
+      value: m,
+      child: _MenuRow(icon: icon, label: label, checked: checked, fill: fill),
+    );
 
-    CheckedPopupMenuItem<_Menu> check(_Menu m, bool on, String label) =>
-        CheckedPopupMenuItem<_Menu>(value: m, checked: on, child: Text(label));
+    // Theme AppBar mặc định là nền sáng → trình xem tự đặt màu thanh theo loại file (PDF).
+    final header = AppColors.headerForCategory(DocCategory.pdf);
+    final actionStyle = IconButton.styleFrom(
+      foregroundColor: Colors.white,
+      disabledForegroundColor: Colors.white54,
+    );
 
     return AppBar(
+      backgroundColor: header,
+      foregroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
+      iconTheme: const IconThemeData(color: Colors.white),
+      actionsIconTheme: const IconThemeData(color: Colors.white),
+      titleTextStyle: const TextStyle(
+        fontFamily: kUiFontFamily,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: Colors.white,
+      ),
       title: Text(_fileName, maxLines: 1, overflow: TextOverflow.ellipsis),
       actions: [
         IconButton(
           key: const Key('reader_searchButton'),
           tooltip: l.reader_search,
-          icon: const Icon(Icons.search),
+          style: actionStyle,
+          icon: const Icon(Symbols.search_rounded),
           onPressed: _loaded ? _startSearch : null,
         ),
         IconButton(
           key: const Key('reader_zoomOutButton'),
           tooltip: l.office_zoomOut,
-          icon: const Icon(Icons.zoom_out),
+          style: actionStyle,
+          icon: const Icon(Symbols.zoom_out_rounded),
           onPressed: _loaded ? () => _zoomBy(-_zoomStep) : null,
         ),
         IconButton(
           key: const Key('reader_zoomInButton'),
           tooltip: l.office_zoomIn,
-          icon: const Icon(Icons.zoom_in),
+          style: actionStyle,
+          icon: const Icon(Symbols.zoom_in_rounded),
           onPressed: _loaded ? () => _zoomBy(_zoomStep) : null,
         ),
         IconButton(
@@ -402,43 +426,70 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
           tooltip: pageMarked
               ? l.reader_removePageBookmark
               : l.reader_bookmarkPage,
-          icon: Icon(pageMarked ? Icons.bookmark : Icons.bookmark_border),
+          style: actionStyle,
+          // Đã đánh dấu = icon đặc (FILL 1).
+          icon: Icon(Symbols.bookmark_rounded, fill: pageMarked ? 1 : 0),
           onPressed: _loaded ? _togglePageBookmark : null,
         ),
         PopupMenuButton<_Menu>(
           key: const Key('reader_menuButton'),
           tooltip: l.reader_more,
+          icon: const Icon(Symbols.more_vert_rounded),
+          iconColor: Colors.white,
+          menuPadding: const EdgeInsets.all(6),
           onSelected: _onMenu,
           itemBuilder: (context) => [
-            item(_Menu.bookmarks, Icons.bookmarks_outlined, l.reader_bookmarks),
-            item(_Menu.outline, Icons.format_list_bulleted, l.reader_outline),
-            item(_Menu.goToPage, Icons.pin_outlined, l.reader_goToPage),
-            const PopupMenuDivider(),
-            check(_Menu.darkMode, prefs.darkMode, l.reader_darkMode),
-            check(
-              _Menu.horizontal,
-              prefs.horizontal,
-              l.reader_horizontalScroll,
+            item(
+              _Menu.bookmarks,
+              Symbols.bookmarks_rounded,
+              l.reader_bookmarks,
             ),
-            check(_Menu.singlePage, prefs.singlePage, l.reader_singlePage),
+            item(
+              _Menu.outline,
+              Symbols.format_list_bulleted_rounded,
+              l.reader_outline,
+            ),
+            item(_Menu.goToPage, Symbols.pin_rounded, l.reader_goToPage),
+            const PopupMenuDivider(),
+            item(
+              _Menu.darkMode,
+              Symbols.dark_mode_rounded,
+              l.reader_darkMode,
+              checked: prefs.darkMode,
+            ),
+            item(
+              _Menu.horizontal,
+              Symbols.swap_horiz_rounded,
+              l.reader_horizontalScroll,
+              checked: prefs.horizontal,
+            ),
+            item(
+              _Menu.singlePage,
+              Symbols.crop_portrait_rounded,
+              l.reader_singlePage,
+              checked: prefs.singlePage,
+            ),
             const PopupMenuDivider(),
             item(
               _Menu.bookmarkDocument,
-              docMarked
-                  ? Icons.collections_bookmark
-                  : Icons.collections_bookmark_outlined,
+              Symbols.collections_bookmark_rounded,
               docMarked
                   ? l.reader_removeDocumentBookmark
                   : l.reader_bookmarkDocument,
+              fill: docMarked ? 1 : 0,
             ),
-            item(_Menu.print, Icons.print_outlined, l.reader_print),
+            item(_Menu.print, Symbols.print_rounded, l.reader_print),
             if (shortcutOk)
               item(
                 _Menu.shortcut,
-                Icons.add_to_home_screen,
+                Symbols.add_to_home_screen_rounded,
                 l.reader_addShortcut,
               ),
-            item(_Menu.toImages, Icons.image_outlined, l.core_toolPdfToImage),
+            item(
+              _Menu.toImages,
+              Symbols.image_rounded,
+              l.core_toolPdfToImage,
+            ),
           ],
         ),
       ],
@@ -449,15 +500,20 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
     final error = _error;
     if (error != null) {
       return EmptyState(
-        icon: Icons.error_outline,
+        icon: Symbols.error_rounded,
         title: appErrorMessage(context, error),
         message: _fileName,
         actionLabel: context.l10n.core_close,
         onAction: () => Navigator.of(context).maybePop(),
       );
     }
+    // Vùng trang nền `surface2` (lỗi thì giữ nền màn vì minh hoạ EmptyState cũng là surface2).
+    final pageArea = context.tokens.surface2;
     if (_unlocking && _bytes == null) {
-      return const Center(child: CircularProgressIndicator());
+      return ColoredBox(
+        color: pageArea,
+        child: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     final viewer = ref.watch(readerViewerBuilderProvider)(
@@ -488,11 +544,63 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
       key: ValueKey('${_generation}_${prefs.horizontal}_${prefs.singlePage}'),
       child: viewer,
     );
-    if (!prefs.darkMode) return keyed;
-    return ColorFiltered(
-      key: const Key('reader_darkFilter'),
-      colorFilter: const ColorFilter.matrix(kInvertColorMatrix),
-      child: keyed,
+    final Widget content = !prefs.darkMode
+        ? keyed
+        : ColorFiltered(
+            key: const Key('reader_darkFilter'),
+            colorFilter: const ColorFilter.matrix(kInvertColorMatrix),
+            child: keyed,
+          );
+    return ColoredBox(color: pageArea, child: content);
+  }
+}
+
+/// Một dòng trong menu ⋮ của trình đọc. [checked] khác null = mục công tắc: hiện ✓ đỏ
+/// bên phải khi bật và báo trạng thái cho trình đọc màn hình.
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    this.checked,
+    this.fill = 0,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool? checked;
+  final double fill;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Semantics(
+      checked: checked,
+      child: Row(
+        children: [
+          Icon(icon, size: 22, fill: fill, color: t.textMuted),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 14.5,
+                fontWeight: FontWeight.w500,
+                color: t.text,
+              ),
+            ),
+          ),
+          if (checked ?? false) ...[
+            const SizedBox(width: 8),
+            const Icon(
+              Symbols.check_rounded,
+              size: 20,
+              color: AppColors.primary,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

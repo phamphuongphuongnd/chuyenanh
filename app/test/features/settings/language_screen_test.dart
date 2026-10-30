@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/settings/language_screen.dart';
+import 'package:pdf_office/features/settings/settings_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _pump(WidgetTester tester, {String? locale}) async {
@@ -68,11 +70,13 @@ void main() {
     await _pump(tester, locale: 'ko');
     final tile = find.ancestor(
       of: find.text('한국어'),
-      matching: find.byType(ListTile),
+      matching: find.byType(ChoiceTile),
     );
     expect(
-      find.descendant(of: tile, matching: find.byIcon(Icons.check)),
+      find.descendant(of: tile, matching: find.byIcon(Symbols.check_rounded)),
       findsOneWidget,
     );
+    // Chỉ một mục mang dấu tích.
+    expect(find.byIcon(Symbols.check_rounded), findsOneWidget);
   });
 }

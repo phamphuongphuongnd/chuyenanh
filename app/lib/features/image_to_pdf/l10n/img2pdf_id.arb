@@ -3,7 +3,7 @@
   "img2pdf_title": "Gambar ke PDF",
   "img2pdf_pickTitle": "Pilih gambar",
   "img2pdf_permissionTitle": "Perlu akses foto",
-  "img2pdf_permissionMessage": "Izinkan PDF Office membaca foto Anda agar Anda dapat memilih gambar yang akan dikonversi.",
+  "img2pdf_permissionMessage": "Izinkan Phiotron PDF membaca foto Anda agar Anda dapat memilih gambar yang akan dikonversi.",
   "img2pdf_allowAccess": "Izinkan akses",
   "img2pdf_openSettings": "Buka pengaturan",
   "img2pdf_limitedAccess": "Hanya sebagian foto yang dapat diakses.",

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:office_reader/office_reader.dart' as rd;
 import 'package:path/path.dart' as p;
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/doc_type.dart';
+import '../../../core/widgets/empty_state.dart';
 import '../logic/xlsx_grid_layout.dart';
 import '../logic/xlsx_search.dart';
 import 'office_common.dart';
@@ -174,41 +177,43 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
     final l = context.l10n;
     final cur = _hits.isEmpty ? null : _hits[_current];
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.xls,
-        foregroundColor: Colors.white,
-        title: Text(p.basename(widget.path), overflow: TextOverflow.ellipsis),
+      appBar: OfficeViewerAppBar(
+        category: DocCategory.xls,
+        title: p.basename(widget.path),
         actions: [
           IconButton(
             tooltip: l.office_search,
-            icon: const Icon(Icons.search),
+            icon: const Icon(Symbols.search_rounded),
             onPressed: () => setState(() => _searching = !_searching),
           ),
           IconButton(
             tooltip: l.office_zoomOut,
-            icon: const Icon(Icons.zoom_out),
+            icon: const Icon(Symbols.zoom_out_rounded),
             onPressed: () => _setZoom(_zoom - 0.25),
           ),
           IconButton(
             tooltip: l.office_zoomIn,
-            icon: const Icon(Icons.zoom_in),
+            icon: const Icon(Symbols.zoom_in_rounded),
             onPressed: () => _setZoom(_zoom + 0.25),
           ),
           IconButton(
             tooltip: l.office_convertToPdf,
-            icon: const Icon(Icons.picture_as_pdf_outlined),
+            icon: const Icon(Symbols.picture_as_pdf_rounded),
             onPressed: () =>
                 context.push(Routes.excelToPdf, extra: widget.path),
           ),
         ],
       ),
       body: _sheets.isEmpty
-          ? Center(child: Text(l.office_emptySheet))
+          ? EmptyState(
+              icon: Symbols.table_chart_rounded,
+              title: l.office_emptySheet,
+            )
           : Column(
               children: [
                 if (_searching)
                   OfficeSearchBar(
-                    color: AppColors.xls,
+                    category: DocCategory.xls,
                     controller: _searchCtrl,
                     onChanged: _onQuery,
                     current: _hits.isEmpty ? 0 : _current + 1,
@@ -251,6 +256,8 @@ class _XlsxViewerPageState extends State<XlsxViewerPage> {
   }
 }
 
+/// Thanh tab sheet ở đáy: viên cao 32 cuộn ngang; tab chọn = nền màu XLS chữ trắng,
+/// chưa chọn = nền `surface2`.
 class _SheetTabs extends StatelessWidget {
   const _SheetTabs({
     required this.names,
@@ -264,44 +271,44 @@ class _SheetTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      color: theme.colorScheme.surfaceContainerHighest,
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 44,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: names.length,
-            itemBuilder: (context, i) {
-              final sel = i == selected;
-              return InkWell(
+    final t = context.tokens;
+    final accent = officeHeaderColor(DocCategory.xls);
+    return OfficeBottomBar(
+      child: SizedBox(
+        height: 48,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          itemCount: names.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 6),
+          itemBuilder: (context, i) {
+            final sel = i == selected;
+            return Material(
+              color: sel ? accent : t.surface2,
+              shape: const StadiumBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
                 key: ValueKey('sheetTab$i'),
                 onTap: () => onSelected(i),
                 child: Container(
+                  height: 32,
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: sel ? theme.colorScheme.surface : null,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: sel ? AppColors.xls : Colors.transparent,
-                        width: 3,
-                      ),
-                    ),
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: Text(
                     names[i],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontWeight: sel ? FontWeight.bold : FontWeight.normal,
-                      color: sel ? AppColors.xls : null,
+                      fontSize: 13.5,
+                      fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
+                      color: sel ? Colors.white : t.text,
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

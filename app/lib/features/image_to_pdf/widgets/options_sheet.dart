@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/file_format.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../engines/pdf/image_to_pdf_engine.dart';
 import '../models/image_item.dart';
 import '../models/pdf_estimate.dart';
+import 'filter_sheet.dart' show pillChoiceChip;
 
 /// Lựa chọn của người dùng ở bảng tuỳ chọn.
 class ExportRequest {
@@ -83,15 +85,17 @@ class _OptionsSheetState extends State<OptionsSheet> {
   }
 
   Widget _section(String title, Widget child) => Padding(
-    padding: const EdgeInsets.only(top: 16),
+    padding: const EdgeInsets.only(top: 18),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w600,
+            color: context.tokens.textMuted,
+          ),
         ),
         const SizedBox(height: 8),
         child,
@@ -105,11 +109,12 @@ class _OptionsSheetState extends State<OptionsSheet> {
     required ValueChanged<T>? onChanged,
   }) => Wrap(
     spacing: 8,
-    runSpacing: 4,
+    runSpacing: 8,
     children: [
       for (final (value, label) in options)
-        ChoiceChip(
-          label: Text(label),
+        pillChoiceChip(
+          context,
+          label: label,
           selected: value == selected,
           onSelected: onChanged == null ? null : (_) => onChanged(value),
         ),
@@ -122,11 +127,12 @@ class _OptionsSheetState extends State<OptionsSheet> {
     final locale = Localizations.localeOf(context).toString();
     final estimate = estimatePdfBytes(widget.items, _quality.round());
     final fit = _size == PageSizeOption.fit;
+    final t = context.tokens;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
+          left: 20,
+          right: 20,
           bottom: MediaQuery.viewInsetsOf(context).bottom + 12,
         ),
         child: SingleChildScrollView(
@@ -136,7 +142,11 @@ class _OptionsSheetState extends State<OptionsSheet> {
             children: [
               Text(
                 l.img2pdf_optionsTitle,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w700,
+                  color: t.text,
+                ),
               ),
               _section(
                 l.core_fileName,
@@ -196,29 +206,59 @@ class _OptionsSheetState extends State<OptionsSheet> {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                l.img2pdf_estimatedSize(
-                  formatFileSize(estimate, locale),
-                  widget.items.length,
+              // Ước tính dung lượng: khối nền `surface2` bo 14, chữ phụ.
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
                 ),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
+                decoration: BoxDecoration(
+                  color: t.surface2,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  l.img2pdf_estimatedSize(
+                    formatFileSize(estimate, locale),
+                    widget.items.length,
+                  ),
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: t.textMuted,
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text(l.core_cancel.toUpperCase()),
+                      child: Text(
+                        l.core_cancel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
                       onPressed: _submit,
-                      child: Text(l.img2pdf_createPdf.toUpperCase()),
+                      child: Text(
+                        l.img2pdf_createPdf,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ],

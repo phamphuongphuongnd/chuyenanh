@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;display=swap"><style>body{margin:0;background:#E8E5E1}a{color:#C62828}a:hover{color:#E5393B}</style></helmet>
+<div style="font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#1C1918;padding:48px 56px 64px;display:flex;flex-direction:column;gap:56px;width:max-content">
+  <div style="display:flex;align-items:center;gap:16px">
+    <img src="assets/logo-3-color.svg" alt="" style="width:56px;height:56px;display:block">
+    <div>
+      <div style="font-size:30px;font-weight:800;letter-spacing:-0.02em">Phiotron PDF — Giao diện cho mọi thiết bị</div>
+      <div style="font-size:15px;color:#6B6461;margin-top:4px">Điện thoại 360 · Điện thoại 430 · Máy tính bảng dọc 820×1180 · Máy tính bảng ngang 1180×820 · mỗi khung bấm được, đổi Sáng/Tối trong Cài đặt → Giao diện</div>
+    </div>
+  </div>
+
+  <section data-screen-label="Điện thoại 360" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-size:20px;font-weight:800">Điện thoại Android nhỏ · 360×800</div><div style="font-size:13.5px;color:#6B6461">Thanh dưới 5 mục, nút ⇄ tròn ở giữa</div></div>
+    <div style="display:flex;gap:36px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Trang chủ · sáng</div><dc-import name="PdfOfficeApp" device="android" theme="light" initial-tab="home" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="380px,820px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Tập tin · sáng</div><dc-import name="PdfOfficeApp" device="android" theme="light" initial-tab="files" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="380px,820px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Công cụ · tối</div><dc-import name="PdfOfficeApp" device="android" theme="dark" initial-tab="tools" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="380px,820px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Cài đặt · tối</div><dc-import name="PdfOfficeApp" device="android" theme="dark" initial-tab="settings" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" show-save-folder="{{ true }}" hint-size="380px,820px"></dc-import></div>
+    </div>
+  </section>
+
+  <section data-screen-label="Điện thoại 430" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-size:20px;font-weight:800">Điện thoại lớn · iPhone Pro Max 430×932</div><div style="font-size:13.5px;color:#6B6461">Cùng bố cục, giãn theo bề rộng</div></div>
+    <div style="display:flex;gap:36px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Trang chủ · tối</div><dc-import name="PdfOfficeApp" device="ios" width="{{ 430 }}" height="{{ 932 }}" theme="dark" initial-tab="home" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="450px,952px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Tập tin · tối</div><dc-import name="PdfOfficeApp" device="ios" width="{{ 430 }}" height="{{ 932 }}" theme="dark" initial-tab="files" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="450px,952px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Công cụ · sáng</div><dc-import name="PdfOfficeApp" device="ios" width="{{ 430 }}" height="{{ 932 }}" theme="light" initial-tab="tools" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="450px,952px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Cài đặt · sáng</div><dc-import name="PdfOfficeApp" device="ios" width="{{ 430 }}" height="{{ 932 }}" theme="light" initial-tab="settings" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="450px,952px"></dc-import></div>
+    </div>
+  </section>
+
+  <section data-screen-label="Máy tính bảng dọc" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-size:20px;font-weight:800">Máy tính bảng dọc · 820×1180</div><div style="font-size:13.5px;color:#6B6461">Thanh bên cố định, nút "Ảnh sang PDF" nổi bật; Tập tin dạng lưới thẻ lớn</div></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Trang chủ · sáng</div><dc-import name="PdfOfficeTablet" width="{{ 820 }}" height="{{ 1180 }}" theme="light" initial-tab="home" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="848px,1208px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Tập tin · sáng</div><dc-import name="PdfOfficeTablet" width="{{ 820 }}" height="{{ 1180 }}" theme="light" initial-tab="files" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="848px,1208px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Công cụ · tối</div><dc-import name="PdfOfficeTablet" width="{{ 820 }}" height="{{ 1180 }}" theme="dark" initial-tab="tools" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="848px,1208px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Cài đặt · tối</div><dc-import name="PdfOfficeTablet" width="{{ 820 }}" height="{{ 1180 }}" theme="dark" initial-tab="settings" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" show-save-folder="{{ true }}" hint-size="848px,1208px"></dc-import></div>
+    </div>
+  </section>
+
+  <section data-screen-label="Máy tính bảng ngang" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-size:20px;font-weight:800">Máy tính bảng ngang · 1180×820</div><div style="font-size:13.5px;color:#6B6461">Yêu thích và Gần đây đặt cạnh nhau; lưới thẻ nhiều cột hơn</div></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Trang chủ · tối</div><dc-import name="PdfOfficeTablet" width="{{ 1180 }}" height="{{ 820 }}" theme="dark" initial-tab="home" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="1208px,848px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Tập tin · tối</div><dc-import name="PdfOfficeTablet" width="{{ 1180 }}" height="{{ 820 }}" theme="dark" initial-tab="files" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="1208px,848px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Công cụ · sáng</div><dc-import name="PdfOfficeTablet" width="{{ 1180 }}" height="{{ 820 }}" theme="light" initial-tab="tools" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="1208px,848px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-size:13px;font-weight:600;color:#6B6461">Cài đặt · sáng</div><dc-import name="PdfOfficeTablet" width="{{ 1180 }}" height="{{ 820 }}" theme="light" initial-tab="settings" files-state="{{ filesState }}" home-empty="{{ homeEmpty }}" hint-size="1208px,848px"></dc-import></div>
+    </div>
+  </section>
+
+  <section data-screen-label="Ghi chú" style="display:grid;grid-template-columns:repeat(3,minmax(0,440px));gap:32px;padding-top:28px;border-top:1px solid rgba(28,25,24,.12);font-size:14px;line-height:1.6;color:#3B3634">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:15px;font-weight:700;color:#1C1918">Quy tắc co giãn</div>
+      <div>Dưới 600dp: thanh điều hướng dưới + nút ⇄. Từ 600dp: thanh bên trái cố định, nút ⇄ trở thành nút đỏ "Ảnh sang PDF" ở đầu thanh bên.</div>
+      <div>Trang chủ và Tập tin dùng lưới tự xếp cột (tối thiểu 168–180px/thẻ, 340px/mục), nên chịu được mọi bề rộng ở giữa.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:15px;font-weight:700;color:#1C1918">Khác biệt trên máy tính bảng</div>
+      <div>Ngăn kéo trái của Tập tin được thay bằng thanh bên: "Gần đây", "Yêu thích" nằm ở mục Lối tắt; Ngôn ngữ, Giao diện, Thư mục lưu, Giới thiệu nằm trong Cài đặt.</div>
+      <div>Bảng chọn đáy (menu ⋮, chọn ngôn ngữ/giao diện/khổ giấy) trở thành hộp thoại giữa màn.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:15px;font-weight:700;color:#1C1918">Font, icon &amp; giấy phép</div>
+      <div>Font: <b>Be Vietnam Pro</b> — SIL Open Font License 1.1.</div>
+      <div>Icon: <b>Material Symbols Rounded</b> — Apache License 2.0.</div>
+      <div>Logo: phương án 1c "Xấp định dạng" (vector tự vẽ).</div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;filesState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;list&quot;,&quot;scanning&quot;,&quot;scanningWithFiles&quot;,&quot;noPermission&quot;,&quot;permissionBanner&quot;,&quot;empty&quot;,&quot;error&quot;],&quot;default&quot;:&quot;list&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Trạng thái&quot;},&quot;homeEmpty&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Trạng thái&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { filesState: this.props.filesState ?? 'list', homeEmpty: !!this.props.homeEmpty };
+  }
+}
+</script>
+</body>
+</html>

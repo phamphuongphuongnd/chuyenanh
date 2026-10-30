@@ -4,8 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../engine/pdf_ops.dart' show isLatin1;
 import '../engine/watermark_layout.dart';
@@ -164,11 +166,18 @@ class _WatermarkScreenState extends ConsumerState<WatermarkScreen>
     return ToolScaffold(
       title: title,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
           PdfInputCard(input: src, onChange: pickNew),
           const SizedBox(height: 16),
-          Center(
+          // Khối xem trước: nền phụ, trang A4 trắng ở giữa.
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              color: context.tokens.surface2,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            alignment: Alignment.center,
             child: _Preview(
               isText: _isText,
               text: _textCtl.text,
@@ -183,111 +192,118 @@ class _WatermarkScreenState extends ConsumerState<WatermarkScreen>
             ),
           ),
           const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: Text(l.tools_wmTypeText),
-                selected: _isText,
-                onSelected: (_) => _setMode(true),
-              ),
-              ChoiceChip(
-                label: Text(l.tools_wmTypeImage),
-                selected: !_isText,
-                onSelected: (_) => _setMode(false),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (_isText) ...[
-            AppTextField(
-              controller: _textCtl,
-              labelText: l.tools_wmTextLabel,
-              onChanged: (_) => setState(() {}),
-            ),
-            if (nonLatin) ...[
-              const SizedBox(height: 8),
-              NoteBanner(l.tools_wmNonLatinNote, icon: Icons.warning_amber_outlined),
-            ],
-            const SizedBox(height: 12),
-            Text(l.tools_wmColor),
-            const SizedBox(height: 4),
-            Wrap(
-              spacing: 8,
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                for (final c in _palette)
-                  GestureDetector(
-                    onTap: () => setState(() => _color = c),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: Color(c),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _color == c
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Colors.transparent,
-                          width: 3,
+                ToolChipWrap(
+                  children: [
+                    ToolChoiceChip(
+                      label: l.tools_wmTypeText,
+                      selected: _isText,
+                      onTap: () => _setMode(true),
+                    ),
+                    ToolChoiceChip(
+                      label: l.tools_wmTypeImage,
+                      selected: !_isText,
+                      onTap: () => _setMode(false),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (_isText) ...[
+                  AppTextField(
+                    controller: _textCtl,
+                    labelText: l.tools_wmTextLabel,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  if (nonLatin) ...[
+                    const SizedBox(height: 10),
+                    NoteBanner(l.tools_wmNonLatinNote, warning: true),
+                  ],
+                  const SizedBox(height: 16),
+                  ToolSectionLabel(l.tools_wmColor),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: [
+                      for (final c in _palette)
+                        ToolColorDot(
+                          color: Color(c),
+                          selected: _color == c,
+                          onTap: () => setState(() => _color = c),
                         ),
-                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _LabeledSlider(
+                    label: l.tools_wmFontSize,
+                    value: _fontSize,
+                    min: 12,
+                    max: 120,
+                    divisions: 108,
+                    display: '${_fontSize.round()}',
+                    onChanged: (v) => setState(() => _fontSize = v),
+                  ),
+                ] else ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: OutlinedButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Symbols.add_photo_alternate_rounded),
+                      label: Text(l.tools_wmChooseImage),
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  _LabeledSlider(
+                    label: l.tools_wmImageSize,
+                    value: _imageScale,
+                    min: 0.1,
+                    max: 1,
+                    divisions: 18,
+                    display: '${(_imageScale * 100).round()}%',
+                    onChanged: (v) => setState(() => _imageScale = v),
+                  ),
+                ],
               ],
             ),
-            _LabeledSlider(
-              label: l.tools_wmFontSize,
-              value: _fontSize,
-              min: 12,
-              max: 120,
-              divisions: 108,
-              display: '${_fontSize.round()}',
-              onChanged: (v) => setState(() => _fontSize = v),
-            ),
-          ] else ...[
-            OutlinedButton.icon(
-              onPressed: _pickImage,
-              icon: const Icon(Icons.image_outlined),
-              label: Text(l.tools_wmChooseImage),
-            ),
-            _LabeledSlider(
-              label: l.tools_wmImageSize,
-              value: _imageScale,
-              min: 0.1,
-              max: 1,
-              divisions: 18,
-              display: '${(_imageScale * 100).round()}%',
-              onChanged: (v) => setState(() => _imageScale = v),
-            ),
-          ],
-          _LabeledSlider(
-            label: l.tools_wmOpacity,
-            value: _opacity,
-            min: 0.05,
-            max: 1,
-            divisions: 19,
-            display: '${(_opacity * 100).round()}%',
-            onChanged: (v) => setState(() => _opacity = v),
           ),
-          _LabeledSlider(
-            label: l.tools_wmAngle,
-            value: _angle,
-            min: -90,
-            max: 90,
-            divisions: 36,
-            display: '${_angle.round()}°',
-            onChanged: (v) => setState(() => _angle = v),
-          ),
-          const SizedBox(height: 8),
-          Text(l.tools_wmPosition),
-          const SizedBox(height: 4),
-          _PositionGrid(
-            alignX: _alignX,
-            alignY: _alignY,
-            onChanged: (x, y) => setState(() {
-              _alignX = x;
-              _alignY = y;
-            }),
+          const SizedBox(height: 16),
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _LabeledSlider(
+                  label: l.tools_wmOpacity,
+                  value: _opacity,
+                  min: 0.05,
+                  max: 1,
+                  divisions: 19,
+                  display: '${(_opacity * 100).round()}%',
+                  onChanged: (v) => setState(() => _opacity = v),
+                ),
+                const SizedBox(height: 8),
+                _LabeledSlider(
+                  label: l.tools_wmAngle,
+                  value: _angle,
+                  min: -90,
+                  max: 90,
+                  divisions: 36,
+                  display: '${_angle.round()}°',
+                  onChanged: (v) => setState(() => _angle = v),
+                ),
+                const SizedBox(height: 12),
+                ToolSectionLabel(l.tools_wmPosition),
+                _PositionGrid(
+                  alignX: _alignX,
+                  alignY: _alignY,
+                  onChanged: (x, y) => setState(() {
+                    _alignX = x;
+                    _alignY = y;
+                  }),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           NoteBanner(l.tools_noteLosesFeatures),
@@ -319,10 +335,37 @@ class _LabeledSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final t = context.tokens;
+    // Nhãn + giá trị ở trên, thanh trượt đỏ chủ đạo rộng hết khối ở dưới.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(width: 96, child: Text(label)),
-        Expanded(
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: t.textMuted,
+                ),
+              ),
+            ),
+            Text(
+              display,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: t.text,
+              ),
+            ),
+          ],
+        ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
+          ),
           child: Slider(
             value: value.clamp(min, max),
             min: min,
@@ -331,7 +374,6 @@ class _LabeledSlider extends StatelessWidget {
             onChanged: onChanged,
           ),
         ),
-        SizedBox(width: 44, child: Text(display, textAlign: TextAlign.end)),
       ],
     );
   }
@@ -351,15 +393,15 @@ class _PositionGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        width: 132,
+        width: 144,
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          border: Border.all(color: scheme.outlineVariant),
-          borderRadius: BorderRadius.circular(8),
+          color: t.surface2,
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
           children: [
@@ -370,9 +412,10 @@ class _PositionGrid extends StatelessWidget {
                     Expanded(
                       child: InkWell(
                         key: ValueKey('pos_${x.toInt()}_${y.toInt()}'),
+                        borderRadius: BorderRadius.circular(10),
                         onTap: () => onChanged(x, y),
                         child: SizedBox(
-                          height: 36,
+                          height: 40,
                           child: Center(
                             child: Container(
                               width: 16,
@@ -380,8 +423,8 @@ class _PositionGrid extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: alignX == x && alignY == y
-                                    ? scheme.primary
-                                    : scheme.surfaceContainerHighest,
+                                    ? AppColors.primary
+                                    : t.lineStrong,
                               ),
                             ),
                           ),
@@ -447,9 +490,10 @@ class _Preview extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
+        // Trang giấy luôn trắng (cả giao diện tối); không đổ bóng.
         color: Colors.white,
-        border: Border.all(color: Colors.black26),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        border: Border.all(color: context.tokens.line),
+        borderRadius: BorderRadius.circular(4),
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(

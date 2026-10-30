@@ -4,10 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path/path.dart' as p;
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/file_format.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../core/widgets/widgets.dart';
@@ -150,20 +151,17 @@ class _UnlockScreenState extends ConsumerState<UnlockScreen> {
       );
     }
     final locale = Localizations.localeOf(context).toString();
-    final card = Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        leading: FileTypeIcon.forPath(path, locked: _locked ?? false),
-        title: Text(p.basename(path), maxLines: 2, overflow: TextOverflow.ellipsis),
-        subtitle: _size == null ? null : Text(formatFileSize(_size!, locale)),
-        trailing: TextButton(onPressed: _pick, child: Text(l.tools_changeFile)),
-      ),
+    final card = ToolFileCard(
+      path: path,
+      info: _size == null ? null : formatFileSize(_size!, locale),
+      locked: _locked ?? false,
+      onChange: _pick,
     );
     if (_locked == false) {
       return ToolScaffold(
         title: title,
         body: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           children: [
             card,
             const SizedBox(height: 16),
@@ -175,32 +173,44 @@ class _UnlockScreenState extends ConsumerState<UnlockScreen> {
     return ToolScaffold(
       title: title,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
           card,
           const SizedBox(height: 16),
-          Text(l.tools_unlockHint),
-          const SizedBox(height: 12),
-          AppTextField(
-            controller: _pwCtl,
-            obscureText: _obscure,
-            hintText: l.core_password,
-            errorText: _error,
-            textInputAction: TextInputAction.done,
-            suffixIcon: IconButton(
-              icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
-              onPressed: () => setState(() => _obscure = !_obscure),
+          ToolCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolHintText(l.tools_unlockHint),
+                const SizedBox(height: 14),
+                AppTextField(
+                  controller: _pwCtl,
+                  obscureText: _obscure,
+                  hintText: l.core_password,
+                  errorText: _error,
+                  textInputAction: TextInputAction.done,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscure
+                          ? Symbols.visibility_rounded
+                          : Symbols.visibility_off_rounded,
+                      color: context.tokens.textMuted,
+                    ),
+                    onPressed: () => setState(() => _obscure = !_obscure),
+                  ),
+                  onChanged: (_) {
+                    if (_error != null) setState(() => _error = null);
+                  },
+                  onSubmitted: (_) => _unlock(),
+                ),
+              ],
             ),
-            onChanged: (_) {
-              if (_error != null) setState(() => _error = null);
-            },
-            onSubmitted: (_) => _unlock(),
           ),
         ],
       ),
       bottom: PrimaryActionButton(
         label: l.tools_unlockAction,
-        icon: Icons.lock_open_outlined,
+        icon: Symbols.lock_open_rounded,
         onPressed: _unlock,
       ),
     );

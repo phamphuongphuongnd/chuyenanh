@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -122,13 +123,13 @@ class _AnnotateScreenState extends ConsumerState<AnnotateScreen> {
                   IconButton(
                     key: const Key('undo'),
                     tooltip: l.edit_undo,
-                    icon: const Icon(Icons.undo),
+                    icon: const Icon(Symbols.undo_rounded),
                     onPressed: v.canUndo ? _undo.undo : null,
                   ),
                   IconButton(
                     key: const Key('redo'),
                     tooltip: l.edit_redo,
-                    icon: const Icon(Icons.redo),
+                    icon: const Icon(Symbols.redo_rounded),
                     onPressed: v.canRedo ? _undo.redo : null,
                   ),
                 ],
@@ -138,13 +139,13 @@ class _AnnotateScreenState extends ConsumerState<AnnotateScreen> {
               IconButton(
                 key: const Key('deleteAnnotation'),
                 tooltip: l.edit_deleteAnnotation,
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Symbols.delete_rounded),
                 onPressed: _deleteSelected,
               ),
             IconButton(
               key: const Key('save'),
               tooltip: l.edit_saveAsNew,
-              icon: const Icon(Icons.save_outlined),
+              icon: const Icon(Symbols.save_rounded),
               onPressed: _failed ? null : _save,
             ),
           ],
@@ -152,7 +153,7 @@ class _AnnotateScreenState extends ConsumerState<AnnotateScreen> {
         body: _failed
             ? EmptyState(
                 title: l.edit_loadFailed,
-                icon: Icons.error_outline,
+                icon: Symbols.error_rounded,
               )
             : Column(
                 children: [

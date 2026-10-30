@@ -2,9 +2,11 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_theme.dart';
 import 'signature_image.dart';
 
 /// Màu bút chọn nhanh.
@@ -21,6 +23,7 @@ Future<Uint8List?> showSignaturePadSheet(BuildContext context) {
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    showDragHandle: true,
     builder: (_) => const SignaturePadSheet(),
   );
 }
@@ -81,48 +84,62 @@ class _SignaturePadSheetState extends State<SignaturePadSheet> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
+    final t = context.tokens;
+    final labelStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: t.text,
+    );
+    // Sheet đã có tay kéo (`showDragHandle`) nên lề trên nhỏ.
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.viewInsetsOf(context).bottom,
         left: 16,
         right: 16,
-        top: 16,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l.edit_drawSignature, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 12),
+          Text(
+            l.edit_drawSignature,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: t.text,
+            ),
+          ),
+          const SizedBox(height: 14),
+          // Ô vẽ: luôn nền trắng (mực tối) ở cả giao diện tối, bo 16, viền `line`.
           Container(
             height: 220,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: _showEmptyWarning
-                    ? theme.colorScheme.error
-                    : theme.dividerColor,
+                color: _showEmptyWarning ? AppColors.primary : t.line,
+                width: _showEmptyWarning ? 1.5 : 1,
               ),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(15),
               child: Stack(
                 children: [
-                  Positioned(
-                    left: 12,
-                    right: 12,
+                  const Positioned(
+                    left: 16,
+                    right: 16,
                     bottom: 40,
                     child: Divider(height: 1, color: Colors.black26),
                   ),
                   Positioned(
-                    left: 12,
+                    left: 16,
                     bottom: 14,
                     child: Text(
                       l.edit_signHere,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.black38,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        color: AppTokens.light.textMuted,
                       ),
                     ),
                   ),
@@ -149,77 +166,122 @@ class _SignaturePadSheetState extends State<SignaturePadSheet> {
           ),
           if (_showEmptyWarning)
             Padding(
-              padding: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.only(top: 8, left: 4),
               child: Text(
                 l.edit_signatureEmpty,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.error,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                  color: t.primaryText,
                 ),
               ),
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Row(
             children: [
-              Text(l.edit_penColor, style: theme.textTheme.labelLarge),
-              const SizedBox(width: 12),
+              Text(l.edit_penColor, style: labelStyle),
+              const SizedBox(width: 10),
               for (final c in kPenColors)
-                InkResponse(
+                _PenDot(
                   key: Key('pen_${c.toARGB32()}'),
+                  color: c,
+                  selected: _color == c,
                   onTap: () => setState(() => _color = c),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: c,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _color == c
-                              ? theme.colorScheme.primary
-                              : Colors.black12,
-                          width: _color == c ? 3 : 1,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
             ],
           ),
           Row(
             children: [
-              Text(l.edit_penWidth, style: theme.textTheme.labelLarge),
+              Text(l.edit_penWidth, style: labelStyle),
               Expanded(
                 child: Slider(
                   value: _width,
                   min: 1.5,
                   max: 8,
+                  activeColor: AppColors.primary,
+                  inactiveColor: t.surface2,
                   onChanged: (v) => setState(() => _width = v),
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  key: const Key('clearPad'),
-                  onPressed: _busy ? null : _clear,
-                  child: Text(l.edit_clear.toUpperCase()),
-                ),
+          const SizedBox(height: 4),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      key: const Key('clearPad'),
+                      onPressed: _busy ? null : _clear,
+                      child: Text(l.edit_clear),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FilledButton(
+                      key: const Key('usePad'),
+                      onPressed: _busy ? null : _use,
+                      child: Text(l.edit_useSignature),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
-                  key: const Key('usePad'),
-                  onPressed: _busy ? null : _use,
-                  child: Text(l.edit_useSignature.toUpperCase()),
-                ),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+}
+
+/// Chấm màu bút tròn 32; đang chọn = viền đỏ chủ đạo + dấu ✓ trắng (thấy rõ cả trên mực đen).
+class _PenDot extends StatelessWidget {
+  const _PenDot({
+    super.key,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: InkResponse(
+        onTap: onTap,
+        radius: 24,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? AppColors.primary : t.lineStrong,
+                width: selected ? 3 : 1,
+              ),
+            ),
+            child: selected
+                ? const Icon(
+                    Symbols.check_rounded,
+                    size: 16,
+                    weight: 700,
+                    color: Colors.white,
+                  )
+                : null,
+          ),
+        ),
       ),
     );
   }

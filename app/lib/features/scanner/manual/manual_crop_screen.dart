@@ -4,10 +4,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_ops/image_ops.dart' as ops;
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/widgets.dart';
 import 'corner_geometry.dart';
 
 /// Kéo bốn góc quanh tài liệu rồi cắt thẳng (perspective). Dùng khi máy không có
@@ -73,17 +76,18 @@ class _ManualCropScreenState extends State<ManualCropScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final t = context.tokens;
     return Scaffold(
+      backgroundColor: t.bg,
+      // AppBar sáng theo theme mặc định (không đặt màu riêng).
       appBar: AppBar(title: Text(l.scan_manualTitle)),
       body: FutureBuilder<_Loaded>(
         future: _future,
         builder: (context, snap) {
           if (snap.hasError) {
-            return Center(
-              child: Text(
-                appErrorMessage(context, const CorruptFile()),
-                textAlign: TextAlign.center,
-              ),
+            return EmptyState(
+              icon: Symbols.broken_image_rounded,
+              title: appErrorMessage(context, const CorruptFile()),
             );
           }
           final data = snap.data;
@@ -95,45 +99,68 @@ class _ManualCropScreenState extends State<ManualCropScreen> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(l.scan_manualHint, textAlign: TextAlign.center),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
+                child: Text(
+                  l.scan_manualHint,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    fontWeight: FontWeight.w500,
+                    color: t.textMuted,
+                  ),
+                ),
               ),
               Expanded(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: data.width / data.height,
-                    child: LayoutBuilder(
-                      builder: (context, box) => _CropArea(
-                        imagePath: widget.imagePath,
-                        size: box.biggest,
-                        corners: corners,
-                        onStart: (pos) =>
-                            _dragging = nearestCornerIndex(corners, pos),
-                        onMove: (pos) {
-                          final i = _dragging;
-                          if (i == null) return;
-                          setState(() {
-                            _corners = [...corners]..[i] = clampPoint(pos);
-                          });
-                        },
-                        onEnd: () => _dragging = null,
+                child: Padding(
+                  // Chừa lề để chấm góc ở mép ảnh không bị cắt.
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: data.width / data.height,
+                      child: LayoutBuilder(
+                        builder: (context, box) => _CropArea(
+                          imagePath: widget.imagePath,
+                          size: box.biggest,
+                          corners: corners,
+                          onStart: (pos) =>
+                              _dragging = nearestCornerIndex(corners, pos),
+                          onMove: (pos) {
+                            final i = _dragging;
+                            if (i == null) return;
+                            setState(() {
+                              _corners = [...corners]..[i] = clampPoint(pos);
+                            });
+                          },
+                          onEnd: () => _dragging = null,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
               SafeArea(
+                top: false,
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
                   child: SizedBox(
                     width: double.infinity,
                     child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size.fromHeight(50),
+                        shape: const StadiumBorder(),
+                      ),
                       onPressed: valid && !_busy ? () => _crop(corners) : null,
                       child: _busy
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
                           : Text(l.scan_manualDone),
                     ),
@@ -178,13 +205,15 @@ class _CropArea extends StatelessWidget {
       onPanCancel: onEnd,
       child: Stack(
         fit: StackFit.expand,
+        // Không cắt chấm góc khi góc nằm sát mép ảnh (đã chừa lề 16 ở ngoài).
+        clipBehavior: Clip.none,
         children: [
           Image.file(File(imagePath), fit: BoxFit.fill),
           CustomPaint(
             painter: _QuadPainter([
               for (final c in corners)
                 Offset(c.x * size.width, c.y * size.height),
-            ], Theme.of(context).colorScheme.primary),
+            ], AppColors.primary),
           ),
         ],
       ),

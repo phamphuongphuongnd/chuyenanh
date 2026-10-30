@@ -5,8 +5,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_ops/image_ops.dart' as ops;
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../model/scan_page.dart';
 
 /// Khoá xem trước: đủ để biết khi nào phải render lại.
@@ -36,7 +38,8 @@ String scanFilterLabel(BuildContext context, ops.ImageFilter f) {
   };
 }
 
-/// Hàng một trang trong danh sách: ảnh nhỏ, số trang, xoay / bộ lọc / chụp lại / xoá, tay kéo sắp xếp.
+/// Thẻ một trang trong danh sách: ảnh nhỏ, số trang, xoay / bộ lọc / chụp lại / xoá, tay kéo sắp xếp.
+/// Thẻ nền `surface` bo 20, không đổ bóng (thiết kế §1.5–1.6).
 class ScanPageTile extends ConsumerWidget {
   const ScanPageTile({
     super.key,
@@ -55,63 +58,128 @@ class ScanPageTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          children: [
-            SizedBox(width: 72, height: 96, child: _Thumb(page: page)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l.scan_pageNumber(index + 1),
-                    style: Theme.of(context).textTheme.titleMedium,
+    final t = context.tokens;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 72,
+            height: 96,
+            decoration: BoxDecoration(
+              color: t.surface2,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: _Thumb(page: page),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.scan_pageNumber(index + 1),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w700,
+                    color: t.text,
                   ),
-                  if (page.filter != ops.ImageFilter.original)
-                    Text(
-                      scanFilterLabel(context, page.filter),
-                      style: Theme.of(context).textTheme.bodySmall,
+                ),
+                if (page.filter != ops.ImageFilter.original) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    scanFilterLabel(context, page.filter),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w500,
+                      color: t.textMuted,
                     ),
-                  Wrap(
-                    children: [
-                      IconButton(
-                        tooltip: l.scan_rotate,
-                        icon: const Icon(Icons.rotate_right),
-                        onPressed: onRotate,
-                      ),
-                      IconButton(
-                        tooltip: l.scan_filter,
-                        icon: const Icon(Icons.tune),
-                        onPressed: onFilter,
-                      ),
-                      IconButton(
-                        tooltip: l.scan_retake,
-                        icon: const Icon(Icons.camera_alt_outlined),
-                        onPressed: onRetake,
-                      ),
-                      IconButton(
-                        tooltip: l.scan_deletePage,
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: onDelete,
-                      ),
-                    ],
                   ),
                 ],
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    _RoundAction(
+                      tooltip: l.scan_rotate,
+                      icon: Symbols.rotate_right_rounded,
+                      onPressed: onRotate,
+                    ),
+                    _RoundAction(
+                      tooltip: l.scan_filter,
+                      icon: Symbols.tune_rounded,
+                      onPressed: onFilter,
+                    ),
+                    _RoundAction(
+                      tooltip: l.scan_retake,
+                      icon: Symbols.photo_camera_rounded,
+                      onPressed: onRetake,
+                    ),
+                    _RoundAction(
+                      tooltip: l.scan_deletePage,
+                      icon: Symbols.delete_rounded,
+                      onPressed: onDelete,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          ReorderableDragStartListener(
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Icon(
+                Symbols.drag_indicator_rounded,
+                size: 24,
+                color: t.textMuted,
               ),
             ),
-            ReorderableDragStartListener(
-              index: index,
-              child: const Padding(
-                padding: EdgeInsets.all(8),
-                child: Icon(Icons.drag_handle),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Nút icon tròn 40 nền `surface2` trong hàng thao tác của thẻ trang.
+class _RoundAction extends StatelessWidget {
+  const _RoundAction({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(icon, size: 20),
+      style: IconButton.styleFrom(
+        backgroundColor: t.surface2,
+        foregroundColor: t.text,
+        fixedSize: const Size(40, 40),
+        minimumSize: const Size(40, 40),
+        padding: EdgeInsets.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: const CircleBorder(),
       ),
     );
   }
@@ -121,7 +189,12 @@ class _Thumb extends ConsumerWidget {
   const _Thumb({required this.page});
   final ScanPage page;
 
-  Widget _broken() => const Center(child: Icon(Icons.broken_image_outlined));
+  Widget _broken(BuildContext context) => Center(
+    child: Icon(
+      Symbols.broken_image_rounded,
+      color: context.tokens.textMuted,
+    ),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -130,7 +203,7 @@ class _Thumb extends ConsumerWidget {
         File(page.path),
         fit: BoxFit.contain,
         cacheWidth: 300,
-        errorBuilder: (_, _, _) => _broken(),
+        errorBuilder: (_, _, _) => _broken(context),
       );
     }
     final preview = ref.watch(
@@ -149,7 +222,7 @@ class _Thumb extends ConsumerWidget {
           child: CircularProgressIndicator(strokeWidth: 2),
         ),
       ),
-      error: (_, _) => _broken(),
+      error: (_, _) => _broken(context),
     );
   }
 }

@@ -27,11 +27,16 @@ void main() {
         )
         .first;
 
-    // Mở mục Cài đặt, chụp, rồi quay lại.
-    Future<void> openSetting(String key, String name) async {
+    // Mở mục Cài đặt, chụp, rồi quay lại. Ngôn ngữ / Giao diện / Khổ giấy mở bảng chọn
+    // (không có nút quay lại) → chạm vùng tối phía trên để đóng.
+    Future<void> openSetting(String key, String name, {bool sheet = false}) async {
       await tapKey(tester, key, scrollable: settingsList);
       await shot(tester, binding, name);
-      await goBack(tester);
+      if (sheet) {
+        await tester.tapAt(const Offset(10, 10));
+      } else {
+        await goBack(tester);
+      }
       await settle(tester, binding, 'back-$name');
     }
 
@@ -54,9 +59,9 @@ void main() {
     }
     await shot(tester, binding, '04-settings');
 
-    await openSetting('settings_language', '05-language');
-    await openSetting('settings_theme', '06-theme');
-    await openSetting('settings_pageSize', '07-page-size');
+    await openSetting('settings_language', '05-language', sheet: true);
+    await openSetting('settings_theme', '06-theme', sheet: true);
+    await openSetting('settings_pageSize', '07-page-size', sheet: true);
     await openSetting('settings_privacy', '08-privacy');
     await openSetting('settings_about', '09-about');
 
@@ -64,9 +69,8 @@ void main() {
     await tapKey(tester, 'settings_language', scrollable: settingsList);
     await settle(tester, binding, 'language-open');
     await tapKey(tester, 'lang_vi');
+    // Chọn là bảng tự đóng.
     await settle(tester, binding, 'language-vi');
-    await goBack(tester);
-    await settle(tester, binding, 'back-language-vi');
     await tab('nav-home', 'tab-home-vi');
     expect(find.text('Trang chủ'), findsWidgets);
     await shot(tester, binding, '10-home-vi');
@@ -77,8 +81,6 @@ void main() {
     await settle(tester, binding, 'theme-open');
     await tapKey(tester, 'theme_dark');
     await settle(tester, binding, 'theme-dark');
-    await goBack(tester);
-    await settle(tester, binding, 'back-theme-dark');
     await tab('nav-home', 'tab-home-dark');
     final brightness = Theme.of(
       tester.element(find.byType(MainShell)),

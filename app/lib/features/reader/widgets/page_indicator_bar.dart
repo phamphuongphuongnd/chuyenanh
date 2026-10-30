@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../logic/page_range.dart';
 
 /// Thanh dưới trình đọc: ‹ 3 / 25 › — chạm vào số trang để nhập số cần nhảy tới.
+/// Kiểu thiết kế mới: ‹ › là nút tròn nền `surface2`, số trang nằm trong viên `surface2`.
 class PageIndicatorBar extends StatelessWidget {
   const PageIndicatorBar({
     super.key,
@@ -27,56 +30,104 @@ class PageIndicatorBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
+    final t = context.tokens;
+    const pill = StadiumBorder();
+    // Nền surface, kẻ mảnh phía trên (không đổ bóng — nhẹ cho máy yếu).
     return Material(
-      color: theme.colorScheme.surface,
-      elevation: 3,
+      color: t.surface,
+      shape: Border(top: BorderSide(color: t.line)),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 48,
+          height: 56,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
+              _RoundNavButton(
                 tooltip: l.reader_previousPage,
+                icon: Symbols.chevron_left_rounded,
                 onPressed: page > 1 ? onPrevious : null,
-                icon: const Icon(Icons.chevron_left),
               ),
-              InkWell(
-                key: const Key('reader_pageIndicator'),
-                borderRadius: BorderRadius.circular(8),
-                onTap: pageCount <= 0
-                    ? null
-                    : () async {
-                        final target = await showGoToPageDialog(
-                          context,
-                          pageCount: pageCount,
-                          current: page,
-                        );
-                        if (target != null) onJump(target);
-                      },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Text(
-                    '$page / $pageCount',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+              const SizedBox(width: 12),
+              // Viên số trang: chạm để mở hộp thoại "Đến trang".
+              Material(
+                color: t.surface2,
+                shape: pill,
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  key: const Key('reader_pageIndicator'),
+                  customBorder: pill,
+                  onTap: pageCount <= 0
+                      ? null
+                      : () async {
+                          final target = await showGoToPageDialog(
+                            context,
+                            pageCount: pageCount,
+                            current: page,
+                          );
+                          if (target != null) onJump(target);
+                        },
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 88),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 9,
+                      ),
+                      child: Text(
+                        '$page / $pageCount',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: t.text,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-              IconButton(
+              const SizedBox(width: 12),
+              _RoundNavButton(
                 tooltip: l.reader_nextPage,
+                icon: Symbols.chevron_right_rounded,
                 onPressed: page < pageCount ? onNext : null,
-                icon: const Icon(Icons.chevron_right),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Nút tròn 40 nền `surface2` (‹ / ›). Vùng chạm vẫn 48 theo `materialTapTargetSize`.
+class _RoundNavButton extends StatelessWidget {
+  const _RoundNavButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(icon, size: 24),
+      style: IconButton.styleFrom(
+        fixedSize: const Size(40, 40),
+        minimumSize: const Size(40, 40),
+        padding: EdgeInsets.zero,
+        backgroundColor: t.surface2,
+        disabledBackgroundColor: t.surface2.withValues(alpha: 0.5),
+        foregroundColor: t.text,
+        disabledForegroundColor: t.textMuted.withValues(alpha: 0.45),
       ),
     );
   }

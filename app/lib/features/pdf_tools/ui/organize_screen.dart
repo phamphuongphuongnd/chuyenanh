@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../engines/pdf/pdf_render_engine.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
 import '../../reader/reader_providers.dart';
@@ -122,17 +124,15 @@ class _OrganizeScreenState extends ConsumerState<OrganizeScreen>
     return ToolScaffold(
       title: title,
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: PdfInputCard(input: src, onChange: pickNew),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Text(
-              l.tools_organizeHint,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+            child: ToolHintText(l.tools_organizeHint),
           ),
           _Toolbar(
             edit: edit,
@@ -150,15 +150,14 @@ class _OrganizeScreenState extends ConsumerState<OrganizeScreen>
             onReset: () =>
                 setState(() => _edit = PageEditList.fromCount(src.pageCount)),
           ),
-          const Divider(height: 1),
           Expanded(
             child: GridView.builder(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 140,
                 childAspectRatio: 0.68,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
               ),
               itemCount: edit.length,
               itemBuilder: (context, index) {
@@ -199,7 +198,7 @@ class _OrganizeScreenState extends ConsumerState<OrganizeScreen>
       ),
       bottom: PrimaryActionButton(
         label: l.core_save,
-        icon: Icons.save_outlined,
+        icon: Symbols.save_rounded,
         onPressed: () => _save(extractOnly: false),
       ),
     );
@@ -229,56 +228,85 @@ class _Toolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final t = context.tokens;
     final has = edit.hasSelection;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          TextButton(
-            onPressed: onSelectAll,
-            child: Text(
-              edit.allSelected ? l.tools_clearSelection : l.tools_selectAll,
-            ),
+    // Nút icon: bật = chữ chính, khoá = mờ theo theme.
+    final iconStyle = IconButton.styleFrom(
+      foregroundColor: t.text,
+      disabledForegroundColor: t.lineStrong,
+    );
+    Widget action(String tooltip, IconData icon, VoidCallback? onPressed) =>
+        IconButton(
+          tooltip: tooltip,
+          style: iconStyle,
+          icon: Icon(icon),
+          onPressed: onPressed,
+        );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ToolCard(
+        padding: EdgeInsets.zero,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: Row(
+            children: [
+              TextButton(
+                onPressed: onSelectAll,
+                child: Text(
+                  edit.allSelected ? l.tools_clearSelection : l.tools_selectAll,
+                ),
+              ),
+              if (has)
+                Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: Text(
+                    l.tools_selectedCount(edit.selected.length),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: t.textMuted,
+                    ),
+                  ),
+                ),
+              action(
+                l.tools_rotate,
+                Symbols.rotate_left_rounded,
+                has ? () => onRotate(-90) : null,
+              ),
+              action(
+                l.tools_rotate,
+                Symbols.rotate_right_rounded,
+                has ? () => onRotate(90) : null,
+              ),
+              action(
+                l.tools_moveEarlier,
+                Symbols.arrow_back_rounded,
+                has ? () => onMove(-1) : null,
+              ),
+              action(
+                l.tools_moveLater,
+                Symbols.arrow_forward_rounded,
+                has ? () => onMove(1) : null,
+              ),
+              action(
+                l.core_delete,
+                Symbols.delete_rounded,
+                has ? onDelete : null,
+              ),
+              action(
+                l.tools_extract,
+                Symbols.file_copy_rounded,
+                has ? onExtract : null,
+              ),
+              action(
+                l.tools_reset,
+                Symbols.restart_alt_rounded,
+                edit.isModified ? onReset : null,
+              ),
+            ],
           ),
-          if (has) Text(l.tools_selectedCount(edit.selected.length)),
-          const SizedBox(width: 4),
-          IconButton(
-            tooltip: l.tools_rotate,
-            icon: const Icon(Icons.rotate_left),
-            onPressed: has ? () => onRotate(-90) : null,
-          ),
-          IconButton(
-            tooltip: l.tools_rotate,
-            icon: const Icon(Icons.rotate_right),
-            onPressed: has ? () => onRotate(90) : null,
-          ),
-          IconButton(
-            tooltip: l.tools_moveEarlier,
-            icon: const Icon(Icons.arrow_back),
-            onPressed: has ? () => onMove(-1) : null,
-          ),
-          IconButton(
-            tooltip: l.tools_moveLater,
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: has ? () => onMove(1) : null,
-          ),
-          IconButton(
-            tooltip: l.core_delete,
-            icon: const Icon(Icons.delete_outline),
-            onPressed: has ? onDelete : null,
-          ),
-          IconButton(
-            tooltip: l.tools_extract,
-            icon: const Icon(Icons.file_copy_outlined),
-            onPressed: has ? onExtract : null,
-          ),
-          IconButton(
-            tooltip: l.tools_reset,
-            icon: const Icon(Icons.restart_alt),
-            onPressed: edit.isModified ? onReset : null,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -305,13 +333,14 @@ class _PageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     final l = context.l10n;
-    final borderColor = selected
-        ? scheme.primary
+    // Chọn = viền đỏ 3; ô đích khi kéo = viền đỏ nhạt 2; thường = kẻ mảnh.
+    final border = selected
+        ? Border.all(color: AppColors.primary, width: 3)
         : highlight
-        ? scheme.tertiary
-        : scheme.outlineVariant;
+        ? Border.all(color: t.primaryText.withValues(alpha: 0.6), width: 2)
+        : Border.all(color: t.lineStrong);
     return Semantics(
       selected: selected,
       label: l.tools_pageNumber(entry.sourceIndex + 1),
@@ -322,16 +351,17 @@ class _PageTile extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
+                  // Trang giấy luôn trắng (cả giao diện tối).
                   color: Colors.white,
-                  border: Border.all(color: borderColor, width: selected ? 3 : 1),
-                  borderRadius: BorderRadius.circular(6),
+                  border: border,
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(3),
                       child: RotatedBox(
                         quarterTurns: entry.rotation ~/ 90,
                         child: _PageImage(
@@ -342,20 +372,36 @@ class _PageTile extends StatelessWidget {
                     ),
                     if (selected)
                       Positioned(
-                        top: 4,
-                        right: 4,
-                        child: Icon(
-                          Icons.check_circle,
-                          size: 22,
-                          color: scheme.primary,
+                        top: 5,
+                        right: 5,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Symbols.check_rounded,
+                            size: 17,
+                            weight: 700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 4),
-            Text('$position', style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: 6),
+            Text(
+              '$position',
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: selected ? t.primaryText : t.textMuted,
+              ),
+            ),
           ],
         ),
       ),
@@ -374,9 +420,11 @@ class _PageImage extends StatelessWidget {
     final placeholder = Center(
       child: Text(
         '${index + 1}',
-        style: Theme.of(
-          context,
-        ).textTheme.titleLarge?.copyWith(color: Colors.black38),
+        style: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: Colors.black38,
+        ),
       ),
     );
     final t = thumbs;

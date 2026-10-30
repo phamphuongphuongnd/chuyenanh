@@ -2,10 +2,80 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/l10n/l10n.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/app_search_field.dart';
+
+/// Màu thanh tiêu đề trình xem theo loại file (bản đậm, `design-mobile/README.md` §1.2):
+/// DOC `#1565C0` · XLS `#2E7D32` · PPT `#D84315` · TXT `#546E7A`; chữ/icon trắng.
+Color officeHeaderColor(DocCategory category) =>
+    AppColors.headerForCategory(category) ?? AppColors.primary;
+
+/// Thanh tiêu đề chung của các trình xem Office/TXT: nền màu theo loại file, chữ/icon trắng.
+///
+/// Theme AppBar mặc định là nền sáng nên đặt rõ nền, chữ, icon và thanh trạng thái sáng.
+class OfficeViewerAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const OfficeViewerAppBar({
+    super.key,
+    required this.category,
+    required this.title,
+    this.actions,
+  });
+
+  final DocCategory category;
+
+  /// Thường là tên file; dài thì cắt "…".
+  final String title;
+  final List<Widget>? actions;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    const onBar = IconThemeData(color: Colors.white);
+    return AppBar(
+      backgroundColor: officeHeaderColor(category),
+      foregroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
+      iconTheme: onBar,
+      actionsIconTheme: onBar,
+      titleTextStyle: const TextStyle(
+        fontFamily: kUiFontFamily,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: Colors.white,
+      ),
+      title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+      actions: actions,
+    );
+  }
+}
+
+/// Thanh đáy chung của trình xem (tab sheet XLSX, "Bảng mã" TXT, dải thumbnail PPTX):
+/// nền `surface`, kẻ trên bằng `line`, chừa vùng an toàn phía dưới.
+class OfficeBottomBar extends StatelessWidget {
+  const OfficeBottomBar({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border(top: BorderSide(color: t.line)),
+      ),
+      child: SafeArea(top: false, child: child),
+    );
+  }
+}
 
 /// Bắt thao tác chụm 2 ngón để phóng to / thu nhỏ mà không tranh cử chỉ với cuộn
 /// (dùng [Listener], không vào arena cử chỉ).
@@ -76,7 +146,7 @@ class _PinchZoomState extends State<PinchZoom> {
   }
 }
 
-/// Thanh tìm chữ: ô nhập + "n/m" + trước/sau + đóng.
+/// Thanh tìm chữ: ô nhập + "n/m" + trước/sau + đóng. Nằm ngay dưới thanh tiêu đề, cùng màu.
 class OfficeSearchBar extends StatelessWidget {
   const OfficeSearchBar({
     super.key,
@@ -87,10 +157,14 @@ class OfficeSearchBar extends StatelessWidget {
     required this.onPrev,
     required this.onNext,
     required this.onClose,
+    this.category,
     this.color,
   });
 
-  /// Nền thanh = màu theo loại file (mặc định đỏ chủ đạo).
+  /// Loại file → nền = [officeHeaderColor] (trùng thanh tiêu đề [OfficeViewerAppBar]).
+  final DocCategory? category;
+
+  /// Nền đặt tay (ưu tiên hơn [category]); cả hai null → đỏ chủ đạo.
   final Color? color;
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
@@ -105,11 +179,13 @@ class OfficeSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
     final hasQuery = controller.text.trim().isNotEmpty;
+    final category = this.category;
+    final bg =
+        color ??
+        (category == null ? AppColors.primary : officeHeaderColor(category));
     return Material(
-      color: color ?? AppColors.primary,
-      elevation: 2,
+      color: bg,
       child: IconTheme(
         data: const IconThemeData(color: Colors.white),
         child: Padding(
@@ -129,27 +205,29 @@ class OfficeSearchBar extends StatelessWidget {
                   total == 0
                       ? l.office_noResults
                       : l.office_matchCount(current, total),
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
               IconButton(
                 tooltip: l.office_prevMatch,
-                icon: const Icon(Icons.keyboard_arrow_up),
+                icon: const Icon(Symbols.keyboard_arrow_up_rounded),
                 color: Colors.white,
                 disabledColor: Colors.white38,
                 onPressed: total == 0 ? null : onPrev,
               ),
               IconButton(
                 tooltip: l.office_nextMatch,
-                icon: const Icon(Icons.keyboard_arrow_down),
+                icon: const Icon(Symbols.keyboard_arrow_down_rounded),
                 color: Colors.white,
                 disabledColor: Colors.white38,
                 onPressed: total == 0 ? null : onNext,
               ),
               IconButton(
                 tooltip: l.core_close,
-                icon: const Icon(Icons.close),
+                icon: const Icon(Symbols.close_rounded),
                 color: Colors.white,
                 onPressed: onClose,
               ),

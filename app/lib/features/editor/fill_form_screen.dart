@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -91,12 +92,13 @@ class _FillFormScreenState extends ConsumerState<FillFormScreen> {
             IconButton(
               key: const Key('save'),
               tooltip: l.edit_saveAsNew,
-              icon: const Icon(Icons.save_outlined),
+              icon: const Icon(Symbols.save_rounded),
               onPressed: _failed ? null : () => _save(_SaveMode.editable),
             ),
             PopupMenuButton<_SaveMode>(
               key: const Key('saveMenu'),
               enabled: !_failed,
+              icon: const Icon(Symbols.more_vert_rounded),
               onSelected: _save,
               itemBuilder: (context) => [
                 PopupMenuItem(
@@ -108,13 +110,13 @@ class _FillFormScreenState extends ConsumerState<FillFormScreen> {
           ],
         ),
         body: _failed
-            ? EmptyState(title: l.edit_loadFailed, icon: Icons.error_outline)
+            ? EmptyState(title: l.edit_loadFailed, icon: Symbols.error_rounded)
             : Column(
                 children: [
                   if (_hasFields == false)
                     HintBanner(
                       l.edit_noFormFields,
-                      icon: Icons.warning_amber_outlined,
+                      icon: Symbols.warning_rounded,
                     )
                   else
                     HintBanner(l.edit_formHint),

@@ -1,20 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Icon PDF Office (tu ve): trang giay gap goc + mui ten xuong. Khung 108x108dp, vung an toan 66dp o giua. -->
+<!-- Icon Phiotron PDF, phuong an "Xap dinh dang" (theo design-mobile/screens/assets/logo-3-color.svg, viewBox 512).
+     Bo nen vuong (nen kem #F4EEE6 nam o ic_launcher_background). Khung 108x108dp, vung an toan 66dp o giua.
+     Scale 0.19: xap the cao ~58dp, rong ~55dp; moi diem nam trong vong tron ban kinh ~33dp quanh tam (54,54). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Trang giay trang -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M35,28 L59,28 L73,42 L73,80 L35,80 Z" />
-    <!-- Goc gap -->
-    <path
-        android:fillColor="#F6C4C5"
-        android:pathData="M59,28 L59,42 L73,42 Z" />
-    <!-- Mui ten xuong (do) -->
-    <path
-        android:fillColor="#E5393B"
-        android:pathData="M51,48 L57,48 L57,60 L65,60 L54,73 L43,60 L51,60 Z" />
+    <group
+        android:scaleX="0.19"
+        android:scaleY="0.19"
+        android:translateX="5.968"
+        android:translateY="5.36">
+        <group
+            android:translateX="26"
+            android:translateY="-6">
+            <!-- The xanh, xoay -24 do quanh (256,400) -->
+            <group
+                android:rotation="-24"
+                android:pivotX="256"
+                android:pivotY="400">
+                <path
+                    android:fillColor="#1E88E5"
+                    android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+            </group>
+            <!-- The xanh la, -16 do -->
+            <group
+                android:rotation="-16"
+                android:pivotX="256"
+                android:pivotY="400">
+                <path
+                    android:fillColor="#43A047"
+                    android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+            </group>
+            <!-- The cam, -8 do -->
+            <group
+                android:rotation="-8"
+                android:pivotX="256"
+                android:pivotY="400">
+                <path
+                    android:fillColor="#F4511E"
+                    android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+            </group>
+            <!-- The do tren cung, 0 do -->
+            <path
+                android:fillColor="#E5393B"
+                android:pathData="M186,130 H326 A30,30 0 0 1 356,160 V364 A30,30 0 0 1 326,394 H186 A30,30 0 0 1 156,364 V160 A30,30 0 0 1 186,130 Z" />
+            <!-- Chu P: net kem, day 38, dau tron, khop tron, khong to -->
+            <path
+                android:strokeColor="#F4EEE6"
+                android:strokeWidth="38"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:pathData="M212,336 V196 H260 A44,44 0 0 1 260,284 H212" />
+        </group>
+    </group>
 </vector>

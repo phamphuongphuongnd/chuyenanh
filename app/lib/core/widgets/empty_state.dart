@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
-/// Danh sách trống: hình + chữ + (tuỳ chọn) nút hành động.
+import '../theme/app_tokens.dart';
+
+/// Danh sách trống / lỗi: minh hoạ trong vòng tròn 120 + tiêu đề + mô tả + (tuỳ chọn) nút.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
     required this.title,
     this.message,
-    this.icon = Icons.folder_open_outlined,
+    this.icon = Symbols.folder_open_rounded,
     this.illustration,
     this.actionLabel,
     this.onAction,
@@ -23,34 +26,53 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            illustration ??
-                Icon(icon, size: 96, color: theme.colorScheme.outline),
-            const SizedBox(height: 16),
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(color: t.surface2, shape: BoxShape.circle),
+              alignment: Alignment.center,
+              child:
+                  illustration ?? Icon(icon, size: 56, color: t.textMuted),
+            ),
+            const SizedBox(height: 20),
             Text(
               title,
-              style: theme.textTheme.titleMedium,
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.w700,
+                color: t.text,
+              ),
               textAlign: TextAlign.center,
             ),
             if (message != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                message!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
+              const SizedBox(height: 10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 290),
+                child: Text(
+                  message!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: t.textMuted,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 20),
-              FilledButton(onPressed: onAction, child: Text(actionLabel!)),
+              const SizedBox(height: 22),
+              FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size(200, 50)),
+                onPressed: onAction,
+                child: Text(actionLabel!),
+              ),
             ],
           ],
         ),

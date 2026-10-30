@@ -72,7 +72,6 @@ Future<void> _pump(
 void main() {
   testWidgets('thanh dưới có đúng 5 nút', (tester) async {
     await _pump(tester);
-    expect(find.byType(NavigationDestination), findsNWidgets(5));
     for (final key in [
       'nav-home',
       'nav-files',
@@ -125,7 +124,8 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('nav-files')));
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(Tab, 'All'), findsOneWidget);
+    expect(find.byKey(const ValueKey('files-tab-0')), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
     expect(find.byKey(const ValueKey('home-favorites')), findsOneWidget);
     expect(find.byKey(const ValueKey('home-recents')), findsOneWidget);
 

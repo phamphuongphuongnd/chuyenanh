@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/core/widgets/widgets.dart';
 import 'package:pdf_office/engines/pdf/pdf_tools_engine.dart';
 import 'package:pdf_office/features/pdf_tools/ui/merge_screen.dart';
@@ -39,7 +40,7 @@ void main() {
       // cảnh báo mất annotation/form/link
       expect(find.textContaining('Annotations'), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(FilledButton, 'MERGE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Merge'));
       await tester.pumpAndSettle();
       expect(find.byType(AppDialog), findsOneWidget);
       // tên gợi ý "A & B"
@@ -48,7 +49,7 @@ void main() {
       await tester.tap(
         find.descendant(
           of: find.byType(AppDialog),
-          matching: find.text('MERGE'),
+          matching: find.text('Merge'),
         ),
       );
       await settle(tester);
@@ -75,7 +76,7 @@ void main() {
       expect(find.text('a.pdf'), findsOneWidget);
       expect(find.text('Select at least 2 PDF files.'), findsOneWidget);
       final merge = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'MERGE'),
+        find.widgetWithText(FilledButton, 'Merge'),
       );
       expect(merge.onPressed, isNull);
     });
@@ -104,12 +105,12 @@ void main() {
       await settle(tester);
 
       expect(find.text('b.pdf'), findsOneWidget);
-      await tester.tap(find.widgetWithText(FilledButton, 'MERGE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Merge'));
       await tester.pumpAndSettle();
       await tester.tap(
         find.descendant(
           of: find.byType(AppDialog),
-          matching: find.text('MERGE'),
+          matching: find.text('Merge'),
         ),
       );
       await settle(tester);
@@ -144,7 +145,7 @@ void main() {
       await settle(tester);
 
       // kéo a.pdf xuống dưới b.pdf
-      await tester.drag(find.byIcon(Icons.drag_handle).first, const Offset(0, 130));
+      await tester.drag(find.byIcon(Symbols.drag_indicator_rounded).first, const Offset(0, 130));
       await tester.pumpAndSettle();
       final order = tester
           .widgetList<Text>(find.textContaining('.pdf'))
@@ -173,7 +174,7 @@ void main() {
 
       // chưa nhập gì → nút khoá
       FilledButton split() => tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'SPLIT'),
+        find.widgetWithText(FilledButton, 'Split'),
       );
       expect(split().onPressed, isNull);
 
@@ -190,7 +191,7 @@ void main() {
       expect(find.text('2 files will be created'), findsOneWidget);
       expect(split().onPressed, isNotNull);
 
-      await tester.tap(find.widgetWithText(FilledButton, 'SPLIT'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Split'));
       await settle(tester);
       expect(engine.splits, hasLength(1));
       final mode = engine.splits.single['mode']! as SplitByRanges;
@@ -226,7 +227,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField), '4');
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'SPLIT'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Split'));
       await settle(tester);
       expect(engine.splits.single['mode'], isA<SplitEveryN>());
       expect((engine.splits.single['mode']! as SplitEveryN).pagesPerFile, 4);

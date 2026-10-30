@@ -112,11 +112,23 @@ void main() {
       expect(find.text('Version $kAppVersion'), findsOneWidget);
     });
 
-    testWidgets('chạm Ngôn ngữ mở màn Ngôn ngữ', (tester) async {
+    testWidgets('chạm Ngôn ngữ mở bảng chọn Ngôn ngữ', (tester) async {
       await _pump(tester);
       await tester.tap(_key('settings_language'));
       await tester.pumpAndSettle();
+      expect(_key('lang_system'), findsOneWidget);
       expect(_key('lang_vi'), findsOneWidget);
+    });
+
+    testWidgets('chọn tiếng Việt: lưu, đóng bảng, đổi phụ đề', (tester) async {
+      final c = await _pump(tester);
+      await tester.tap(_key('settings_language'));
+      await tester.pumpAndSettle();
+      await tester.tap(_key('lang_vi'));
+      await tester.pumpAndSettle();
+      expect(c.read(settingsProvider).locale, const Locale('vi'));
+      expect(_key('lang_vi'), findsNothing);
+      expect(find.text('Tiếng Việt'), findsOneWidget);
     });
 
     testWidgets('chạm Giới thiệu mở màn Giới thiệu', (tester) async {
@@ -135,8 +147,8 @@ void main() {
       await tester.tap(_key('theme_dark'));
       await tester.pumpAndSettle();
       expect(c.read(settingsProvider).themeMode, ThemeMode.dark);
-      await tester.pageBack();
-      await tester.pumpAndSettle();
+      // Chọn là bảng tự đóng, phụ đề đổi ngay.
+      expect(_key('theme_dark'), findsNothing);
       expect(find.text('Dark'), findsOneWidget);
     });
 
@@ -150,6 +162,9 @@ void main() {
       await tester.tap(_key('theme_light'));
       await tester.pumpAndSettle();
       expect(c.read(settingsProvider).themeMode, ThemeMode.light);
+      // Bảng đã đóng sau lần chọn trước: mở lại để chọn tiếp.
+      await tester.tap(_key('settings_theme'));
+      await tester.pumpAndSettle();
       await tester.tap(_key('theme_system'));
       await tester.pumpAndSettle();
       expect(c.read(settingsProvider).themeMode, ThemeMode.system);
@@ -164,6 +179,8 @@ void main() {
       await tester.tap(_key('pagesize_letter'));
       await tester.pumpAndSettle();
       expect(c.read(settingsProvider).defaultPageSize, PageSizeOption.letter);
+      expect(_key('pagesize_letter'), findsNothing);
+      expect(find.text('Letter'), findsOneWidget);
     });
   });
 
@@ -244,7 +261,7 @@ void main() {
       await _pump(tester, locale: 'vi');
       await tester.tap(_key('settings_about'));
       await tester.pumpAndSettle();
-      expect(find.text('PDF Office'), findsOneWidget);
+      expect(find.text('Phiotron PDF'), findsOneWidget);
       expect(find.text('Phiên bản $kAppVersion'), findsOneWidget);
       expect(find.textContaining('Syncfusion Community'), findsOneWidget);
     });

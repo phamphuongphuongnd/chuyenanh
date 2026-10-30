@@ -3,10 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
 import '../../engines/pdf/pdf_render_engine.dart';
@@ -289,7 +291,7 @@ class _SignScreenState extends ConsumerState<SignScreen> {
             IconButton(
               key: const Key('apply'),
               tooltip: l.edit_applySignatures,
-              icon: const Icon(Icons.check),
+              icon: const Icon(Symbols.check_rounded),
               onPressed: canApply ? _apply : null,
             ),
           ],
@@ -306,7 +308,7 @@ class _SignScreenState extends ConsumerState<SignScreen> {
       final e = _openError;
       return EmptyState(
         title: e is AppError ? appErrorMessage(context, e) : l.edit_loadFailed,
-        icon: Icons.error_outline,
+        icon: Symbols.error_rounded,
         actionLabel: l.core_retry,
         onAction: _open,
       );
@@ -325,7 +327,7 @@ class _SignScreenState extends ConsumerState<SignScreen> {
                   title: snap.error is AppError
                       ? appErrorMessage(context, snap.error as AppError)
                       : l.edit_loadFailed,
-                  icon: Icons.error_outline,
+                  icon: Symbols.error_rounded,
                   actionLabel: l.core_retry,
                   onAction: () => setState(() => _pages.remove(_pageIndex)),
                 );
@@ -376,10 +378,15 @@ class _SignScreenState extends ConsumerState<SignScreen> {
                     behavior: HitTestBehavior.opaque,
                     onTap: () => setState(() => _selectedId = null),
                     child: DecoratedBox(
-                      decoration: BoxDecoration(
+                      // Trang giấy: nền trắng + bóng nhẹ để tách khỏi nền màn.
+                      decoration: const BoxDecoration(
                         color: Colors.white,
-                        boxShadow: const [
-                          BoxShadow(blurRadius: 4, color: Colors.black26),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                            color: Color(0x1A000000),
+                          ),
                         ],
                       ),
                       child: Image.memory(
@@ -439,23 +446,55 @@ class _PageNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          key: const Key('prevPage'),
-          tooltip: l.edit_previousPage,
-          icon: const Icon(Icons.chevron_left),
-          onPressed: onPrevious,
-        ),
-        Text(l.edit_pageOf(pageIndex + 1, pageCount)),
-        IconButton(
-          key: const Key('nextPage'),
-          tooltip: l.edit_nextPage,
-          icon: const Icon(Icons.chevron_right),
-          onPressed: onNext,
-        ),
-      ],
+    final t = context.tokens;
+    // Nút tròn 40 nền `surface2` hai bên viên số trang.
+    final navStyle = IconButton.styleFrom(
+      fixedSize: const Size.square(40),
+      minimumSize: const Size.square(40),
+      padding: EdgeInsets.zero,
+      backgroundColor: t.surface2,
+      foregroundColor: t.text,
+      disabledBackgroundColor: t.surface2.withValues(alpha: 0.5),
+      disabledForegroundColor: t.textMuted.withValues(alpha: 0.5),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            key: const Key('prevPage'),
+            tooltip: l.edit_previousPage,
+            style: navStyle,
+            icon: const Icon(Symbols.chevron_left_rounded, size: 22),
+            onPressed: onPrevious,
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+            decoration: ShapeDecoration(
+              color: t.surface,
+              shape: StadiumBorder(side: BorderSide(color: t.line)),
+            ),
+            child: Text(
+              l.edit_pageOf(pageIndex + 1, pageCount),
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: t.text,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            key: const Key('nextPage'),
+            tooltip: l.edit_nextPage,
+            style: navStyle,
+            icon: const Icon(Symbols.chevron_right_rounded, size: 22),
+            onPressed: onNext,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -475,46 +514,65 @@ class _SignatureBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final theme = Theme.of(context);
+    final t = context.tokens;
     final saved = ref.watch(savedSignaturesProvider);
     final list = saved.value ?? const <SignatureEntry>[];
+    // Thanh đáy nền `surface` bo trên 24, kẻ trên `line` (cùng kiểu thanh công cụ chú thích).
     return Material(
-      elevation: 8,
-      color: theme.colorScheme.surface,
+      color: t.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: t.line),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 96,
+          height: 104,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
             children: [
               _Tile(
                 key: const Key('newSignature'),
                 onTap: onNew,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.draw_outlined),
-                    const SizedBox(height: 4),
-                    Text(
-                      l.edit_newSignature,
-                      style: theme.textTheme.labelSmall,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                    ),
-                  ],
+                background: t.primarySoft,
+                borderColor: t.primaryText.withValues(alpha: 0.35),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Symbols.draw_rounded, color: t.primaryText),
+                      const SizedBox(height: 4),
+                      Text(
+                        l.edit_newSignature,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: t.primaryText,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               if (list.isEmpty && saved.hasValue)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: Center(
                     child: SizedBox(
-                      width: 180,
+                      width: 200,
                       child: Text(
                         l.edit_noSavedSignatures,
-                        style: theme.textTheme.bodySmall,
+                        style: TextStyle(
+                          fontSize: 13,
+                          height: 1.4,
+                          color: t.textMuted,
+                        ),
                       ),
                     ),
                   ),
@@ -524,23 +582,31 @@ class _SignatureBar extends ConsumerWidget {
                   key: Key('saved_${s.saved.fileName}'),
                   onTap: () => onPick(s),
                   onLongPress: () => onDelete(s),
+                  // Nền luôn trắng để nét mực tối vẫn thấy rõ ở giao diện tối.
                   background: Colors.white,
+                  borderColor: t.line,
                   badge: GestureDetector(
                     key: Key('delete_${s.saved.fileName}'),
                     onTap: () => onDelete(s),
-                    child: const Icon(
-                      Icons.cancel,
-                      size: 20,
-                      color: Colors.black45,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Symbols.cancel_rounded,
+                        size: 20,
+                        fill: 1,
+                        color: AppTokens.light.textMuted,
+                      ),
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
                     child: Image.memory(
                       s.png,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, _, _) =>
-                          const Icon(Icons.broken_image_outlined),
+                      errorBuilder: (_, _, _) => Icon(
+                        Symbols.broken_image_rounded,
+                        color: AppTokens.light.textMuted,
+                      ),
                     ),
                   ),
                 ),
@@ -558,31 +624,33 @@ class _Tile extends StatelessWidget {
     required this.child,
     required this.onTap,
     this.onLongPress,
-    this.background,
+    required this.background,
+    required this.borderColor,
     this.badge,
   });
 
   final Widget child;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
-  final Color? background;
+  final Color background;
+  final Color borderColor;
   final Widget? badge;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // Ô chữ ký bo 14, viền mảnh.
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
-        width: 104,
+        width: 108,
         child: Stack(
           children: [
             Positioned.fill(
               child: Material(
-                color: background ?? theme.colorScheme.surfaceContainerHighest,
+                color: background,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(color: theme.dividerColor),
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(color: borderColor),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(

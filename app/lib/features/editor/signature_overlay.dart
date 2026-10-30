@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import 'signature_overlay_model.dart';
 
@@ -85,7 +86,11 @@ List<Widget> signatureOverlayWidgets(
             final deltaPx = resizeWidthDeltaPx(d.delta, rect.size);
             onResize(item.norm.width + deltaPx / pageBox.width);
           },
-          child: dot(scheme.primary, scheme.onPrimary, Icons.open_in_full),
+          child: dot(
+            scheme.primary,
+            scheme.onPrimary,
+            Symbols.open_in_full_rounded,
+          ),
         ),
       ),
       Positioned(
@@ -100,7 +105,7 @@ List<Widget> signatureOverlayWidgets(
             key: Key('remove_${item.id}'),
             behavior: HitTestBehavior.opaque,
             onTap: onRemove,
-            child: dot(scheme.error, scheme.onError, Icons.close),
+            child: dot(scheme.error, scheme.onError, Symbols.close_rounded),
           ),
         ),
       ),

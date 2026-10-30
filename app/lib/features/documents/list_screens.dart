@@ -1,16 +1,37 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/widgets/widgets.dart';
 import 'documents_logic.dart';
 import 'documents_providers.dart';
 import 'widgets/document_list.dart';
 import 'widgets/document_tile.dart';
 import 'widgets/sort_menu.dart';
+
+/// Danh sách tài liệu trong một khối bo 20 (dòng đầu/cuối tự bo góc), lề 16/14/16/24.
+class _DocCardList extends StatelessWidget {
+  const _DocCardList(this.items);
+
+  final List<DocItem> items;
+
+  @override
+  Widget build(BuildContext context) => ListView.builder(
+    padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+    itemCount: items.length,
+    itemBuilder: (_, i) => CardRow(
+      first: i == 0,
+      last: i == items.length - 1,
+      child: DocumentTile(items[i]),
+    ),
+  );
+}
 
 /// Màn danh sách đơn giản: tiêu đề + danh sách từ [provider] (Gần đây, Yêu thích).
 class SimpleDocListScreen extends ConsumerWidget {
@@ -20,7 +41,7 @@ class SimpleDocListScreen extends ConsumerWidget {
     required this.provider,
     required this.emptyTitle,
     this.emptyMessage,
-    this.emptyIcon = Icons.folder_open_outlined,
+    this.emptyIcon = Symbols.folder_open_rounded,
   });
 
   final String title;
@@ -33,21 +54,21 @@ class SimpleDocListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(provider);
     return Scaffold(
+      backgroundColor: context.tokens.bg,
       appBar: AppBar(title: Text(title)),
       body: items.when(
         loading: () => const DocumentListSkeleton(),
-        error: (e, _) =>
-            EmptyState(title: appErrorMessage(context, AppError.from(e))),
+        error: (e, _) => EmptyState(
+          icon: Symbols.error_rounded,
+          title: appErrorMessage(context, AppError.from(e)),
+        ),
         data: (list) => list.isEmpty
             ? EmptyState(
                 icon: emptyIcon,
                 title: emptyTitle,
                 message: emptyMessage,
               )
-            : ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (_, i) => DocumentTile(list[i]),
-              ),
+            : _DocCardList(list),
       ),
     );
   }
@@ -61,7 +82,7 @@ class RecentsScreen extends StatelessWidget {
     title: context.l10n.docs_recents,
     provider: recentItemsProvider,
     emptyTitle: context.l10n.docs_emptyRecents,
-    emptyIcon: Icons.history,
+    emptyIcon: Symbols.history_rounded,
   );
 }
 
@@ -74,7 +95,7 @@ class FavoritesScreen extends StatelessWidget {
     provider: favoriteItemsProvider,
     emptyTitle: context.l10n.docs_emptyFavorites,
     emptyMessage: context.l10n.docs_emptyFavoritesHint,
-    emptyIcon: Icons.star_border,
+    emptyIcon: Symbols.star_rounded,
   );
 }
 
@@ -128,7 +149,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final sort = ref.watch(docSortProvider);
     final docs = ref.watch(documentsProvider);
     return Scaffold(
+      backgroundColor: context.tokens.bg,
+      // Ô tìm kiếm chữ trắng → thanh tiêu đề giữ nền đỏ (AppBar mặc định của app là nền sáng).
       appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
         title: AppSearchField(
           key: const ValueKey('search-field'),
           controller: _controller,
@@ -138,16 +164,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         actions: [
           if (_controller.text.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(Symbols.close_rounded, color: Colors.white),
               onPressed: _clear,
             ),
-          const SortMenuButton(),
+          const SortMenuButton(iconColor: Colors.white),
         ],
       ),
       body: docs.when(
         loading: () => const DocumentListSkeleton(),
-        error: (e, _) =>
-            EmptyState(title: appErrorMessage(context, AppError.from(e))),
+        error: (e, _) => EmptyState(
+          icon: Symbols.error_rounded,
+          title: appErrorMessage(context, AppError.from(e)),
+        ),
         data: (items) {
           final result = sortDocuments(
             filterDocuments(items, query: _query),
@@ -155,14 +183,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           );
           if (result.isEmpty) {
             return EmptyState(
-              icon: Icons.search_off,
+              icon: Symbols.search_off_rounded,
               title: l.docs_emptySearch,
             );
           }
-          return ListView.builder(
-            itemCount: result.length,
-            itemBuilder: (_, i) => DocumentTile(result[i]),
-          );
+          return _DocCardList(result);
         },
       ),
     );

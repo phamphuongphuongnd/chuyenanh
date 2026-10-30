@@ -131,6 +131,10 @@ void main() {
     expect(find.text('1 / 2'), findsOneWidget);
     expect(tester.takeException(), isNull);
     expect(find.text('Not supported'), findsWidgets);
+    // Thanh tiêu đề màu PPT đậm, chữ trắng.
+    final bar = tester.widget<AppBar>(find.byType(AppBar));
+    expect(bar.backgroundColor, const Color(0xFFD84315));
+    expect(bar.foregroundColor, Colors.white);
 
     // Ghi chú
     await tester.tap(find.byTooltip('Notes'));

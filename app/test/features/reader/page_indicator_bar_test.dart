@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/features/reader/widgets/page_indicator_bar.dart';
 
 import 'test_app.dart';
@@ -35,17 +36,17 @@ void main() {
       bar(page: 1, pageCount: 2, onPrevious: () => prev++, onNext: () => next++),
     );
     // Trang 1: nut truoc bi khoa.
-    await t.tap(find.byIcon(Icons.chevron_left));
+    await t.tap(find.byIcon(Symbols.chevron_left_rounded));
     expect(prev, 0);
-    await t.tap(find.byIcon(Icons.chevron_right));
+    await t.tap(find.byIcon(Symbols.chevron_right_rounded));
     expect(next, 1);
 
     await t.pumpWidget(
       bar(page: 2, pageCount: 2, onPrevious: () => prev++, onNext: () => next++),
     );
-    await t.tap(find.byIcon(Icons.chevron_right));
+    await t.tap(find.byIcon(Symbols.chevron_right_rounded));
     expect(next, 1);
-    await t.tap(find.byIcon(Icons.chevron_left));
+    await t.tap(find.byIcon(Symbols.chevron_left_rounded));
     expect(prev, 1);
   });
 
@@ -91,7 +92,7 @@ void main() {
     await t.pumpWidget(bar(onJump: (n) => jumped = n));
     await t.tap(find.byKey(const Key('reader_pageIndicator')));
     await t.pumpAndSettle();
-    await t.tap(find.text('CANCEL'));
+    await t.tap(find.text('Cancel'));
     await t.pumpAndSettle();
     expect(jumped, isNull);
   });

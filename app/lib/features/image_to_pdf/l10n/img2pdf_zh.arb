@@ -3,7 +3,7 @@
   "img2pdf_title": "图片转 PDF",
   "img2pdf_pickTitle": "选择图片",
   "img2pdf_permissionTitle": "需要照片访问权限",
-  "img2pdf_permissionMessage": "请允许 PDF Office 读取您的照片，以便选择要转换的图片。",
+  "img2pdf_permissionMessage": "请允许 Phiotron PDF 读取您的照片，以便选择要转换的图片。",
   "img2pdf_allowAccess": "允许访问",
   "img2pdf_openSettings": "打开设置",
   "img2pdf_limitedAccess": "仅可访问部分照片。",

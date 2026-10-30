@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/engines/pdf/pdf_tools_engine.dart';
 import 'package:pdf_office/features/pdf_tools/ui/lock_screen.dart';
@@ -37,19 +38,19 @@ void main() {
 
       // chưa chọn gì: các nút thao tác bị khoá
       expect(
-        tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.rotate_right)).onPressed,
+        tester.widget<IconButton>(find.widgetWithIcon(IconButton, Symbols.rotate_right_rounded)).onPressed,
         isNull,
       );
 
       await tester.tap(page(1));
       await tester.pump();
       expect(find.text('1 selected'), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.rotate_right));
+      await tester.tap(find.byIcon(Symbols.rotate_right_rounded));
       await tester.pump();
-      await tester.tap(find.byIcon(Icons.arrow_forward)); // trang 2 ra sau trang 3
+      await tester.tap(find.byIcon(Symbols.arrow_forward_rounded)); // trang 2 ra sau trang 3
       await tester.pump();
 
-      await tester.tap(find.widgetWithText(FilledButton, 'SAVE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
       await settle(tester);
 
       expect(engine.organizes, hasLength(1));
@@ -75,7 +76,7 @@ void main() {
       await settle(tester);
 
       // chưa sửa gì → Save báo không có thay đổi
-      await tester.tap(find.widgetWithText(FilledButton, 'SAVE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
       await tester.pump();
       expect(find.text('No changes to save.'), findsOneWidget);
       expect(engine.organizes, isEmpty);
@@ -83,7 +84,7 @@ void main() {
       // chọn tất cả rồi xoá → từ chối
       await tester.tap(find.text('Select all'));
       await tester.pump();
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Symbols.delete_rounded));
       await tester.pump();
       expect(find.text('Keep at least one page.'), findsOneWidget);
       expect(page(0), findsOneWidget);
@@ -93,7 +94,7 @@ void main() {
       await tester.pump();
       await tester.tap(page(1));
       await tester.pump();
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Symbols.delete_rounded));
       await tester.pump();
       expect(page(1), findsNothing);
 
@@ -154,20 +155,20 @@ void main() {
       );
       await settle(tester);
 
-      await tester.tap(find.widgetWithText(FilledButton, 'LOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Lock'));
       await tester.pump();
       expect(find.text('Enter a password.'), findsOneWidget);
 
       final fields = find.byType(TextField);
       await tester.enterText(fields.at(0), 'abc');
       await tester.enterText(fields.at(1), 'abd');
-      await tester.tap(find.widgetWithText(FilledButton, 'LOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Lock'));
       await tester.pump();
       expect(find.text('Passwords do not match.'), findsOneWidget);
       expect(security.encryptCalls, isEmpty);
 
       await tester.enterText(fields.at(1), 'abc');
-      await tester.tap(find.widgetWithText(FilledButton, 'LOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Lock'));
       await settleUntilFound(tester, find.text('All done!'));
 
       expect(security.encryptCalls, ['abc']);
@@ -203,7 +204,7 @@ void main() {
       final fields = find.byType(TextField);
       await tester.enterText(fields.at(0), 'new');
       await tester.enterText(fields.at(1), 'new');
-      await tester.tap(find.widgetWithText(FilledButton, 'LOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Lock'));
       await settleUntilFound(tester, find.text('All done!'));
       final data = String.fromCharCodes(
         File(p.join(out.path, 'doc_locked.pdf')).readAsBytesSync(),
@@ -224,7 +225,7 @@ void main() {
       );
       await settle(tester);
       expect(find.text('This file is not password protected.'), findsOneWidget);
-      expect(find.widgetWithText(FilledButton, 'UNLOCK'), findsNothing);
+      expect(find.widgetWithText(FilledButton, 'Unlock'), findsNothing);
     });
 
     testWidgets('sai mật khẩu báo ngay dưới ô nhập; đúng thì ghi _unlocked', (tester) async {
@@ -239,19 +240,19 @@ void main() {
       );
       await settle(tester);
 
-      await tester.tap(find.widgetWithText(FilledButton, 'UNLOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
       await tester.pump();
       expect(find.text('Enter a password.'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'wrong');
-      await tester.tap(find.widgetWithText(FilledButton, 'UNLOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
       await settle(tester);
       await tester.pumpAndSettle();
       expect(find.text('Incorrect password.'), findsWidgets);
       expect(File(p.join(out.path, 'doc_unlocked.pdf')).existsSync(), isFalse);
 
       await tester.enterText(find.byType(TextField), 'secret');
-      await tester.tap(find.widgetWithText(FilledButton, 'UNLOCK'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
       await settleUntilFound(tester, find.text('All done!'));
       expect(File(p.join(out.path, 'doc_unlocked.pdf')).existsSync(), isTrue);
       expect(find.text('All done!'), findsOneWidget);

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
 import 'package:pdf_office/engines/pdf/pdf_render_engine.dart';
@@ -218,7 +219,7 @@ void main() {
     await tester.tap(find.byKey(Key('delete_$name')));
     await tester.pumpAndSettle();
     expect(find.text('Delete this signature?'), findsOneWidget);
-    await tester.tap(find.text('DELETE'));
+    await tester.tap(find.text('Delete'));
     await settle(
       tester,
       until: () => find.byKey(Key('saved_$name')).evaluate().isEmpty,
@@ -284,7 +285,7 @@ void main() {
       tester,
       until: () => find.text('Retry').evaluate().isNotEmpty,
     );
-    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    expect(find.byIcon(Symbols.error_rounded), findsOneWidget);
     expect(
       find.text('The file is damaged or cannot be read.'),
       findsOneWidget,

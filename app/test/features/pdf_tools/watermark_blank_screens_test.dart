@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/engines/pdf/pdf_tools_engine.dart';
 import 'package:pdf_office/features/pdf_tools/engine/watermark_layout.dart';
 import 'package:pdf_office/features/pdf_tools/ui/create_blank_screen.dart';
@@ -38,7 +39,7 @@ void main() {
       await tester.enterText(find.byType(TextField), 'DRAFT');
       await tester.tap(find.byKey(const ValueKey('pos_-1_-1')));
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'APPLY'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await settle(tester);
 
       expect(engine.watermarks, hasLength(1));
@@ -69,7 +70,7 @@ void main() {
       );
       await settle(tester);
       await tester.enterText(find.byType(TextField), '   ');
-      await tester.tap(find.widgetWithText(FilledButton, 'APPLY'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pump();
       expect(find.text('Enter the watermark text.'), findsOneWidget);
       expect(engine.watermarks, isEmpty);
@@ -95,7 +96,7 @@ void main() {
       await settle(tester);
       await tester.tap(find.text('Image'));
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'APPLY'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pump();
       expect(find.text('Choose a PNG or JPG image.'), findsOneWidget);
 
@@ -109,7 +110,7 @@ void main() {
       );
       await tester.tap(find.text('Choose image'));
       await settle(tester);
-      await tester.tap(find.widgetWithText(FilledButton, 'APPLY'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await settle(tester);
       final spec = engine.watermarks.single['spec']! as PlacedWatermarkSpec;
       expect(spec.imageBytes, isNotNull);
@@ -139,9 +140,9 @@ void main() {
       await tester.tap(find.text('Letter'));
       await tester.tap(find.text('Work'));
       await tester.pump();
-      await tester.tap(find.byIcon(Icons.add)); // 1 → 2 trang
+      await tester.tap(find.byIcon(Symbols.add_rounded)); // 1 → 2 trang
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'CREATE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Create'));
       await settle(tester);
 
       expect(engine.blanks, hasLength(1));
@@ -176,12 +177,12 @@ void main() {
       await tester.enterText(pages, '1001');
       await tester.pump();
       expect(find.text('Enter a number from 1 to 1000.'), findsWidgets);
-      await tester.tap(find.widgetWithText(FilledButton, 'CREATE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Create'));
       await tester.pump();
       expect(engine.blanks, isEmpty);
 
       await tester.enterText(pages, '1000');
-      await tester.tap(find.widgetWithText(FilledButton, 'CREATE'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Create'));
       await settle(tester);
       expect((engine.blanks.single['spec']! as BlankDocSpec).pageCount, 1000);
       expect(

@@ -4,11 +4,13 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/router/routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/doc_type.dart';
 import '../data/text_decoder.dart';
 import '../logic/text_search.dart';
 import 'office_common.dart';
@@ -117,35 +119,34 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final fontSize = ref.watch(txtFontSizeProvider);
-    final theme = Theme.of(context);
+    final t = context.tokens;
     final notifier = ref.read(txtFontSizeProvider.notifier);
     final query = _searchCtrl.text;
     final curHit = _hits.isEmpty ? null : _hits[_current];
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.txt,
-        foregroundColor: Colors.white,
-        title: Text(p.basename(widget.path), overflow: TextOverflow.ellipsis),
+      appBar: OfficeViewerAppBar(
+        category: DocCategory.txt,
+        title: p.basename(widget.path),
         actions: [
           IconButton(
             tooltip: l.office_search,
-            icon: const Icon(Icons.search),
+            icon: const Icon(Symbols.search_rounded),
             onPressed: () => setState(() => _searching = !_searching),
           ),
           IconButton(
             tooltip: l.office_zoomOut,
-            icon: const Icon(Icons.zoom_out),
+            icon: const Icon(Symbols.zoom_out_rounded),
             onPressed: () => notifier.set(fontSize - 2),
           ),
           IconButton(
             tooltip: l.office_zoomIn,
-            icon: const Icon(Icons.zoom_in),
+            icon: const Icon(Symbols.zoom_in_rounded),
             onPressed: () => notifier.set(fontSize + 2),
           ),
           IconButton(
             tooltip: l.office_convertToPdf,
-            icon: const Icon(Icons.picture_as_pdf_outlined),
+            icon: const Icon(Symbols.picture_as_pdf_rounded),
             onPressed: () =>
                 context.push(Routes.textToPdf, extra: widget.path),
           ),
@@ -155,7 +156,7 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
         children: [
           if (_searching)
             OfficeSearchBar(
-              color: AppColors.txt,
+              category: DocCategory.txt,
               controller: _searchCtrl,
               onChanged: _onQuery,
               current: _hits.isEmpty ? 0 : _current + 1,
@@ -170,15 +171,14 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
                 _hits = const [];
               }),
             ),
-          if (widget.content.truncated)
-            MaterialBanner(
-              content: Text(l.office_truncated),
-              actions: const [SizedBox.shrink()],
-              dividerColor: Colors.transparent,
-            ),
+          if (widget.content.truncated) _NoticeBanner(l.office_truncated),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: officeHeaderColor(DocCategory.txt),
+                    ),
+                  )
                 : PinchZoom(
               scale: fontSize / 16,
               min: 10 / 16,
@@ -204,13 +204,57 @@ class _TxtViewerPageState extends ConsumerState<TxtViewerPage> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            color: theme.colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          OfficeBottomBar(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Text(
+                l.office_encodingLabel(widget.content.encoding.label),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                  color: t.textMuted,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Băng báo dưới thanh tiêu đề (vd. "File lớn, chỉ hiển thị phần đầu."):
+/// nền `surface`, kẻ dưới `line`, icon thông tin + chữ 13.
+class _NoticeBanner extends StatelessWidget {
+  const _NoticeBanner(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border(bottom: BorderSide(color: t.line)),
+      ),
+      child: Row(
+        children: [
+          Icon(Symbols.info_rounded, size: 18, color: t.textMuted),
+          const SizedBox(width: 10),
+          Expanded(
             child: Text(
-              l.office_encodingLabel(widget.content.encoding.label),
-              style: theme.textTheme.bodySmall,
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+                color: t.text,
+              ),
             ),
           ),
         ],

@@ -12,6 +12,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/tools/tool_registry.dart';
 import '../../core/navigation/open_document.dart';
 import '../../core/platform/app_platform.dart';
+import '../../core/theme/app_tokens.dart';
 import '../../core/utils/doc_type.dart';
 import '../../core/utils/file_import.dart';
 import '../../core/utils/file_format.dart';
@@ -61,19 +62,29 @@ Future<void> shareDocument(DocItem item) => SharePlus.instance.share(
 Future<void> showDocumentInfo(BuildContext context, DocItem item) {
   final l = context.l10n;
   final locale = Localizations.localeOf(context).toString();
+  final t = context.tokens;
   Widget row(String label, String value) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 96,
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: t.textMuted,
           ),
         ),
-        Expanded(child: Text(value)),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w500,
+            color: t.text,
+          ),
+        ),
       ],
     ),
   );

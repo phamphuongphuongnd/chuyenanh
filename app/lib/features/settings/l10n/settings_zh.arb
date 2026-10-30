@@ -20,15 +20,15 @@
   "settings_version": "版本 {version}",
   "settings_tagline": "阅读、创建和转换 PDF、Office 文档与图片。",
   "settings_licenses": "开源许可",
-  "settings_aboutOffline": "PDF Office 完全离线运行，不收集任何数据，也不使用网络。",
+  "settings_aboutOffline": "Phiotron PDF 完全离线运行，不收集任何数据，也不使用网络。",
   "settings_aboutSyncfusion": "PDF 功能使用 Syncfusion Flutter 组件，遵循 Syncfusion Community License。",
   "settings_sectionGeneral": "通用",
   "settings_sectionAbout": "关于应用",
   "settings_share": "分享应用",
-  "settings_shareText": "我用 PDF Office 阅读、转换和编辑 PDF，完全离线，没有广告。",
+  "settings_shareText": "我用 Phiotron PDF 阅读、转换和编辑 PDF，完全离线，没有广告。",
   "settings_feedback": "反馈",
-  "settings_feedbackSubject": "PDF Office 反馈",
+  "settings_feedbackSubject": "Phiotron PDF 反馈",
   "settings_feedbackFailed": "无法打开邮件应用",
   "settings_privacy": "隐私政策",
-  "settings_privacyBody": "PDF Office 完全离线运行，不会收集、发送或分享您的数据。\n\n您的文件仅在本设备上读取，用于显示和转换。新文件保存到您选择的文件夹，不会覆盖原文件。\n\n应用不联网，没有广告，也没有应用内购买。文件访问权限仅用于查找设备上的文档。"
+  "settings_privacyBody": "Phiotron PDF 完全离线运行，不会收集、发送或分享您的数据。\n\n您的文件仅在本设备上读取，用于显示和转换。新文件保存到您选择的文件夹，不会覆盖原文件。\n\n应用不联网，没有广告，也没有应用内购买。文件访问权限仅用于查找设备上的文档。"
 }

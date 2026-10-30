@@ -3,10 +3,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:office_reader/office_reader.dart' as rd;
 import 'package:pdf_office/core/l10n/l10n.dart';
 import 'package:pdf_office/features/office_viewer/data/text_decoder.dart';
 import 'package:pdf_office/features/office_viewer/widgets/docx_view.dart';
+import 'package:pdf_office/features/office_viewer/widgets/office_common.dart';
 import 'package:pdf_office/features/office_viewer/widgets/txt_viewer_page.dart';
 import 'package:pdf_office/features/office_viewer/widgets/xlsx_view.dart';
 
@@ -86,6 +88,33 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('beta-cell'), findsOneWidget);
       expect(find.text('a-one'), findsNothing);
+    });
+
+    testWidgets('thanh tiêu đề + thanh tìm màu XLS đậm; tab chọn chữ trắng', (
+      tester,
+    ) async {
+      await tester.pumpWidget(app(XlsxViewerPage(path: '/x/b.xlsx', workbook: wb)));
+      await tester.pumpAndSettle();
+      const xls = Color(0xFF2E7D32);
+      expect(tester.widget<AppBar>(find.byType(AppBar)).backgroundColor, xls);
+      expect(tester.widget<Text>(find.text('Alpha')).style?.color, Colors.white);
+      expect(
+        tester.widget<Text>(find.text('Beta')).style?.color,
+        isNot(Colors.white),
+      );
+
+      await tester.tap(find.byIcon(Symbols.search_rounded));
+      await tester.pumpAndSettle();
+      // Thanh tìm cùng màu thanh tiêu đề.
+      final own = tester.widget<Material>(
+        find
+            .descendant(
+              of: find.byType(OfficeSearchBar),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      expect(own.color, xls);
     });
 
     testWidgets('ô gộp rộng bằng tổng 3 cột', (tester) async {
@@ -201,7 +230,7 @@ void main() {
     testWidgets('tìm chữ: đếm kết quả và tô màu', (tester) async {
       await tester.pumpWidget(app(DocxViewerPage(path: '/x/a.docx', document: doc)));
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.search));
+      await tester.tap(find.byIcon(Symbols.search_rounded));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'o-phai');
       await tester.pumpAndSettle();
@@ -225,14 +254,18 @@ void main() {
 
       expect(find.text('dong 0 xin chao'), findsOneWidget);
       expect(find.text('Encoding: UTF-16 LE'), findsOneWidget);
+      expect(
+        tester.widget<AppBar>(find.byType(AppBar)).backgroundColor,
+        const Color(0xFF546E7A),
+      );
 
       final before = tester.widget<Text>(find.text('dong 0 xin chao')).style!.fontSize!;
-      await tester.tap(find.byIcon(Icons.zoom_in));
+      await tester.tap(find.byIcon(Symbols.zoom_in_rounded));
       await tester.pumpAndSettle();
       final after = tester.widget<Text>(find.text('dong 0 xin chao')).style!.fontSize!;
       expect(after, before + 2);
 
-      await tester.tap(find.byIcon(Icons.search));
+      await tester.tap(find.byIcon(Symbols.search_rounded));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'dong 4');
       await tester.pumpAndSettle();
@@ -243,7 +276,7 @@ void main() {
     testWidgets('tìm xa: cuộn tới dòng khớp', (tester) async {
       await tester.pumpWidget(app(TxtViewerPage(path: '/x/n.txt', content: content)));
       await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.search));
+      await tester.tap(find.byIcon(Symbols.search_rounded));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'dong 49');
       await tester.pumpAndSettle();

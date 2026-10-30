@@ -20,15 +20,15 @@
   "settings_version": "Phiên bản {version}",
   "settings_tagline": "Đọc, tạo và chuyển đổi PDF, Office và ảnh.",
   "settings_licenses": "Giấy phép mã nguồn mở",
-  "settings_aboutOffline": "PDF Office hoạt động hoàn toàn ngoại tuyến. Ứng dụng không thu thập dữ liệu và không dùng mạng.",
+  "settings_aboutOffline": "Phiotron PDF hoạt động hoàn toàn ngoại tuyến. Ứng dụng không thu thập dữ liệu và không dùng mạng.",
   "settings_aboutSyncfusion": "Tính năng PDF dùng thành phần Syncfusion Flutter theo Giấy phép Syncfusion Community.",
   "settings_sectionGeneral": "Chung",
   "settings_sectionAbout": "Về ứng dụng",
   "settings_share": "Chia sẻ ứng dụng",
-  "settings_shareText": "Mình đang dùng PDF Office để đọc, chuyển đổi và chỉnh sửa PDF, hoàn toàn ngoại tuyến và không quảng cáo.",
+  "settings_shareText": "Mình đang dùng Phiotron PDF để đọc, chuyển đổi và chỉnh sửa PDF, hoàn toàn ngoại tuyến và không quảng cáo.",
   "settings_feedback": "Phản hồi",
-  "settings_feedbackSubject": "Phản hồi về PDF Office",
+  "settings_feedbackSubject": "Phản hồi về Phiotron PDF",
   "settings_feedbackFailed": "Không mở được ứng dụng email",
   "settings_privacy": "Chính sách bảo mật",
-  "settings_privacyBody": "PDF Office hoạt động hoàn toàn ngoại tuyến. Ứng dụng không thu thập, không gửi và không chia sẻ dữ liệu của bạn.\n\nTệp của bạn chỉ được đọc trên thiết bị để hiển thị và chuyển đổi. Tệp mới được lưu vào thư mục bạn chọn; tệp gốc không bị ghi đè.\n\nỨng dụng không dùng mạng, không có quảng cáo và không có mua trong ứng dụng. Quyền truy cập tệp chỉ dùng để tìm tài liệu trên máy."
+  "settings_privacyBody": "Phiotron PDF hoạt động hoàn toàn ngoại tuyến. Ứng dụng không thu thập, không gửi và không chia sẻ dữ liệu của bạn.\n\nTệp của bạn chỉ được đọc trên thiết bị để hiển thị và chuyển đổi. Tệp mới được lưu vào thư mục bạn chọn; tệp gốc không bị ghi đè.\n\nỨng dụng không dùng mạng, không có quảng cáo và không có mua trong ứng dụng. Quyền truy cập tệp chỉ dùng để tìm tài liệu trên máy."
 }

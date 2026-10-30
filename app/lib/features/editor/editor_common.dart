@@ -1,11 +1,13 @@
 // Tiện ích UI dùng chung cho 3 màn của feature `editor`.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/navigation/open_document.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
 import 'edited_output.dart';
@@ -100,32 +102,39 @@ class UnsavedChangesGuard extends StatelessWidget {
   }
 }
 
-/// Dải gợi ý mỏng dưới AppBar.
+/// Dải gợi ý dưới AppBar: thẻ bo 16 nền `surface2`, cách mép 12, icon ⓘ màu phụ, chữ 13.
 class HintBanner extends StatelessWidget {
-  const HintBanner(this.text, {super.key, this.icon = Icons.info_outline});
+  const HintBanner(this.text, {super.key, this.icon = Symbols.info_rounded});
 
   final String text;
   final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: scheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: scheme.onSurfaceVariant),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.bodySmall,
+    final t = context.tokens;
+    return Container(
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: t.surface2,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: t.textMuted),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+                color: t.text,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

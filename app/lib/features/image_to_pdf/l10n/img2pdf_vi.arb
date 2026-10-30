@@ -3,7 +3,7 @@
   "img2pdf_title": "Ảnh sang PDF",
   "img2pdf_pickTitle": "Chọn ảnh",
   "img2pdf_permissionTitle": "Cần quyền truy cập ảnh",
-  "img2pdf_permissionMessage": "Hãy cho phép PDF Office đọc ảnh trong máy để bạn chọn ảnh cần chuyển.",
+  "img2pdf_permissionMessage": "Hãy cho phép Phiotron PDF đọc ảnh trong máy để bạn chọn ảnh cần chuyển.",
   "img2pdf_allowAccess": "Cho phép truy cập",
   "img2pdf_openSettings": "Mở cài đặt",
   "img2pdf_limitedAccess": "Chỉ một phần ảnh trong máy được cấp quyền.",

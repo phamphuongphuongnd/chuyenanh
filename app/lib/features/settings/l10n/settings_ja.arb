@@ -20,15 +20,15 @@
   "settings_version": "バージョン {version}",
   "settings_tagline": "PDF、Office、画像の閲覧・作成・変換。",
   "settings_licenses": "オープンソースライセンス",
-  "settings_aboutOffline": "PDF Office は完全オフラインで動作します。データを収集せず、ネットワークも使用しません。",
+  "settings_aboutOffline": "Phiotron PDF は完全オフラインで動作します。データを収集せず、ネットワークも使用しません。",
   "settings_aboutSyncfusion": "PDF 機能は Syncfusion Community License のもとで Syncfusion Flutter コンポーネントを使用しています。",
   "settings_sectionGeneral": "一般",
   "settings_sectionAbout": "アプリについて",
   "settings_share": "アプリを共有",
-  "settings_shareText": "PDF Office で PDF の閲覧・変換・編集をしています。完全オフラインで広告なしです。",
+  "settings_shareText": "Phiotron PDF で PDF の閲覧・変換・編集をしています。完全オフラインで広告なしです。",
   "settings_feedback": "フィードバック",
-  "settings_feedbackSubject": "PDF Office へのフィードバック",
+  "settings_feedbackSubject": "Phiotron PDF へのフィードバック",
   "settings_feedbackFailed": "メールアプリを開けませんでした",
   "settings_privacy": "プライバシーポリシー",
-  "settings_privacyBody": "PDF Office は完全にオフラインで動作し、データの収集・送信・共有は行いません。\n\nファイルは表示と変換のためにこの端末上でのみ読み込まれます。新しいファイルは選択したフォルダに保存され、元のファイルは上書きされません。\n\nネットワークは使用せず、広告もアプリ内課金もありません。ファイルへのアクセスは端末内の文書を探すためだけに使います。"
+  "settings_privacyBody": "Phiotron PDF は完全にオフラインで動作し、データの収集・送信・共有は行いません。\n\nファイルは表示と変換のためにこの端末上でのみ読み込まれます。新しいファイルは選択したフォルダに保存され、元のファイルは上書きされません。\n\nネットワークは使用せず、広告もアプリ内課金もありません。ファイルへのアクセスは端末内の文書を探すためだけに使います。"
 }

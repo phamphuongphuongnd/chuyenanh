@@ -60,6 +60,19 @@ void main() {
     expect(find.text('Enter some text first.'), findsOneWidget);
   });
 
+  testWidgets('Nút Chuyển đổi chữ thường đầu câu, cao 52, giãn hết bề ngang', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await _pump(tester, ConvertMode.wordToPdf);
+    final button = find.widgetWithText(FilledButton, 'Convert');
+    await tester.scrollUntilVisible(button, 200, scrollable: find.byType(Scrollable).first);
+    expect(find.text('CONVERT'), findsNothing);
+    final size = tester.getSize(button);
+    expect(size.height, 52);
+    expect(size.width, 390 - 32);
+  });
+
   testWidgets('Word → PDF không có ô nhập chữ, có chọn hướng giấy', (tester) async {
     await _pump(tester, ConvertMode.wordToPdf);
     expect(find.byType(TextField), findsNothing);

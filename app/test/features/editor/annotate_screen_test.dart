@@ -119,7 +119,7 @@ void main() {
     expect(find.textContaining('Bao cao_annotated.pdf'), findsOneWidget);
 
     // Sau khi lưu, thoát không còn bị hỏi.
-    await tester.tap(find.text('CLOSE'));
+    await tester.tap(find.text('Close'));
     await tester.pumpAndSettle();
     await tester.pageBack();
     await tester.pumpAndSettle();
@@ -151,14 +151,14 @@ void main() {
     expect(find.byType(AnnotateScreen), findsOneWidget);
 
     // Huỷ → ở lại.
-    await tester.tap(find.text('CANCEL'));
+    await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(find.byType(AnnotateScreen), findsOneWidget);
 
     // Bỏ → thoát.
     await tester.pageBack();
     await tester.pumpAndSettle();
-    await tester.tap(find.text('DISCARD'));
+    await tester.tap(find.text('Discard'));
     await tester.pumpAndSettle();
     expect(find.byType(AnnotateScreen), findsNothing);
   });

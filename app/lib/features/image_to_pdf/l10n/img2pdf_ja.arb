@@ -3,7 +3,7 @@
   "img2pdf_title": "画像をPDFに変換",
   "img2pdf_pickTitle": "画像を選択",
   "img2pdf_permissionTitle": "写真へのアクセスが必要です",
-  "img2pdf_permissionMessage": "変換する画像を選べるように、PDF Office に写真の読み取りを許可してください。",
+  "img2pdf_permissionMessage": "変換する画像を選べるように、Phiotron PDF に写真の読み取りを許可してください。",
   "img2pdf_allowAccess": "アクセスを許可",
   "img2pdf_openSettings": "設定を開く",
   "img2pdf_limitedAccess": "一部の写真のみアクセスできます。",
