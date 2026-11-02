@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'dart:ui' show Rect, Size;
 
 import 'package:image_ops/image_ops.dart' as ops;
-import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 import '../../../core/errors/app_error.dart';
@@ -15,6 +14,7 @@ import '../../../engines/pdf/pdf_tools_engine.dart';
 import 'isolate_job.dart';
 import 'page_ranges.dart';
 import 'pdf_ops.dart';
+import 'syncfusion_pdf_tools.dart' show isSameFilePath;
 
 /// Số trang trắng tối đa mỗi lần chèn.
 const int maxInsertBlankPages = 50;
@@ -223,9 +223,8 @@ class SyncfusionInsertPages implements InsertPagesEngine {
     CancelToken? cancelToken,
   }) async {
     _validateContent(content);
-    final out = p.normalize(p.absolute(outputPath));
     for (final i in [inputPath, if (content is InsertPdfPages) content.path]) {
-      if (p.normalize(p.absolute(i)) == out) {
+      if (isSameFilePath(outputPath, i)) {
         throw ArgumentError('output must differ from input: $outputPath');
       }
     }

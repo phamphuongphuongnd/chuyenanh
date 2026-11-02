@@ -1,5 +1,6 @@
 // Kiểm thử hộp trắng (A09 · reader) — pdf_to_image_export.dart.
 // Bộ dữ liệu + expected chép từ test-output/whitebox/reader/pdf_to_image_export/buoc-5-du-lieu-thu.md.
+import 'dart:convert' show utf8;
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -72,6 +73,11 @@ void main() {
     test('EN-1 tổng < 100 trang ⇒ đệm tối thiểu 3 chữ số', () {
       expect(exportImageName('bao cao', 0, 12, RenderFormat.jpg), 'bao cao_001.jpg');
       expect(exportImageName('a', 98, 99, RenderFormat.png), 'a_099.png');
+    });
+    test('PH-EN-long tên rất dài ⇒ phần tên ≤ 150 byte, không cắt đôi ký tự, giữ hậu tố', () {
+      final n = exportImageName('ệ' * 100, 4, 12, RenderFormat.jpg);
+      expect(n, '${'ệ' * 50}_005.jpg');
+      expect(utf8.encode(n).length, lessThan(255));
     });
     test('EN-2 tổng ≥ 100 trang ⇒ đệm theo số chữ số của tổng', () {
       expect(exportImageName('a', 99, 100, RenderFormat.png), 'a_100.png');

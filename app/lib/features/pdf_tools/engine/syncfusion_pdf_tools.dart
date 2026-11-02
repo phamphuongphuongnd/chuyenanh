@@ -84,7 +84,7 @@ class SyncfusionPdfTools implements PdfToolsEngine {
       while (outputs.contains(path) || File(path).existsSync()) {
         path = p.join(
           outputDir,
-          '${sanitizeFileName('$baseName (${rangeLabel(r)})')} ($n).pdf',
+          '${capFileNameBytes(sanitizeFileName('$baseName (${rangeLabel(r)})'))} ($n).pdf',
         );
         n++;
       }

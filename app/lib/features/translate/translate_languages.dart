@@ -38,7 +38,8 @@ String? normalizeLanguageCode(String? code) {
 }
 
 /// Đoán ngôn ngữ theo ký tự (không cần gói nhận diện ngôn ngữ):
-/// có chữ Hán / Kana / Hangul đáng kể → zh / ja / ko; có dấu tiếng Việt → vi; còn lại → en.
+/// có chữ Hán / Kana / Hangul đáng kể → zh / ja / ko; có dấu tiếng Việt → vi; chữ Latin không dấu có nhiều từ phổ biến tiếng Indonesia
+/// hơn tiếng Anh → id; còn lại → en.
 String guessLanguageCode(String text, {int maxChars = 4000}) {
   var hangul = 0, kana = 0, han = 0, latin = 0, viMarks = 0;
   var seen = 0;
@@ -69,7 +70,71 @@ String guessLanguageCode(String text, {int maxChars = 4000}) {
   }
   // Tiếng Việt: hầu như từ nào cũng có dấu → ≥ 5% số chữ Latin có dấu.
   if (viMarks > 0 && viMarks * 20 >= latin) return 'vi';
-  return 'en';
+  return _looksIndonesian(text, maxChars) ? 'id' : 'en';
+}
+
+/// Từ phổ biến (không dấu) của tiếng Indonesia / tiếng Anh, để phân biệt hai thứ tiếng Latin này.
+const Set<String> _idWords = {
+  'yang',
+  'dan',
+  'di',
+  'ini',
+  'itu',
+  'untuk',
+  'dengan',
+  'tidak',
+  'dari',
+  'pada',
+  'ke',
+  'adalah',
+  'akan',
+  'juga',
+  'dalam',
+  'saya',
+  'anda',
+  'kami',
+  'atau',
+  'oleh',
+  'sudah',
+  'bisa',
+  'karena',
+  'ada',
+};
+const Set<String> _enWords = {
+  'the',
+  'and',
+  'of',
+  'to',
+  'in',
+  'is',
+  'that',
+  'it',
+  'for',
+  'with',
+  'was',
+  'on',
+  'are',
+  'this',
+  'be',
+  'as',
+  'at',
+  'by',
+  'not',
+  'from',
+  'or',
+  'have',
+};
+
+/// Có ≥ 2 từ Indonesia phổ biến và nhiều hơn số từ Anh phổ biến.
+bool _looksIndonesian(String text, int maxChars) {
+  final sample = text.length > maxChars ? text.substring(0, maxChars) : text;
+  var id = 0, en = 0;
+  for (final m in RegExp('[A-Za-z]+').allMatches(sample)) {
+    final w = m.group(0)!.toLowerCase();
+    if (_idWords.contains(w)) id++;
+    if (_enWords.contains(w)) en++;
+  }
+  return id >= 2 && id > en;
 }
 
 /// Ngôn ngữ đích mặc định: ngôn ngữ app; nếu trùng nguồn thì sang tiếng Anh

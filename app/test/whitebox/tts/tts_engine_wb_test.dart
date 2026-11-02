@@ -30,9 +30,12 @@ class _SpyTts extends FlutterTts {
     IosTextToSpeechAudioCategory category,
     List<IosTextToSpeechAudioCategoryOptions> options, [
     IosTextToSpeechAudioMode mode = IosTextToSpeechAudioMode.defaultMode,
-  ]) => _rec('setIosAudioCategory:${category.name}:${options.map((o) => o.name).join(',')}');
+  ]) => _rec(
+    'setIosAudioCategory:${category.name}:${options.map((o) => o.name).join(',')}',
+  );
   @override
-  Future<dynamic> setQueueMode(int queueMode) => _rec('setQueueMode:$queueMode');
+  Future<dynamic> setQueueMode(int queueMode) =>
+      _rec('setQueueMode:$queueMode');
   @override
   Future<dynamic> isLanguageAvailable(String language) =>
       _rec('isLanguageAvailable:$language', available);
@@ -45,11 +48,13 @@ class _SpyTts extends FlutterTts {
   @override
   Future<dynamic> clearVoice() => _rec('clearVoice');
   @override
-  Future<dynamic> setVoice(Map<String, String> voice) => _rec('setVoice:${voice['name']}');
+  Future<dynamic> setVoice(Map<String, String> voice) =>
+      _rec('setVoice:${voice['name']}');
   @override
   Future<dynamic> setSpeechRate(double rate) => _rec('setSpeechRate:$rate');
   @override
-  Future<dynamic> speak(String text, {bool focus = false}) => _rec('speak:$text');
+  Future<dynamic> speak(String text, {bool focus = false}) =>
+      _rec('speak:$text');
   @override
   Future<dynamic> stop() => _rec('stop');
 }
@@ -70,9 +75,9 @@ void main() {
     channelCalls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      channelCalls.add(call.method);
-      return 1;
-    });
+          channelCalls.add(call.method);
+          return 1;
+        });
   });
   tearDown(() {
     debugDefaultTargetPlatformOverride = null;
@@ -81,12 +86,15 @@ void main() {
   });
 
   group('U1 constructor', () {
-    test('1-1 không truyền FlutterTts ⇒ tự tạo FlutterTts (gọi kênh flutter_tts)', () async {
-      final e = FlutterTtsEngine();
-      await pumpEventQueue();
-      await e.speak('xin chào');
-      expect(channelCalls, containsAll(['awaitSpeakCompletion', 'speak']));
-    });
+    test(
+      '1-1 không truyền FlutterTts ⇒ tự tạo FlutterTts (gọi kênh flutter_tts)',
+      () async {
+        final e = FlutterTtsEngine();
+        await pumpEventQueue();
+        await e.speak('xin chào');
+        expect(channelCalls, containsAll(['awaitSpeakCompletion', 'speak']));
+      },
+    );
     test('1-2 truyền FlutterTts ⇒ dùng đúng instance đó', () async {
       final (_, spy) = await _engine();
       expect(spy.log.first, 'awaitSpeakCompletion:false');
@@ -133,18 +141,35 @@ void main() {
   });
 
   group('U5 _init', () {
-    test('5-1 Android ⇒ QUEUE_FLUSH (setQueueMode 0), không cấu hình iOS', () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      final (_, spy) = await _engine();
-      expect(spy.log, contains('setQueueMode:0'));
-      expect(spy.log.where((l) => l.startsWith('setShared') || l.startsWith('setIos')), isEmpty);
-    });
-    test('5-2 iOS ⇒ shared instance + playback/duckOthers, không setQueueMode', () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-      final (_, spy) = await _engine();
-      expect(spy.log, containsAll(['setSharedInstance:true', 'setIosAudioCategory:playback:duckOthers']));
-      expect(spy.log.where((l) => l.startsWith('setQueueMode')), isEmpty);
-    });
+    test(
+      '5-1 Android ⇒ QUEUE_FLUSH (setQueueMode 0), không cấu hình iOS',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        final (_, spy) = await _engine();
+        expect(spy.log, contains('setQueueMode:0'));
+        expect(
+          spy.log.where(
+            (l) => l.startsWith('setShared') || l.startsWith('setIos'),
+          ),
+          isEmpty,
+        );
+      },
+    );
+    test(
+      '5-2 iOS ⇒ shared instance + playback/duckOthers, không setQueueMode',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        final (_, spy) = await _engine();
+        expect(
+          spy.log,
+          containsAll([
+            'setSharedInstance:true',
+            'setIosAudioCategory:playback:duckOthers',
+          ]),
+        );
+        expect(spy.log.where((l) => l.startsWith('setQueueMode')), isEmpty);
+      },
+    );
     test('5-3 nền tảng khác (Windows) ⇒ không cấu hình riêng', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.windows;
       final (_, spy) = await _engine();
@@ -159,15 +184,22 @@ void main() {
       expect(spy.log.last, 'isLanguageAvailable:vi-VN');
       expect(r, isTrue);
     });
-    test('6-2 kênh nền tảng lỗi ⇒ nuốt lỗi (không ném), kết quả mặc định', () async {
+    test('6-2 kênh nền tảng lỗi ⇒ nuốt lỗi (không ném), kết quả mặc định; speak báo onError', () async {
+      // Sửa sau Bước 6: trước đây speak nuốt lỗi im lặng; nay báo qua onError (controller thoát `playing`).
       final (e, spy) = await _engine(fail: true);
+      final errors = <String>[];
+      e.onError = errors.add;
       final r = await Future.wait<Object?>([
         e.speak('x').then((_) => 'ok', onError: (Object x) => x),
         e.isLanguageAvailable('vi-VN').then((v) => v, onError: (Object x) => x),
         e.voicesFor('vi-VN').then((v) => v, onError: (Object x) => x),
       ]);
-      expect(spy.log, containsAll(['speak:x', 'isLanguageAvailable:vi-VN', 'getVoices']));
+      expect(
+        spy.log,
+        containsAll(['speak:x', 'isLanguageAvailable:vi-VN', 'getVoices']),
+      );
       expect(r, ['ok', false, isEmpty]);
+      expect(errors, hasLength(1));
     });
   });
 
@@ -186,12 +218,15 @@ void main() {
   });
 
   group('U8 setVoice', () {
-    test('8-1 null ⇒ bỏ giọng chọn, đặt lại ngôn ngữ (giọng mặc định)', () async {
-      final (e, spy) = await _engine();
-      spy.log.clear();
-      await e.setVoice(null, 'vi-VN');
-      expect(spy.log, ['clearVoice', 'setLanguage:vi-VN']);
-    });
+    test(
+      '8-1 null ⇒ bỏ giọng chọn, đặt lại ngôn ngữ (giọng mặc định)',
+      () async {
+        final (e, spy) = await _engine();
+        spy.log.clear();
+        await e.setVoice(null, 'vi-VN');
+        expect(spy.log, ['clearVoice', 'setLanguage:vi-VN']);
+      },
+    );
     test('8-2 có giọng ⇒ setVoice(map)', () async {
       final (e, spy) = await _engine();
       spy.log.clear();

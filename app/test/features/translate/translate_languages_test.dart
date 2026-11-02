@@ -24,9 +24,26 @@ void main() {
       expect(guessLanguageCode('Tiệng Việt'), 'vi');
     });
 
-    test('Latin không dấu (Anh, Indonesia) → en', () {
+    test('Latin không dấu tiếng Anh → en', () {
       expect(guessLanguageCode('The weather is nice today.'), 'en');
+      // Câu ngắn không có từ phổ biến nào của tiếng Indonesia → vẫn en (giới hạn đã biết).
       expect(guessLanguageCode('Selamat pagi, apa kabar?'), 'en');
+    });
+
+    test('Latin có nhiều từ phổ biến tiếng Indonesia → id', () {
+      expect(
+        guessLanguageCode('Saya tidak tahu apa yang dia lakukan di rumah itu.'),
+        'id',
+      );
+      expect(
+        guessLanguageCode('Buku ini untuk anak dan dibuat dengan baik.'),
+        'id',
+      );
+    });
+
+    test('từ Anh nhiều hơn / chỉ một từ Indonesia lẻ → en', () {
+      expect(guessLanguageCode('The book is for the kids di'), 'en');
+      expect(guessLanguageCode('yang'), 'en');
     });
 
     test('vài chữ có dấu lẻ trong văn bản tiếng Anh dài → vẫn en', () {

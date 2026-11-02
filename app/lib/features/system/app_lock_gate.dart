@@ -43,6 +43,9 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   bool _autoAuthPending = false;
   bool _authenticating = false;
 
+  /// Lần xác thực gần nhất lỗi do plugin / nền tảng (máy vẫn có khoá): hiện "Thử lại".
+  bool _pluginError = false;
+
   DateTime _now() => ref.read(appLockClockProvider)();
 
   @override
@@ -109,14 +112,17 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
     setState(() => _authenticating = true);
     final result = await service.authenticate(reason);
     var unlock = result == AppAuthResult.success;
+    var pluginError = false;
     // Máy đã gỡ hết khoá màn hình thì không còn cách nào xác thực: cho vào, tránh kẹt
     // ngoài app vĩnh viễn. Lỗi khác / không kiểm tra được thì giữ màn khoá (bấm lại để thử).
     if (result == AppAuthResult.unavailable) {
       unlock = await service.isDefinitelyUnsupported();
+      pluginError = !unlock;
     }
     if (!mounted) return;
     setState(() {
       _authenticating = false;
+      _pluginError = pluginError;
       if (unlock) _locked = false;
     });
   }
@@ -148,6 +154,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
           _LockScreen(
             key: const ValueKey('app_lock_screen'),
             busy: _authenticating,
+            retry: _pluginError,
             onUnlock: _unlock,
           ),
       ],
@@ -155,11 +162,19 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   }
 }
 
-/// Màn khoá phủ kín: logo, "Phiotron PDF đã khoá", lời nhắc, nút "Mở khoá".
+/// Màn khoá phủ kín: logo, "Phiotron PDF đã khoá", lời nhắc, nút "Mở khoá" ("Thử lại" khi lỗi plugin).
 class _LockScreen extends StatelessWidget {
-  const _LockScreen({super.key, required this.busy, required this.onUnlock});
+  const _LockScreen({
+    super.key,
+    required this.busy,
+    required this.retry,
+    required this.onUnlock,
+  });
 
   final bool busy;
+
+  /// Lỗi plugin lần trước: nút đổi thành "Thử lại".
+  final bool retry;
   final VoidCallback onUnlock;
 
   @override
@@ -207,8 +222,17 @@ class _LockScreen extends StatelessWidget {
                       minimumSize: const Size(200, 50),
                     ),
                     onPressed: busy ? null : onUnlock,
-                    icon: const Icon(Symbols.fingerprint_rounded, size: 22),
-                    label: Text(l.settings_appLockUnlock),
+                    icon: Icon(
+                      retry
+                          ? Symbols.refresh_rounded
+                          : Symbols.fingerprint_rounded,
+                      size: 22,
+                    ),
+                    label: Text(
+                      retry
+                          ? l.settings_appLockRetry
+                          : l.settings_appLockUnlock,
+                    ),
                   ),
                 ],
               ),

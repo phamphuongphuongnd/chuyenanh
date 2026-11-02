@@ -122,6 +122,15 @@ void main() {
     });
   });
 
+  group('PH planSplit SplitEveryN không hợp lệ', () {
+    test('PH-PS-N0 SplitEveryN(0) và (-1) ⇒ lỗi, không lặp vô hạn', () {
+      // Debug: assert của constructor nổ trước (AssertionError); release: planSplit ném ArgumentError.
+      for (final n in [0, -1]) {
+        expect(() => planSplit(SplitEveryN(n), 5), throwsA(isA<Error>()));
+      }
+    });
+  });
+
   group('U4 rangeLabel', () {
     test('RL-1 (1,3) ⇒ "1-3"', () => expect(rangeLabel(const PageRange(1, 3)), '1-3'));
     test('RL-2 (4,4) ⇒ "4"', () => expect(rangeLabel(const PageRange(4, 4)), '4'));

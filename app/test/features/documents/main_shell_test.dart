@@ -83,14 +83,14 @@ void main() {
     }
   });
 
-  testWidgets('Trang chủ có ô tìm kiếm, 3 ô tính năng và danh sách gần đây', (
+  testWidgets('Trang chủ có ô tìm kiếm và danh sách gần đây, không còn ô tính năng', (
     tester,
   ) async {
     await _pump(tester, recents: [_doc('gan-day.pdf')]);
     expect(find.byKey(const ValueKey('home-tab-search')), findsOneWidget);
-    expect(find.byKey(const ValueKey('home-tile-imageToPdf')), findsOneWidget);
-    expect(find.byKey(const ValueKey('home-tile-scanner')), findsOneWidget);
-    expect(find.byKey(const ValueKey('home-tile-pdfToImage')), findsOneWidget);
+    expect(find.byKey(const ValueKey('home-tile-imageToPdf')), findsNothing);
+    expect(find.byKey(const ValueKey('home-tile-scanner')), findsNothing);
+    expect(find.byKey(const ValueKey('home-tile-pdfToImage')), findsNothing);
     expect(find.byKey(const ValueKey('home-view-all')), findsOneWidget);
     expect(find.text('gan-day.pdf'), findsOneWidget);
   });

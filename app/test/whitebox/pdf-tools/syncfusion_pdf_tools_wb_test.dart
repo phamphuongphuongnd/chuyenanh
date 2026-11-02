@@ -2,6 +2,7 @@
 // Kiểm thử hộp trắng (A02) — lib/features/pdf_tools/engine/syncfusion_pdf_tools.dart
 // Mã bộ & kết quả mong đợi chép từ test-output/whitebox/pdf-tools/syncfusion_pdf_tools/buoc-5-du-lieu-thu.md
 // Mật khẩu trong file này chỉ là mật khẩu của PDF mẫu tự sinh trong test.
+import 'dart:convert' show utf8;
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' show Rect, Size;
@@ -216,6 +217,19 @@ void main() {
       );
       expect(names(r), ['src (1-2).pdf', 'src (1-2) (2).pdf']);
       expect(existing.readAsStringSync(), 'x');
+    });
+    test('PH-SP-7b tên gốc rất dài + hai khoảng trùng ⇒ mọi tên ≤ 150 byte (không kể đuôi)', () async {
+      final src = await makePdf(tmp.path, 'src.pdf', 3);
+      final outDir = p.join(tmp.path, 'out');
+      final r = await capture(
+        () => engine.split(src, const SplitByRanges([PageRange(1, 2), PageRange(1, 2)]), outDir, 'ệ' * 100),
+      );
+      final list = (r! as List).cast<String>();
+      expect(list, hasLength(2));
+      for (final f in list) {
+        expect(File(f).existsSync(), isTrue);
+        expect(utf8.encode(p.basename(f)).length, lessThan(255));
+      }
     });
     test('SP-9 huỷ ngay sau khi gọi ⇒ Cancelled ở bước chạy job, không có file kết quả', () async {
       final src = await makePdf(tmp.path, 'src.pdf', 3);

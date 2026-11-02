@@ -43,5 +43,6 @@
   "settings_appLockUnavailableBody": "Máy chưa cài khoá màn hình hoặc không hỗ trợ. Hãy cài vân tay, khuôn mặt, mã PIN, hình vẽ hoặc mật khẩu trong Cài đặt của máy rồi thử lại.",
   "settings_appLockLocked": "Phiotron PDF đã khoá",
   "settings_appLockLockedHint": "Dùng vân tay, khuôn mặt hoặc mã PIN của máy để tiếp tục.",
-  "settings_appLockUnlock": "Mở khoá"
+  "settings_appLockUnlock": "Mở khoá",
+  "settings_appLockRetry": "Thử lại"
 }

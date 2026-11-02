@@ -87,9 +87,8 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
     final err = _c.error;
     if (err == null || !mounted) return;
     _c.clearError();
-    ScaffoldMessenger.maybeOf(
-      context,
-    )?.showSnackBar(SnackBar(content: Text(context.l10n.tts_error)));
+    ScaffoldMessenger.maybeOf(context)
+        ?.showSnackBar(SnackBar(content: Text(context.l10n.tts_error)));
   }
 
   /// `languageCode` → ngôn ngữ trong cài đặt → ngôn ngữ đang hiển thị.
@@ -166,7 +165,8 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
   Widget _buildUnavailable(BuildContext context) {
     final t = context.tokens;
     final l = context.l10n;
-    final name = localeNativeNames[_languageCode.toLowerCase()] ??
+    final name =
+        localeNativeNames[_languageCode.toLowerCase()] ??
         _requestedLocale ??
         _languageCode;
     return Row(
@@ -255,8 +255,9 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
           key: 'tts_stop',
           icon: Symbols.stop_rounded,
           tooltip: l.tts_stop,
-          onPressed:
-              _c.isPlaying || _c.status == ReadAloudStatus.paused ? _c.stop : null,
+          onPressed: _c.isPlaying || _c.status == ReadAloudStatus.paused
+              ? _c.stop
+              : null,
         ),
         TextButton(
           key: const ValueKey('tts_speed'),
@@ -329,7 +330,8 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
 
   void _showInstallHelp() {
     final l = context.l10n;
-    final ios = defaultTargetPlatform == TargetPlatform.iOS ||
+    final ios =
+        defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS;
     showAppSheet<void>(
       context,

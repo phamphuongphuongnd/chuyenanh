@@ -19,14 +19,40 @@ Future<(ReadAloudController, FakeTtsEngine, List<int>)> _ready(
   return (c, engine, announced);
 }
 
+class _ThrowingSpeakEngine extends FakeTtsEngine {
+  @override
+  Future<void> speak(String text) async => throw StateError('hỏng');
+}
+
 void main() {
-  test('kiểm tra ngôn ngữ: có giọng → sẵn sàng, đặt ngôn ngữ và tốc độ', () async {
-    final (c, e, _) = await _ready(['A']);
-    expect(e.checked, ['vi-VN']);
-    expect(e.languages, ['vi-VN']);
-    expect(e.speed, 1.0);
-    expect(c.status, ReadAloudStatus.idle);
+  test('speak ném lỗi: ghi lỗi, thoát khỏi playing', () async {
+    final engine = _ThrowingSpeakEngine();
+    final c = ReadAloudController(engine: engine, paragraphs: ['A.']);
+    addTearDown(c.dispose);
+    await c.setLocale('vi-VN');
+    await c.play();
+    expect(c.error, contains('hỏng'));
+    expect(c.status, isNot(ReadAloudStatus.playing));
   });
+
+  test('engine báo onError khi đang đọc: không kẹt playing', () async {
+    final (c, e, _) = await _ready(['A.']);
+    await c.play();
+    e.onError?.call('lỗi speak');
+    expect(c.error, 'lỗi speak');
+    expect(c.isPlaying, isFalse);
+  });
+
+  test(
+    'kiểm tra ngôn ngữ: có giọng → sẵn sàng, đặt ngôn ngữ và tốc độ',
+    () async {
+      final (c, e, _) = await _ready(['A']);
+      expect(e.checked, ['vi-VN']);
+      expect(e.languages, ['vi-VN']);
+      expect(e.speed, 1.0);
+      expect(c.status, ReadAloudStatus.idle);
+    },
+  );
 
   test('không có giọng → unavailable; cài xong kiểm tra lại → idle', () async {
     final (c, e, _) = await _ready(['A'], available: false);
@@ -91,13 +117,16 @@ void main() {
     expect(ann, [0, 1, 1]);
   });
 
-  test('đổi tốc độ khi đang đọc → đọc lại phần hiện tại với tốc độ mới', () async {
-    final (c, e, _) = await _ready(['A.']);
-    await c.play();
-    await c.setSpeed(1.5);
-    expect(e.speed, 1.5);
-    expect(e.spoken, ['A.', 'A.']);
-  });
+  test(
+    'đổi tốc độ khi đang đọc → đọc lại phần hiện tại với tốc độ mới',
+    () async {
+      final (c, e, _) = await _ready(['A.']);
+      await c.play();
+      await c.setSpeed(1.5);
+      expect(e.speed, 1.5);
+      expect(e.spoken, ['A.', 'A.']);
+    },
+  );
 
   test('dispose khi đang đọc thì dừng engine và gỡ callback', () async {
     final e = FakeTtsEngine();

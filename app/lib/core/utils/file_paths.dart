@@ -7,7 +7,7 @@ import 'package:path/path.dart' as p;
 /// [ext] có hoặc không có dấu chấm đều được. Ký tự cấm trong tên file được thay bằng `_`.
 Future<String> uniqueOutputPath(String dir, String baseName, String ext) async {
   final e = ext.isEmpty ? '' : (ext.startsWith('.') ? ext : '.$ext');
-  final base = _capUtf8(sanitizeFileName(baseName), _maxNameBytes);
+  final base = capFileNameBytes(sanitizeFileName(baseName));
   var candidate = p.join(dir, '$base$e');
   var i = 1;
   while (await File(candidate).exists() ||
@@ -19,10 +19,11 @@ Future<String> uniqueOutputPath(String dir, String baseName, String ext) async {
 }
 
 /// Hệ thống file giới hạn 255 byte/tên; chừa chỗ cho ` (n)`, đuôi và `.tmp`.
-const int _maxNameBytes = 150;
+const int maxNameBytes = 150;
 
-/// Cắt [s] sao cho UTF-8 không quá [maxBytes] byte, không cắt giữa một ký tự.
-String _capUtf8(String s, int maxBytes) {
+/// Cắt [s] sao cho UTF-8 không quá [maxBytes] (mặc định [maxNameBytes]) byte, không cắt giữa
+/// một ký tự. Rỗng sau khi cắt → `untitled`.
+String capFileNameBytes(String s, [int maxBytes = maxNameBytes]) {
   if (utf8.encode(s).length <= maxBytes) return s;
   final out = StringBuffer();
   var bytes = 0;

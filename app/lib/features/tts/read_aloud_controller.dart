@@ -245,7 +245,11 @@ class ReadAloudController extends ChangeNotifier {
     final text = _queue[_seg].text;
     if (_offset >= text.length) _offset = 0;
     _spokenBase = _offset;
-    await engine.speak(_offset == 0 ? text : text.substring(_offset));
+    try {
+      await engine.speak(_offset == 0 ? text : text.substring(_offset));
+    } catch (e) {
+      _handleError('$e');
+    }
   }
 
   void _handleProgress(int start, int end) {

@@ -168,20 +168,21 @@ void main() {
     expect(auth.calls, 2);
   });
 
-  testWidgets('đang ở hộp thoại xác thực của hệ thống thì không tính là rời app', (
-    tester,
-  ) async {
-    final auth = _FakeAuth()..pending = Completer<AppAuthResult>();
-    await _pump(tester, appLock: true, auth: auth, clock: clock);
-    expect(auth.calls, 1);
+  testWidgets(
+    'đang ở hộp thoại xác thực của hệ thống thì không tính là rời app',
+    (tester) async {
+      final auth = _FakeAuth()..pending = Completer<AppAuthResult>();
+      await _pump(tester, appLock: true, auth: auth, clock: clock);
+      expect(auth.calls, 1);
 
-    // Android mở Activity PIN → app xuống nền 60 giây trong lúc đang xác thực.
-    await _leaveAndReturn(tester, clock, const Duration(seconds: 60));
-    auth.pending!.complete(AppAuthResult.success);
-    await tester.pumpAndSettle();
-    expect(_lockScreen, findsNothing);
-    expect(auth.calls, 1);
-  });
+      // Android mở Activity PIN → app xuống nền 60 giây trong lúc đang xác thực.
+      await _leaveAndReturn(tester, clock, const Duration(seconds: 60));
+      auth.pending!.complete(AppAuthResult.success);
+      await tester.pumpAndSettle();
+      expect(_lockScreen, findsNothing);
+      expect(auth.calls, 1);
+    },
+  );
 
   testWidgets('máy đã gỡ khoá màn hình: không kẹt ngoài app', (tester) async {
     final auth = _FakeAuth(result: AppAuthResult.unavailable)
@@ -198,12 +199,35 @@ void main() {
     expect(_lockScreen, findsOneWidget);
   });
 
-  testWidgets('lỗi plugin khi kiểm tra khoá máy: giữ màn khoá (không fail-open)', (
+  testWidgets(
+    'lỗi plugin khi kiểm tra khoá máy: giữ màn khoá (không fail-open)',
+    (tester) async {
+      final auth = _FakeAuth(result: AppAuthResult.unavailable)
+        ..supportedError = StateError('plugin lỗi');
+      await _pump(tester, appLock: true, auth: auth, clock: clock);
+      expect(_lockScreen, findsOneWidget);
+    },
+  );
+
+  testWidgets('lỗi plugin: nút đổi thành "Try again", bấm lại được mở khoá', (
     tester,
   ) async {
-    final auth = _FakeAuth(result: AppAuthResult.unavailable)
-      ..supportedError = StateError('plugin lỗi');
+    final auth = _FakeAuth(result: AppAuthResult.unavailable);
     await _pump(tester, appLock: true, auth: auth, clock: clock);
     expect(_lockScreen, findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+    expect(find.text('Unlock'), findsNothing);
+
+    auth.result = AppAuthResult.success;
+    await tester.tap(find.byKey(const ValueKey('app_lock_unlock')));
+    await tester.pumpAndSettle();
+    expect(_lockScreen, findsNothing);
+  });
+
+  testWidgets('xác thực thất bại thường: vẫn là nút "Unlock"', (tester) async {
+    final auth = _FakeAuth(result: AppAuthResult.failed);
+    await _pump(tester, appLock: true, auth: auth, clock: clock);
+    expect(find.text('Unlock'), findsOneWidget);
+    expect(find.text('Try again'), findsNothing);
   });
 }

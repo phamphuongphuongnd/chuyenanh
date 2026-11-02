@@ -76,12 +76,24 @@ List<LayoutPage> extractLayoutPages(
     final n = doc.pages.count;
     final pages = <LayoutPage>[];
     for (var i = 0; i < n; i++) {
-      final size = doc.pages[i].size;
-      final lines = extractor.extractTextLines(startPageIndex: i, endPageIndex: i);
+      // Chỉ lỗi từ thư viện Syncfusion (dữ liệu PDF hỏng) mới thành CorruptFile; lỗi lập trình
+      // ở code của mình (vòng lặp bên dưới) được để nổi lên.
+      final double width, height;
+      final List<sf.TextLine> lines;
+      try {
+        final size = doc.pages[i].size;
+        width = size.width;
+        height = size.height;
+        lines = extractor.extractTextLines(startPageIndex: i, endPageIndex: i);
+      } on AppError {
+        rethrow;
+      } catch (e) {
+        throw CorruptFile(e.toString());
+      }
       pages.add(LayoutPage(
         index: i,
-        width: size.width,
-        height: size.height,
+        width: width,
+        height: height,
         lines: [
           for (final l in lines)
             if (l.text.trim().isNotEmpty) layoutLineFromTextLine(l),
@@ -90,10 +102,6 @@ List<LayoutPage> extractLayoutPages(
       report?.call((i + 1) / n * 0.8);
     }
     return pages;
-  } on AppError {
-    rethrow;
-  } catch (e) {
-    throw CorruptFile(e.toString());
   } finally {
     doc.dispose();
   }

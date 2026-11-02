@@ -44,6 +44,10 @@ List<PageRange> planSplit(SplitMode mode, int pageCount) {
     case SplitEveryPage():
       return [for (var i = 1; i <= pageCount; i++) PageRange(i, i)];
     case SplitEveryN(:final pagesPerFile):
+      // Kiểm thật (assert của constructor const bị bỏ ở release → vòng lặp vô hạn khi n ≤ 0).
+      if (pagesPerFile < 1) {
+        throw ArgumentError.value(pagesPerFile, 'pagesPerFile', 'must be >= 1');
+      }
       return [
         for (var s = 1; s <= pageCount; s += pagesPerFile)
           PageRange(s, (s + pagesPerFile - 1).clamp(s, pageCount)),

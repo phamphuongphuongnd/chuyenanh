@@ -43,5 +43,6 @@
   "settings_appLockUnavailableBody": "Perangkat ini belum memasang kunci layar atau tidak mendukungnya. Atur sidik jari, wajah, PIN, pola, atau kata sandi di pengaturan perangkat, lalu coba lagi.",
   "settings_appLockLocked": "Phiotron PDF terkunci",
   "settings_appLockLockedHint": "Gunakan sidik jari, wajah, atau PIN perangkat untuk melanjutkan.",
-  "settings_appLockUnlock": "Buka kunci"
+  "settings_appLockUnlock": "Buka kunci",
+  "settings_appLockRetry": "Coba lagi"
 }

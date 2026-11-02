@@ -53,35 +53,36 @@ Future<void> _pump(
 }
 
 void main() {
-  testWidgets('bấm phát → đọc đoạn 0; xong → sang đoạn 1, onParagraph được gọi', (
-    tester,
-  ) async {
-    final engine = FakeTtsEngine();
-    final announced = <int>[];
-    await _pump(tester, engine, onParagraph: announced.add);
+  testWidgets(
+    'bấm phát → đọc đoạn 0; xong → sang đoạn 1, onParagraph được gọi',
+    (tester) async {
+      final engine = FakeTtsEngine();
+      final announced = <int>[];
+      await _pump(tester, engine, onParagraph: announced.add);
 
-    expect(engine.checked, ['vi-VN']);
-    expect(find.text('Paragraph 1 / 3'), findsOneWidget);
-    expect(tester.getSize(find.byType(ReadAloudBar)).height, 64);
+      expect(engine.checked, ['vi-VN']);
+      expect(find.text('Paragraph 1 / 3'), findsOneWidget);
+      expect(tester.getSize(find.byType(ReadAloudBar)).height, 64);
 
-    await tester.tap(find.byKey(const ValueKey('tts_play')));
-    await tester.pump();
-    expect(engine.spoken, ['Một.']);
-    expect(announced, [0]);
-    expect(find.byTooltip('Pause'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('tts_play')));
+      await tester.pump();
+      expect(engine.spoken, ['Một.']);
+      expect(announced, [0]);
+      expect(find.byTooltip('Pause'), findsOneWidget);
 
-    engine.finish();
-    await tester.pump();
-    expect(engine.spoken, ['Một.', 'Hai.']);
-    expect(announced, [0, 1]);
-    expect(find.text('Paragraph 2 / 3'), findsOneWidget);
+      engine.finish();
+      await tester.pump();
+      expect(engine.spoken, ['Một.', 'Hai.']);
+      expect(announced, [0, 1]);
+      expect(find.text('Paragraph 2 / 3'), findsOneWidget);
 
-    // Tạm dừng → engine dừng, nút trở lại Phát.
-    await tester.tap(find.byKey(const ValueKey('tts_play')));
-    await tester.pump();
-    expect(engine.stops, 1);
-    expect(find.byTooltip('Read aloud'), findsOneWidget);
-  });
+      // Tạm dừng → engine dừng, nút trở lại Phát.
+      await tester.tap(find.byKey(const ValueKey('tts_play')));
+      await tester.pump();
+      expect(engine.stops, 1);
+      expect(find.byTooltip('Read aloud'), findsOneWidget);
+    },
+  );
 
   testWidgets('đoạn sau / trước và dừng', (tester) async {
     final engine = FakeTtsEngine();

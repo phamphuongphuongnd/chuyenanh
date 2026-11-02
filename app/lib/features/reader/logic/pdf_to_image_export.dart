@@ -25,7 +25,7 @@ String exportImageName(
       ? 3
       : pageCount.toString().length;
   final number = (pageIndex + 1).toString().padLeft(width, '0');
-  return '${sanitizeFileName(baseName)}_$number.${imageExtension(format)}';
+  return '${capFileNameBytes(sanitizeFileName(baseName))}_$number.${imageExtension(format)}';
 }
 
 /// Kích thước ảnh sẽ được tạo cho một trang ở [dpi] (đã giới hạn số điểm ảnh tối đa).

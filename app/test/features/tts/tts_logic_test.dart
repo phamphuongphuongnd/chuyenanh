@@ -58,7 +58,10 @@ void main() {
       final text = List.filled(30, 'chữ').join(' '); // 119 ký tự
       final parts = splitForTts(text, maxLength: 40);
       expect(parts.every((p) => p.length <= 40), isTrue);
-      expect(parts.every((p) => !p.startsWith(' ') && !p.endsWith(' ')), isTrue);
+      expect(
+        parts.every((p) => !p.startsWith(' ') && !p.endsWith(' ')),
+        isTrue,
+      );
       expect(parts.join(' '), text);
     });
 
@@ -87,7 +90,11 @@ void main() {
   test('filterVoices: đúng ngôn ngữ, bỏ giọng cần mạng / chưa cài', () {
     final raw = [
       {'name': 'vi-vn-x-gft-local', 'locale': 'vi-VN', 'network_required': '0'},
-      {'name': 'vi-vn-x-gft-network', 'locale': 'vi-VN', 'network_required': '1'},
+      {
+        'name': 'vi-vn-x-gft-network',
+        'locale': 'vi-VN',
+        'network_required': '1',
+      },
       {
         'name': 'vi-vn-x-vic-local',
         'locale': 'vi-VN',
@@ -103,20 +110,51 @@ void main() {
     expect(v.last.toMap()['identifier'], 'com.apple.linh');
     expect(filterVoices(null, 'vi-VN'), isEmpty);
     // Không có đúng vùng → lấy cùng ngôn ngữ.
-    expect(filterVoices([
-      {'name': 'en-gb-x-1', 'locale': 'en-GB'},
-    ], 'en-US').length, 1);
+    expect(
+      filterVoices([
+        {'name': 'en-gb-x-1', 'locale': 'en-GB'},
+      ], 'en-US').length,
+      1,
+    );
   });
 
   test('ttsVoiceDisplayName ẩn tên mã Android', () {
     expect(
-      ttsVoiceDisplayName(const TtsVoice(name: 'vi-vn-x-gft-local', locale: 'vi-VN')),
+      ttsVoiceDisplayName(
+        const TtsVoice(name: 'vi-vn-x-gft-local', locale: 'vi-VN'),
+      ),
       isNull,
     );
     expect(
       ttsVoiceDisplayName(const TtsVoice(name: 'Linh', locale: 'vi-VN')),
       'Linh',
     );
+  });
+
+  test('ttsVoiceDisplayName giữ tên người có dấu gạch', () {
+    for (final n in ['Ana-Maria', 'Jean-Luc', 'Mary_Ann']) {
+      expect(ttsVoiceDisplayName(TtsVoice(name: n, locale: 'en-US')), n);
+    }
+    expect(
+      ttsVoiceDisplayName(const TtsVoice(name: 'vi-VN', locale: 'vi-VN')),
+      isNull,
+    );
+    expect(
+      ttsVoiceDisplayName(const TtsVoice(name: 'en_us_x', locale: 'en-US')),
+      isNull,
+    );
+  });
+
+  test('filterVoices bỏ giọng network_required là 1 / true / int 1', () {
+    final raw = [
+      {'name': 'A', 'locale': 'vi-VN', 'network_required': 'true'},
+      {'name': 'B', 'locale': 'vi-VN', 'network_required': 'TRUE'},
+      {'name': 'C', 'locale': 'vi-VN', 'network_required': 1},
+      {'name': 'D', 'locale': 'vi-VN', 'network_required': true},
+      {'name': 'E', 'locale': 'vi-VN', 'network_required': 'false'},
+      {'name': 'F', 'locale': 'vi-VN', 'network_required': 0},
+    ];
+    expect(filterVoices(raw, 'vi-VN').map((e) => e.name), ['E', 'F']);
   });
 
   test('nhãn tốc độ và quy đổi tốc độ engine', () {

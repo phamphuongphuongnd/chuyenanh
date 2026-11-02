@@ -50,5 +50,6 @@
   "settings_appLockUnavailableBody": "This device has no screen lock set up, or doesn't support it. Set up a fingerprint, face, PIN, pattern or password in your device settings, then try again.",
   "settings_appLockLocked": "Phiotron PDF is locked",
   "settings_appLockLockedHint": "Use your fingerprint, face or device PIN to continue.",
-  "settings_appLockUnlock": "Unlock"
+  "settings_appLockUnlock": "Unlock",
+  "settings_appLockRetry": "Try again"
 }

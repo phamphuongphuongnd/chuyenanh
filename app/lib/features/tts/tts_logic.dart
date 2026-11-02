@@ -159,7 +159,7 @@ class TtsVoice {
 }
 
 /// Lọc giọng hợp [locale]: cùng ngôn ngữ, ưu tiên đúng vùng; bỏ giọng cần mạng hoặc
-/// chưa tải (Android báo `network_required` = 1 / feature `notInstalled`).
+/// chưa tải (Android báo `network_required` = 1 / true / feature `notInstalled`).
 /// [raw] là kết quả thô `FlutterTts.getVoices` (List<Map>).
 List<TtsVoice> filterVoices(Object? raw, String locale) {
   if (raw is! List) return const [];
@@ -173,7 +173,8 @@ List<TtsVoice> filterVoices(Object? raw, String locale) {
     final name = item['name']?.toString() ?? '';
     final loc = (item['locale']?.toString() ?? '').replaceAll('_', '-');
     if (name.isEmpty || loc.isEmpty) continue;
-    if (item['network_required']?.toString() == '1') continue;
+    final net = item['network_required']?.toString().toLowerCase();
+    if (net == '1' || net == 'true') continue;
     final features = item['features']?.toString() ?? '';
     if (features.contains('notInstalled')) continue;
     final l = loc.toLowerCase();
@@ -192,7 +193,12 @@ List<TtsVoice> filterVoices(Object? raw, String locale) {
 /// Tên giọng dễ đọc: tên Android kiểu `vi-vn-x-gft-local` → null (UI hiện "Giọng n").
 String? ttsVoiceDisplayName(TtsVoice voice) {
   final n = voice.name;
-  if (RegExp(r'^[a-z]{2,3}[-_][a-z]{2}', caseSensitive: false).hasMatch(n) ||
+  // Mã locale: `vi-VN`, `vi_vn`, `fil-ph`… (sau vùng phải hết chuỗi hoặc gặp `-`/`_`/`#`),
+  // không nhầm tên người có gạch như `Ana-Maria`.
+  if (RegExp(
+        r'^[a-z]{2,3}[-_][a-z]{2}(?![a-z])',
+        caseSensitive: false,
+      ).hasMatch(n) ||
       n.contains('#') ||
       n.contains('-x-')) {
     return null;

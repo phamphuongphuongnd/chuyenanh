@@ -43,5 +43,6 @@
   "settings_appLockUnavailableBody": "この端末には画面ロックが設定されていないか、対応していません。端末の設定で指紋・顔・PIN・パターン・パスワードを設定してから、もう一度お試しください。",
   "settings_appLockLocked": "Phiotron PDF はロックされています",
   "settings_appLockLockedHint": "指紋・顔・端末の PIN で続行してください。",
-  "settings_appLockUnlock": "ロックを解除"
+  "settings_appLockUnlock": "ロックを解除",
+  "settings_appLockRetry": "再試行"
 }

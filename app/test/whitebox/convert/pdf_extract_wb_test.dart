@@ -130,9 +130,11 @@ void main() {
       expect(r, isA<Cancelled>());
     });
 
-    test('U2-P7 report ném lỗi không phải AppError ⇒ ném AppError (không lỗi thô)', () {
+    // Sau khi sửa (PH): lỗi lập trình (callback report) không còn bị đổi thành CorruptFile.
+    test('PH-U2-P7 report ném StateError ⇒ StateError nổi lên nguyên dạng (không thành AppError)', () {
       final r = _try(() => extractLayoutPages(_pdf(['x']), report: (_) => throw StateError('bug')));
-      expect(r, isA<AppError>());
+      expect(r, isA<StateError>());
+      expect(r, isNot(isA<AppError>()));
     });
   });
 

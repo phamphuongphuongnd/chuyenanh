@@ -43,5 +43,6 @@
   "settings_appLockUnavailableBody": "이 기기에 화면 잠금이 설정되어 있지 않거나 지원되지 않습니다. 기기 설정에서 지문, 얼굴, PIN, 패턴 또는 비밀번호를 설정한 후 다시 시도하세요.",
   "settings_appLockLocked": "Phiotron PDF가 잠겨 있습니다",
   "settings_appLockLockedHint": "지문, 얼굴 또는 기기 PIN으로 계속하세요.",
-  "settings_appLockUnlock": "잠금 해제"
+  "settings_appLockUnlock": "잠금 해제",
+  "settings_appLockRetry": "다시 시도"
 }

@@ -44,7 +44,7 @@ abstract class TtsEngine {
 }
 
 /// Cài đặt bằng gói `flutter_tts` (Android TextToSpeech / iOS AVSpeechSynthesizer).
-/// Mọi lỗi kênh nền tảng (vd. chạy trong test không có plugin) đều được nuốt.
+/// Lỗi kênh nền tảng (vd. chạy trong test không có plugin) được nuốt; riêng lỗi [speak] báo qua [onError].
 class FlutterTtsEngine extends TtsEngine {
   FlutterTtsEngine([FlutterTts? tts]) : _tts = tts ?? FlutterTts() {
     _tts.setCompletionHandler(() => onComplete?.call());
@@ -111,7 +111,15 @@ class FlutterTtsEngine extends TtsEngine {
       _guard(() => _tts.setSpeechRate(ttsEngineRate(speed)));
 
   @override
-  Future<void> speak(String text) => _guard(() => _tts.speak(text));
+  Future<void> speak(String text) async {
+    try {
+      await _tts.speak(text);
+    } catch (e) {
+      // Không nuốt: báo lên controller để thoát trạng thái đang đọc.
+      debugPrint('TTS: $e');
+      onError?.call('$e');
+    }
+  }
 
   @override
   Future<void> stop() => _guard(() => _tts.stop());

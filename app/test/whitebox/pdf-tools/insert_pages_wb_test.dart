@@ -253,6 +253,20 @@ void main() {
       expect(File(src).readAsBytesSync(), before);
     });
 
+    test('PH-I9-3c output chỉ khác hoa/thường với input ⇒ ArgumentError, gốc không đổi', () async {
+      final src = await _makePdf(tmp.path, 'src.pdf', 1);
+      final before = File(src).readAsBytesSync();
+      final upper = p.join(tmp.path, 'SRC.pdf');
+      final r = await _catch(engine.insertPages(src, 1, const InsertBlank(1), upper));
+      // Windows/macOS: cùng file ⇒ chặn; Linux (phân biệt hoa/thường): hai file khác nhau.
+      if (Platform.isWindows || Platform.isMacOS) {
+        expect(r, isA<ArgumentError>());
+        expect(File(src).readAsBytesSync(), before);
+      } else {
+        expect(r, isA<String>());
+      }
+    });
+
     test('I9-3b output trùng PDF nguồn trang ⇒ ArgumentError, file nguồn trang không đổi', () async {
       final src = await _makePdf(tmp.path, 'doc.pdf', 1);
       final other = await _makePdf(tmp.path, 'b.pdf', 1, tag: 'B');

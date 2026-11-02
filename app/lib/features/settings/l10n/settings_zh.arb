@@ -43,5 +43,6 @@
   "settings_appLockUnavailableBody": "此设备未设置锁屏或不支持该功能。请在设备设置中设置指纹、面容、PIN 码、图案或密码后重试。",
   "settings_appLockLocked": "Phiotron PDF 已锁定",
   "settings_appLockLockedHint": "使用指纹、面容或设备 PIN 码继续。",
-  "settings_appLockUnlock": "解锁"
+  "settings_appLockUnlock": "解锁",
+  "settings_appLockRetry": "重试"
 }
