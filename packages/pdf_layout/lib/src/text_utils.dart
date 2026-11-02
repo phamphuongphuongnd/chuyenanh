@@ -19,11 +19,15 @@ bool _isLatin(int r) =>
     (r >= 0xC0 && r <= 0x24F && r != 0xD7 && r != 0xF7) ||
     (r >= 0x1E00 && r <= 0x1EFF);
 
-/// Lower-case Latin letter, including Vietnamese and other accented letters.
+/// Uncased Latin letters (ƻ, the click letters ǀ–ǃ): neither upper nor lower.
+bool _isUncasedLatin(int r) => r == 0x1BB || (r >= 0x1C0 && r <= 0x1C3);
+
+/// Lower-case Latin letter, including Vietnamese and other accented letters
+/// and lower-case letters without an upper-case form (ĸ, ƍ, ȡ, ẟ…).
 bool isLowerLatin(int rune) {
-  if (!_isLatin(rune)) return false;
+  if (!_isLatin(rune) || _isUncasedLatin(rune)) return false;
   final s = String.fromCharCode(rune);
-  return s.toLowerCase() == s && s.toUpperCase() != s;
+  return s.toLowerCase() == s;
 }
 
 const _hyphens = {0x2D, 0xAD, 0x2010}; // '-', soft hyphen, hyphen

@@ -385,20 +385,38 @@ String _stripZeros(String s) {
   return r;
 }
 
+/// Fixed-point text of non-negative [v], rounding half up on its shortest
+/// decimal form (as Excel does) instead of on the binary value.
+String _toFixedDecimal(double v, int dec) {
+  final s = v.toString();
+  if (dec > 20 || s.contains('e')) return v.toStringAsFixed(dec);
+  final dot = s.indexOf('.');
+  final ip = s.substring(0, dot);
+  final fp = s.substring(dot + 1);
+  if (fp.length <= dec) return dec == 0 ? ip : '$ip.${fp.padRight(dec, '0')}';
+  var n = BigInt.parse(ip + fp.substring(0, dec));
+  if (fp.codeUnitAt(dec) >= 0x35) n += BigInt.one;
+  final t = n.toString().padLeft(dec + 1, '0');
+  return dec == 0
+      ? t
+      : '${t.substring(0, t.length - dec)}.${t.substring(t.length - dec)}';
+}
+
 String _general(double v) {
   if (v == 0) return '0';
   final neg = v < 0;
   final a = _round15(v.abs());
   String body;
-  if (a >= 1e11 || a < 1e-9) {
+  if (a >= 1e11 || a < 1e-4) {
     var exp = (math.log(a) / math.ln10).floor();
     var mant = a / math.pow(10.0, exp);
+    if (mant < 1) {
+      exp--;
+      mant *= 10;
+    }
     if (double.parse(mant.toStringAsFixed(5)) >= 10) {
       exp++;
       mant /= 10;
-    } else if (mant < 1) {
-      exp--;
-      mant *= 10;
     }
     final m = _stripZeros(mant.toStringAsFixed(5));
     final e = exp.abs().toString().padLeft(2, '0');
@@ -462,13 +480,11 @@ String _fixed(double a, List<_Tok> toks) {
   final decPh = <String>[];
   var grouping = false;
   var scale = 0;
-  int? lastIntDigit;
   for (var i = 0; i < toks.length; i++) {
     final t = toks[i];
     if (t.k == _K.digit) {
       if (i < intEnd) {
         intPh.add(t.s);
-        lastIntDigit = i;
       } else {
         decPh.add(t.s);
       }
@@ -484,7 +500,7 @@ String _fixed(double a, List<_Tok> toks) {
         .any((t) => t.k == _K.digit);
     if (digitBefore && digitAfterInInt) {
       grouping = true;
-    } else if (digitBefore && lastIntDigit != null && i > lastIntDigit) {
+    } else if (digitBefore && i > lastDigit) {
       scale++;
     }
   }
@@ -492,7 +508,7 @@ String _fixed(double a, List<_Tok> toks) {
     a /= 1000;
   }
 
-  final fixedStr = _round15(a).toStringAsFixed(decPh.length);
+  final fixedStr = _toFixedDecimal(_round15(a), decPh.length);
   final parts = fixedStr.split('.');
   var intDigits = parts[0];
   final decDigits = parts.length > 1 ? parts[1] : '';
@@ -536,6 +552,27 @@ String _fixed(double a, List<_Tok> toks) {
   }
   final decStr = dec.join();
 
+  // Literals between integer placeholders (`000-00-0000`): spread the digits
+  // over the placeholders, right-aligned; surplus digits join the first one.
+  final firstInt = toks.indexWhere((t) => t.k == _K.digit);
+  List<String>? spread;
+  if (!grouping &&
+      intPh.length > 1 &&
+      toks
+          .sublist(firstInt, intEnd)
+          .any((t) => t.k != _K.digit && t.k != _K.comma)) {
+    final n = intPh.length;
+    spread = [
+      for (var j = 0; j < n; j++)
+        intStr.length - n + j < 0
+            ? ''
+            : j == 0
+            ? intStr.substring(0, intStr.length - n + 1)
+            : intStr[intStr.length - n + j],
+    ];
+  }
+  var spreadAt = 0;
+
   final b = StringBuffer();
   var intWritten = false, decWritten = false;
   for (var i = 0; i < toks.length; i++) {
@@ -543,7 +580,11 @@ String _fixed(double a, List<_Tok> toks) {
     switch (t.k) {
       case _K.digit:
         if (i < intEnd) {
-          if (!intWritten) b.write(intStr);
+          if (spread != null) {
+            b.write(spread[spreadAt++]);
+          } else if (!intWritten) {
+            b.write(intStr);
+          }
           intWritten = true;
         } else {
           if (!decWritten) b.write(decStr);

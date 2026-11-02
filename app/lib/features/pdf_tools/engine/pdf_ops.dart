@@ -176,9 +176,10 @@ Future<Object?> watermarkJob(Map<String, Object?> args, JobPort port) async {
     sf.PdfFont? font;
     sf.PdfBrush? brush;
     sf.PdfBitmap? bitmap;
-    final text = spec.text == null ? null : composeVietnamese(spec.text!);
+    var text = spec.text == null ? null : composeVietnamese(spec.text!);
     if (text != null) {
       font = makeFont(text, spec.fontSize, fontBytes);
+      text = drawableText(text, font);
       brush = sf.PdfSolidBrush(_color(spec.colorArgb));
     } else {
       bitmap = sf.PdfBitmap(spec.imageBytes!);
@@ -319,7 +320,8 @@ sf.PdfColor _color(int argb) =>
 bool isLatin1(String text) => text.runes.every((r) => r <= 0xFF);
 
 /// Font vẽ [text]: chữ Latin-1 → Helvetica; ngoài ra cần [fontBytes] (TTF Unicode nhúng).
-/// Thiếu font cho chữ ngoài Latin-1 → vẫn dùng Helvetica (ký tự lạ có thể hiện sai).
+/// Thiếu font cho chữ ngoài Latin-1 → vẫn dùng Helvetica (ký tự lạ có thể hiện sai) —
+/// chữ đem đo/vẽ phải qua [drawableText] để Helvetica không ném lỗi.
 sf.PdfFont makeFont(
   String text,
   double size,
@@ -334,4 +336,26 @@ sf.PdfFont makeFont(
     size,
     style: bold ? sf.PdfFontStyle.bold : sf.PdfFontStyle.regular,
   );
+}
+
+/// [text] đổi sang dạng [font] đo/vẽ được: font chuẩn (Helvetica, khi thiếu font Unicode)
+/// gặp ký tự nó không có thì Syncfusion ném `ArgumentError` → thay ký tự đó bằng `?`.
+/// Font nhúng (TTF) giữ nguyên chữ.
+String drawableText(String text, sf.PdfFont font) {
+  if (font is! sf.PdfStandardFont || isLatin1(text)) return text;
+  final out = StringBuffer();
+  for (final r in text.runes) {
+    final ch = String.fromCharCode(r);
+    if (r > 0xFF) {
+      // Vài ký tự ngoài Latin-1 (vd. "€", dấu nháy cong) font chuẩn vẫn có (bảng Windows-1252).
+      try {
+        font.measureString(ch);
+      } on ArgumentError {
+        out.write('?');
+        continue;
+      }
+    }
+    out.write(ch);
+  }
+  return out.toString();
 }

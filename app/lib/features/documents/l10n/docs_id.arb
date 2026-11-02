@@ -17,11 +17,11 @@
   "docs_emptyFavorites": "Belum ada favorit",
   "docs_emptyFavoritesHint": "Ketuk bintang pada file untuk menambahkannya ke sini",
   "docs_emptySearch": "Tidak ada file yang cocok",
-  "docs_permissionTitle": "Izinkan akses penyimpanan",
-  "docs_permissionMessage": "Phiotron PDF memerlukan izin penyimpanan untuk menyimpan dan menampilkan dokumen Anda.",
+  "docs_permissionTitle": "Izinkan akses ke file",
+  "docs_permissionMessage": "Phiotron PDF memerlukan akses ke semua file untuk menemukan dokumen di perangkat ini.",
   "docs_grantPermission": "Beri izin",
   "docs_pickFileInstead": "Pilih file secara manual",
-  "docs_permissionBanner": "Beri izin penyimpanan untuk menyimpan dan menampilkan dokumen",
+  "docs_permissionBanner": "Beri izin akses file untuk menemukan semua dokumen",
   "docs_scanning": "Memindai… {count} file ditemukan",
   "@docs_scanning": {
     "placeholders": {

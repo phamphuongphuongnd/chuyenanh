@@ -103,8 +103,7 @@ Uint8List? drawInvisibleTextLayer(
       g.save();
       g.setTransparency(0);
       for (final line in lines) {
-        _drawLine(g, fonts, line);
-        drawn++;
+        if (_drawLine(g, fonts, line)) drawn++;
       }
       g.restore();
     }
@@ -115,7 +114,8 @@ Uint8List? drawInvisibleTextLayer(
   }
 }
 
-void _drawLine(sf.PdfGraphics g, PdfFontSet fonts, PlacedLine line) {
+/// Vẽ một dòng; `false` khi bề rộng đo được ≤ 0 (không vẽ gì).
+bool _drawLine(sf.PdfGraphics g, PdfFontSet fonts, PlacedLine line) {
   final runs = splitScriptRuns(line.text);
   final base = line.height * 0.8;
   double measure(double size) {
@@ -127,7 +127,7 @@ void _drawLine(sf.PdfGraphics g, PdfFontSet fonts, PlacedLine line) {
   }
 
   final w0 = measure(base);
-  if (w0 <= 0) return;
+  if (w0 <= 0) return false;
   // Chọn cỡ chữ để bề rộng chữ khớp bề rộng hộp (giới hạn để dòng 1 ký tự không phình to).
   final size = (base * line.width / w0).clamp(base * 0.4, base * 2.0).toDouble();
   var x = line.left;
@@ -139,6 +139,7 @@ void _drawLine(sf.PdfGraphics g, PdfFontSet fonts, PlacedLine line) {
     g.drawString(text, font, brush: sf.PdfBrushes.black, bounds: Rect.fromLTWH(x, y, 0, 0));
     x += fonts.width(r.face, style, r.text) + _trailingSpaces(r.text) * fonts.spaceWidth(r.face, style);
   }
+  return true;
 }
 
 // `measureString` cắt dấu cách cuối đoạn → cộng bù (xem xuat-chu-ra-pdf.md).

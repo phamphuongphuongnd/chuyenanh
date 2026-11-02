@@ -313,12 +313,13 @@ Offset _arcTo(
   }
   final t1 = t0 + sweep;
   final center = Offset(cur.dx - wR * math.cos(t0), cur.dy - hR * math.sin(t0));
-  path.arcTo(
-    Rect.fromCenter(center: center, width: wR * 2, height: hR * 2),
-    t0,
-    sweep,
-    false,
-  );
+  final rect = Rect.fromCenter(center: center, width: wR * 2, height: hR * 2);
+  // `Path.arcTo` với |sweep| ≥ 2π không thêm cung → chia thành các đoạn ≤ π.
+  final parts = sweep.abs() >= 2 * math.pi ? (sweep.abs() / math.pi).ceil() : 1;
+  final step = sweep / parts;
+  for (var i = 0; i < parts; i++) {
+    path.arcTo(rect, t0 + step * i, step, false);
+  }
   return Offset(center.dx + wR * math.cos(t1), center.dy + hR * math.sin(t1));
 }
 

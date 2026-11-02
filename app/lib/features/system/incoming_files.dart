@@ -13,7 +13,7 @@ import '../../core/platform/app_platform.dart';
 import '../../core/router/app_router.dart';
 import '../../core/router/routes.dart';
 import '../../core/utils/doc_type.dart';
-import '../../core/utils/file_import.dart' show importedFolderName;
+import '../../core/utils/file_import.dart' show importedFolderName, isSameFileContent;
 import '../../core/utils/output_directory.dart';
 import '../../data/db/app_database.dart';
 import 'incoming_action.dart';
@@ -250,15 +250,14 @@ String _realPath(String path) {
   }
 }
 
-/// Chép [source] vào thư mục [dir]: `a.pdf`, `a (1).pdf`…; cùng tên và cùng dung lượng thì
-/// dùng lại bản cũ (như `importIntoAppDocuments`). Đã nằm trong [dir] thì trả nguyên.
+/// Chép [source] vào thư mục [dir]: `a.pdf`, `a (1).pdf`…; cùng tên và cùng nội dung (dung lượng
+/// rồi từng byte) thì dùng lại bản cũ (như `importIntoAppDocuments`). Đã nằm trong [dir] thì trả nguyên.
 Future<String> persistIncomingFile(String source, String dir) async {
   if (p.isWithin(dir, source)) return source;
   final file = File(source);
   await Directory(dir).create(recursive: true);
   final base = p.basenameWithoutExtension(source);
   final ext = p.extension(source);
-  final length = await file.length();
   for (var i = 0; ; i++) {
     final name = i == 0 ? '$base$ext' : '$base ($i)$ext';
     final target = File(p.join(dir, name));
@@ -266,7 +265,7 @@ Future<String> persistIncomingFile(String source, String dir) async {
       await file.copy(target.path);
       return target.path;
     }
-    if (await target.length() == length) return target.path;
+    if (await isSameFileContent(file, target)) return target.path;
   }
 }
 

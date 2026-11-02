@@ -28,9 +28,11 @@ String decodeTextBytes(Uint8List bytes) {
         }
       }
     }
+    // Cho phép vài byte 0 "lạc" ở phía kia (vd U+0300, U+2000 có byte thấp 0x00): chỉ cần phía kia
+    // ít hơn 1/4 phía nhiều byte 0.
     final half = n / 2;
-    if (odd > half * 0.3 && even == 0) return _utf16(bytes, 0, littleEndian: true);
-    if (even > half * 0.3 && odd == 0) return _utf16(bytes, 0, littleEndian: false);
+    if (odd > half * 0.3 && even * 4 < odd) return _utf16(bytes, 0, littleEndian: true);
+    if (even > half * 0.3 && odd * 4 < even) return _utf16(bytes, 0, littleEndian: false);
   }
   return utf8.decode(bytes, allowMalformed: true);
 }

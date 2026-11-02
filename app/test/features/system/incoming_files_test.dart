@@ -227,13 +227,17 @@ void main() {
 
   group('persistIncomingFile', () {
     test(
-      'trung ten + cung dung luong -> dung lai; khac dung luong -> (1)',
+      'trung ten + cung noi dung -> dung lai; khac noi dung (du cung cuc) -> (1)',
       () async {
         final first = await persistIncomingFile(
           cacheFile('a.pdf', [1, 2]),
           importedDir,
         );
         final same = await persistIncomingFile(
+          cacheFile('a.pdf', [1, 2]),
+          importedDir,
+        );
+        final sameSizeOther = await persistIncomingFile(
           cacheFile('a.pdf', [3, 4]),
           importedDir,
         );
@@ -243,7 +247,8 @@ void main() {
         );
         expect(first, p.join(importedDir, 'a.pdf'));
         expect(same, first);
-        expect(other, p.join(importedDir, 'a (1).pdf'));
+        expect(sameSizeOther, p.join(importedDir, 'a (1).pdf'));
+        expect(other, p.join(importedDir, 'a (2).pdf'));
       },
     );
 

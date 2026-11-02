@@ -200,11 +200,22 @@ class SyncfusionPdfTools implements PdfToolsEngine {
 
   /// Không bao giờ ghi đè file gốc.
   void _ensureOutputIsNotInput(String output, List<String> inputs) {
-    final out = p.normalize(p.absolute(output));
     for (final i in inputs) {
-      if (p.normalize(p.absolute(i)) == out) {
+      if (isSameFilePath(output, i)) {
         throw ArgumentError('output must differ from input: $output');
       }
     }
+  }
+}
+
+/// `true` nếu [a] và [b] trỏ cùng một file: cùng đường dẫn sau chuẩn hoá (Windows không phân
+/// biệt hoa/thường), hoặc — khi cả hai đã tồn tại — cùng file trên đĩa (hệ file không phân biệt
+/// hoa/thường như macOS, liên kết…).
+bool isSameFilePath(String a, String b) {
+  if (p.equals(a, b)) return true;
+  try {
+    return FileSystemEntity.identicalSync(a, b);
+  } on FileSystemException {
+    return false; // một trong hai chưa có → không thể là cùng file
   }
 }

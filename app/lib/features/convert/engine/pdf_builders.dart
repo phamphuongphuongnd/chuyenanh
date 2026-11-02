@@ -116,13 +116,14 @@ void _docxParagraph(PdfFlowWriter w, office.DocxParagraph p, ToPdfOptions o) {
   final images = <office.DocxImage>[];
   final spans = _docxSpans(p, o, images: images);
   final isList = p.listLevel != null;
-  final indent = p.indentLeftPt ?? (isList ? 18.0 * (p.listLevel! + 1) : 0.0);
+  // Kẹp trước: thụt âm lớn không được làm cận dưới của clamp vượt cận trên (ArgumentError).
+  final indent = (p.indentLeftPt ?? (isList ? 18.0 * (p.listLevel! + 1) : 0.0)).clamp(0.0, w.contentWidth / 2);
   final hasText = spans.any((s) => s.text.trim().isNotEmpty);
   if (hasText || images.isEmpty) {
     w.paragraph(
       spans,
       align: _align(p.align),
-      indentLeft: indent.clamp(0.0, w.contentWidth / 2),
+      indentLeft: indent,
       indentRight: (p.indentRightPt ?? 0).clamp(0.0, w.contentWidth / 4),
       firstLineIndent: isList ? 0 : (p.firstLineIndentPt ?? 0).clamp(-indent, w.contentWidth / 3),
       spaceBefore: (p.spaceBeforePt ?? 0).clamp(0.0, 40.0),
@@ -136,22 +137,35 @@ void _docxParagraph(PdfFlowWriter w, office.DocxParagraph p, ToPdfOptions o) {
   }
 }
 
-List<StyledSpan> _cellSpans(List<office.DocxBlock> blocks, ToPdfOptions o) {
+List<StyledSpan> _cellSpans(List<office.DocxBlock> blocks, ToPdfOptions o, [List<office.DocxImage>? images]) {
   final out = <StyledSpan>[];
   for (final b in blocks) {
     if (b is office.DocxParagraph) {
       if (out.isNotEmpty) out.add(const StyledSpan('\n'));
       if (b.listLabel != null) out.add(StyledSpan('${b.listLabel} '));
-      out.addAll(_docxSpans(b, o));
+      out.addAll(_docxSpans(b, o, images: images));
     } else if (b is office.DocxTable) {
       for (final r in b.rows) {
         for (final c in r.cells) {
-          out.addAll(_cellSpans(c.blocks, o));
+          out.addAll(_cellSpans(c.blocks, o, images));
         }
       }
     }
   }
   return out;
+}
+
+GridCell _docxCell(office.DocxTableCell c, office.DocxTable t, ToPdfOptions o) {
+  final imgs = <office.DocxImage>[];
+  final spans = _cellSpans(c.blocks, o, imgs);
+  return GridCell(
+    spans,
+    colSpan: c.gridSpan,
+    covered: c.vMergeContinue,
+    fillArgb: c.shadingArgb,
+    border: t.bordered,
+    images: [for (final i in imgs) (bytes: i.bytes, width: i.widthPt, height: i.heightPt)],
+  );
 }
 
 void _docxTable(PdfFlowWriter w, office.DocxTable t, ToPdfOptions o) {
@@ -184,14 +198,7 @@ void _docxTable(PdfFlowWriter w, office.DocxTable t, ToPdfOptions o) {
   final rows = <List<GridCell>>[
     for (final r in t.rows)
       [
-        for (final c in r.cells)
-          GridCell(
-            _cellSpans(c.blocks, o),
-            colSpan: c.gridSpan,
-            covered: c.vMergeContinue,
-            fillArgb: c.shadingArgb,
-            border: t.bordered,
-          ),
+        for (final c in r.cells) _docxCell(c, t, o),
       ],
   ];
   w.table(colWidths: widths, rows: rows, fontSize: o.fontSize, padding: 3);
@@ -317,6 +324,13 @@ PdfBuildResult buildXlsxPdf(
       if (e.key.$2 > lastCol) lastCol = e.key.$2;
     }
     if (lastRow < 0 || lastCol < 0) continue;
+    // Ô gộp có chữ ở ô neo kéo sang cột trống: mở rộng tới hết vùng gộp để chữ không bị cắt (tối đa 256 cột).
+    for (final m in s.merges) {
+      if (m.firstRow > lastRow || m.firstCol > lastCol) continue;
+      if ((s.cell(m.firstRow, m.firstCol)?.display ?? '').isEmpty) continue;
+      final mc = m.lastCol < 255 ? m.lastCol : 255;
+      if (mc > lastCol) lastCol = mc;
+    }
     final rowsAll = <int>[
       for (var r = 0; r <= lastRow; r++)
         if ((s.rowHeightsPt[r] ?? 1) != 0) r,

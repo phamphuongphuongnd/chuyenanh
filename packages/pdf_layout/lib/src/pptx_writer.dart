@@ -133,25 +133,24 @@ Uint8List writeImagePptx(
 (int, int) slideSizeEmu(double widthPt, double heightPt) {
   bool ok(double v) => v.isFinite && v > 0;
   final valid = ok(widthPt) && ok(heightPt);
-  var w = (valid ? widthPt : _defaultWidthPt) * emuPerPt;
-  var h = (valid ? heightPt : _defaultHeightPt) * emuPerPt;
-  final longSide = math.max(w, h);
-  if (longSide > _maxSlideEmu) {
-    final s = _maxSlideEmu / longSide;
-    w *= s;
-    h *= s;
-  }
-  final shortSide = math.min(w, h);
+  final wPt = valid ? widthPt : _defaultWidthPt;
+  final hPt = valid ? heightPt : _defaultHeightPt;
+  // Tính qua tỉ lệ cạnh ngắn/cạnh dài (0–1) và kẹp trước khi round, để cỡ cực trị
+  // (1e308, 1e-320…) không tràn thành vô cực/NaN.
+  final ratio = math.min(wPt, hPt) / math.max(wPt, hPt);
+  // Cạnh dài quá 56 inch thì co lại (vô cực sau khi nhân cũng về 56 inch).
+  var longSide = (math.max(wPt, hPt) * emuPerPt)
+      .clamp(_minSlideEmu, _maxSlideEmu)
+      .toDouble();
+  var shortSide = longSide * ratio;
   if (shortSide < _minSlideEmu) {
-    final s = _minSlideEmu / shortSide;
-    w *= s;
-    h *= s;
+    longSide = _minSlideEmu / ratio; // ratio = 0 ⇒ vô cực, kẹp ở dưới
+    shortSide = _minSlideEmu.toDouble();
   }
   // Tỉ lệ quá dài (> 56:1) thì không giữ được tỉ lệ nữa — ép từng cạnh.
-  return (
-    w.round().clamp(_minSlideEmu, _maxSlideEmu),
-    h.round().clamp(_minSlideEmu, _maxSlideEmu),
-  );
+  final l = longSide.clamp(_minSlideEmu, _maxSlideEmu).round();
+  final s = shortSide.clamp(_minSlideEmu, _maxSlideEmu).round();
+  return wPt >= hPt ? (l, s) : (s, l);
 }
 
 /// Khung ảnh (x, y, cx, cy) EMU: ảnh tỉ lệ [wPt]:[hPt] thu/phóng vừa khít giữa slide
@@ -165,9 +164,16 @@ Uint8List writeImagePptx(
   if (!(wPt.isFinite && wPt > 0 && hPt.isFinite && hPt > 0)) {
     return (0, 0, slideCx, slideCy);
   }
-  final scale = math.min(slideCx / wPt, slideCy / hPt);
-  final cx = (wPt * scale).round().clamp(1, slideCx);
-  final cy = (hPt * scale).round().clamp(1, slideCy);
+  // So tỉ lệ thay vì nhân hệ số co/giãn: cỡ cực nhỏ/cực lớn không ra vô cực.
+  final fitWidth = wPt / hPt >= slideCx / slideCy;
+  final cx = (fitWidth ? slideCx : slideCy * (wPt / hPt)).round().clamp(
+    1,
+    slideCx,
+  );
+  final cy = (fitWidth ? slideCx * (hPt / wPt) : slideCy).round().clamp(
+    1,
+    slideCy,
+  );
   return ((slideCx - cx) ~/ 2, (slideCy - cy) ~/ 2, cx, cy);
 }
 

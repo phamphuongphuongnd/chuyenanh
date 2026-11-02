@@ -16,11 +16,15 @@ class _FakeAuth implements AppAuthenticator {
 
   AppAuthResult result;
   bool supported = true;
+  Object? supportedError;
   Completer<AppAuthResult>? pending;
   int calls = 0;
 
   @override
-  Future<bool> isSupported() async => supported;
+  Future<bool> isSupported() async {
+    if (supportedError != null) throw supportedError!;
+    return supported;
+  }
 
   @override
   Future<AppAuthResult> authenticate(String reason) {
@@ -190,6 +194,15 @@ void main() {
     tester,
   ) async {
     final auth = _FakeAuth(result: AppAuthResult.unavailable);
+    await _pump(tester, appLock: true, auth: auth, clock: clock);
+    expect(_lockScreen, findsOneWidget);
+  });
+
+  testWidgets('lỗi plugin khi kiểm tra khoá máy: giữ màn khoá (không fail-open)', (
+    tester,
+  ) async {
+    final auth = _FakeAuth(result: AppAuthResult.unavailable)
+      ..supportedError = StateError('plugin lỗi');
     await _pump(tester, appLock: true, auth: auth, clock: clock);
     expect(_lockScreen, findsOneWidget);
   });

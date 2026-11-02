@@ -86,7 +86,9 @@ Uint8List _bakeSync(_BakeArgs a) => ops.applyEdit(
   File(a.path).readAsBytesSync(),
   a.edit.copyWith(
     maxLongSide:
-        a.edit.maxLongSide != null && a.edit.maxLongSide! < embeddedLongSide
+        a.edit.maxLongSide != null &&
+            a.edit.maxLongSide! > 0 &&
+            a.edit.maxLongSide! < embeddedLongSide
         ? a.edit.maxLongSide
         : embeddedLongSide,
   ),

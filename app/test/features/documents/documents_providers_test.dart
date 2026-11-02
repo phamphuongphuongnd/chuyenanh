@@ -228,7 +228,7 @@ void main() {
     });
 
     test(
-      'không có file + vài thư mục con bị bỏ qua → vẫn done, không đòi quyền',
+      'không có file + vài thư mục con bị chặn → đòi quyền "Truy cập tất cả file"',
       () async {
         final scanner = _FakeScanner(
           const ScanResult(files: [], skippedDirectories: 5),
@@ -236,7 +236,7 @@ void main() {
         final c = makeContainer(scanner, _FakePermission(granted: true));
         c.read(scanControllerProvider);
         await settle();
-        expect(c.read(scanControllerProvider).phase, ScanPhase.done);
+        expect(c.read(scanControllerProvider).phase, ScanPhase.needsPermission);
       },
     );
 
@@ -257,63 +257,73 @@ void main() {
     });
   });
 
-  group(
-    'PermissionHandlerStorage (không bao giờ xin "Truy cập tất cả file")',
-    () {
-      PermissionHandlerStorage make(
-        AppPlatform platform,
-        int? sdk, {
-        required List<String> calls,
-        bool granted = false,
-      }) => PermissionHandlerStorage(
-        platform: platform,
-        sdkInt: () async => sdk,
-        storageGranted: () async {
-          calls.add('status');
-          return granted;
-        },
-        requestStorage: () async {
-          calls.add('request');
-          return true;
-        },
-      );
+  group('PermissionHandlerStorage', () {
+    PermissionHandlerStorage make(
+      AppPlatform platform,
+      int? sdk, {
+      required List<String> calls,
+      bool granted = false,
+      bool manageOk = true,
+    }) => PermissionHandlerStorage(
+      platform: platform,
+      sdkInt: () async => sdk,
+      storageGranted: () async {
+        calls.add('status');
+        return granted;
+      },
+      requestStorage: () async {
+        calls.add('request');
+        return true;
+      },
+      manageGranted: () async {
+        calls.add('manage-status');
+        return granted;
+      },
+      requestManage: () async {
+        calls.add('manage-request');
+        return manageOk;
+      },
+    );
 
-      for (final sdk in [30, 33, 35]) {
-        test('Android API $sdk → không cần quyền, không hỏi', () async {
-          final calls = <String>[];
-          final s = make(AppPlatform.android, sdk, calls: calls);
-          expect(await s.isGranted(), isTrue);
-          expect(await s.request(), isTrue);
-          expect(calls, isEmpty);
-        });
-      }
-
-      test('Android API ≤ 29 → dùng Permission.storage', () async {
+    for (final sdk in [30, 33, 35]) {
+      test('Android API $sdk → "Truy cập tất cả file"', () async {
         final calls = <String>[];
-        final s = make(AppPlatform.android, 29, calls: calls);
+        final s = make(AppPlatform.android, sdk, calls: calls);
         expect(await s.isGranted(), isFalse);
         expect(await s.request(), isTrue);
-        expect(calls, ['status', 'request']);
-
-        final granted = make(AppPlatform.android, 24, calls: [], granted: true);
-        expect(await granted.isGranted(), isTrue);
+        expect(calls, ['manage-status', 'manage-request']);
       });
+    }
 
-      test('iOS / khác / không đọc được mức API → true, không hỏi', () async {
-        final calls = <String>[];
-        for (final (platform, sdk) in [
-          (AppPlatform.ios, null),
-          (AppPlatform.other, null),
-          (AppPlatform.android, null),
-        ]) {
-          final s = make(platform, sdk, calls: calls);
-          expect(await s.isGranted(), isTrue);
-          expect(await s.request(), isTrue);
-        }
-        expect(calls, isEmpty);
-      });
-    },
-  );
+    test('Android API ≤ 29 → dùng Permission.storage', () async {
+      final calls = <String>[];
+      final s = make(AppPlatform.android, 29, calls: calls);
+      expect(await s.isGranted(), isFalse);
+      expect(await s.request(), isTrue);
+      expect(calls, ['status', 'request']);
+
+      final granted = make(AppPlatform.android, 24, calls: [], granted: true);
+      expect(await granted.isGranted(), isTrue);
+    });
+
+    test('Android không đọc được mức API → thử cả hai quyền', () async {
+      final calls = <String>[];
+      final s = make(AppPlatform.android, null, calls: calls, manageOk: false);
+      expect(await s.isGranted(), isFalse);
+      expect(await s.request(), isTrue);
+      expect(calls, ['manage-status', 'status', 'manage-request', 'request']);
+    });
+
+    test('iOS / khác → true, không hỏi', () async {
+      final calls = <String>[];
+      for (final platform in [AppPlatform.ios, AppPlatform.other]) {
+        final s = make(platform, null, calls: calls);
+        expect(await s.isGranted(), isTrue);
+        expect(await s.request(), isTrue);
+      }
+      expect(calls, isEmpty);
+    });
+  });
 
   group('androidScanRoots', () {
     late Directory tmp;
@@ -353,6 +363,18 @@ void main() {
       expect(roots, [out, dir('app_docs')]);
     });
 
+    test('có bộ nhớ chung → bỏ các thư mục nằm trong nó', () async {
+      final storage = dir('storage');
+      final roots = await androidScanRoots(
+        storageRoot: storage,
+        outputDir: dir('storage/Documents/$appFolderName'),
+        appDocumentsDir: dir('app_docs'),
+        defaultDir: dir('storage/Documents/$appFolderName'),
+        legacyDir: dir('storage/Documents/$legacyAppFolderName'),
+      );
+      expect(roots, [storage, dir('app_docs')]);
+    });
+
     test(
       'thư mục lưu nằm trong Documents của app → chỉ quét một lần',
       () async {
@@ -368,13 +390,13 @@ void main() {
     );
   });
 
-  group('Android chỉ quét thư mục của app', () {
+  group('Android quét cả máy', () {
     late Directory tmp;
     setUp(() => tmp = Directory.systemTemp.createTempSync('android_scan_'));
     tearDown(() => tmp.deleteSync(recursive: true));
 
     test(
-      'API ≥ 30: quét thư mục lưu + Documents của app, không xin quyền',
+      'API ≥ 30 đã bật "Truy cập tất cả file": quét bộ nhớ chung + thư mục lưu + Documents của app',
       () async {
         final out = Directory(p.join(tmp.path, 'out'))..createSync();
         final docs = Directory(p.join(tmp.path, 'app_docs'))..createSync();
@@ -388,6 +410,13 @@ void main() {
             androidSdkIntProvider.overrideWith((ref) async => 34),
             outputDirectoryProvider.overrideWith((ref) async => out.path),
             appDocumentsDirProvider.overrideWith((ref) async => docs.path),
+            storagePermissionProvider.overrideWith(
+              (ref) => PermissionHandlerStorage(
+                platform: ref.watch(appPlatformProvider),
+                sdkInt: () => ref.read(androidSdkIntProvider.future),
+                manageGranted: () async => true,
+              ),
+            ),
           ],
         );
         addTearDown(c.dispose);
@@ -396,7 +425,7 @@ void main() {
         await settle();
 
         expect(c.read(scanControllerProvider).phase, ScanPhase.done);
-        // `Documents/PDF Office` thật không có trên máy dev → bị bỏ.
+        // `/storage/emulated/0` và `Documents/PDF Office` thật không có trên máy dev → bị bỏ.
         expect(scanner.roots, [out.path, docs.path]);
       },
     );

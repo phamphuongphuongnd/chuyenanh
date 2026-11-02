@@ -204,6 +204,10 @@ Future<void> _buildPdfInIsolate(
   cancelToken?.throwIfCancelled();
   final port = ReceivePort();
   final completer = Completer<void>();
+  // Huỷ có thể báo lỗi trước khi `await completer.future` bắt đầu nghe (lúc
+  // `Isolate.spawn` đang chạy) → gắn sẵn người nghe để lỗi không lọt ra zone.
+  // `await` bên dưới vẫn nhận lỗi như thường.
+  completer.future.ignore();
   Isolate? isolate;
   var cancelled = false;
 

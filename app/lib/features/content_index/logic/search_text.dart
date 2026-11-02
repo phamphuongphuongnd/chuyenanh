@@ -210,8 +210,11 @@ Excerpt buildExcerpt(
   while (end > keepTo && _isWs(window.codeUnitAt(end - 1))) {
     end--;
   }
-  final prefix = (start > 0 || !atStart) ? '…' : '';
-  final suffix = (end < len || !atEnd) ? '…' : '';
+  // `…` chỉ ở phía còn chữ: phần bị bỏ mà toàn khoảng trắng thì không tính.
+  final prefix = (!atStart || window.substring(0, start).trim().isNotEmpty)
+      ? '…'
+      : '';
+  final suffix = (!atEnd || window.substring(end).trim().isNotEmpty) ? '…' : '';
   final body = window.substring(start, end).replaceAll(RegExp('[\n\r\t]'), ' ');
   return Excerpt(
     '$prefix$body$suffix',

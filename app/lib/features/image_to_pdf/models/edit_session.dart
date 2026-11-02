@@ -83,10 +83,15 @@ class EditSession extends ChangeNotifier {
   void removeCurrent() => removeAt(_current);
 
   /// Hoàn tác lần xoá gần nhất (đặt lại đúng vị trí cũ, chọn lại ảnh đó).
+  /// Đã đủ [maxImagesPerPdf] (vd. thêm ảnh sau khi xoá) thì bỏ lượt hoàn tác.
   void undoRemove() {
     final last = _lastRemoved;
     if (last == null) return;
     _lastRemoved = null;
+    if (remainingCapacity <= 0) {
+      notifyListeners();
+      return;
+    }
     final at = last.index.clamp(0, _items.length);
     _items.insert(at, last.item);
     _current = at;

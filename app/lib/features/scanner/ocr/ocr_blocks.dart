@@ -5,8 +5,9 @@ import 'package:pdf_layout/pdf_layout.dart';
 
 import '../../../engines/ocr/ocr_engine.dart';
 
-// Hán + kana + dấu câu CJK + dạng toàn chiều. KHÔNG gồm Hangul (tiếng Hàn có dấu cách giữa từ).
-final RegExp _noSpaceScript = RegExp(r'[　-〿぀-ヿ㐀-䶿一-鿿＀-￯]');
+// Hán + kana + dấu câu CJK + dạng toàn chiều. KHÔNG gồm Hangul (tiếng Hàn có dấu cách giữa từ),
+// nên dải U+FF00–FFEF bỏ khúc Hangul nửa độ rộng U+FFA0–FFDF.
+final RegExp _noSpaceScript = RegExp(r'[　-〿぀-ヿ㐀-䶿一-鿿＀-ﾟ￠-￯]');
 
 /// Nối các dòng của một block thành một đoạn: dấu cách ở giữa, trừ khi chỗ nối
 /// là chữ Trung/Nhật (không dùng dấu cách).

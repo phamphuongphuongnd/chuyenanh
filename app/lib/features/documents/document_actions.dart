@@ -122,44 +122,10 @@ Future<void> renameDocument(
   DocItem item,
 ) async {
   final l = context.l10n;
-  final controller = TextEditingController(
-    text: p.basenameWithoutExtension(item.path),
-  );
   final newBase = await showDialog<String>(
     context: context,
-    builder: (ctx) {
-      String? error;
-      return StatefulBuilder(
-        builder: (ctx, setState) => AppDialog(
-          title: l.docs_renameTitle,
-          content: AppTextField(
-            controller: controller,
-            autofocus: true,
-            errorText: error,
-            textInputAction: TextInputAction.done,
-          ),
-          onConfirm: () {
-            final problem = validateRename(
-              oldPath: item.path,
-              newBaseName: controller.text,
-              exists: (path) => File(path).existsSync(),
-            );
-            if (problem == null) {
-              Navigator.of(ctx).pop(controller.text);
-              return;
-            }
-            setState(
-              () => error = switch (problem) {
-                RenameProblem.empty => l.docs_renameEmpty,
-                RenameProblem.exists => l.docs_renameExists,
-              },
-            );
-          },
-        ),
-      );
-    },
+    builder: (ctx) => _RenameDialog(item: item),
   );
-  controller.dispose();
   if (newBase == null) return;
   final target = renameTarget(item.path, newBase.trim());
   if (p.equals(target, item.path)) return;
@@ -229,4 +195,58 @@ Future<void> launchTool(BuildContext context, ToolSpec tool) async {
     return;
   }
   await context.push(tool.route);
+}
+
+/// Nội dung hộp thoại đổi tên; controller thuộc State nên chỉ bị dispose khi route đã gỡ hẳn.
+class _RenameDialog extends StatefulWidget {
+  const _RenameDialog({required this.item});
+
+  final DocItem item;
+
+  @override
+  State<_RenameDialog> createState() => _RenameDialogState();
+}
+
+class _RenameDialogState extends State<_RenameDialog> {
+  late final TextEditingController _controller = TextEditingController(
+    text: p.basenameWithoutExtension(widget.item.path),
+  );
+  String? _error;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return AppDialog(
+      title: l.docs_renameTitle,
+      content: AppTextField(
+        controller: _controller,
+        autofocus: true,
+        errorText: _error,
+        textInputAction: TextInputAction.done,
+      ),
+      onConfirm: () {
+        final problem = validateRename(
+          oldPath: widget.item.path,
+          newBaseName: _controller.text,
+          exists: (path) => File(path).existsSync(),
+        );
+        if (problem == null) {
+          Navigator.of(context).pop(_controller.text);
+          return;
+        }
+        setState(
+          () => _error = switch (problem) {
+            RenameProblem.empty => l.docs_renameEmpty,
+            RenameProblem.exists => l.docs_renameExists,
+          },
+        );
+      },
+    );
+  }
 }

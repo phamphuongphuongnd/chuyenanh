@@ -39,7 +39,8 @@ bool _isHangul(int c) =>
     (c >= 0x1100 && c <= 0x11FF) ||
     (c >= 0x3130 && c <= 0x318F) ||
     (c >= 0xA960 && c <= 0xA97F) ||
-    (c >= 0xD7B0 && c <= 0xD7FF);
+    (c >= 0xD7B0 && c <= 0xD7FF) ||
+    (c >= 0xFFA0 && c <= 0xFFDC); // Hangul nửa độ rộng
 
 bool _isKana(int c) =>
     (c >= 0x3040 && c <= 0x30FF) ||
@@ -56,7 +57,7 @@ bool _isHan(int c) =>
 bool _isCjkPunct(int c) =>
     (c >= 0x3000 && c <= 0x303F) ||
     (c >= 0xFF00 && c <= 0xFF65) ||
-    (c >= 0xFFA0 && c <= 0xFFEF);
+    (c >= 0xFFDD && c <= 0xFFEF); // FFA0–FFDC là Hangul nửa độ rộng, xem [_isHangul]
 
 /// Ký tự trung tính: theo hệ chữ của ký tự đứng trước (dấu cách, số, dấu câu ASCII).
 bool _isNeutral(int c) =>

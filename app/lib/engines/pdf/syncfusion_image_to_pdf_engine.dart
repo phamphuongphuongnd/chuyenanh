@@ -74,6 +74,7 @@ _Prepared _prepare(_PrepareArgs a) {
   final bytes = File(a.path).readAsBytesSync();
   final edit = a.edit.copyWith(
     maxLongSide: a.edit.maxLongSide != null &&
+            a.edit.maxLongSide! > 0 &&
             a.edit.maxLongSide! < maxEmbeddedLongSide
         ? a.edit.maxLongSide
         : maxEmbeddedLongSide,

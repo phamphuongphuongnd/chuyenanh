@@ -31,18 +31,10 @@ class LocalAppAuthenticator implements AppAuthenticator {
 
   final LocalAuthentication _auth;
 
+  /// Lỗi plugin / nền tảng được ném lên (không đổi thành `false`) để [AppAuthService] phân biệt
+  /// "máy không có khoá" với "không kiểm tra được".
   @override
-  Future<bool> isSupported() async {
-    try {
-      return await _auth.isDeviceSupported();
-    } on PlatformException {
-      return false;
-    } on LocalAuthException {
-      return false;
-    } on MissingPluginException {
-      return false;
-    }
-  }
+  Future<bool> isSupported() => _auth.isDeviceSupported();
 
   @override
   Future<AppAuthResult> authenticate(String reason) async {
@@ -91,7 +83,24 @@ class AppAuthService {
   /// Đang có hộp thoại xác thực của hệ thống.
   bool get isAuthenticating => _running > 0;
 
-  Future<bool> isSupported() => _engine.isSupported();
+  /// Lỗi khi kiểm tra ⇒ `false` (không bật khoá được).
+  Future<bool> isSupported() async {
+    try {
+      return await _engine.isSupported();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// `true` chỉ khi máy BÁO RÕ không có khoá màn hình / sinh trắc. Lỗi hay ngoại lệ của
+  /// plugin ⇒ `false` (giữ khoá, không mở khoá khi không chắc).
+  Future<bool> isDefinitelyUnsupported() async {
+    try {
+      return !await _engine.isSupported();
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<AppAuthResult> authenticate(String reason) async {
     _running++;

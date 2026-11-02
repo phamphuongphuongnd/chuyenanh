@@ -1,3 +1,4 @@
+// ignore_for_file: depend_on_referenced_packages
 // Giả lập iOS trên máy dev (không có Xcode/Simulator): ghi đè nền tảng = iOS và kiểm giao diện,
 // luồng quét, cấu hình native. Không thay thế việc thử trên iPhone thật.
 import 'dart:io';

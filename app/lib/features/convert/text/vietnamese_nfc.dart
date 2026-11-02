@@ -80,6 +80,7 @@ String composeVietnamese(String s) {
         if (k == null) break;
         base = k;
       } else {
+        if (tone != null) break; // dấu thanh thứ hai: không ghép, để đứng riêng (không mất dấu)
         tone = m;
       }
       i++;

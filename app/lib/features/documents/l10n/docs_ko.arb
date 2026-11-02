@@ -17,11 +17,11 @@
   "docs_emptyFavorites": "즐겨찾기가 없습니다",
   "docs_emptyFavoritesHint": "파일의 별을 누르면 여기에 추가됩니다",
   "docs_emptySearch": "일치하는 파일이 없습니다",
-  "docs_permissionTitle": "저장소 접근 허용",
-  "docs_permissionMessage": "Phiotron PDF가 문서를 저장하고 목록에 표시하려면 저장소 권한이 필요합니다.",
+  "docs_permissionTitle": "파일 접근 허용",
+  "docs_permissionMessage": "Phiotron PDF가 기기의 문서를 찾으려면 모든 파일에 접근할 수 있어야 합니다.",
   "docs_grantPermission": "권한 허용",
   "docs_pickFileInstead": "대신 파일 선택",
-  "docs_permissionBanner": "문서를 저장하고 목록에 표시하려면 저장소 권한을 허용하세요",
+  "docs_permissionBanner": "모든 문서를 찾으려면 파일 접근 권한을 허용하세요",
   "docs_scanning": "검색 중… 파일 {count}개 발견",
   "@docs_scanning": {
     "placeholders": {

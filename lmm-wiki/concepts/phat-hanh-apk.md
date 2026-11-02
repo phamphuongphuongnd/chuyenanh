@@ -1,7 +1,7 @@
 ---
 title: Phát hành APK — build release, link tải GitHub Release
 type: concept
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - app/android/app/build.gradle.kts
   - app/android/app/proguard-rules.pro
@@ -18,7 +18,7 @@ sources:
    `https://github.com/phamphuongphuongnd/chuyenanh/releases/download/android-latest/PDFOffice.apk`
    (hằng `kAppDownloadUrl` trong `settings_logic.dart`; nút **Chia sẻ ứng dụng** ở Cài đặt gửi link này).
 3. Cập nhật bản mới = sửa Release, xoá file cũ, tải file mới (link giữ nguyên).
-4. Máy không có `gh`; đăng nhập GitHub **người dùng tự làm** (luật cố định không tự đăng nhập) nên tạo Release bằng trình duyệt:
+4. (Cũ, 27/10 — từ 29/10 máy đã có `gh` và đăng nhập sẵn: `gh release upload android-latest dist/PDFOffice.apk --clobber --repo phamphuongphuongnd/chuyenanh`, bản cũ giữ ở `dist/backup/`.) Máy không có `gh`; đăng nhập GitHub **người dùng tự làm** (luật cố định không tự đăng nhập) nên tạo Release bằng trình duyệt:
    `github.com/<owner>/<repo>/releases/new` → tag `android-latest` (gõ **một từ, không dấu cách**) → kéo APK vào ô
    "Attach binaries" (không phải khung mô tả) → Publish.
 

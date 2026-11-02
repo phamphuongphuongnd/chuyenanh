@@ -108,6 +108,14 @@ const List<ToolSpec> allTools = [
     group: ToolGroup.create,
     inputType: ToolInputType.none,
   ),
+  ToolSpec(
+    id: 'pptToPdf',
+    route: Routes.pptToPdf,
+    icon: Symbols.slideshow_rounded,
+    labelKey: 'core_toolPptToPdf',
+    group: ToolGroup.create,
+    inputType: ToolInputType.none,
+  ),
   // Chuyển đổi
   ToolSpec(
     id: 'wordToPdf',
@@ -156,14 +164,6 @@ const List<ToolSpec> allTools = [
     labelKey: 'core_toolPdfToExcel',
     group: ToolGroup.convert,
     inputType: ToolInputType.pdf,
-  ),
-  ToolSpec(
-    id: 'pptToPdf',
-    route: Routes.pptToPdf,
-    icon: Symbols.slideshow_rounded,
-    labelKey: 'core_toolPptToPdf',
-    group: ToolGroup.convert,
-    inputType: ToolInputType.none,
   ),
   ToolSpec(
     id: 'pdfToPpt',

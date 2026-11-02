@@ -17,11 +17,11 @@
   "docs_emptyFavorites": "お気に入りはまだありません",
   "docs_emptyFavoritesHint": "ファイルの星をタップするとここに追加されます",
   "docs_emptySearch": "一致するファイルがありません",
-  "docs_permissionTitle": "ストレージへのアクセスを許可",
-  "docs_permissionMessage": "Phiotron PDF がドキュメントを保存・一覧表示するには、ストレージの権限が必要です。",
+  "docs_permissionTitle": "ファイルへのアクセスを許可",
+  "docs_permissionMessage": "Phiotron PDF は端末内のドキュメントを探すため、すべてのファイルへのアクセスが必要です。",
   "docs_grantPermission": "アクセスを許可",
   "docs_pickFileInstead": "代わりにファイルを選択",
-  "docs_permissionBanner": "ドキュメントを保存・一覧表示するにはストレージの権限を許可してください",
+  "docs_permissionBanner": "すべてのドキュメントを探すにはファイルへのアクセスを許可してください",
   "docs_scanning": "スキャン中… {count} 件のファイルを検出",
   "@docs_scanning": {
     "placeholders": {

@@ -19,25 +19,35 @@ import '../../engines/pdf/pdf_security.dart';
 import 'documents_logic.dart';
 
 /// Thư mục gốc cố định để quét (test ghi đè). Rỗng ⇒ dùng [platformScanRootsProvider].
-/// Android không còn quét cả `/storage/emulated/0` (Google Play hạn chế quyền
-/// "Truy cập tất cả file"), nên mặc định rỗng trên mọi nền tảng.
 final scanRootsProvider = Provider<List<String>>((ref) => const []);
+
+/// Gốc bộ nhớ chung trên Android: quét cả máy khi đã có quyền "Truy cập tất cả file"
+/// (người dùng chọn giữ quyền này, chấp nhận khó lên Google Play).
+const String androidStorageRoot = '/storage/emulated/0';
 
 /// Thư mục lưu cũ trên Android (`Documents/PDF Office`): không ghi nữa, chỉ quét để thấy file cũ.
 const String legacyAndroidOutputDir =
     '/storage/emulated/0/Documents/$legacyAppFolderName';
 
-/// Thư mục quét trên Android: chỉ vùng của app như iOS — thư mục lưu kết quả [outputDir], thư mục
-/// mặc định / cũ trong `Documents` (file đã lưu trước đó) và Documents riêng của app (có `Imported`).
-/// Bỏ thư mục không tồn tại, bỏ trùng và bỏ thư mục nằm trong một thư mục khác đã có (không quét hai lần).
+/// Thư mục quét trên Android: bộ nhớ chung [storageRoot] (cả máy), thư mục lưu kết quả [outputDir],
+/// thư mục mặc định / cũ trong `Documents` (file đã lưu trước đó) và Documents riêng của app (có
+/// `Imported`). Bỏ thư mục không tồn tại, bỏ trùng và bỏ thư mục nằm trong một thư mục khác đã có
+/// (không quét hai lần). [storageRoot] rỗng ⇒ chỉ quét vùng của app.
 Future<List<String>> androidScanRoots({
   required String outputDir,
   required String appDocumentsDir,
+  String storageRoot = '',
   String defaultDir = defaultAndroidOutputDir,
   String legacyDir = legacyAndroidOutputDir,
 }) async {
   final roots = <String>[];
-  for (final dir in [outputDir, defaultDir, legacyDir, appDocumentsDir]) {
+  for (final dir in [
+    if (storageRoot.isNotEmpty) storageRoot,
+    outputDir,
+    defaultDir,
+    legacyDir,
+    appDocumentsDir,
+  ]) {
     final norm = p.normalize(dir);
     if (roots.any((r) => p.equals(r, norm) || p.isWithin(r, norm))) continue;
     if (!await Directory(norm).exists()) continue;
@@ -62,6 +72,7 @@ final platformScanRootsProvider = Provider<Future<List<String>> Function()>((
   return () async => switch (platform) {
     AppPlatform.ios => [await ref.read(appDocumentsDirProvider.future)],
     AppPlatform.android => await androidScanRoots(
+      storageRoot: androidStorageRoot,
       outputDir: await ref.read(outputDirectoryProvider.future),
       appDocumentsDir: await ref.read(appDocumentsDirProvider.future),
     ),
@@ -82,19 +93,23 @@ abstract interface class StoragePermissionService {
   Future<bool> request();
 }
 
-/// Android 10 (API 29) trở xuống mới cần quyền bộ nhớ để ghi / đọc `Documents/`.
+/// Android 10 (API 29) trở xuống dùng quyền bộ nhớ thường; từ Android 11 cần "Truy cập tất cả file".
 const int legacyStorageMaxSdk = 29;
 
-/// Không bao giờ xin "Truy cập tất cả file" (`MANAGE_EXTERNAL_STORAGE`):
-/// - Android 11+ (API ≥ 30): thư mục của app không cần quyền → luôn `true`.
+/// Quyền để quét cả máy:
+/// - Android 11+ (API ≥ 30): `Permission.manageExternalStorage` ("Truy cập tất cả file", mở trang
+///   Cài đặt).
 /// - Android 7–10 (API ≤ 29): `Permission.storage` (đọc/ghi bộ nhớ ngoài).
-/// - Nền tảng khác / không đọc được mức API: `true`.
+/// - Android không đọc được mức API: thử "Truy cập tất cả file" rồi tới quyền bộ nhớ.
+/// - Nền tảng khác: `true`.
 class PermissionHandlerStorage implements StoragePermissionService {
   const PermissionHandlerStorage({
     required this.platform,
     required this.sdkInt,
     this.storageGranted = _storageGranted,
     this.requestStorage = _requestStorage,
+    this.manageGranted = _manageGranted,
+    this.requestManage = _requestManage,
   });
 
   final AppPlatform platform;
@@ -104,23 +119,33 @@ class PermissionHandlerStorage implements StoragePermissionService {
   final Future<bool> Function() storageGranted;
   final Future<bool> Function() requestStorage;
 
+  /// Trạng thái / xin `Permission.manageExternalStorage` (test thay bằng giả).
+  final Future<bool> Function() manageGranted;
+  final Future<bool> Function() requestManage;
+
   static Future<bool> _storageGranted() => Permission.storage.isGranted;
   static Future<bool> _requestStorage() async =>
       (await Permission.storage.request()).isGranted;
+  static Future<bool> _manageGranted() =>
+      Permission.manageExternalStorage.isGranted;
+  static Future<bool> _requestManage() async =>
+      (await Permission.manageExternalStorage.request()).isGranted;
 
-  Future<bool> _needsStoragePermission() async {
-    if (platform != AppPlatform.android) return false;
+  @override
+  Future<bool> isGranted() async {
+    if (platform != AppPlatform.android) return true;
     final sdk = await sdkInt();
-    return sdk != null && sdk <= legacyStorageMaxSdk;
+    if (sdk == null) return await manageGranted() || await storageGranted();
+    return sdk <= legacyStorageMaxSdk ? storageGranted() : manageGranted();
   }
 
   @override
-  Future<bool> isGranted() async =>
-      !await _needsStoragePermission() || await storageGranted();
-
-  @override
-  Future<bool> request() async =>
-      !await _needsStoragePermission() || await requestStorage();
+  Future<bool> request() async {
+    if (platform != AppPlatform.android) return true;
+    final sdk = await sdkInt();
+    if (sdk == null) return await requestManage() || await requestStorage();
+    return sdk <= legacyStorageMaxSdk ? requestStorage() : requestManage();
+  }
 }
 
 final storagePermissionProvider = Provider<StoragePermissionService>(
@@ -259,6 +284,12 @@ class ScanController extends Notifier<ScanState> {
       if (!ref.mounted) return;
       // Đọc được 0 thư mục gốc ⇒ thực chất chưa có quyền.
       if (result.unreadableRoots.length == roots.length) {
+        state = state.copyWith(phase: ScanPhase.needsPermission);
+        return;
+      }
+      // Gốc đọc được nhưng không thấy file và nhiều thư mục con bị chặn
+      // (Android 11+: chưa bật "Truy cập tất cả file").
+      if (result.files.isEmpty && result.skippedDirectories > 0) {
         state = state.copyWith(phase: ScanPhase.needsPermission);
         return;
       }

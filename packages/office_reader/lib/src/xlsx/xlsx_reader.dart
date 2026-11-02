@@ -28,7 +28,9 @@ final _refRe = RegExp(r'^\$?([A-Za-z]{1,3})\$?(\d+)$');
 (int, int)? parseCellRef(String ref) {
   final m = _refRe.firstMatch(ref.trim());
   if (m == null) return null;
-  return (int.parse(m.group(2)!) - 1, columnIndex(m.group(1)!));
+  final row = int.parse(m.group(2)!);
+  if (row < 1) return null;
+  return (row - 1, columnIndex(m.group(1)!));
 }
 
 /// Shifts relative A1 references of [formula] by ([dRow], [dCol]); used to

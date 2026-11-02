@@ -27,7 +27,6 @@ Future<String> importIntoAppDocuments(
   await dir.create(recursive: true);
   final base = p.basenameWithoutExtension(path);
   final ext = p.extension(path);
-  final length = await source.length();
   for (var i = 0; ; i++) {
     final name = i == 0 ? '$base$ext' : '$base ($i)$ext';
     final target = File(p.join(dir.path, name));
@@ -35,7 +34,33 @@ Future<String> importIntoAppDocuments(
       await source.copy(target.path);
       return target.path;
     }
-    // Cùng tên và cùng dung lượng: coi như đã nhập trước đó, dùng lại.
-    if (await target.length() == length) return target.path;
+    // Cùng tên và nội dung giống hệt: đã nhập trước đó, dùng lại.
+    if (await isSameFileContent(source, target)) return target.path;
+  }
+}
+
+/// `true` khi [a] và [b] giống hệt từng byte: so dung lượng trước, rồi so nội dung theo khối
+/// (không đọc cả file to vào bộ nhớ).
+Future<bool> isSameFileContent(File a, File b) async {
+  if (await a.length() != await b.length()) return false;
+  const chunkSize = 64 * 1024;
+  final ra = await a.open();
+  try {
+    final rb = await b.open();
+    try {
+      while (true) {
+        final ca = await ra.read(chunkSize);
+        final cb = await rb.read(chunkSize);
+        if (ca.length != cb.length) return false;
+        if (ca.isEmpty) return true;
+        for (var i = 0; i < ca.length; i++) {
+          if (ca[i] != cb[i]) return false;
+        }
+      }
+    } finally {
+      await rb.close();
+    }
+  } finally {
+    await ra.close();
   }
 }

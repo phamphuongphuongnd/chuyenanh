@@ -360,7 +360,8 @@ class _Numbering {
     if (item.ordered) {
       final d = RegExp(r'^(\d+)([.)])$').firstMatch(m);
       if (d != null) {
-        return (_ListFormat('decimal', '%1${d[2]}'), int.parse(d[1]!));
+        // Số quá dài (vượt giới hạn int) thì bắt đầu từ 1 thay vì ném lỗi.
+        return (_ListFormat('decimal', '%1${d[2]}'), int.tryParse(d[1]!) ?? 1);
       }
       final lower = RegExp(r'^([a-z])([.)])$').firstMatch(m);
       if (lower != null) {

@@ -129,8 +129,7 @@ void main() {
       scan: const ScanState(phase: ScanPhase.needsPermission),
     );
 
-    expect(find.text('Allow storage access'), findsOneWidget);
-    expect(find.textContaining('all files'), findsNothing);
+    expect(find.text('Allow access to your files'), findsOneWidget);
     expect(find.text('Grant access'), findsOneWidget);
     expect(find.text('Choose a file instead'), findsOneWidget);
   });
@@ -145,7 +144,7 @@ void main() {
       );
 
       expect(
-        find.text('Grant storage permission to save and list your documents'),
+        find.text('Grant file access to find all your documents'),
         findsOneWidget,
       );
       expect(find.text('a.pdf'), findsOneWidget);

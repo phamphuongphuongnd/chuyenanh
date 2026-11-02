@@ -38,16 +38,33 @@ Future<T> runInBackground<T>(
   cancelToken?.throwIfCancelled();
   final receive = ReceivePort();
   final completer = Completer<T>();
-  final isolate = await Isolate.spawn<_Start<T>>(
-    _entry<T>,
-    _Start<T>(job, receive.sendPort),
-    errorsAreFatal: true,
-  );
   final errorPort = ReceivePort();
-  isolate.addErrorListener(errorPort.sendPort);
+  final exitPort = ReceivePort();
   errorPort.listen((dynamic e) {
     if (!completer.isCompleted) completer.completeError(Unknown('isolate: $e'));
   });
+  // Isolate thoát mà chưa trả kết quả (chết sớm): chờ ngắn để tin 'r'/'e' đang bay kịp tới rồi mới báo lỗi.
+  exitPort.listen((dynamic _) {
+    Future<void>.delayed(const Duration(milliseconds: 200), () {
+      if (!completer.isCompleted) completer.completeError(const Unknown('isolate: thoát đột ngột'));
+    });
+  });
+  final Isolate isolate;
+  try {
+    // Gắn onError/onExit ngay lúc spawn để không lỡ lỗi của isolate chết sớm.
+    isolate = await Isolate.spawn<_Start<T>>(
+      _entry<T>,
+      _Start<T>(job, receive.sendPort),
+      errorsAreFatal: true,
+      onError: errorPort.sendPort,
+      onExit: exitPort.sendPort,
+    );
+  } catch (_) {
+    receive.close();
+    errorPort.close();
+    exitPort.close();
+    rethrow;
+  }
   cancelToken?.onCancel(() {
     isolate.kill(priority: Isolate.immediate);
     if (!completer.isCompleted) completer.completeError(const Cancelled());
@@ -71,6 +88,7 @@ Future<T> runInBackground<T>(
   } finally {
     receive.close();
     errorPort.close();
+    exitPort.close();
     isolate.kill(priority: Isolate.immediate);
   }
 }

@@ -140,7 +140,8 @@ class PdfFontSet implements TextMeasurer {
 
   /// Chuỗi an toàn để vẽ: font chuẩn chỉ có Latin-1.
   String safeText(ScriptFace face, StyledSpan style, String text) {
-    final slot = FontSlot.forFace(face);
+    var slot = FontSlot.forFace(face);
+    if (face == ScriptFace.latin && style.bold && bytes.containsKey(FontSlot.bold)) slot = FontSlot.bold; // khớp fontFor
     final eff = bytes.containsKey(slot) ? slot : (bytes.containsKey(FontSlot.regular) ? FontSlot.regular : slot);
     if (bytes.containsKey(eff)) return text;
     final b = StringBuffer();

@@ -138,8 +138,10 @@ class Row {
 
   String _buildText() {
     final first = segs.first;
+    // Dòng có words nhưng text rỗng: dựng chữ từ words (Seg.text) ở dưới.
     if (segs.every((s) => identical(s.line, first.line)) &&
-        segs.length == first.lineSegCount) {
+        segs.length == first.lineSegCount &&
+        first.line.text.trim().isNotEmpty) {
       return first.line.text.trim();
     }
     final sb = StringBuffer();

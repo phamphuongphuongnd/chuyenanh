@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' show Offset, Rect, Size;
 
-import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 import '../../../core/utils/file_paths.dart';
@@ -12,8 +11,9 @@ import '../../../engines/pdf/pdf_tools_engine.dart';
 import '../logic/vi_nfc.dart';
 import 'isolate_job.dart';
 import 'page_ranges.dart';
-import 'pdf_ops.dart' show isLatin1, makeFont, openPdfFile;
-import 'syncfusion_pdf_tools.dart' show PdfFontLoader, loadBundledFont;
+import 'pdf_ops.dart' show drawableText, isLatin1, makeFont, openPdfFile;
+import 'syncfusion_pdf_tools.dart'
+    show PdfFontLoader, isSameFilePath, loadBundledFont;
 
 /// Kiểu nhãn số trang.
 enum PageNumberStyle {
@@ -246,7 +246,7 @@ Future<Object?> pageNumbersJob(Map<String, Object?> args, JobPort port) async {
       final raw = page.size;
       final rot = pageRotationDegrees(page.rotation);
       final view = visualPageSize(raw, rot);
-      final text = label(spec.startNumber + k);
+      final text = drawableText(label(spec.startNumber + k), font);
       final m = font.measureString(text);
       final box = pageNumberRect(
         pageW: view.width,
@@ -321,8 +321,7 @@ class SyncfusionPageNumbers implements PageNumbersEngine {
     if (spec.margin < 0) {
       throw ArgumentError.value(spec.margin, 'margin', 'must be >= 0');
     }
-    if (p.normalize(p.absolute(outputPath)) ==
-        p.normalize(p.absolute(inputPath))) {
+    if (isSameFilePath(outputPath, inputPath)) {
       throw ArgumentError('output must differ from input: $outputPath');
     }
     cancelToken?.throwIfCancelled();

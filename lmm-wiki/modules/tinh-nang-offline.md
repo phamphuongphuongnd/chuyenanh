@@ -1,7 +1,7 @@
 ---
 title: 11 tính năng offline mới (30/10) — nén, số trang, chèn trang, ảnh chữ ký, PPT↔PDF, thẻ ID, QR, tìm nội dung, đọc to, dàn chữ, dịch, mở file từ app khác, khoá app
 type: module
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - C:/Users/Admin/.claude/plans/cho-to-n-b-c-c-ticklish-scott.md
   - app/lib/core/tools/tool_registry.dart
@@ -63,3 +63,11 @@ AI tóm tắt/chat cũng không làm (cần mạng). Yêu cầu chia việc cho 
   Các file `app/test/whitebox/**` còn dở, chưa chạy được, nên **không commit**. Muốn làm tiếp thì nhắn lại từng agent.
 
 Liên quan: [[viec-con-lai]], [[giao-dien-phiotron]], [[phat-hanh-apk]], [[co-so-du-lieu]].
+
+## Cập nhật 02/11 — thử máy thật, kiểm thử hộp trắng, sửa lỗi
+- **Thử trên Galaxy A13 (bản release):** Nén (2,44→1,27MB), Đánh số trang, Dàn chữ, Tìm theo nội dung, PDF→PPT chạy đúng; Dịch mở được (chưa tải gói); Đọc to báo "Máy chưa có giọng đọc Tiếng Việt" vì app dùng bộ đọc Samsung (máy có Google TTS nhưng chưa tự chuyển). Một lần thấy cả app bị phủ xám sau khi đóng bảng Dịch, không tái hiện lại.
+- **Quyền bộ nhớ:** commit `6352ec7` (chat khác) đã bỏ "Truy cập tất cả file", tab Tập tin chỉ còn 3–4 file của app. Chủ dự án chọn **trả lại** (02/11): `MANAGE_EXTERNAL_STORAGE` + `READ_EXTERNAL_STORAGE` (tới API 32, kèm `tools:replace` vì `open_filex` khai 32), `PermissionHandlerStorage` API ≥30 dùng manageExternalStorage, `androidScanRoots(storageRoot: /storage/emulated/0)`. Sau khi tự bật quyền trong Cài đặt Android, tab Tập tin thấy 44 tài liệu. Hệ quả: Play có thể từ chối — xem [[0005-len-store-mien-phi]].
+- **Kiểm thử hộp trắng toàn hệ thống** (`/phuong-whitebox-test`, 19 agent chia theo nhóm file, kết quả `test-output/whitebox/`, sổ tổng `tong-hop.md`; test mới ở `app/test/whitebox/**` và `packages/*/test/whitebox/`): 177 file, 4437 PASS / 51 FAIL ở lần chạy đầu. Mọi FAIL đều là lỗi thật, đã sửa (xem từng `buoc-6` mục "Sau khi sửa code"): xử lý chữ (NFC hai dấu thanh, Hangul nửa độ rộng, dò UTF-16), gói `pdf_layout` (6), PPT/ký PDF (3), công cụ PDF (nén ghi đè file gốc, thiếu font Noto, so đường dẫn hoa/thường), ảnh→PDF (giới hạn 100 ảnh, `maxLongSide ≤ 0`), nhập file (so nội dung thay vì chỉ dung lượng), Mục lục (named destination), đổi tên (dispose controller), thẻ ID, **khoá app (lỗi plugin không còn mở khoá)**, chuyển đổi (chạy nền treo, ảnh trong ô DOCX, ô gộp XLSX), gói `office_reader` (11 lỗi: vanish, VML, định dạng số Excel), chỉ mục (đoạn trích, file bị xoá giữa lúc quét). Kết quả: 4020 test app + 4 gói xanh, analyze sạch.
+- **Chưa sửa / chờ quyết:** nút "Thử lại" riêng ở màn khoá (cần ARB 6 ngôn ngữ); `insert_pages` có thể so đường dẫn hoa/thường; `pdf_extract` báo lỗi lập trình thành `CorruptFile`; phát hiện mức thấp trong từng `buoc-6`; nhiều hàm lớn chưa kiểm vì khối lượng (ghi trong `buoc-1`: `_makeRun`, `_parseSection`, `_formatDate`, `_sheet` của office_reader, ~280 nút của pptx_reader reader); các màn hình lớn (`pdf_reader_screen`) chưa kiểm.
+- **Lưu ý quy trình hộp trắng:** mỗi agent tự làm cả 6 bước cho nhóm file của mình, không có người kiểm chéo; vài file (ảnh→PDF, chuyển đổi) bị viết test trước tài liệu bước 5 do bị ngắt giữa chừng → bước 5 có nguy cơ bám theo test. Test chạy song song phải qua khoá `mkdir app/.test_lock`.
+- **Giao diện Công cụ:** "PowerPoint sang PDF" chuyển lên nhóm Tạo PDF; mỗi công cụ có màu riêng (`_toolColor` trong `features/documents/widgets/tools_sheet.dart`), không còn toàn đỏ.

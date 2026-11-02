@@ -311,7 +311,7 @@ class _DocxReader {
               );
             }
           case 'br':
-            if (!_fieldVisible) break;
+            if (!_fieldVisible || hidden) break;
             flush();
             if (e.attr('type') == 'page') {
               out.add(_pageBreak);
@@ -319,18 +319,18 @@ class _DocxReader {
               out.add(const DocxBreak());
             }
           case 'cr':
-            if (!_fieldVisible) break;
+            if (!_fieldVisible || hidden) break;
             flush();
             out.add(const DocxBreak());
           case 'drawing':
-            if (!_fieldVisible) break;
+            if (!_fieldVisible || hidden) break;
             final img = _drawing(e);
             if (img != null) {
               flush();
               out.add(img);
             }
           case 'pict' || 'object':
-            if (!_fieldVisible) break;
+            if (!_fieldVisible || hidden) break;
             final img = _vml(e);
             if (img != null) {
               flush();
@@ -387,7 +387,8 @@ class _DocxReader {
         '$key\\s*:\\s*([0-9.]+)(pt|in|px|cm|mm)?',
       ).firstMatch(style);
       if (m == null) return 0;
-      final v = double.parse(m.group(1)!);
+      final v = double.tryParse(m.group(1)!);
+      if (v == null) return 0;
       final unit = m.group(2) ?? 'px';
       final perUnit = switch (unit) {
         'pt' => 12700.0,

@@ -96,7 +96,14 @@ class SyncfusionPdfSignEngine implements PdfSignEngine {
     if (future == null) {
       _parseCount++;
       future = _readAllSizes(inputPath, password);
-      future.then<void>((_) {}, onError: (_) => _sizeCache.remove(key));
+      // Lỗi ⇒ bỏ khỏi cache. Không trả lại future (đang lỗi) từ onError,
+      // nếu không future của `then` cũng lỗi mà không ai nghe.
+      future.then<void>(
+        (_) {},
+        onError: (Object _) {
+          _sizeCache.remove(key);
+        },
+      );
     }
     _sizeCache[key] = future; // đưa về cuối = mới dùng nhất
     while (_sizeCache.length > _maxCachedFiles) {

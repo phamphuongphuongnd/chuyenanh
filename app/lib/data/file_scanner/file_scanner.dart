@@ -97,6 +97,11 @@ Future<ScanResult> scanRoots(
             if (!extensions.contains(ext)) continue;
             try {
               final stat = entity.statSync();
+              // statSync không ném khi file vừa bị xoá: trả notFound, size -1.
+              if (stat.type == FileSystemEntityType.notFound) {
+                skipped++;
+                continue;
+              }
               files.add(
                 ScannedFile(
                   path: entity.path,

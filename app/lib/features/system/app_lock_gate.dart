@@ -110,9 +110,9 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
     final result = await service.authenticate(reason);
     var unlock = result == AppAuthResult.success;
     // Máy đã gỡ hết khoá màn hình thì không còn cách nào xác thực: cho vào, tránh kẹt
-    // ngoài app vĩnh viễn. Lỗi khác (máy vẫn có khoá) thì giữ màn khoá.
+    // ngoài app vĩnh viễn. Lỗi khác / không kiểm tra được thì giữ màn khoá (bấm lại để thử).
     if (result == AppAuthResult.unavailable) {
-      unlock = !await service.isSupported();
+      unlock = await service.isDefinitelyUnsupported();
     }
     if (!mounted) return;
     setState(() {

@@ -20,9 +20,13 @@ class GridCell {
     this.wrap = true,
     this.borderArgb = 0xFF808080,
     this.border = true,
+    this.images = const [],
   });
 
   final List<StyledSpan> spans;
+
+  /// Ảnh trong ô, xếp dọc dưới chữ (thu nhỏ vừa bề rộng ô). Ảnh không đọc được thì bỏ qua.
+  final List<({Uint8List bytes, double? width, double? height})> images;
   final int colSpan;
 
   /// Ô bị gộp che (chỉ vẽ nền/viền, không có chữ).
@@ -252,11 +256,32 @@ class PdfFlowWriter {
           lineHs.add(lh);
           h += lh;
         }
-        if (lines.isEmpty) {
+        if (lines.isEmpty && cell.images.isEmpty) {
           h = 2 * padding + fonts.fontFor(ScriptFace.latin, StyledSpan('', size: size)).height;
         }
+        final imgs = <_CellImage>[];
+        if (!cell.covered) {
+          for (final im in cell.images) {
+            PdfBitmap bmp;
+            try {
+              bmp = PdfBitmap(im.bytes);
+            } catch (e) {
+              debugPrint('convert: bỏ qua ảnh trong ô không đọc được ($e)');
+              continue;
+            }
+            var iw = im.width ?? bmp.width.toDouble();
+            var ih = im.height ?? bmp.height.toDouble();
+            if (iw <= 0 || ih <= 0) continue;
+            if (iw > inner) {
+              ih *= inner / iw;
+              iw = inner;
+            }
+            imgs.add(_CellImage(bmp, iw, ih));
+            h += ih + 2;
+          }
+        }
         if (h > rowH) rowH = h;
-        laid.add(_CellLayout(cell, col, w, inner, lines, lineHs));
+        laid.add(_CellLayout(cell, col, w, inner, lines, lineHs, imgs));
         col += span;
       }
       if (rowH > contentHeight) rowH = contentHeight;
@@ -274,7 +299,7 @@ class PdfFlowWriter {
         if (c.cell.border) {
           g.drawRectangle(pen: PdfPen(_color(c.cell.borderArgb), width: 0.5), bounds: rect);
         }
-        if (c.lines.isEmpty) continue;
+        if (c.lines.isEmpty && c.images.isEmpty) continue;
         g.save();
         g.setClip(bounds: rect);
         var ty = y + padding;
@@ -285,6 +310,10 @@ class PdfFlowWriter {
             _drawRun(g, r, x + padding + dx + r.x, ty, c.lineHs[i]);
           }
           ty += c.lineHs[i];
+        }
+        for (final im in c.images) {
+          g.drawImage(im.bitmap, Rect.fromLTWH(x + padding + _alignDx(c.cell.align, c.inner, im.width), ty, im.width, im.height));
+          ty += im.height + 2;
         }
         g.restore();
       }
@@ -302,11 +331,19 @@ class PdfFlowWriter {
 }
 
 class _CellLayout {
-  _CellLayout(this.cell, this.col, this.width, this.inner, this.lines, this.lineHs);
+  _CellLayout(this.cell, this.col, this.width, this.inner, this.lines, this.lineHs, this.images);
   final GridCell cell;
   final int col;
   final double width;
   final double inner;
   final List<WrappedLine> lines;
   final List<double> lineHs;
+  final List<_CellImage> images;
+}
+
+class _CellImage {
+  _CellImage(this.bitmap, this.width, this.height);
+  final PdfBitmap bitmap;
+  final double width;
+  final double height;
 }

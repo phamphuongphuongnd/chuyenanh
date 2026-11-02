@@ -405,7 +405,7 @@ void main() {
       expect(s.cell(1, 1)!.raw, 0.30000000000000004);
       expect(disp(s, 2), '0.333333333');
       expect(disp(s, 3), '1.23457E+13');
-      expect(disp(s, 4), '0.000012345');
+      expect(disp(s, 4), '1.2345E-05');
       expect(disp(s, 5), '-42');
       expect(disp(s, 6), '1.23E+03');
       expect(disp(s, 7), '3/4');

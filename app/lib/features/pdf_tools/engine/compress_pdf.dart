@@ -17,6 +17,7 @@ import '../../../engines/pdf/pdf_render_engine.dart';
 import '../../reader/reader_providers.dart' show pdfRenderEngineProvider;
 import 'isolate_job.dart';
 import 'pdf_ops.dart' show openPdfFile;
+import 'syncfusion_pdf_tools.dart' show isSameFilePath;
 
 /// Mức nén.
 enum CompressLevel { light, medium, strong }
@@ -91,7 +92,8 @@ class CompressResult {
 abstract interface class CompressEngine {
   /// Nén [inputPath] thành file mới [outputPath] (không đụng file gốc).
   /// [password]: mật khẩu file gốc nếu có — file kết quả KHÔNG có mật khẩu.
-  /// Lỗi: `PasswordRequired`, `WrongPassword`, `CorruptFile`, `Cancelled`…
+  /// Lỗi: `PasswordRequired`, `WrongPassword`, `CorruptFile`, `Cancelled`…;
+  /// [outputPath] trùng file gốc → `ArgumentError`.
   Future<CompressResult> compress(
     String inputPath,
     String outputPath,
@@ -123,6 +125,9 @@ class PdfCompressEngine implements CompressEngine {
     ProgressCallback? onProgress,
     CancelToken? cancelToken,
   }) async {
+    if (isSameFilePath(outputPath, inputPath)) {
+      throw ArgumentError('output must differ from input: $outputPath');
+    }
     cancelToken?.throwIfCancelled();
     final originalBytes = await _length(inputPath);
     final pw = (password == null || password.isEmpty) ? null : password;

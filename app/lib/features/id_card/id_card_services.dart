@@ -151,7 +151,8 @@ class IsolateIdCardComposer implements IdCardComposer {
       );
     } on FormatException catch (e) {
       throw CorruptFile(e.message);
-    } on PathNotFoundException catch (e) {
+    } on FileSystemException catch (e) {
+      // Gồm PathNotFoundException / PathAccessException: ảnh mất hoặc không đọc được.
       throw CorruptFile(e.message);
     }
   }

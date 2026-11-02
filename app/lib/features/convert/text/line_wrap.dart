@@ -212,28 +212,33 @@ List<WrappedLine> wrapTokens(
   var runs = <PlacedRun>[];
   var x = firstLineIndent;
   var end = firstLineIndent;
+  var start = firstLineIndent; // x đầu dòng hiện tại
   LayoutToken? prev; // token chữ ngay trước trên dòng, còn gộp được
+  var gap = 0; // số dấu cách sau `prev` (gồm cả token chỉ có dấu cách)
+  var gapWidth = 0.0;
 
   void flush() {
     lines.add(WrappedLine(runs, end));
     runs = <PlacedRun>[];
     x = 0;
     end = 0;
+    start = 0;
     prev = null;
   }
 
   for (final t in tokens) {
     if (t.text.isNotEmpty) {
-      if (runs.isNotEmpty && x + t.width > maxWidth + 0.01) flush();
+      // Dòng chỉ mới có dấu cách đầu dòng mà từ không còn vừa ⇒ cũng xuống dòng.
+      if ((runs.isNotEmpty || x > start + 0.01) && x + t.width > maxWidth + 0.01) flush();
       final p = prev;
       if (p != null && p.face == t.face && p.style.sameStyle(t.style)) {
         final last = runs.last;
         runs[runs.length - 1] = PlacedRun(
-          text: '${last.text}${' ' * p.spaces}${t.text}',
+          text: '${last.text}${' ' * gap}${t.text}',
           face: last.face,
           style: last.style,
           x: last.x,
-          width: last.width + p.trailingSpace + t.width,
+          width: last.width + gapWidth + t.width,
         );
       } else {
         runs.add(PlacedRun(text: t.text, face: t.face, style: t.style, x: x, width: t.width));
@@ -241,9 +246,12 @@ List<WrappedLine> wrapTokens(
       end = x + t.width;
       x = end + t.trailingSpace;
       prev = t;
+      gap = t.spaces;
+      gapWidth = t.trailingSpace;
     } else if (!t.forceBreak) {
-      x += t.trailingSpace; // chỉ có dấu cách
-      prev = null;
+      x += t.trailingSpace; // chỉ có dấu cách: vẫn giữ `prev` để gộp tiếp, cộng dồn khoảng trắng
+      gap += t.spaces;
+      gapWidth += t.trailingSpace;
     }
     if (t.forceBreak) flush();
   }

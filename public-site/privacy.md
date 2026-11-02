@@ -43,8 +43,9 @@ bấm "Chia sẻ" để gửi tệp qua ứng dụng khác — khi đó chính s
 - **Máy ảnh** — để quét tài liệu và chụp ảnh. Chỉ dùng khi bạn mở tính năng chụp / quét.
 - **Ảnh** — chọn qua **trình chọn ảnh của hệ thống** (Android Photo Picker / iOS PHPicker). Ứng dụng chỉ nhận
   những ảnh bạn chọn, không đọc cả thư viện ảnh.
-- **Tệp** — chỉ những tệp bạn chọn hoặc mở bằng ứng dụng. Trên Android 7–10, ứng dụng xin quyền bộ nhớ để ghi
-  vào `Documents/Phiotron PDF`; từ Android 11 trở lên ứng dụng không xin quyền đọc toàn bộ bộ nhớ.
+- **Tệp** — Android: ứng dụng xin quyền bộ nhớ (Android 7–10) hoặc **"Truy cập tất cả file"** (Android 11 trở lên)
+  để tìm, liệt kê và mở tài liệu trên máy, và lưu vào `Documents/Phiotron PDF`. Tệp chỉ được đọc trên thiết bị,
+  không bao giờ được tải lên. iOS: chỉ những tệp bạn chọn hoặc mở bằng ứng dụng.
 - **Sinh trắc học / mã PIN của máy** (Khoá ứng dụng, tuỳ chọn) — việc xác thực do hệ điều hành thực hiện
   (Android BiometricPrompt / iOS Face ID, Touch ID). Ứng dụng chỉ nhận kết quả "thành công / thất bại", **không
   bao giờ nhận dữ liệu vân tay hay khuôn mặt**.

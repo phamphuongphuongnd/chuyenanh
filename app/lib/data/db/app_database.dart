@@ -85,7 +85,6 @@ class AppDatabase extends _$AppDatabase {
       await (delete(recents)..where((t) => t.path.equals(path))).go();
       await (delete(bookmarks)..where((t) => t.path.equals(path))).go();
       await (delete(documentTexts)..where((t) => t.path.equals(path))).go();
-      await (delete(documentTexts)..where((t) => t.path.equals(path))).go();
     });
   }
 }

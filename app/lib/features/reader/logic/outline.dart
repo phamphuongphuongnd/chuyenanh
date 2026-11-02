@@ -27,7 +27,9 @@ List<OutlineEntry> flattenOutline(sf.PdfDocument document) {
 
   int? pageOf(sf.PdfBookmark b) {
     try {
-      final page = b.destination?.page;
+      // Bookmark dùng named destination thì `destination` null: lấy trang qua đích có tên.
+      final page =
+          b.destination?.page ?? b.namedDestination?.destination?.page;
       if (page == null) return null;
       final index = document.pages.indexOf(page);
       return index < 0 ? null : index + 1;

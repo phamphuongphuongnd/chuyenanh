@@ -55,10 +55,8 @@ class DocxNumbering {
       for (final o in n.childrenNamed('lvlOverride')) {
         final ilvl = parseIntOrNull(o.attr('ilvl')) ?? 0;
         final lvl = o.child('lvl');
-        final base = lvl != null
-            ? _Level.parse(lvl)
-            : _abstract[aid]?[ilvl] ??
-                  const _Level(1, 'decimal', '', false, ParaProps.empty);
+        final base = lvl != null ? _Level.parse(lvl) : _abstract[aid]?[ilvl];
+        if (base == null) continue; // no level to override: stay undefined
         final so = parseIntOrNull(o.childVal('startOverride'));
         ov[ilvl] = so == null ? base : base.withStart(so);
       }
