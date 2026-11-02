@@ -2,20 +2,9 @@
   "@@locale": "en",
   "img2pdf_title": "Image to PDF",
   "img2pdf_pickTitle": "Select images",
-  "img2pdf_permissionTitle": "Photo access needed",
-  "img2pdf_permissionMessage": "Allow Phiotron PDF to read your photos so you can choose images to convert.",
-  "img2pdf_allowAccess": "Allow access",
-  "img2pdf_openSettings": "Open settings",
-  "img2pdf_limitedAccess": "Only some of your photos are accessible.",
-  "img2pdf_noImages": "No images in this album",
-  "img2pdf_camera": "Camera",
-  "img2pdf_selectedCount": "{count} selected",
-  "@img2pdf_selectedCount": {
-    "placeholders": {
-      "count": {"type": "int"}
-    }
-  },
-  "img2pdf_next": "Next",
+  "img2pdf_choosePhotos": "Choose photos",
+  "img2pdf_takePhoto": "Take photo",
+  "img2pdf_pickHint": "Pick photos from your gallery or take a new one. You can reorder and edit them in the next step.",
   "img2pdf_maxImages": "You can add up to {max} images.",
   "@img2pdf_maxImages": {
     "placeholders": {

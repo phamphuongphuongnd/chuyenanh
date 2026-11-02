@@ -109,7 +109,8 @@ void main() {
   testWidgets('thiếu extra → quay về màn chọn ảnh thay vì lỗi', (tester) async {
     final h = Harness(tmp: tmp);
     await h.pump(tester, initialLocation: img2pdfResultPath);
-    expect(find.text('Select images'), findsNothing); // album có tên 'Recent'
-    expect(find.text('Recent'), findsOneWidget);
+    expect(find.text('Select images'), findsOneWidget);
+    expect(find.byKey(const ValueKey('choose_photos_button')), findsOneWidget);
+    expect(h.picker.calls, 1);
   });
 }

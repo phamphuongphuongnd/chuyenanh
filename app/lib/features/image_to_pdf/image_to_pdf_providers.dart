@@ -1,4 +1,4 @@
-// Provider của feature `image_to_pdf`: engine thật + các dịch vụ nền tảng (thư viện ảnh,
+// Provider của feature `image_to_pdf`: engine thật + các dịch vụ nền tảng (trình chọn ảnh,
 // camera, cắt ảnh, xử lý ảnh). Test thay bằng bản giả qua `ProviderScope(overrides: …)`.
 import 'dart:io';
 
@@ -8,15 +8,15 @@ import '../../engines/pdf/image_to_pdf_engine.dart';
 import '../../engines/pdf/syncfusion_image_to_pdf_engine.dart';
 import 'services/camera_service.dart';
 import 'services/crop_service.dart';
-import 'services/gallery_service.dart';
 import 'services/image_processor.dart';
+import 'services/photo_picker_service.dart';
 
 final imageToPdfEngineProvider = Provider<ImageToPdfEngine>(
   (ref) => const SyncfusionImageToPdfEngine(),
 );
 
-final galleryServiceProvider = Provider<GalleryService>(
-  (ref) => const PhotoManagerGalleryService(),
+final photoPickerServiceProvider = Provider<PhotoPickerService>(
+  (ref) => const ImagePickerPhotoPickerService(),
 );
 
 final cameraServiceProvider = Provider<CameraService>(

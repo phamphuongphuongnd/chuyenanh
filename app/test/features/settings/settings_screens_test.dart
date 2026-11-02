@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/core/platform/app_platform.dart';
 import 'package:pdf_office/core/router/routes.dart';
 import 'package:pdf_office/core/utils/link_opener.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
@@ -200,7 +201,10 @@ void main() {
       await tester.tap(_key('settings_outputDir'));
       await tester.pumpAndSettle();
       await tester.tap(_key('output_dir_choose'));
-      await _realIo(tester, until: () => c.read(settingsProvider).outputDir == tmp.path);
+      await _realIo(
+        tester,
+        until: () => c.read(settingsProvider).outputDir == tmp.path,
+      );
       await tester.pumpAndSettle();
       expect(c.read(settingsProvider).outputDir, tmp.path);
       expect(find.text(tmp.path), findsOneWidget);
@@ -293,7 +297,11 @@ void main() {
       await tester.tap(_key('settings_privacy'));
       await tester.pumpAndSettle();
       expect(_key('privacy_body'), findsOneWidget);
-      expect(find.textContaining('offline'), findsWidgets);
+      expect(
+        find.textContaining('processed only on this device'),
+        findsOneWidget,
+      );
+      expect(_key('privacy_fullPolicy'), findsOneWidget);
     });
 
     testWidgets('Phản hồi mở email; không mở được thì báo lỗi', (tester) async {
@@ -321,19 +329,151 @@ void main() {
   });
 
   group('Link chia sẻ ứng dụng', () {
-    test('link tải là https hợp lệ trỏ tới file APK trong repo', () {
-      final uri = safeLinkUri(kAppDownloadUrl);
-      expect(uri, isNotNull);
-      expect(uri!.scheme, 'https');
-      expect(uri.host, 'github.com');
-      expect(uri.path, endsWith('.apk'));
+    test('link cửa hàng / chính sách / hỗ trợ là https hợp lệ', () {
+      final play = safeLinkUri(kPlayStoreUrl)!;
+      expect(play.host, 'play.google.com');
+      expect(play.queryParameters['id'], 'com.phuong.pdfoffice');
+      for (final url in [kPrivacyPolicyUrl, kSupportUrl]) {
+        final uri = safeLinkUri(url);
+        expect(uri, isNotNull, reason: url);
+        expect(uri!.scheme, 'https');
+        expect(uri.host, 'phamphuongphuongnd.github.io');
+      }
+      expect(kPrivacyPolicyUrl, startsWith(kSupportUrl));
+      // Không còn link tải ngoài cửa hàng (GitHub Release / sideload).
+      for (final url in [kPlayStoreUrl, kPrivacyPolicyUrl, kSupportUrl]) {
+        expect(url, isNot(contains('releases')));
+        expect(url, isNot(endsWith('.apk')));
+      }
     });
 
-    test('noi dung chia se gom loi gioi thieu, link Android va link iPhone', () {
-      final msg = appShareMessage('Xin chao');
-      expect(msg, startsWith('Xin chao\n\n'));
-      expect(msg, contains('Android: $kAppDownloadUrl'));
-      expect(msg, contains('iPhone: $kIosDownloadUrl'));
+    test('Android: lời giới thiệu + link Google Play', () {
+      expect(
+        appShareMessage('Xin chao', AppPlatform.android),
+        'Xin chao\n\n$kPlayStoreUrl',
+      );
+    });
+
+    test(
+      'iOS chưa có link App Store: chỉ lời giới thiệu, không nhắc Android',
+      () {
+        final msg = appShareMessage(
+          'Xin chao',
+          AppPlatform.ios,
+          appStoreUrl: '',
+        );
+        expect(msg, 'Xin chao');
+        expect(msg.toLowerCase(), isNot(contains('android')));
+        expect(msg, isNot(contains('play.google')));
+      },
+    );
+
+    test('iOS có link App Store: chỉ kèm link App Store', () {
+      const store = 'https://apps.apple.com/app/id123';
+      final msg = appShareMessage(
+        'Xin chao',
+        AppPlatform.ios,
+        appStoreUrl: store,
+      );
+      expect(msg, 'Xin chao\n\n$store');
+      expect(msg, isNot(contains(kPlayStoreUrl)));
+      // Giá trị mặc định là hằng [kAppStoreUrl].
+      expect(
+        appShareMessage('x', AppPlatform.ios),
+        kAppStoreUrl.isEmpty ? 'x' : 'x\n\n$kAppStoreUrl',
+      );
+    });
+
+    test('nền tảng khác: chỉ lời giới thiệu', () {
+      expect(appShareMessage('Xin chao', AppPlatform.other), 'Xin chao');
+    });
+  });
+
+  group('Chính sách bảo mật & hỗ trợ', () {
+    test(
+      'lời chia sẻ / giới thiệu không còn tuyên bố "hoàn toàn ngoại tuyến"',
+      () {
+        final en = lookupAppLocalizations(const Locale('en'));
+        final vi = lookupAppLocalizations(const Locale('vi'));
+        expect(en.settings_shareText.toLowerCase(), isNot(contains('offline')));
+        expect(
+          en.settings_aboutOffline.toLowerCase(),
+          isNot(contains('offline')),
+        );
+        expect(vi.settings_shareText, isNot(contains('ngoại tuyến')));
+        expect(vi.settings_aboutOffline, isNot(contains('ngoại tuyến')));
+      },
+    );
+
+    test('tóm tắt chính sách mọi ngôn ngữ có email liên hệ và nhắc ML Kit', () {
+      for (final locale in AppLocalizations.supportedLocales) {
+        final l = lookupAppLocalizations(locale);
+        expect(
+          l.settings_privacyBody,
+          contains(kFeedbackEmail),
+          reason: '$locale',
+        );
+        expect(l.settings_privacyBody, contains('ML Kit'), reason: '$locale');
+        expect(l.settings_privacyFull, isNotEmpty);
+        expect(l.settings_support, isNotEmpty);
+        expect(l.settings_linkOpenFailed, isNotEmpty);
+        // Màn chung cho iOS: không nhắc nền tảng khác (App Store 2.3.10).
+        for (final s in [
+          l.settings_privacyBody,
+          l.settings_aboutOffline,
+          l.settings_shareText,
+        ]) {
+          expect(
+            s.toLowerCase(),
+            isNot(contains('android')),
+            reason: '$locale',
+          );
+          expect(s, isNot(contains('Google Play')), reason: '$locale');
+        }
+      }
+    });
+
+    testWidgets('nút chính sách đầy đủ mở link công khai', (tester) async {
+      Uri? opened;
+      await _pump(
+        tester,
+        launcher: (uri) async {
+          opened = uri;
+          return true;
+        },
+      );
+      await tester.tap(_key('settings_privacy'));
+      await tester.pumpAndSettle();
+      expect(find.text('Full privacy policy'), findsOneWidget);
+      await tester.tap(_key('privacy_fullPolicy'));
+      await tester.pumpAndSettle();
+      expect(opened, Uri.parse(kPrivacyPolicyUrl));
+      expect(find.text('Could not open the link'), findsNothing);
+    });
+
+    testWidgets('không mở được link chính sách thì báo lỗi', (tester) async {
+      await _pump(tester, launcher: (_) async => false);
+      await tester.tap(_key('settings_privacy'));
+      await tester.pumpAndSettle();
+      await tester.tap(_key('privacy_fullPolicy'));
+      await tester.pumpAndSettle();
+      expect(find.text('Could not open the link'), findsOneWidget);
+    });
+
+    testWidgets('Giới thiệu: nút Trang hỗ trợ mở link hỗ trợ', (tester) async {
+      Uri? opened;
+      await _pump(
+        tester,
+        launcher: (uri) async {
+          opened = uri;
+          return true;
+        },
+      );
+      await tester.tap(_key('settings_about'));
+      await tester.pumpAndSettle();
+      await tester.tap(_key('about_support'));
+      await tester.pumpAndSettle();
+      expect(opened, Uri.parse(kSupportUrl));
     });
   });
 }

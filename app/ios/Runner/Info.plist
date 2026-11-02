@@ -8,6 +8,10 @@
 	<string>Phiotron PDF reads your photos to convert them to PDF.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Phiotron PDF saves exported images to your photo library.</string>
+	<!-- Khoa/mo khoa PDF bang mat khau dung ma hoa AES (Syncfusion), khong phai cua he dieu hanh: khai YES,
+	     App Store Connect chon 'thuat toan chuan', TAT storefront Phap (ANSSI). Xem lmm-wiki/decisions/0005. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Phiotron PDF uses Face ID to unlock the app when App lock is on.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

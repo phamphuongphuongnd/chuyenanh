@@ -156,9 +156,14 @@ Quy ước:
 
 ## 8. Quyền Android
 
-App quét toàn bộ bộ nhớ nên cần `MANAGE_EXTERNAL_STORAGE` (Android 11+) hoặc quyền đọc / ghi bộ nhớ (Android 7–10).
-Từ chối quyền thì app chuyển sang chế độ chọn file thủ công (`file_picker`).
-Ngoài ra: máy ảnh (máy quét), ảnh / media (chọn ảnh).
+Theo chính sách Google Play, app **không** xin "Truy cập tất cả tệp" (`MANAGE_EXTERNAL_STORAGE`) và **không** xin quyền đọc toàn bộ
+ảnh/video (`READ_MEDIA_*`) — cả hai bị chặn bằng `tools:node="remove"` trong Manifest.
+
+- **Tài liệu:** app chỉ liệt kê thư mục của mình (`Documents/Phiotron PDF`, thư mục cũ `Documents/PDF Office`, vùng riêng của app)
+  + tệp người dùng **chọn** (bộ chọn tệp) hoặc **mở / chia sẻ** từ app khác (được chép vào thư mục của app).
+- **Ảnh:** chọn bằng Photo Picker của hệ thống (`image_picker`), không cần quyền.
+- **Android 7–10:** xin quyền bộ nhớ cũ (`READ/WRITE_EXTERNAL_STORAGE`, `maxSdkVersion=29`) để ghi vào `Documents/`.
+- **Khác:** máy ảnh (máy quét, chụp ảnh), sinh trắc học (khoá app), mạng (chỉ để tải gói ngôn ngữ dịch ML Kit khi người dùng chọn).
 
 ## 9. Kiểm thử trên máy thật
 
@@ -166,7 +171,7 @@ Máy thử mục tiêu: Samsung Galaxy A13. Hai cách:
 
 - **Cắm cáp** (khuyên dùng — đọc được log lỗi): cài Samsung USB Driver, bật Gỡ lỗi USB, chọn Truyền tệp, bấm Cho phép; kiểm `adb devices`, rồi `flutter run`.
 - **Không cáp:** chép `app/build/app/outputs/flutter-apk/app-debug.apk` (~261 MB, **không nằm trong git**) sang điện thoại, cho phép cài từ nguồn
-  không rõ, rồi bật "Truy cập tất cả tệp" cho Phiotron PDF.
+  không rõ, rồi mở app (không cần bật "Truy cập tất cả tệp").
 
 Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đặc biệt cần đo trên máy thật: quyền đọc file, camera, máy quét tự nhận viền,
 **OCR tiếng Việt dấu chồng (ặ ỗ ữ ẫ ậ ề ở)**, lối tắt màn hình chính, tốc độ với file lớn.
@@ -203,3 +208,49 @@ Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đ�
   Syncfusion yêu cầu. Bản Flutter **không cần** license key — không dán key vào code hay commit.
 - **Trước khi phát hành:** tự tra tên "Phiotron" trên WIPO Global Brand Database và cổng Cục Sở hữu trí tuệ Việt Nam;
   tên, mô tả, icon và ảnh chụp trên store phải tự làm, không chép chữ / ảnh / tên của app khác.
+
+## 12. Phát hành lên Google Play và App Store
+
+App **miễn phí, không quảng cáo, không mua trong app, không tài khoản** (quyết định: `lmm-wiki/decisions/0005-len-store-mien-phi.md`).
+
+### 12.1. Trang công khai bắt buộc (làm trước)
+Cả hai store cần **URL Chính sách bảo mật** và App Store cần **Support URL**. Nội dung đã soạn sẵn ở [`public-site/`](public-site/):
+làm theo [`public-site/README.md`](public-site/README.md) — tạo repo **công khai** riêng `phiotron-pdf`, bật GitHub Pages →
+`https://phamphuongphuongnd.github.io/phiotron-pdf/privacy` (hằng `kPrivacyPolicyUrl`) và `.../phiotron-pdf/` (`kSupportUrl`).
+Có trang này rồi mới khoá (private) repo chính được. Kênh báo lỗ hổng: [`SECURITY.md`](SECURITY.md).
+
+### 12.2. Android — Google Play
+1. **Tạo khoá tải lên (upload key)** — bạn tự làm, **không** gửi mật khẩu cho ai, **không** commit:
+   ```powershell
+   keytool -genkey -v -keystore $env:USERPROFILE\phiotron-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+   ```
+   Tạo `app/android/key.properties` (đã gitignore) gồm 4 dòng: `storePassword=…`, `keyPassword=…`, `keyAlias=upload`,
+   `storeFile=C:/Users/<tên>/phiotron-upload.jks`. Có file này thì `build.gradle.kts` tự ký bằng khoá thật; không có thì vẫn ký debug.
+   **Sao lưu file .jks + mật khẩu** ở chỗ an toàn (mất là không cập nhật được app nếu chưa bật Play App Signing).
+2. **Build:** trong `app/`: `flutter build appbundle --release` → `build/app/outputs/bundle/release/app-release.aab` (Play nhận `.aab`, không nhận APK).
+3. **Play Console** (tài khoản 25 USD, xác minh danh tính; tên nhà phát triển: Phiotron):
+   - Tài khoản **cá nhân** tạo sau 13/11/2023: phải chạy **thử kín (closed test) ≥ 12 người × 14 ngày liên tục** trước khi lên production.
+   - Bật **Play App Signing** (mặc định).
+   - **Chính sách bảo mật:** dán `kPrivacyPolicyUrl`.
+   - **Quảng cáo:** Không. **Quyền truy cập ứng dụng:** không cần đăng nhập. **Đối tượng mục tiêu:** 13+ (không nhắm trẻ em).
+   - **Xếp hạng nội dung (IARC):** trả lời bảng câu hỏi (công cụ văn phòng, không nội dung nhạy cảm).
+   - **An toàn dữ liệu (Data safety):** điền đúng theo `public-site/privacy.md` (mục Google ML Kit / Play services) — phải khớp hành vi thật.
+   - Không còn quyền nào cần tờ khai (All files access / Photo & Video đã bỏ).
+   - Ảnh chụp màn hình, mô tả: **tự chụp, tự viết**; không dùng tên/ảnh của app khác.
+4. Kiểm **trang bộ nhớ 16 KB** trong báo cáo của Play Console (bắt buộc với bản cập nhật từ 01/02/2027).
+
+### 12.3. iOS — App Store
+1. **Apple Developer Program** 99 USD/năm (cá nhân → trang store hiện tên thật). Chỉ cần thoả thuận **Free Apps** (không khai thuế/ngân hàng).
+2. App Store Connect → tạo app (bundle `com.phuong.pdfOffice`) → điền `kAppStoreUrl` trong `app/lib/features/settings/settings_logic.dart`.
+3. App chỉ chạy trên **iPhone** (`TARGETED_DEVICE_FAMILY = 1`). Privacy manifest: `app/ios/Runner/PrivacyInfo.xcprivacy`.
+4. **App Privacy:** điền theo `public-site/privacy.md`. **Support URL / Privacy URL:** mục 12.1.
+5. **Mã hoá xuất khẩu:** `Info.plist` đã có `ITSAppUsesNonExemptEncryption = YES` (khoá PDF bằng AES) → khi nộp chọn
+   *dùng thuật toán chuẩn không phải của hệ điều hành*; **tắt storefront Pháp** (Pricing and Availability) để khỏi khai ANSSI.
+   Báo cáo tự phân loại mã hoá với BIS (Mỹ) hạn 01/02 hằng năm có thể áp dụng — **cần xác nhận pháp lý**.
+6. **Xếp hạng tuổi:** trả lời bảng câu hỏi mới (có mục Việt Nam).
+7. **Ký + tải IPA:** chưa làm. Cần Mac hoặc CI macOS có chứng chỉ Apple Distribution + provisioning profile + App Store Connect API key
+   (bạn tự tạo, tự lưu vào GitHub Secrets). Thử bằng **TestFlight trên iPhone thật** trước khi nộp duyệt (app chưa từng chạy trên iPhone thật).
+
+### 12.4. Rủi ro còn lại
+- Apple **4.3 (spam)**: nhóm app chuyển đổi PDF rất đông → mô tả + ảnh nhấn điểm khác (xử lý trên máy, không quảng cáo, Office + OCR + dịch).
+- Crash khi reviewer chạy thử → TestFlight trước. Chính sách store đổi theo quý → đọc lại trước mỗi lần phát hành.

@@ -1,20 +1,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Bo nho: Android 7-10 dung READ/WRITE; Android 11+ dung "Truy cap tat ca file". -->
+    <!-- Bo nho: chi Android 7-10 (ghi vao Documents/Phiotron PDF). Android 11+ khong xin quyen bo nho:
+         app chi doc/ghi thu muc cua minh + file nguoi dung chon / mo bang app (chinh sach Google Play). -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+        android:maxSdkVersion="29"
+        tools:replace="android:maxSdkVersion" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29"
         tools:ignore="ScopedStorage" />
-    <uses-permission
-        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-    <!-- Anh (photo_manager / image_picker) Android 13+ -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <!-- Cam han: Google Play han che "Truy cap tat ca file" va quyen doc toan bo anh/video.
+         Chon anh dung Photo Picker cua he thong (khong can quyen). Xoa ca khi plugin tu gop vao. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" tools:node="remove" />
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Khoa app bang van tay / khuon mat / PIN may (local_auth) -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />

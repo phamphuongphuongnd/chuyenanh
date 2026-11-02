@@ -10,6 +10,7 @@ import '../../core/errors/app_error.dart';
 import '../../core/platform/app_platform.dart';
 import '../../core/utils/doc_type.dart';
 import '../../core/utils/file_paths.dart';
+import '../../core/utils/output_directory.dart';
 import '../../data/db/app_database.dart';
 import '../../data/file_scanner/file_scanner.dart';
 import '../../data/file_scanner/scan_sync.dart';
@@ -17,20 +18,55 @@ import '../../data/settings/settings_providers.dart';
 import '../../engines/pdf/pdf_security.dart';
 import 'documents_logic.dart';
 
-/// Thư mục gốc để quét. Chỉ Android mới có `/storage/emulated/0`; máy khác → không quét.
-final scanRootsProvider = Provider<List<String>>(
-  (ref) => Platform.isAndroid ? const ['/storage/emulated/0'] : const [],
+/// Thư mục gốc cố định để quét (test ghi đè). Rỗng ⇒ dùng [platformScanRootsProvider].
+/// Android không còn quét cả `/storage/emulated/0` (Google Play hạn chế quyền
+/// "Truy cập tất cả file"), nên mặc định rỗng trên mọi nền tảng.
+final scanRootsProvider = Provider<List<String>>((ref) => const []);
+
+/// Thư mục lưu cũ trên Android (`Documents/PDF Office`): không ghi nữa, chỉ quét để thấy file cũ.
+const String legacyAndroidOutputDir =
+    '/storage/emulated/0/Documents/$legacyAppFolderName';
+
+/// Thư mục quét trên Android: chỉ vùng của app như iOS — thư mục lưu kết quả [outputDir], thư mục
+/// mặc định / cũ trong `Documents` (file đã lưu trước đó) và Documents riêng của app (có `Imported`).
+/// Bỏ thư mục không tồn tại, bỏ trùng và bỏ thư mục nằm trong một thư mục khác đã có (không quét hai lần).
+Future<List<String>> androidScanRoots({
+  required String outputDir,
+  required String appDocumentsDir,
+  String defaultDir = defaultAndroidOutputDir,
+  String legacyDir = legacyAndroidOutputDir,
+}) async {
+  final roots = <String>[];
+  for (final dir in [outputDir, defaultDir, legacyDir, appDocumentsDir]) {
+    final norm = p.normalize(dir);
+    if (roots.any((r) => p.equals(r, norm) || p.isWithin(r, norm))) continue;
+    if (!await Directory(norm).exists()) continue;
+    roots
+      ..removeWhere((r) => p.isWithin(norm, r))
+      ..add(norm);
+  }
+  return roots;
+}
+
+/// Đường dẫn Documents riêng của app (test ghi đè).
+final appDocumentsDirProvider = FutureProvider<String>(
+  (ref) async => (await getApplicationDocumentsDirectory()).path,
 );
 
 /// Thư mục quét khi [scanRootsProvider] rỗng: iOS chỉ có vùng Documents của chính app
-/// (file nhập từ Tệp + kết quả xuất); nền tảng khác → rỗng như cũ.
+/// (file nhập từ Tệp + kết quả xuất); Android xem [androidScanRoots]; nền tảng khác → rỗng.
 final platformScanRootsProvider = Provider<Future<List<String>> Function()>((
   ref,
 ) {
   final platform = ref.watch(appPlatformProvider);
-  return () async => platform == AppPlatform.ios
-      ? [(await getApplicationDocumentsDirectory()).path]
-      : const <String>[];
+  return () async => switch (platform) {
+    AppPlatform.ios => [await ref.read(appDocumentsDirProvider.future)],
+    AppPlatform.android => await androidScanRoots(
+      outputDir: await ref.read(outputDirectoryProvider.future),
+      appDocumentsDir: await ref.read(appDocumentsDirProvider.future),
+    ),
+    AppPlatform.other => const <String>[],
+  };
 });
 
 final fileScannerProvider = Provider<FileScanner>(
@@ -39,37 +75,59 @@ final fileScannerProvider = Provider<FileScanner>(
 
 /// Quyền truy cập bộ nhớ (để test thay bằng giả).
 abstract interface class StoragePermissionService {
-  /// Đã được cấp quyền đọc toàn bộ bộ nhớ chưa.
+  /// Đã đủ quyền để lưu / liệt kê tài liệu chưa.
   Future<bool> isGranted();
 
-  /// Xin quyền (Android 11+ mở trang cài đặt "Truy cập tất cả file"). `true` nếu được cấp.
+  /// Xin quyền (hộp thoại hệ thống). `true` nếu được cấp.
   Future<bool> request();
 }
 
-/// Android 11+ cần `MANAGE_EXTERNAL_STORAGE`; Android 7–10 dùng quyền đọc bộ nhớ.
+/// Android 10 (API 29) trở xuống mới cần quyền bộ nhớ để ghi / đọc `Documents/`.
+const int legacyStorageMaxSdk = 29;
+
+/// Không bao giờ xin "Truy cập tất cả file" (`MANAGE_EXTERNAL_STORAGE`):
+/// - Android 11+ (API ≥ 30): thư mục của app không cần quyền → luôn `true`.
+/// - Android 7–10 (API ≤ 29): `Permission.storage` (đọc/ghi bộ nhớ ngoài).
+/// - Nền tảng khác / không đọc được mức API: `true`.
 class PermissionHandlerStorage implements StoragePermissionService {
-  const PermissionHandlerStorage();
+  const PermissionHandlerStorage({
+    required this.platform,
+    required this.sdkInt,
+    this.storageGranted = _storageGranted,
+    this.requestStorage = _requestStorage,
+  });
 
-  @override
-  Future<bool> isGranted() async {
-    if (!Platform.isAndroid) return true;
-    return await Permission.manageExternalStorage.isGranted ||
-        await Permission.storage.isGranted;
+  final AppPlatform platform;
+  final Future<int?> Function() sdkInt;
+
+  /// Trạng thái / xin `Permission.storage` (test thay bằng giả).
+  final Future<bool> Function() storageGranted;
+  final Future<bool> Function() requestStorage;
+
+  static Future<bool> _storageGranted() => Permission.storage.isGranted;
+  static Future<bool> _requestStorage() async =>
+      (await Permission.storage.request()).isGranted;
+
+  Future<bool> _needsStoragePermission() async {
+    if (platform != AppPlatform.android) return false;
+    final sdk = await sdkInt();
+    return sdk != null && sdk <= legacyStorageMaxSdk;
   }
 
   @override
-  Future<bool> request() async {
-    if (!Platform.isAndroid) return true;
-    // Android 11+ (R+): mở trang Cài đặt "Truy cập tất cả file".
-    if (await Permission.manageExternalStorage.request().isGranted) return true;
-    // Android ≤10: manageExternalStorage → RESTRICTED (không khả dụng trước API 30);
-    // phải xin READ_EXTERNAL_STORAGE qua permission_handler.storage.
-    return (await Permission.storage.request()).isGranted;
-  }
+  Future<bool> isGranted() async =>
+      !await _needsStoragePermission() || await storageGranted();
+
+  @override
+  Future<bool> request() async =>
+      !await _needsStoragePermission() || await requestStorage();
 }
 
 final storagePermissionProvider = Provider<StoragePermissionService>(
-  (ref) => const PermissionHandlerStorage(),
+  (ref) => PermissionHandlerStorage(
+    platform: ref.watch(appPlatformProvider),
+    sdkInt: () => ref.read(androidSdkIntProvider.future),
+  ),
 );
 
 /// Giai đoạn của lượt quét.
@@ -148,6 +206,8 @@ class ScanController extends Notifier<ScanState> {
       state = state.copyWith(phase: ScanPhase.needsPermission);
       return false;
     }
+    // Android ≤10: lúc chưa có quyền, thư mục lưu đã rơi về vùng riêng của app → tính lại.
+    ref.invalidate(outputDirectoryProvider);
     await _scan();
     return true;
   }
@@ -199,12 +259,6 @@ class ScanController extends Notifier<ScanState> {
       if (!ref.mounted) return;
       // Đọc được 0 thư mục gốc ⇒ thực chất chưa có quyền.
       if (result.unreadableRoots.length == roots.length) {
-        state = state.copyWith(phase: ScanPhase.needsPermission);
-        return;
-      }
-      // Root đọc được nhưng không thấy file và nhiều thư mục con bị chặn
-      // (Android 11-12: READ_EXTERNAL_STORAGE không đủ, cần MANAGE_EXTERNAL_STORAGE).
-      if (result.files.isEmpty && result.skippedDirectories > 0) {
         state = state.copyWith(phase: ScanPhase.needsPermission);
         return;
       }

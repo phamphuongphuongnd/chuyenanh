@@ -8,8 +8,8 @@ design-mobile/
 ├── README.md
 └── screens/
     ├── Phiotron PDF Thiet bi.dc.html   ← trang tổng: 4 thiết bị × 4 màn (mở file này trước)
-    ├── PDF Office Redesign.dc.html     ← bản đầu: iPhone 390×844, 4 màn sáng/tối
-    ├── PDF Office Logo.dc.html         ← 4 phương án logo (đã chọn 1c)
+    ├── Phiotron PDF Redesign.dc.html   ← bản đầu: iPhone 390×844, 4 màn sáng/tối
+    ├── Phiotron PDF Logo.dc.html       ← 4 phương án logo (đã chọn 1c)
     ├── PdfOfficeApp.dc.html            ← component điện thoại (iOS/Android, mọi kích thước)
     ├── PdfOfficeTablet.dc.html         ← component máy tính bảng (dọc/ngang)
     ├── support.js                      ← runtime để mở các file .dc.html

@@ -5,17 +5,19 @@ import 'package:path_provider/path_provider.dart';
 
 import '../platform/app_platform.dart';
 
-/// Tên thư mục con của Documents chứa file người dùng chọn từ ngoài vào (iOS).
+/// Tên thư mục con của Documents (của app) chứa file người dùng chọn từ ngoài vào.
 const String importedFolderName = 'Imported';
 
-/// iOS: `file_picker` trả bản sao TẠM (bị hệ thống dọn). Chép vào `Documents/Imported` để file
-/// còn mãi, hiện trong app Tệp và nằm trong vùng app quét. Android/khác: trả nguyên [path].
+/// iOS/Android: `file_picker` trả bản sao TẠM (bị hệ thống / "Xoá bộ nhớ đệm" dọn). Chép vào
+/// `<app documents>/Imported` để file còn mãi và nằm trong vùng app quét (iOS: hiện cả trong app
+/// Tệp). Nền tảng khác: trả nguyên [path].
 Future<String> importIntoAppDocuments(
   String path, {
   AppPlatform? platform,
   Directory? documentsDir,
 }) async {
-  if ((platform ?? detectPlatform()) != AppPlatform.ios) return path;
+  final current = platform ?? detectPlatform();
+  if (current != AppPlatform.ios && current != AppPlatform.android) return path;
   final docs = documentsDir ?? await getApplicationDocumentsDirectory();
   if (p.isWithin(docs.path, path)) return path;
   final source = File(path);

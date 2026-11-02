@@ -129,7 +129,8 @@ void main() {
       scan: const ScanState(phase: ScanPhase.needsPermission),
     );
 
-    expect(find.text('Allow access to your files'), findsOneWidget);
+    expect(find.text('Allow storage access'), findsOneWidget);
+    expect(find.textContaining('all files'), findsNothing);
     expect(find.text('Grant access'), findsOneWidget);
     expect(find.text('Choose a file instead'), findsOneWidget);
   });
@@ -144,19 +145,22 @@ void main() {
       );
 
       expect(
-        find.text('Grant file access to find all your documents'),
+        find.text('Grant storage permission to save and list your documents'),
         findsOneWidget,
       );
       expect(find.text('a.pdf'), findsOneWidget);
     },
   );
 
-  testWidgets('trống và đã quét xong → thông báo không có tài liệu', (
-    tester,
-  ) async {
-    await _pump(tester);
-    expect(find.text('No documents found'), findsOneWidget);
-  });
+  testWidgets(
+    'trống và đã quét xong → thông báo không có tài liệu + nút chọn file',
+    (tester) async {
+      await _pump(tester);
+      expect(find.text('No documents found'), findsOneWidget);
+      expect(find.widgetWithText(FilledButton, 'Select file'), findsOneWidget);
+      expect(find.text('Grant access'), findsNothing);
+    },
+  );
 
   testWidgets('đang quét và chưa có gì → thanh "đã tìm N file"', (
     tester,

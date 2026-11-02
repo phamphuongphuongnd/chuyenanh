@@ -8,10 +8,17 @@ import 'package:pdf_office/features/settings/app_logo.dart';
 void main() {
   const res = 'android/app/src/main/res';
 
-  test('thẻ trên cùng của logo trùng màu chủ đạo, các thẻ sau theo màu loại file', () {
-    expect(AppLogoPainter.front, AppColors.primary);
-    expect(AppLogoPainter.back, [AppColors.doc, AppColors.xls, AppColors.ppt]);
-  });
+  test(
+    'thẻ trên cùng của logo trùng màu chủ đạo, các thẻ sau theo màu loại file',
+    () {
+      expect(AppLogoPainter.front, AppColors.primary);
+      expect(AppLogoPainter.back, [
+        AppColors.doc,
+        AppColors.xls,
+        AppColors.ppt,
+      ]);
+    },
+  );
 
   testWidgets('AppLogo vẽ đúng kích thước yêu cầu', (tester) async {
     await tester.pumpWidget(

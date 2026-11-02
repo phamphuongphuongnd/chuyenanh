@@ -23,64 +23,43 @@ import 'package:pdf_office/features/image_to_pdf/image_to_pdf_providers.dart';
 import 'package:pdf_office/features/image_to_pdf/image_to_pdf_routes.dart';
 import 'package:pdf_office/features/image_to_pdf/services/camera_service.dart';
 import 'package:pdf_office/features/image_to_pdf/services/crop_service.dart';
-import 'package:pdf_office/features/image_to_pdf/services/gallery_service.dart';
 import 'package:pdf_office/features/image_to_pdf/services/image_processor.dart';
+import 'package:pdf_office/features/image_to_pdf/services/photo_picker_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// PNG 1x1 hợp lệ cho ảnh thu nhỏ / xem trước giả.
+/// PNG 2x2 hợp lệ cho ảnh xem trước giả.
 final Uint8List tinyPng = Uint8List.fromList(
   img.encodePng(img.Image(width: 2, height: 2)),
 );
 
-class FakeGallery implements GalleryService {
-  FakeGallery({
-    this.access = GalleryAccess.granted,
-    this.count = 6,
-    this.albumList,
-  });
+/// Trình chọn ảnh hệ thống giả: mỗi lần mở trả về lô kế tiếp trong [batches]
+/// (hết lô → rỗng = huỷ). [prepareFile] trả đường dẫn đã "đổi" theo [converted].
+class FakePhotoPicker implements PhotoPickerService {
+  FakePhotoPicker([List<List<String>>? batches])
+    : batches = batches ?? [];
 
-  GalleryAccess access;
-  final int count;
-  final List<GalleryAlbum>? albumList;
-  int requestCount = 0;
-  int openSettingsCount = 0;
-  final List<String> resolved = [];
+  final List<List<String>> batches;
+  Object? error;
+  final List<int?> limits = [];
+  final List<String> prepared = [];
+
+  /// Đường dẫn gốc → đường dẫn sau khi đổi định dạng (`null` = không đọc được).
+  final Map<String, String?> converted = {};
+
+  int get calls => limits.length;
 
   @override
-  Future<GalleryAccess> requestAccess() async {
-    requestCount++;
-    return access;
+  Future<List<String>> pickImages({int? limit}) async {
+    limits.add(limit);
+    if (error != null) throw error!;
+    return batches.isEmpty ? const [] : batches.removeAt(0);
   }
 
   @override
-  Future<List<GalleryAlbum>> albums() async =>
-      albumList ?? [GalleryAlbum(id: 'all', name: 'Recent', count: count)];
-
-  @override
-  Future<List<GalleryAsset>> assets(
-    GalleryAlbum album, {
-    required int page,
-    required int pageSize,
-  }) async {
-    if (page > 0) return const [];
-    return [
-      for (var i = 0; i < count; i++)
-        GalleryAsset(id: '${album.id}_$i', width: 400, height: 300),
-    ];
+  Future<String?> prepareFile(String path, Directory workDir) async {
+    prepared.add(path);
+    return converted.containsKey(path) ? converted[path] : path;
   }
-
-  @override
-  Future<Uint8List?> thumbnail(GalleryAsset asset, {int size = 256}) async =>
-      tinyPng;
-
-  @override
-  Future<String?> resolveFile(GalleryAsset asset, Directory workDir) async {
-    resolved.add(asset.id);
-    return '/fake/${asset.id}.jpg';
-  }
-
-  @override
-  Future<void> openSettings() async => openSettingsCount++;
 }
 
 class FakeCamera implements CameraService {
@@ -187,20 +166,20 @@ class FakeEngine implements ImageToPdfEngine {
 /// Dựng app thử: router thật của feature + trang chủ giả ở `/`.
 class Harness {
   Harness({
-    FakeGallery? gallery,
+    FakePhotoPicker? picker,
     FakeCamera? camera,
     FakeCrop? crop,
     FakeProcessor? processor,
     FakeEngine? engine,
     required this.tmp,
-  }) : gallery = gallery ?? FakeGallery(),
+  }) : picker = picker ?? FakePhotoPicker(),
        camera = camera ?? FakeCamera(),
        crop = crop ?? FakeCrop(),
        processor = processor ?? FakeProcessor(),
        engine = engine ?? FakeEngine();
 
   final Directory tmp;
-  final FakeGallery gallery;
+  final FakePhotoPicker picker;
   final FakeCamera camera;
   final FakeCrop crop;
   final FakeProcessor processor;
@@ -231,7 +210,7 @@ class Harness {
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          galleryServiceProvider.overrideWithValue(gallery),
+          photoPickerServiceProvider.overrideWithValue(picker),
           cameraServiceProvider.overrideWithValue(camera),
           cropServiceProvider.overrideWithValue(crop),
           imageProcessorProvider.overrideWithValue(processor),

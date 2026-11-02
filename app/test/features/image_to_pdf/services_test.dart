@@ -7,12 +7,12 @@ import 'package:image/image.dart' as img;
 import 'package:image_ops/image_ops.dart' as ops;
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/data/db/app_database.dart';
-import 'package:pdf_office/features/image_to_pdf/services/gallery_service.dart';
 import 'package:pdf_office/features/image_to_pdf/services/image_processor.dart';
 import 'package:pdf_office/features/image_to_pdf/services/output_registry.dart';
+import 'package:pdf_office/features/image_to_pdf/services/photo_picker_service.dart';
 
 void main() {
-  group('gallery_service (hàm thuần)', () {
+  group('photo_picker_service (hàm thuần)', () {
     test('isDirectlyDecodableMime', () {
       expect(isDirectlyDecodableMime('image/jpeg'), isTrue);
       expect(isDirectlyDecodableMime('IMAGE/PNG'), isTrue);
@@ -28,6 +28,86 @@ void main() {
       expect(fitWithin(800, 600, 3000), (width: 800, height: 600));
       expect(fitWithin(0, 0, 3000), (width: 3000, height: 3000));
     });
+
+    test('detectImageMime đọc magic number', () {
+      List<int> ftyp(String brand) => [
+        0, 0, 0, 0x18, ...'ftyp'.codeUnits, ...brand.codeUnits, 0, 0, 0, 0,
+      ];
+      expect(detectImageMime(img.encodeJpg(img.Image(width: 2, height: 2))), 'image/jpeg');
+      expect(detectImageMime(img.encodePng(img.Image(width: 2, height: 2))), 'image/png');
+      expect(detectImageMime(img.encodeGif(img.Image(width: 2, height: 2))), 'image/gif');
+      expect(detectImageMime(img.encodeBmp(img.Image(width: 2, height: 2))), 'image/bmp');
+      expect(
+        detectImageMime([...'RIFF'.codeUnits, 0, 0, 0, 0, ...'WEBP'.codeUnits]),
+        'image/webp',
+      );
+      expect(detectImageMime(ftyp('heic')), 'image/heic');
+      expect(detectImageMime(ftyp('mif1')), 'image/heif');
+      expect(detectImageMime(ftyp('avif')), 'image/avif');
+      expect(detectImageMime(ftyp('isom')), isNull, reason: 'video MP4');
+      expect(detectImageMime(const [1, 2, 3]), isNull);
+      expect(detectImageMime(const []), isNull);
+      // ảnh cần đổi định dạng
+      expect(isDirectlyDecodableMime(detectImageMime(ftyp('heic'))), isFalse);
+    });
+
+    test('encodeRgbaAsJpeg ra JPEG đúng kích thước', () {
+      final rgba = Uint8List(4 * 2 * 4)..fillRange(0, 32, 200);
+      final jpg = encodeRgbaAsJpeg(rgba, 4, 2);
+      final decoded = img.decodeJpg(jpg)!;
+      expect((decoded.width, decoded.height), (4, 2));
+    });
+  });
+
+  group('ImagePickerPhotoPickerService.prepareFile', () {
+    late Directory tmp;
+    const service = ImagePickerPhotoPickerService();
+
+    setUp(() => tmp = Directory.systemTemp.createTempSync('img2pdf_pick'));
+    tearDown(() => tmp.deleteSync(recursive: true));
+
+    test('JPG/PNG/WebP… giữ nguyên đường dẫn', () async {
+      final f = File(p.join(tmp.path, 'a.png'))
+        ..writeAsBytesSync(img.encodePng(img.Image(width: 3, height: 3)));
+      final work = Directory(p.join(tmp.path, 'work'));
+      expect(await service.prepareFile(f.path, work), f.path);
+      expect(work.existsSync(), isFalse, reason: 'không tạo file tạm');
+    });
+
+    test('file không tồn tại → null', () async {
+      expect(
+        await service.prepareFile(p.join(tmp.path, 'missing.jpg'), tmp),
+        isNull,
+      );
+    });
+
+    testWidgets('định dạng lạ không giải mã được → null', (tester) async {
+      final f = File(p.join(tmp.path, 'x.heic'))
+        ..writeAsBytesSync(List.filled(64, 7));
+      final out = await tester.runAsync(
+        () => service.prepareFile(f.path, Directory(p.join(tmp.path, 'w'))),
+      );
+      expect(out, isNull);
+    });
+  });
+
+  testWidgets('convertImageFileToJpeg: giải mã bằng codec hệ thống, thu nhỏ, ra JPEG', (
+    tester,
+  ) async {
+    final tmp = Directory.systemTemp.createTempSync('img2pdf_conv');
+    addTearDown(() => tmp.deleteSync(recursive: true));
+    final src = File(p.join(tmp.path, 'src.png'))
+      ..writeAsBytesSync(img.encodePng(img.Image(width: 40, height: 20)));
+    final dst = p.join(tmp.path, 'out.jpg');
+
+    final out = await tester.runAsync(
+      () => convertImageFileToJpeg(src.path, dst, maxSide: 10),
+    );
+    expect(out, dst);
+    final bytes = File(dst).readAsBytesSync();
+    expect(detectImageMime(bytes), 'image/jpeg');
+    final decoded = img.decodeJpg(bytes)!;
+    expect((decoded.width, decoded.height), (10, 5));
   });
 
   group('output_registry', () {

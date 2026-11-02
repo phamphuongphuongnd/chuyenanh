@@ -4,10 +4,11 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme.dart';
 import 'app_logo.dart';
+import 'privacy_screen.dart';
 import 'settings_logic.dart';
 
-/// Màn Giới thiệu: logo, tên app, phiên bản, ghi chú ngoại tuyến + Syncfusion Community,
-/// nút mở trang giấy phép mã nguồn mở.
+/// Màn Giới thiệu: logo, tên app, phiên bản, ghi chú xử lý trên máy + Syncfusion Community,
+/// nút mở trang hỗ trợ ([kSupportUrl]) và trang giấy phép mã nguồn mở.
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
@@ -54,6 +55,13 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(l.settings_aboutSyncfusion, style: body),
           const SizedBox(height: 24),
+          OutlinedButton.icon(
+            key: const ValueKey('about_support'),
+            onPressed: () => openSettingsLink(context, kSupportUrl),
+            icon: const Icon(Symbols.help_rounded),
+            label: Text(l.settings_support),
+          ),
+          const SizedBox(height: 12),
           OutlinedButton.icon(
             key: const ValueKey('about_licenses'),
             onPressed: () => showLicensePage(

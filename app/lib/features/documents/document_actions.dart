@@ -20,6 +20,7 @@ import '../../core/utils/file_paths.dart';
 import '../../core/widgets/widgets.dart';
 import '../../data/db/app_database.dart';
 import 'documents_logic.dart';
+import 'documents_providers.dart';
 
 /// Mở [path] bằng viewer phù hợp; lỗi hiện SnackBar thay vì ném ra UI.
 Future<void> openDocumentWithFeedback(BuildContext context, String path) async {
@@ -47,6 +48,13 @@ Future<void> pickAndOpenDocument(BuildContext context) async {
   if (picked0 == null) return;
   final path = await importIntoAppDocuments(picked0);
   if (!context.mounted) return;
+  // Vừa chép vào `Imported` → quét lại để file hiện ngay trong tab Tập tin.
+  if (path != picked0) {
+    ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(scanControllerProvider.notifier).refresh();
+  }
   await openDocumentWithFeedback(context, path);
 }
 

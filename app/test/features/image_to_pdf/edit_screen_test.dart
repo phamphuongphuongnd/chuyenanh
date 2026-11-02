@@ -22,6 +22,8 @@ void main() {
     FakeProcessor? processor,
     FakeCrop? crop,
     FakeEngine? engine,
+    FakePhotoPicker? picker,
+    FakeCamera? camera,
     List<String> paths = _paths,
   }) async {
     tester.view.physicalSize = const Size(400, 900);
@@ -32,6 +34,8 @@ void main() {
       processor: processor,
       crop: crop,
       engine: engine,
+      picker: picker,
+      camera: camera,
     );
     await h.pump(tester, extra: paths);
     return h;
@@ -200,22 +204,36 @@ void main() {
     });
   });
 
-  testWidgets('thêm ảnh từ màn chọn ảnh', (tester) async {
-    final h = await open(tester);
+  testWidgets('thêm ảnh từ trình chọn ảnh hệ thống', (tester) async {
+    final picker = FakePhotoPicker([
+      ['/d.jpg', '/e.heic'],
+    ])..converted['/e.heic'] = '/work/e.jpg';
+    final h = await open(tester, picker: picker);
     await tester.tap(find.byKey(const ValueKey('add_button')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('asset_all_0')), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('asset_all_0')));
-    await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('asset_all_5')));
-    await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('next_button')));
-    await tester.pumpAndSettle();
 
+    expect(picker.limits, [97], reason: 'giới hạn = số chỗ còn lại (100 - 3)');
     expect(find.text('Edit images'), findsOneWidget);
     expect(find.text('4 / 5'), findsOneWidget, reason: 'ảnh mới thêm đầu tiên được chọn xem');
     expect(find.text('Create PDF (5)'), findsOneWidget);
-    expect(h.gallery.resolved, ['all_0', 'all_5']);
+    expect(picker.prepared, ['/d.jpg', '/e.heic']);
+    expect(h.processor.previews.any((e) => e.$1 == '/work/e.jpg'), isTrue);
+  });
+
+  testWidgets('thêm ảnh chụp camera: huỷ trình chọn rồi bấm Chụp ảnh', (
+    tester,
+  ) async {
+    final h = await open(tester, camera: FakeCamera('/cam/shot.jpg'));
+    await tester.tap(find.byKey(const ValueKey('add_button')));
+    await tester.pumpAndSettle();
+    // trình chọn trả rỗng (huỷ) → vẫn ở màn chọn nguồn
+    expect(find.byKey(const ValueKey('take_photo_button')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('take_photo_button')));
+    await tester.pumpAndSettle();
+    expect(h.camera.calls, 1);
+    expect(find.text('4 / 4'), findsOneWidget, reason: 'ảnh chụp nối vào cuối');
+    expect(find.text('Create PDF (4)'), findsOneWidget);
   });
 
   group('thoát', () {

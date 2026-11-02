@@ -17,11 +17,11 @@
   "docs_emptyFavorites": "暂无收藏",
   "docs_emptyFavoritesHint": "点按文件上的星标即可添加到这里",
   "docs_emptySearch": "没有匹配的文件",
-  "docs_permissionTitle": "允许访问文件",
-  "docs_permissionMessage": "Phiotron PDF 需要访问所有文件才能找到设备上的文档。",
+  "docs_permissionTitle": "允许访问存储",
+  "docs_permissionMessage": "Phiotron PDF 需要存储权限才能保存并列出您的文档。",
   "docs_grantPermission": "授予权限",
   "docs_pickFileInstead": "改为选择文件",
-  "docs_permissionBanner": "授予文件访问权限以查找所有文档",
+  "docs_permissionBanner": "授予存储权限以保存并列出您的文档",
   "docs_scanning": "正在扫描… 已找到 {count} 个文件",
   "@docs_scanning": {
     "placeholders": {

@@ -63,10 +63,7 @@ class AppLogoPainter extends CustomPainter {
       ..moveTo(212, 336)
       ..lineTo(212, 196)
       ..lineTo(260, 196)
-      ..arcToPoint(
-        const Offset(260, 284),
-        radius: const Radius.circular(44),
-      )
+      ..arcToPoint(const Offset(260, 284), radius: const Radius.circular(44))
       ..lineTo(212, 284);
     canvas.drawPath(
       p,

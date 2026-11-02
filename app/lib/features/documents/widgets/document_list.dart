@@ -89,6 +89,9 @@ class DocumentList extends ConsumerWidget {
                                       : _typeOfCategory(category!),
                                 ),
                                 title: l.docs_emptyAll,
+                                // App chỉ liệt kê thư mục của mình → mời chọn file từ máy.
+                                actionLabel: l.core_selectFile,
+                                onAction: () => pickAndOpenDocument(context),
                               ),
                       )
                     : CustomScrollView(

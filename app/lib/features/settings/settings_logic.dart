@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../../core/platform/app_platform.dart';
 import '../../core/utils/output_directory.dart';
 import '../../data/settings/settings_providers.dart';
 import 'settings_providers.dart';
@@ -10,28 +11,41 @@ import 'settings_providers.dart';
 /// (chưa có gói đọc phiên bản app — xem "Cần MÓNG bổ sung").
 const String kAppVersion = '1.0.0';
 
-/// Link tải APK mới nhất: file đính kèm của GitHub Release gắn tag `android-latest`
-/// (Release cho file tới 2GB, còn file trong repo bị chặn trên 100MB).
-const String kAppDownloadUrl =
-    'https://github.com/phamphuongphuongnd/chuyenanh/releases/download/android-latest/PDFOffice.apk';
-
 /// Địa chỉ nhận phản hồi (người gửi là tài khoản mail đang dùng trên máy bấm nút).
 const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';
 
-/// Link cài cho iPhone: trang GitHub Release gắn tag `ios-latest` (có ghi chú cách cài bằng Sideloadly).
-/// Không trỏ thẳng file .ipa vì IPA không ký không mở được bằng cách bấm tải.
-const String kIosDownloadUrl =
-    'https://github.com/phamphuongphuongnd/chuyenanh/releases/tag/ios-latest';
+/// Trang ứng dụng trên Google Play (gói `com.phuong.pdfoffice`).
+const String kPlayStoreUrl =
+    'https://play.google.com/store/apps/details?id=com.phuong.pdfoffice';
 
-/// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link tải cho CẢ hai hệ điều hành, trên mọi nền tảng
-/// (người nhận dùng máy nào thì bấm link của máy đó).
+/// Trang ứng dụng trên App Store. Rỗng tới khi App Store Connect cấp id
+/// (dạng `https://apps.apple.com/app/id<số>`); rỗng thì lời chia sẻ trên iOS không kèm link.
+const String kAppStoreUrl = '';
+
+/// Chính sách bảo mật công khai (GitHub Pages, nguồn ở `public-site/privacy.md`).
+/// Phải khớp với nội dung trong app và hành vi thật của app.
+const String kPrivacyPolicyUrl =
+    'https://phamphuongphuongnd.github.io/phiotron-pdf/privacy';
+
+/// Trang hỗ trợ công khai (nguồn ở `public-site/index.md`).
+const String kSupportUrl = 'https://phamphuongphuongnd.github.io/phiotron-pdf/';
+
+/// Nội dung gửi đi khi chia sẻ ứng dụng: lời giới thiệu + link cửa hàng của đúng nền tảng.
+/// - Android: kèm link Google Play.
+/// - iOS: chỉ kèm link App Store khi đã có [kAppStoreUrl]; không bao giờ nhắc Android / Google Play
+///   (App Store 2.3.10 cấm nhắc nền tảng khác).
+/// - Khác: chỉ lời giới thiệu.
 ///
-///     <lời giới thiệu>
-///
-///     Android: <link APK>
-///     iPhone: <link trang cài iOS>
-String appShareMessage(String intro) =>
-    '$intro\n\nAndroid: $kAppDownloadUrl\niPhone: $kIosDownloadUrl';
+/// [appStoreUrl] chỉ để test ghi đè.
+String appShareMessage(
+  String intro,
+  AppPlatform platform, {
+  String appStoreUrl = kAppStoreUrl,
+}) => switch (platform) {
+  AppPlatform.android => '$intro\n\n$kPlayStoreUrl',
+  AppPlatform.ios when appStoreUrl.isNotEmpty => '$intro\n\n$appStoreUrl',
+  _ => intro,
+};
 
 /// `true` nếu ghi được file vào [path] (thư mục phải tồn tại). Thử bằng cách tạo rồi xoá
 /// một file tạm — không để lại dấu vết.
