@@ -21,6 +21,15 @@ abstract class TtsEngine {
 
   Future<void> setLanguage(String locale);
 
+  /// Tên (gói) các bộ đọc đã cài trên máy (Android; nơi khác rỗng).
+  Future<List<String>> engines();
+
+  /// Bộ đọc đang dùng (mặc định của máy, hoặc bộ đã [useEngine]); `null` nếu không biết.
+  Future<String?> currentEngine();
+
+  /// Chuyển bộ đọc cho phiên của app (không đổi mặc định của hệ thống).
+  Future<void> useEngine(String engine);
+
   /// Giọng dùng được cho [locale] (đã lọc, chỉ giọng offline).
   Future<List<TtsVoice>> voicesFor(String locale);
 
@@ -56,6 +65,7 @@ class FlutterTtsEngine extends TtsEngine {
   }
 
   final FlutterTts _tts;
+  String? _current;
 
   Future<void> _init() async {
     await _guard(() async {
@@ -91,6 +101,25 @@ class FlutterTtsEngine extends TtsEngine {
   @override
   Future<void> setLanguage(String locale) =>
       _guard(() => _tts.setLanguage(locale));
+
+  @override
+  Future<List<String>> engines() async {
+    final r = await _guard<dynamic>(() => _tts.getEngines);
+    return r is List ? [for (final e in r) '$e'] : const [];
+  }
+
+  @override
+  Future<String?> currentEngine() async {
+    if (_current != null) return _current;
+    final r = await _guard<dynamic>(() => _tts.getDefaultEngine);
+    return _current = r?.toString();
+  }
+
+  @override
+  Future<void> useEngine(String engine) async {
+    await _guard(() => _tts.setEngine(engine));
+    _current = engine;
+  }
 
   @override
   Future<List<TtsVoice>> voicesFor(String locale) async =>

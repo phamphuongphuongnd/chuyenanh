@@ -64,6 +64,50 @@ void main() {
     expect(c.status, ReadAloudStatus.idle);
   });
 
+  Future<ReadAloudController> withEngines(FakeTtsEngine e) async {
+    final c = ReadAloudController(engine: e, paragraphs: ['A']);
+    addTearDown(c.dispose);
+    await c.setLocale('vi-VN');
+    return c;
+  }
+
+  test('bộ đọc mặc định thiếu tiếng, bộ thứ hai có → chuyển sang và đọc được', () async {
+    final e = FakeTtsEngine(
+      installedEngines: ['samsung', 'google'],
+      engineHasLanguage: {'samsung': false, 'google': true},
+      current: 'samsung',
+    );
+    final c = await withEngines(e);
+    expect(e.engineSwitches, ['google']);
+    expect(e.current, 'google');
+    expect(c.status, ReadAloudStatus.idle);
+    await c.play();
+    expect(e.spoken, ['A']);
+  });
+
+  test('không bộ đọc nào có tiếng → unavailable, trả về bộ ban đầu', () async {
+    final e = FakeTtsEngine(
+      installedEngines: ['samsung', 'google'],
+      engineHasLanguage: {'samsung': false, 'google': false},
+      current: 'samsung',
+    );
+    final c = await withEngines(e);
+    expect(c.status, ReadAloudStatus.unavailable);
+    expect(e.engineSwitches, ['google', 'samsung']);
+    expect(e.current, 'samsung');
+  });
+
+  test('bộ đọc mặc định đã có tiếng → không đổi bộ', () async {
+    final e = FakeTtsEngine(
+      installedEngines: ['samsung', 'google'],
+      engineHasLanguage: {'samsung': true, 'google': true},
+      current: 'samsung',
+    );
+    final c = await withEngines(e);
+    expect(c.status, ReadAloudStatus.idle);
+    expect(e.engineSwitches, isEmpty);
+  });
+
   test('đọc lần lượt, bỏ đoạn rỗng, hết thì về đầu', () async {
     final (c, e, ann) = await _ready(['Một.', '', 'Ba.']);
     await c.play();

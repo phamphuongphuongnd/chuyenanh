@@ -8,16 +8,30 @@ import '../platform/app_platform.dart';
 /// Tên thư mục con của Documents (của app) chứa file người dùng chọn từ ngoài vào.
 const String importedFolderName = 'Imported';
 
+/// Gốc bộ nhớ chung trên Android (file_picker trả bản sao tạm thì nằm ngoài, trong cache của app).
+const String androidSharedStorageRoot = '/storage/emulated/0';
+
 /// iOS/Android: `file_picker` trả bản sao TẠM (bị hệ thống / "Xoá bộ nhớ đệm" dọn). Chép vào
 /// `<app documents>/Imported` để file còn mãi và nằm trong vùng app quét (iOS: hiện cả trong app
 /// Tệp). Nền tảng khác: trả nguyên [path].
+///
+/// Android đã có quyền đọc tất cả file ([hasFullStorageAccess]) và [path] là đường dẫn thật dưới
+/// bộ nhớ chung [sharedStorageRoot] (không phải bản sao tạm trong cache của app) → mở thẳng bản
+/// gốc, không chép (tránh một file hiện hai lần). iOS luôn chép.
 Future<String> importIntoAppDocuments(
   String path, {
   AppPlatform? platform,
   Directory? documentsDir,
+  bool hasFullStorageAccess = false,
+  String sharedStorageRoot = androidSharedStorageRoot,
 }) async {
   final current = platform ?? detectPlatform();
   if (current != AppPlatform.ios && current != AppPlatform.android) return path;
+  if (current == AppPlatform.android &&
+      hasFullStorageAccess &&
+      p.isWithin(sharedStorageRoot, path)) {
+    return path;
+  }
   final docs = documentsDir ?? await getApplicationDocumentsDirectory();
   if (p.isWithin(docs.path, path)) return path;
   final source = File(path);

@@ -33,6 +33,16 @@ class _Engine extends TtsEngine {
     return available;
   }
 
+  // Chỉ có một bộ đọc (không có bộ khác để chuyển) → hành vi cũ giữ nguyên.
+  @override
+  Future<List<String>> engines() async => const [];
+
+  @override
+  Future<String?> currentEngine() async => null;
+
+  @override
+  Future<void> useEngine(String engine) async {}
+
   @override
   Future<void> setLanguage(String locale) async => languages.add(locale);
 

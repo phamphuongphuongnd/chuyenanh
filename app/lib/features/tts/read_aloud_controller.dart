@@ -126,7 +126,7 @@ class ReadAloudController extends ChangeNotifier {
   }
 
   Future<void> _checkLanguage(String locale) async {
-    final ok = await engine.isLanguageAvailable(locale);
+    final ok = await _ensureLanguage(locale);
     if (_disposed || _locale != locale) return;
     if (!ok) {
       _status = ReadAloudStatus.unavailable;
@@ -140,6 +140,20 @@ class ReadAloudController extends ChangeNotifier {
     _voices = voices;
     _status = ReadAloudStatus.idle;
     _notify();
+  }
+
+  /// Bộ đọc hiện tại không có [locale] → thử lần lượt các bộ đã cài, giữ bộ đầu tiên có.
+  /// Không bộ nào có thì trả về bộ ban đầu. Bộ đã chọn được engine nhớ cho cả phiên.
+  Future<bool> _ensureLanguage(String locale) async {
+    if (await engine.isLanguageAvailable(locale)) return true;
+    final current = await engine.currentEngine();
+    for (final name in await engine.engines()) {
+      if (name == current) continue;
+      await engine.useEngine(name);
+      if (await engine.isLanguageAvailable(locale)) return true;
+    }
+    if (current != null) await engine.useEngine(current);
+    return false;
   }
 
   Future<void> play() async {

@@ -3,9 +3,21 @@ import 'package:pdf_office/features/tts/tts_logic.dart';
 
 /// Engine giả: ghi lại lời gọi, [finish] giả lập đọc xong một lần.
 class FakeTtsEngine extends TtsEngine {
-  FakeTtsEngine({this.available = true, this.voices = const []});
+  FakeTtsEngine({
+    this.available = true,
+    this.voices = const [],
+    this.installedEngines = const [],
+    this.engineHasLanguage = const {},
+    this.current,
+  });
 
   bool available;
+
+  /// Bộ đọc đã cài; [engineHasLanguage] (tên → có ngôn ngữ) thay [available] khi không rỗng.
+  List<String> installedEngines;
+  Map<String, bool> engineHasLanguage;
+  String? current;
+  final engineSwitches = <String>[];
   List<TtsVoice> voices;
 
   final checked = <String>[];
@@ -18,7 +30,20 @@ class FakeTtsEngine extends TtsEngine {
   @override
   Future<bool> isLanguageAvailable(String locale) async {
     checked.add(locale);
+    if (engineHasLanguage.isNotEmpty) return engineHasLanguage[current] ?? false;
     return available;
+  }
+
+  @override
+  Future<List<String>> engines() async => installedEngines;
+
+  @override
+  Future<String?> currentEngine() async => current;
+
+  @override
+  Future<void> useEngine(String engine) async {
+    engineSwitches.add(engine);
+    current = engine;
   }
 
   @override

@@ -37,6 +37,22 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Chỉ giữ 2 ABI máy thật dùng (32-bit A13 + 64-bit). Thư viện native của ML Kit đi kèm cả x86_64
+        // (~35MB) nhưng app không có libflutter/libapp x86_64 nên không bao giờ chạy trên ABI đó.
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // Nén các file .so trong APK (mặc định để nguyên, không nén) -> APK tải về nhỏ hơn nhiều.
+            // Đổi lại cài xong chiếm thêm dung lượng máy vì .so được giải nén ra bộ nhớ.
+            useLegacyPackaging = true
+        }
+        resources {
+            excludes += listOf("META-INF/*.version", "META-INF/DEPENDENCIES", "DebugProbesKt.bin", "kotlin-tooling-metadata.json")
+        }
     }
 
     signingConfigs {

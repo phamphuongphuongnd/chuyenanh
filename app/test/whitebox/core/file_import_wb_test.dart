@@ -135,4 +135,45 @@ void main() {
     expect(p.basename(r), 'a (1).pdf');
     expect(content, 'xyz');
   });
+
+  group('Android có quyền đọc tất cả file', () {
+    Future<String> impA(String path, {bool full = true}) => importIntoAppDocuments(
+      path,
+      platform: AppPlatform.android,
+      documentsDir: docs,
+      hasFullStorageAccess: full,
+      sharedStorageRoot: p.join(tmp.path, 'shared'),
+    );
+
+    test('1.12 file thật dưới bộ nhớ chung ⇒ mở thẳng bản gốc, không chép', () async {
+      final s = src('shared/Download', 'a.pdf', 'one');
+      final r = await impA(s.path);
+      expect(r, s.path);
+      expect(imported().existsSync(), isFalse);
+    });
+
+    test('1.13 bản sao tạm trong cache (ngoài bộ nhớ chung) ⇒ vẫn chép vào Imported', () async {
+      final s = src('cache/file_picker', 'a.pdf', 'one');
+      final r = await impA(s.path);
+      expect(r, p.join(docs.path, importedFolderName, 'a.pdf'));
+    });
+
+    test('1.14 chưa có quyền, file ở bộ nhớ chung ⇒ vẫn chép', () async {
+      final s = src('shared/Download', 'a.pdf', 'one');
+      final r = await impA(s.path, full: false);
+      expect(r, p.join(docs.path, importedFolderName, 'a.pdf'));
+    });
+
+    test('1.15 iOS bỏ qua cờ quyền ⇒ luôn chép', () async {
+      final s = src('shared/Download', 'a.pdf', 'one');
+      final r = await importIntoAppDocuments(
+        s.path,
+        platform: AppPlatform.ios,
+        documentsDir: docs,
+        hasFullStorageAccess: true,
+        sharedStorageRoot: p.join(tmp.path, 'shared'),
+      );
+      expect(r, p.join(docs.path, importedFolderName, 'a.pdf'));
+    });
+  });
 }

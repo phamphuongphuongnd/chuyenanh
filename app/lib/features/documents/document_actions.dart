@@ -38,15 +38,23 @@ Future<void> openDocumentWithFeedback(BuildContext context, String path) async {
   }
 }
 
+/// Chép file vừa chọn vào `Imported`, trừ khi app đã có quyền đọc tất cả file và file là bản gốc
+/// ở bộ nhớ chung (khi đó mở thẳng, không tạo bản trùng).
+Future<String> _importPicked(ProviderContainer container, String picked) async {
+  final granted = await container.read(storagePermissionProvider).isGranted();
+  return importIntoAppDocuments(picked, hasFullStorageAccess: granted);
+}
+
 /// Chế độ chọn file (khi chưa có quyền quét): chọn một tài liệu rồi mở.
 Future<void> pickAndOpenDocument(BuildContext context) async {
+  final container = ProviderScope.containerOf(context, listen: false);
   final picked = await FilePicker.pickFile(
     type: FileType.custom,
     allowedExtensions: documentExtensions.toList(),
   );
   final picked0 = picked?.path;
   if (picked0 == null) return;
-  final path = await importIntoAppDocuments(picked0);
+  final path = await _importPicked(container, picked0);
   if (!context.mounted) return;
   // Vừa chép vào `Imported` → quét lại để file hiện ngay trong tab Tập tin.
   if (path != picked0) {
@@ -183,13 +191,14 @@ Future<void> deleteDocument(
 /// Mở công cụ [tool]. Công cụ bắt buộc có PDF (`pdfRequired`) thì chọn PDF trước.
 Future<void> launchTool(BuildContext context, ToolSpec tool) async {
   if (tool.inputType == ToolInputType.pdfRequired) {
+    final container = ProviderScope.containerOf(context, listen: false);
     final picked = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
     );
     final picked0 = picked?.path;
     if (picked0 == null) return;
-    final path = await importIntoAppDocuments(picked0);
+    final path = await _importPicked(container, picked0);
     if (!context.mounted) return;
     await context.push(tool.route, extra: path);
     return;
