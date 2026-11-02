@@ -33,8 +33,8 @@ sources:
 - **Classifier giấy phép:** văn bản MPL-2.0 có nhắc "GNU Affero" → phải kiểm `Mozilla Public License` **trước** các mẫu GNU; LGPL trước GPL.
   `sky_engine` là file gộp 1.608 thông báo → phân loại theo từng đoạn (`MULTIPLE`).
 - **Syncfusion Flutter không có key**: app chạy được dù chưa đăng ký, nhưng giấy phép cấm dùng khi chưa có Community License.
-  Đơn đã nộp 30/10 (cá nhân / Hobbyist, ticket **#886739**, xác minh bằng hồ sơ Xing vì LinkedIn bị chặn ở VN). Email "7-day trial key" bỏ qua;
-  chờ email duyệt → sửa README mục 11 thành "đã có giấy phép". Không dán key vào code/commit. Xem [[0002-syncfusion-community]].
+  **Đã duyệt 30/10/2026 19:16** (cá nhân / Hobbyist, ticket **#886739**, xác minh bằng hồ sơ Xing vì LinkedIn bị chặn ở VN; sau đó
+  phiếu tự đóng — bình thường). Email "7-day trial key" bỏ qua. Điều kiện kèm theo: mã nguồn do chính mình sở hữu, không phải khách hàng. Không dán key vào code/commit. Xem [[0002-syncfusion-community]].
 - **Lịch sử git còn bản cũ** (tài liệu nhắc app tham khảo, PDF nhúng font Windows từ commit `ffc6558`) → cách xử lý là **khoá repo (private)**,
   không viết lại lịch sử. Store không cần repo công khai; chỉ cần URL công khai cho Chính sách bảo mật + Support URL (đặt chỗ khác).
 - Commit khi **chat khác đang sửa cùng file**: stage riêng dòng của mình bằng `git show HEAD:file` → thay chuỗi → `git hash-object -w` →

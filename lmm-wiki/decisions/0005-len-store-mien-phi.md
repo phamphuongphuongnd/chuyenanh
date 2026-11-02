@@ -17,14 +17,14 @@ tiêu chuẩn `D:\Phuong\tieu-chuan-ban-app-toan-cau.md` và muốn lên store m
 **Đã chốt với người dùng:**
 - Phát hành **Google Play + App Store**, **miễn phí, không quảng cáo, không mua trong app, không tài khoản**
   ⇒ Apple chỉ cần thoả thuận Free Apps; không thuế/thanh toán.
-- **Giai đoạn 1 = bản quyền** (đã xong, xem [[ban-quyen-giay-phep]]). **Giai đoạn 2 = chính sách store** (chưa làm).
+- **Giai đoạn 1 = bản quyền** (đã xong, xem [[ban-quyen-giay-phep]]). **Giai đoạn 2 = chính sách store** (đã làm 2/11, xem bảng dưới).
 - Khoá repo GitHub (private) **sau khi** không còn ai cần link tải APK GitHub; store không cần repo công khai.
 - Tên nhà phát triển / Company khi đăng ký: **Phiotron** (cá nhân; App Store tài khoản cá nhân sẽ hiện tên thật).
 
-**Giai đoạn 2 — đã chốt cách làm, chưa code:**
+**Giai đoạn 2 — đã làm (commit `6352ec7`, 2/11), trừ ký/tải IPA:**
 | Vấn đề (theo mức nguy hiểm) | Cách đã chốt |
 |---|---|
-| `MANAGE_EXTERNAL_STORAGE` (Play hạn chế "All files access") | **Bỏ**; Android làm như iOS: thư mục của app + file chọn bằng bộ chọn hệ thống + "Mở bằng"; Android 7–10 giữ quyền bộ nhớ cũ |
+| `MANAGE_EXTERNAL_STORAGE` (Play hạn chế "All files access") | Đã bỏ trong commit `6352ec7`; **2/11 chủ dự án đổi ý: giữ** để quét cả máy (Android 11+) và nộp tờ khai All files access (`docs/store/google-play-all-files-access.md`). Bị từ chối thì quay lại cách bỏ quyền |
 | `READ_MEDIA_IMAGES` + lưới ảnh `photo_manager` (chính sách Ảnh & Video) | **Chuyển sang Photo Picker** (`image_picker.pickMultiImage`) |
 | Nút Chia sẻ gửi link APK GitHub + trang Sideloadly (`settings_logic.dart`) | Đổi sang link store; **bản iOS không nhắc Android** (Apple 2.3.10) |
 | Chữ "không dùng mạng / không thu thập dữ liệu" sai với ML Kit + Play services (+ ML Kit Translation) | Viết lại đúng sự thật, khớp Data safety / App Privacy |

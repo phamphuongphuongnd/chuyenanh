@@ -54,7 +54,7 @@ updated: 2026-10-30
 - [[trinh-xem-dong-bo]] — 5 định dạng cùng thanh tìm kiếm + zoom, tô vàng chữ tìm, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách.
 - [[ui-app-goc]] — khảo sát luồng chức năng app tham khảo (lịch sử; từ 30/10 giao diện tự thiết kế, xem [[giao-dien-phiotron]]).
 - [[loi-chi-hien-tren-may-that]] — 3 lỗi chỉ lộ trên máy thật (R8/ML Kit, provider autoDispose khi `read`), cách tái hiện bằng ADB, quy tắc rút ra.
-- [[ban-quyen-giay-phep]] — **bản quyền & giấy phép (30/10)**: trang Giấy phép trong app (Noto, uCrop), `THIRD_PARTY_LICENSES.md` + script, đổi tên "PDF Office", Syncfusion đang chờ duyệt (#886739), khoá repo.
+- [[ban-quyen-giay-phep]] — **bản quyền & giấy phép (30/10)**: trang Giấy phép trong app (Noto, uCrop), `THIRD_PARTY_LICENSES.md` + script, đổi tên "PDF Office", Syncfusion Community License đã duyệt 30/10 (#886739), khoá repo.
 - [[phat-hanh-apk]] — build release, vì sao phải kèm 32-bit, R8/ML Kit, đưa APK lên GitHub Release + link chia sẻ.
 - [[ios]] — chạy trên iPhone: khác Android, build bằng CI macOS, cài bằng Sideloadly (7 ngày), việc chưa kiểm.
 

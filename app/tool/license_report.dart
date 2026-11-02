@@ -315,8 +315,7 @@ void main(List<String> args) {
     ..writeln('| Be Vietnam Pro font | all | OFL-1.1 '
         '(app/assets/ui_fonts/OFL.txt) |')
     ..writeln('| Syncfusion Flutter packages | all | Syncfusion Community '
-        'License (application submitted 30/10/2026, ticket #886739, pending '
-        'approval) |')
+        'License (approved 30/10/2026, ticket #886739) |')
     ..writeln();
 
   // Notes — only state what the data confirms.

@@ -156,13 +156,12 @@ Quy ước:
 
 ## 8. Quyền Android
 
-Theo chính sách Google Play, app **không** xin "Truy cập tất cả tệp" (`MANAGE_EXTERNAL_STORAGE`) và **không** xin quyền đọc toàn bộ
-ảnh/video (`READ_MEDIA_*`) — cả hai bị chặn bằng `tools:node="remove"` trong Manifest.
-
-- **Tài liệu:** app chỉ liệt kê thư mục của mình (`Documents/Phiotron PDF`, thư mục cũ `Documents/PDF Office`, vùng riêng của app)
-  + tệp người dùng **chọn** (bộ chọn tệp) hoặc **mở / chia sẻ** từ app khác (được chép vào thư mục của app).
-- **Ảnh:** chọn bằng Photo Picker của hệ thống (`image_picker`), không cần quyền.
-- **Android 7–10:** xin quyền bộ nhớ cũ (`READ/WRITE_EXTERNAL_STORAGE`, `maxSdkVersion=29`) để ghi vào `Documents/`.
+- **Tài liệu (quét cả máy):** Android 11+ xin **"Truy cập tất cả tệp"** (`MANAGE_EXTERNAL_STORAGE`) — chủ dự án chọn giữ để trang
+  Tài liệu tìm được mọi PDF/Office trên máy. Google Play **bắt khai tờ khai quyền** và có thể từ chối: nội dung tờ khai + video
+  soạn sẵn ở [`docs/store/google-play-all-files-access.md`](docs/store/google-play-all-files-access.md). Android 7–10 dùng quyền
+  bộ nhớ cũ (`READ/WRITE_EXTERNAL_STORAGE`). Từ chối quyền thì vẫn dùng được: chọn tệp thủ công, "Mở bằng / Chia sẻ" từ app khác.
+- **Ảnh:** chọn bằng Photo Picker của hệ thống (`image_picker`), **không** xin quyền đọc toàn bộ ảnh/video (`READ_MEDIA_*` bị chặn
+  bằng `tools:node="remove"` trong Manifest).
 - **Khác:** máy ảnh (máy quét, chụp ảnh), sinh trắc học (khoá app), mạng (chỉ để tải gói ngôn ngữ dịch ML Kit khi người dùng chọn).
 
 ## 9. Kiểm thử trên máy thật
@@ -203,9 +202,10 @@ Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đ�
   theo SIL Open Font License 1.1 — file giấy phép **phải đi kèm** font khi phát hành. Không dùng font của Windows/macOS
   (Arial, SimSun, Yu Gothic…) trong app hay trong repo.
 - **Syncfusion Flutter (PDF, PDF Viewer, XlsIO, Signature Pad):** chỉ được dùng khi có Syncfusion Community License
-  (miễn phí: doanh thu < 1 triệu USD/năm, ≤ 5 lập trình viên, ≤ 10 nhân viên). **Đã nộp đơn 30/10/2026 (cá nhân /
-  Hobbyist), đang chờ duyệt.** Giữ email duyệt + chụp trang *License & Downloads* làm bằng chứng; gia hạn nếu
-  Syncfusion yêu cầu. Bản Flutter **không cần** license key — không dán key vào code hay commit.
+  (miễn phí: doanh thu < 1 triệu USD/năm, ≤ 5 lập trình viên, ≤ 10 nhân viên). **Đã được duyệt 30/10/2026 (cá nhân /
+  Hobbyist, ticket #886739, email từ communitylicense@syncfusion.com).** Giữ email duyệt + chụp trang
+  *License & Downloads* làm bằng chứng; gia hạn nếu Syncfusion yêu cầu. Mã nguồn phải do chính mình sở hữu (điều kiện
+  của Syncfusion) — đúng với `LICENSE`. Bản Flutter **không cần** license key — không dán key vào code hay commit.
 - **Trước khi phát hành:** tự tra tên "Phiotron" trên WIPO Global Brand Database và cổng Cục Sở hữu trí tuệ Việt Nam;
   tên, mô tả, icon và ảnh chụp trên store phải tự làm, không chép chữ / ảnh / tên của app khác.
 
@@ -235,7 +235,8 @@ Có trang này rồi mới khoá (private) repo chính được. Kênh báo lỗ
    - **Quảng cáo:** Không. **Quyền truy cập ứng dụng:** không cần đăng nhập. **Đối tượng mục tiêu:** 13+ (không nhắm trẻ em).
    - **Xếp hạng nội dung (IARC):** trả lời bảng câu hỏi (công cụ văn phòng, không nội dung nhạy cảm).
    - **An toàn dữ liệu (Data safety):** điền đúng theo `public-site/privacy.md` (mục Google ML Kit / Play services) — phải khớp hành vi thật.
-   - Không còn quyền nào cần tờ khai (All files access / Photo & Video đã bỏ).
+   - **Quyền nhạy cảm → All files access:** điền theo [`docs/store/google-play-all-files-access.md`](docs/store/google-play-all-files-access.md)
+     (kèm video). Bị từ chối thì bỏ quyền này (cách làm có ở commit `6352ec7`). Photo & Video: không cần khai (dùng Photo Picker).
    - Ảnh chụp màn hình, mô tả: **tự chụp, tự viết**; không dùng tên/ảnh của app khác.
 4. Kiểm **trang bộ nhớ 16 KB** trong báo cáo của Play Console (bắt buộc với bản cập nhật từ 01/02/2027).
 

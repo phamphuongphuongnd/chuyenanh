@@ -1,0 +1,7 @@
+# GitHub Pages (Jekyll) cho trang công khai của Phiotron PDF: Hỗ trợ + Chính sách bảo mật.
+title: Phiotron PDF
+description: Đọc, tạo và chuyển đổi PDF, Word, Excel, PowerPoint và ảnh — miễn phí, không quảng cáo.
+theme: jekyll-theme-minimal
+lang: vi
+exclude:
+  - README.md
