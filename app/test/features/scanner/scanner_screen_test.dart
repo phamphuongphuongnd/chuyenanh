@@ -4,11 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/core/permissions/camera_permission.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/scanner/capture/document_capture.dart';
 import 'package:pdf_office/features/scanner/model/scan_session.dart';
 import 'package:pdf_office/features/scanner/ui/scanner_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/permissions/fake_camera_permission.dart';
 
 class FakeCapture implements DocumentCapture {
   FakeCapture({this.pages, this.unavailable = false, this.denied = false});
@@ -36,6 +40,7 @@ Future<ProviderContainer> pump(
   WidgetTester tester,
   FakeCapture capture, {
   String locale = 'en',
+  FakeCameraPermission? cameraPermission,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -43,6 +48,9 @@ Future<ProviderContainer> pump(
     ProviderScope(
       overrides: [
         documentCaptureProvider.overrideWithValue(capture),
+        cameraPermissionProvider.overrideWithValue(
+          cameraPermission ?? FakeCameraPermission(),
+        ),
         sharedPreferencesProvider.overrideWithValue(prefs),
       ],
       child: MaterialApp(
@@ -135,6 +143,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(cap.photoCalls, 1);
     expect(find.textContaining('not available on this device'), findsOneWidget);
+  });
+
+  testWidgets('chụp ảnh tay khi chưa có quyền camera: Để sau → không mở camera', (
+    tester,
+  ) async {
+    final cap = FakeCapture(unavailable: true);
+    final perm = FakeCameraPermission(current: PermissionStatus.denied);
+    await pump(tester, cap, cameraPermission: perm);
+    await tester.tap(find.text('Scan pages'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('camera_permission_dialog')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('camera_permission_later')));
+    await tester.pumpAndSettle();
+    expect(perm.requestCalls, 0);
+    expect(cap.photoCalls, 0);
+    expect(find.textContaining('Permission denied'), findsNothing);
   });
 
   testWidgets('thiếu quyền camera → báo lỗi quyền', (tester) async {

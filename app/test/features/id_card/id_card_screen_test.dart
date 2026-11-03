@@ -6,10 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/core/permissions/camera_permission.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
 import 'package:pdf_office/features/id_card/id_card_screen.dart';
 import 'package:pdf_office/features/id_card/id_card_services.dart';
 import 'package:pdf_office/features/scanner/capture/document_capture.dart';
+
+import '../../core/permissions/fake_camera_permission.dart';
 
 class FakeCapture implements DocumentCapture {
   FakeCapture({
@@ -89,6 +92,7 @@ Future<Env> pump(WidgetTester tester, {Env? env, FakeCapture? capture}) async {
     ProviderScope(
       overrides: [
         documentCaptureProvider.overrideWithValue(capture ?? e.capture),
+        cameraPermissionProvider.overrideWithValue(FakeCameraPermission()),
         idCardGalleryPickerProvider.overrideWithValue(e.gallery),
         idCardComposerProvider.overrideWithValue(e.composer),
         idCardExporterProvider.overrideWithValue(e.exporter),

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdf_office/core/errors/app_error.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+import '../../core/permissions/fake_camera_permission.dart';
 import 'fakes.dart';
 
 void main() {
@@ -153,6 +155,56 @@ void main() {
     await tester.pumpAndSettle();
     expect(h.camera.calls, 1);
     expect(choose, findsOneWidget);
+  });
+
+  testWidgets('chưa có quyền camera → hộp giải thích → Tiếp tục → xin quyền rồi chụp', (
+    tester,
+  ) async {
+    final perm = FakeCameraPermission(current: PermissionStatus.denied);
+    final h = Harness(
+      tmp: tmp,
+      camera: FakeCamera('/cam/shot.jpg'),
+      cameraPermission: perm,
+    );
+    await h.pump(tester);
+
+    await tester.tap(takePhoto);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('camera_permission_dialog')), findsOneWidget);
+    expect(h.camera.calls, 0, reason: 'chưa bấm Tiếp tục thì chưa mở camera');
+
+    await tester.tap(find.byKey(const ValueKey('camera_permission_continue')));
+    await tester.pumpAndSettle();
+    expect(perm.requestCalls, 1);
+    expect(h.camera.calls, 1);
+    expect(find.text('Edit images'), findsOneWidget);
+  });
+
+  testWidgets('chưa có quyền camera → Để sau → không xin, không mở camera, không báo lỗi', (
+    tester,
+  ) async {
+    final perm = FakeCameraPermission(current: PermissionStatus.denied);
+    final h = Harness(tmp: tmp, cameraPermission: perm);
+    await h.pump(tester);
+
+    await tester.tap(takePhoto);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('camera_permission_later')));
+    await tester.pumpAndSettle();
+    expect(perm.requestCalls, 0);
+    expect(h.camera.calls, 0);
+    expect(find.byType(SnackBar), findsNothing);
+    expect(choose, findsOneWidget);
+  });
+
+  testWidgets('đã có quyền camera → không hiện hộp giải thích', (tester) async {
+    final h = Harness(tmp: tmp, camera: FakeCamera('/cam/shot.jpg'));
+    await h.pump(tester);
+    await tester.tap(takePhoto);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('camera_permission_dialog')), findsNothing);
+    expect(h.cameraPermission.requestCalls, 0);
+    expect(h.camera.calls, 1);
   });
 
   testWidgets('camera bị từ chối quyền → hiện thông báo lỗi', (tester) async {

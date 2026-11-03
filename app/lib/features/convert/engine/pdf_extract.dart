@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xio;
 
 import '../../../core/errors/app_error.dart';
 import '../text/vietnamese_nfc.dart';
+import 'tounicode_repair.dart';
 
 typedef Report = void Function(double progress);
 
@@ -64,6 +65,22 @@ LayoutLine layoutLineFromTextLine(sf.TextLine l) => LayoutLine(
       ],
     );
 
+/// Các dòng chữ của trang [i]. Syncfusion lỗi khi đọc trang → sửa CMap ToUnicode lệch chuẩn của
+/// các font trên trang ([repairPageToUnicode], vd. PDF do MuPDF tạo) rồi thử lại MỘT lần; không có
+/// gì để sửa thì ném lại đúng lỗi gốc (người gọi đổi thành [CorruptFile] như trước).
+List<sf.TextLine> extractPageTextLines(
+  sf.PdfDocument doc,
+  sf.PdfTextExtractor extractor,
+  int i,
+) {
+  try {
+    return extractor.extractTextLines(startPageIndex: i, endPageIndex: i);
+  } catch (e, st) {
+    if (repairPageToUnicode(doc.pages[i]) == 0) Error.throwWithStackTrace(e, st);
+    return extractor.extractTextLines(startPageIndex: i, endPageIndex: i);
+  }
+}
+
 /// Trích chữ cả tài liệu thành [LayoutPage]. Bỏ dòng rỗng.
 List<LayoutPage> extractLayoutPages(
   Uint8List bytes, {
@@ -84,7 +101,7 @@ List<LayoutPage> extractLayoutPages(
         final size = doc.pages[i].size;
         width = size.width;
         height = size.height;
-        lines = extractor.extractTextLines(startPageIndex: i, endPageIndex: i);
+        lines = extractPageTextLines(doc, extractor, i);
       } on AppError {
         rethrow;
       } catch (e) {

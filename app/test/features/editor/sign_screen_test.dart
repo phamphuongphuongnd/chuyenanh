@@ -7,13 +7,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:pdf_office/core/errors/app_error.dart';
+import 'package:pdf_office/core/permissions/camera_permission.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
 import 'package:pdf_office/engines/pdf/pdf_render_engine.dart';
 import 'package:pdf_office/features/editor/editor_providers.dart';
 import 'package:pdf_office/features/editor/sign_screen.dart';
 import 'package:pdf_office/features/editor/signature_store.dart';
 import 'package:pdf_office/features/reader/reader_providers.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+import '../../core/permissions/fake_camera_permission.dart';
 import 'editor_test_helpers.dart';
 
 void main() {
@@ -38,11 +41,15 @@ void main() {
   List<Override> overrides({
     PdfRenderEngine? renderEngine,
     SignaturePhotoPicker? photoPicker,
+    FakeCameraPermission? cameraPermission,
   }) => [
     outputDirectoryProvider.overrideWith((ref) async => outDir.path),
     signatureStoreProvider.overrideWith((ref) async => store),
     pdfRenderEngineProvider.overrideWithValue(renderEngine ?? render),
     pdfSignEngineProvider.overrideWithValue(sign),
+    cameraPermissionProvider.overrideWithValue(
+      cameraPermission ?? FakeCameraPermission(),
+    ),
     if (photoPicker != null)
       signaturePhotoPickerProvider.overrideWithValue(photoPicker),
   ];
@@ -50,11 +57,15 @@ void main() {
   Future<void> open(
     WidgetTester tester, {
     SignaturePhotoPicker? photoPicker,
+    FakeCameraPermission? cameraPermission,
   }) async {
     await pumpEditorScreen(
       tester,
       screen: const SignScreen(path: '/x/Hop dong.pdf'),
-      overrides: overrides(photoPicker: photoPicker),
+      overrides: overrides(
+        photoPicker: photoPicker,
+        cameraPermission: cameraPermission,
+      ),
     );
     await settle(
       tester,
@@ -116,6 +127,25 @@ void main() {
     expect(find.byKey(const Key('placed_1')), findsOneWidget);
     final saved = await tester.runAsync(store.list);
     expect(saved, hasLength(1));
+  });
+
+  testWidgets('chup anh chu ky khi chua co quyen camera: De sau -> khong mo camera', (
+    tester,
+  ) async {
+    final picker = _FakePhotoPicker(_paperPhoto(stroke: true));
+    final perm = FakeCameraPermission(current: PermissionStatus.denied);
+    await open(tester, photoPicker: picker, cameraPermission: perm);
+
+    await tester.tap(find.byKey(const Key('importSignature')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('importFromCamera')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('camera_permission_dialog')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('camera_permission_later')));
+    await tester.pumpAndSettle();
+    expect(perm.requestCalls, 0);
+    expect(picker.sources, isEmpty);
+    expect(find.byKey(const Key('importPreview')), findsNothing);
   });
 
   testWidgets('nhap tu anh trang tinh -> bao khong tach duoc net', (

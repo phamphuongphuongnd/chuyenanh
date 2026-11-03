@@ -26,7 +26,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.phuong.pdfoffice"
+        // Tên gói trên Google Play (đổi 03/11/2026, trước khi phát hành). namespace + package Kotlin giữ
+        // "com.phuong.pdfoffice" (chỉ là tên nội bộ, không cần trùng applicationId).
+        applicationId = "com.phiotron.phiotronpdf"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24

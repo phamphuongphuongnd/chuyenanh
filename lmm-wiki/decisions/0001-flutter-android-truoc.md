@@ -17,7 +17,7 @@ giao diện, logo, icon và tài nguyên do dự án tự thiết kế) — xem 
 - **Android trước** (minSdk 24 = Android 7.0, compileSdk 36). Code iOS để sẵn nhưng **không build** (máy phát triển là Windows).
 - **Dùng cá nhân, cài sideload, không lên store**, miễn phí hoàn toàn: không quảng cáo, không mua trong app, không mạng.
   → được dùng `MANAGE_EXTERNAL_STORAGE` (quét toàn máy) mà không lo Google Play duyệt.
-- Tên **PDF Office**, gói `com.phuong.pdfoffice`, code ở `app/`.
+- Tên **PDF Office**, gói `com.phuong.pdfoffice`, code ở `app/`. (Sau đổi tên thành Phiotron PDF; tên gói Google Play đổi thành `com.phiotron.phiotronpdf` ngày 03/11/2026.)
 - ~~6 ngôn ngữ UI: vi, en, zh, ja, ko, id.~~ Từ 02/11/2026 chỉ còn **vi, en** (chủ dự án chốt; bỏ zh/ja/ko/id cả UI, Dịch, OCR, font xuất PDF).
 - Thiết bị test thật: **Samsung Galaxy A13** qua cáp USB (Android SDK dạng dòng lệnh ở `C:\Android\sdk`, không cần emulator).
 

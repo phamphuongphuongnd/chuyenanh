@@ -14,9 +14,9 @@ const String kAppVersion = '1.0.0';
 /// Địa chỉ nhận phản hồi (người gửi là tài khoản mail đang dùng trên máy bấm nút).
 const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';
 
-/// Trang ứng dụng trên Google Play (gói `com.phuong.pdfoffice`).
+/// Trang ứng dụng trên Google Play (gói `com.phiotron.phiotronpdf`).
 const String kPlayStoreUrl =
-    'https://play.google.com/store/apps/details?id=com.phuong.pdfoffice';
+    'https://play.google.com/store/apps/details?id=com.phiotron.phiotronpdf';
 
 /// Trang ứng dụng trên App Store. Rỗng tới khi App Store Connect cấp id
 /// (dạng `https://apps.apple.com/app/id<số>`); rỗng thì lời chia sẻ trên iOS không kèm link.

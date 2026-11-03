@@ -10,7 +10,7 @@ updated: 2026-10-30
 > Wiki vận hành theo phương pháp Karpathy "LLM Wiki". Quy tắc đầy đủ ở [[SCHEMA]].
 
 ## Tổng quan dự án
-- **Tên:** Phiotron PDF (đổi từ "PDF Office" ngày 30/10/2026; package id vẫn `com.phuong.pdfoffice`, thư mục lưu đổi thành `Documents/Phiotron PDF`, file cũ ở `Documents/PDF Office` vẫn đọc được)
+- **Tên:** Phiotron PDF (đổi từ "PDF Office" ngày 30/10/2026; package id Google Play = `com.phiotron.phiotronpdf` từ 03/11/2026 (trước là `com.phuong.pdfoffice`; namespace/package Kotlin và tên kênh native vẫn `com.phuong.pdfoffice`), thư mục lưu đổi thành `Documents/Phiotron PDF`, file cũ ở `Documents/PDF Office` vẫn đọc được)
 - **Mục đích:** app dùng cá nhân, có các nhóm chức năng phổ biến của app chuyển đổi PDF (tham khảo luồng chức năng
   phổ biến; giao diện, logo, icon và tài nguyên do dự án tự thiết kế): ảnh↔PDF, đọc PDF/Office, công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR.
   Miễn phí, không quảng cáo, không mua trong app; **dự kiến lên Google Play + App Store** (xem [[0005-len-store-mien-phi]]). Thiết kế: `docs/superpowers/specs/2026-10-25-pdf-office-design.md`.

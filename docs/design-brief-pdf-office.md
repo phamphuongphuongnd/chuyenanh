@@ -97,7 +97,7 @@ Thanh điều hướng dưới (5 mục)
 - **3 ô lớn ở Trang chủ (gradient):** Ảnh sang PDF `#EF5350→#C62828` · Quét tài liệu `#42A5F5→#1565C0` · PDF sang ảnh `#FFA726→#E65100`.
 - **Bo góc đang dùng:** 8 (ô nhập, banner) · 12 (nút, ô công cụ) · 16 (hộp thoại, 3 ô Trang chủ) · 28 (ô tìm kiếm Trang chủ).
 - **Font:** mặc định hệ thống, chưa có font riêng.
-- **Logo:** nền vuông bo đỏ `#E5393B`, trang giấy trắng gập góc phải trên, mũi tên xuống đỏ ở giữa. Có bản adaptive icon Android + monochrome.
+- **Logo:** (cập nhật 03/11/2026) logo chữ P phương án "Xấp định dạng" — 4 thẻ màu xanh dương/xanh lá/cam/đỏ xếp xoè, thẻ đỏ trên cùng có chữ P, nền kem `#F4EEE6` (`design-mobile/screens/assets/logo-3-color.svg`, `app/assets/branding/logo.svg`). Có bản adaptive icon Android + monochrome. Logo cũ (trang giấy + mũi tên xuống) đã bỏ hẳn.
 
 ### Thành phần dùng chung (nên thiết kế thành một bộ)
 | Thành phần | Mô tả |

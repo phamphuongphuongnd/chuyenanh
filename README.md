@@ -1,6 +1,6 @@
 # Phiotron PDF
 
-App di động **Phiotron PDF** (`com.phuong.pdfoffice`): ảnh ↔ PDF, đọc PDF / Word / Excel / PowerPoint / TXT,
+App di động **Phiotron PDF** (`com.phiotron.phiotronpdf`): ảnh ↔ PDF, đọc PDF / Word / Excel / PowerPoint / TXT,
 công cụ PDF, chỉnh sửa, chuyển đổi, máy quét + OCR. **Miễn phí, không quảng cáo, không mua trong ứng dụng, không cần
 tài khoản; tệp được xử lý ngay trên máy.** Chạy trên Android và iOS; dự kiến phát hành lên Google Play và App Store.
 Giao diện, logo, icon và tài nguyên do dự án tự thiết kế. Bản quyền: xem [mục 11](#11-bản-quyền--giấy-phép) và [`LICENSE`](LICENSE).

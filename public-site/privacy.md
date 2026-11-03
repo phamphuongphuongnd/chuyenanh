@@ -8,7 +8,7 @@ title: Chính sách bảo mật · Privacy Policy
 
 **Ngày hiệu lực:** 03/11/2026
 
-Chính sách này giải thích ứng dụng **Phiotron PDF** (Android: `com.phuong.pdfoffice`, iOS) xử lý dữ liệu của bạn
+Chính sách này giải thích ứng dụng **Phiotron PDF** (Android: `com.phiotron.phiotronpdf`, iOS) xử lý dữ liệu của bạn
 như thế nào. Ứng dụng do cá nhân **Phạm Phương (Phiotron)** phát triển ("chúng tôi"). Liên hệ:
 [phamphuongphuongnd@gmail.com](mailto:phamphuongphuongnd@gmail.com).
 
@@ -16,9 +16,10 @@ như thế nào. Ứng dụng do cá nhân **Phạm Phương (Phiotron)** phát 
 
 - Ứng dụng **miễn phí**: không quảng cáo, không mua trong ứng dụng, không tài khoản, không đăng nhập.
 - **Không có** công cụ phân tích (analytics), không có báo cáo lỗi tự động (crash reporting), không theo dõi
-  quảng cáo. Chúng tôi **không vận hành máy chủ nào** và **không thu thập, không bán, không chia sẻ** dữ liệu của bạn.
+  quảng cáo. Chúng tôi **không vận hành máy chủ nào**, **không nhận, không bán, không chia sẻ** dữ liệu của bạn.
 - Tệp PDF, Office và ảnh của bạn được **xử lý ngay trên thiết bị** và **không bao giờ bị tải lên**.
-- Ứng dụng chỉ dùng Internet để **tải gói ngôn ngữ dịch từ Google khi bạn chọn tải**.
+- Ứng dụng dùng Internet để **tải gói ngôn ngữ dịch từ Google khi bạn chọn tải**, và để các thành phần Google ML Kit
+  gửi dữ liệu chẩn đoán cho Google (mục 4).
 - Một số thành phần của Google (Google ML Kit) có thể gửi **dữ liệu chẩn đoán và thống kê sử dụng** cho Google
   (xem mục 4). Dữ liệu này không chứa nội dung tệp hay chữ của bạn.
 
@@ -44,12 +45,14 @@ bấm "Chia sẻ" để gửi tệp qua ứng dụng khác — khi đó chính s
 - **Ảnh** — chọn qua **trình chọn ảnh của hệ thống** (Android Photo Picker / iOS PHPicker). Ứng dụng chỉ nhận
   những ảnh bạn chọn, không đọc cả thư viện ảnh.
 - **Tệp** — Android: ứng dụng xin quyền bộ nhớ (Android 7–10) hoặc **"Truy cập tất cả file"** (Android 11 trở lên)
-  để tìm, liệt kê và mở tài liệu trên máy, và lưu vào `Documents/Phiotron PDF`. Tệp chỉ được đọc trên thiết bị,
+  để tìm, liệt kê và mở tài liệu trên máy, và lưu vào `Documents/Phiotron PDF`. Bộ quét chỉ tìm tệp tài liệu (PDF, Word,
+  Excel, PowerPoint, TXT). Tệp chỉ được đọc trên thiết bị,
   không bao giờ được tải lên. iOS: chỉ những tệp bạn chọn hoặc mở bằng ứng dụng.
 - **Sinh trắc học / mã PIN của máy** (Khoá ứng dụng, tuỳ chọn) — việc xác thực do hệ điều hành thực hiện
   (Android BiometricPrompt / iOS Face ID, Touch ID). Ứng dụng chỉ nhận kết quả "thành công / thất bại", **không
   bao giờ nhận dữ liệu vân tay hay khuôn mặt**.
-- **Internet** — chỉ để tải gói ngôn ngữ dịch từ Google khi bạn chọn tải (xem mục 4).
+- **Internet** — để tải gói ngôn ngữ dịch từ Google khi bạn chọn tải, và để Google ML Kit gửi dữ liệu chẩn đoán,
+  thống kê sử dụng cho Google (xem mục 4). Tệp và chữ của bạn không bao giờ được gửi đi.
 
 ## 4. Thành phần của bên thứ ba
 
@@ -69,7 +72,7 @@ ML Kit có thể thu thập và gửi cho Google, nhằm **chẩn đoán và th�
 - Số đo hiệu năng (ví dụ độ trễ), cấu hình API (ví dụ định dạng và độ phân giải ảnh), kích thước đầu vào / đầu ra,
   phiên bản tính năng, loại sự kiện (khởi tạo, tải model, nhận dạng, giải phóng tài nguyên) và mã lỗi;
 - Với tính năng Dịch: cặp ngôn ngữ nguồn / đích đã cấu hình; Dịch cũng dùng Firebase Remote Config và
-  Firebase Installations.
+  Firebase Installations (Remote Config nhận thêm mã quốc gia, ngôn ngữ, múi giờ và phiên bản hệ điều hành của máy).
 
 Google cho biết dữ liệu này được **mã hoá khi truyền (HTTPS)** và **không được chuyển cho bên thứ ba**. Chúng tôi
 không nhận được dữ liệu này. Việc Google xử lý dữ liệu tuân theo
@@ -101,7 +104,7 @@ nhận được địa chỉ email và nội dung bạn viết; chúng tôi ch�
 ## 5. Trẻ em
 
 Ứng dụng là công cụ văn phòng dành cho mọi người, **không hướng tới trẻ em dưới 13 tuổi**. Chúng tôi không cố ý thu
-thập dữ liệu cá nhân của trẻ em (thực tế ứng dụng không thu thập dữ liệu cá nhân của ai). Nếu bạn cho rằng một trẻ
+thập dữ liệu cá nhân của trẻ em (chúng tôi không nhận dữ liệu cá nhân của ai; xem mục 4 về dữ liệu chẩn đoán Google ML Kit thu). Nếu bạn cho rằng một trẻ
 em đã gửi thông tin cho chúng tôi qua email, hãy liên hệ để chúng tôi xoá.
 
 ## 6. Lưu giữ và xoá dữ liệu
@@ -136,7 +139,7 @@ Phạm Phương (Phiotron) — [phamphuongphuongnd@gmail.com](mailto:phamphuongp
 
 **Effective date:** 3 November 2026
 
-This policy explains how the **Phiotron PDF** app (Android: `com.phuong.pdfoffice`, iOS) handles your data. The app
+This policy explains how the **Phiotron PDF** app (Android: `com.phiotron.phiotronpdf`, iOS) handles your data. The app
 is developed by an individual, **Phạm Phương (Phiotron)** ("we"). Contact:
 [phamphuongphuongnd@gmail.com](mailto:phamphuongphuongnd@gmail.com).
 
@@ -144,9 +147,10 @@ is developed by an individual, **Phạm Phương (Phiotron)** ("we"). Contact:
 
 - The app is **free**: no ads, no in-app purchases, no account, no sign-in.
 - There is **no** analytics, **no** automatic crash reporting and **no** ad tracking. We **run no servers** and we
-  **do not collect, sell or share** your data.
+  **do not receive, sell or share** your data.
 - Your PDF, Office files and images are **processed on your device** and **never uploaded**.
-- The app uses the Internet **only to download translation language packs from Google when you choose to**.
+- The app uses the Internet **to download translation language packs from Google when you choose to**, and so that
+  Google ML Kit components can send diagnostic data to Google (section 4).
 - Some Google components (Google ML Kit) may send **diagnostic and usage data** to Google (see section 4). This
   data does not include the content of your files or text.
 
@@ -172,13 +176,15 @@ None of the data above is sent to us or to anyone else, unless **you** share a f
 - **Photos** — chosen through the **system photo picker** (Android Photo Picker / iOS PHPicker). The app only
   receives the photos you pick and never reads your whole library.
 - **Files** — Android: the app asks for storage access (Android 7–10) or **"All files access"** (Android 11 and
-  later) to find, list and open documents on the device, and to save into `Documents/Phiotron PDF`. Files are only
+  later) to find, list and open documents on the device, and to save into `Documents/Phiotron PDF`. The scan only
+  looks for document files (PDF, Word, Excel, PowerPoint, TXT). Files are only
   read on the device and are never uploaded. If you decline, you can still pick files one by one. iOS: only the
   files you choose or open with the app.
 - **Biometrics / device PIN** (optional App lock) — the check is done by the operating system (Android
   BiometricPrompt / iOS Face ID, Touch ID). The app only receives "success / failure" and **never receives
   fingerprint or face data**.
-- **Internet** — only to download translation language packs from Google when you choose to (see section 4).
+- **Internet** — to download translation language packs from Google when you choose to, and for Google ML Kit to
+  send diagnostic and usage data to Google (see section 4). Your files and text are never sent.
 
 ## 4. Third-party components
 
@@ -198,7 +204,7 @@ ML Kit may collect and send to Google, for **diagnostics and usage analytics**:
 - Performance metrics (e.g. latency), API configuration (e.g. image format and resolution), input / output sizes,
   feature version, event types (initialisation, model download, detection, resource release) and error codes;
 - For Translation: the configured source and target languages; Translation also uses Firebase Remote Config and
-  Firebase Installations.
+  Firebase Installations (Remote Config also receives the device's country code, language, time zone and OS version).
 
 Google states that this data is **encrypted in transit (HTTPS)** and **not transferred to third parties**. We do not
 receive this data. Google's processing is governed by the
@@ -230,7 +236,7 @@ email address and what you wrote; we use them only to reply to you.
 ## 5. Children
 
 The app is a general productivity tool and is **not directed to children under 13**. We do not knowingly collect
-personal data from children (in fact the app collects no personal data from anyone). If you believe a child has sent
+personal data from children (we receive no personal data from anyone; see section 4 for the diagnostic data Google ML Kit collects). If you believe a child has sent
 us information by email, contact us and we will delete it.
 
 ## 6. Data retention and deletion

@@ -13,6 +13,7 @@ import 'package:image_ops/image_ops.dart' as ops;
 import 'package:path/path.dart' as p;
 import 'package:pdf_office/core/errors/app_error.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/core/permissions/camera_permission.dart';
 import 'package:pdf_office/core/router/routes.dart';
 import 'package:pdf_office/core/theme/app_theme.dart';
 import 'package:pdf_office/core/utils/output_directory.dart';
@@ -26,6 +27,8 @@ import 'package:pdf_office/features/image_to_pdf/services/crop_service.dart';
 import 'package:pdf_office/features/image_to_pdf/services/image_processor.dart';
 import 'package:pdf_office/features/image_to_pdf/services/photo_picker_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/permissions/fake_camera_permission.dart';
 
 /// PNG 2x2 hợp lệ cho ảnh xem trước giả.
 final Uint8List tinyPng = Uint8List.fromList(
@@ -171,9 +174,11 @@ class Harness {
     FakeCrop? crop,
     FakeProcessor? processor,
     FakeEngine? engine,
+    FakeCameraPermission? cameraPermission,
     required this.tmp,
   }) : picker = picker ?? FakePhotoPicker(),
        camera = camera ?? FakeCamera(),
+       cameraPermission = cameraPermission ?? FakeCameraPermission(),
        crop = crop ?? FakeCrop(),
        processor = processor ?? FakeProcessor(),
        engine = engine ?? FakeEngine();
@@ -181,6 +186,7 @@ class Harness {
   final Directory tmp;
   final FakePhotoPicker picker;
   final FakeCamera camera;
+  final FakeCameraPermission cameraPermission;
   final FakeCrop crop;
   final FakeProcessor processor;
   final FakeEngine engine;
@@ -212,6 +218,7 @@ class Harness {
           sharedPreferencesProvider.overrideWithValue(prefs),
           photoPickerServiceProvider.overrideWithValue(picker),
           cameraServiceProvider.overrideWithValue(camera),
+          cameraPermissionProvider.overrideWithValue(cameraPermission),
           cropServiceProvider.overrideWithValue(crop),
           imageProcessorProvider.overrideWithValue(processor),
           imageToPdfEngineProvider.overrideWithValue(engine),

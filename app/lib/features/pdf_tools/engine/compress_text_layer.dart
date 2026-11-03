@@ -9,7 +9,8 @@ import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 import '../../convert/engine/font_set.dart';
-import '../../convert/engine/pdf_extract.dart' show layoutLineFromTextLine;
+import '../../convert/engine/pdf_extract.dart'
+    show extractPageTextLines, layoutLineFromTextLine;
 import '../../convert/text/line_wrap.dart' show StyledSpan;
 import '../../convert/text/script_runs.dart';
 import '../../convert/text/vietnamese_nfc.dart';
@@ -35,7 +36,7 @@ Future<Object?> compressExtractTextJob(
     for (var i = 0; i < n; i++) {
       final lines = <TextLineData>[];
       if (doc.pages[i].rotation == sf.PdfPageRotateAngle.rotateAngle0) {
-        for (final t in extractor.extractTextLines(startPageIndex: i, endPageIndex: i)) {
+        for (final t in extractPageTextLines(doc, extractor, i)) {
           if (t.text.trim().isEmpty) continue;
           final l = layoutLineFromTextLine(t);
           final text = composeVietnamese(l.text.replaceAll(RegExp(r'[\r\n]+'), ' ').trim());

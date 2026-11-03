@@ -85,5 +85,10 @@
   "core_toolPdfToPpt": "PDF to PowerPoint",
   "core_toolCompress": "Compress PDF",
   "core_toolPageNumbers": "Page numbers",
-  "core_toolInsertPages": "Insert pages"
+  "core_toolInsertPages": "Insert pages",
+  "core_cameraPermissionTitle": "Allow camera access",
+  "core_cameraPermissionWhy": "Phiotron PDF uses the camera to photograph and scan documents and to read QR codes.",
+  "core_cameraPermissionLocal": "Photos are processed only on your device and never sent anywhere.",
+  "core_cameraPermissionContinue": "Continue",
+  "core_cameraPermissionLater": "Not now"
 }

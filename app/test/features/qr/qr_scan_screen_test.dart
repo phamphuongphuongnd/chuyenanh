@@ -5,13 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdf_office/core/l10n/l10n.dart';
+import 'package:pdf_office/core/permissions/camera_permission.dart';
 import 'package:pdf_office/core/utils/link_opener.dart';
 import 'package:pdf_office/data/settings/settings_providers.dart';
 import 'package:pdf_office/features/qr/barcode_reader.dart';
 import 'package:pdf_office/features/qr/qr_content.dart';
 import 'package:pdf_office/features/qr/qr_history.dart';
 import 'package:pdf_office/features/qr/qr_scan_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/permissions/fake_camera_permission.dart';
 
 class FakeReader implements BarcodeReader {
   FakeReader(this.codes);
@@ -43,11 +47,13 @@ const _wifi = ScannedCode(
 
 void main() {
   late FakePicker picker;
+  late FakeCameraPermission cameraPermission;
   late List<Uri> launched;
   late List<String> clipboard;
 
   setUp(() {
     picker = FakePicker();
+    cameraPermission = FakeCameraPermission();
     launched = [];
     clipboard = [];
   });
@@ -83,6 +89,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           barcodeReaderProvider.overrideWithValue(reader),
           qrImagePickerProvider.overrideWithValue(picker),
+          cameraPermissionProvider.overrideWithValue(cameraPermission),
           linkLauncherProvider.overrideWithValue((uri) async {
             launched.add(uri);
             return true;
@@ -150,6 +157,41 @@ void main() {
     expect(picker.sources, [QrImageSource.camera]);
     expect(find.text('No code found'), findsOneWidget);
     expect(find.byType(QrCodeCard), findsNothing);
+  });
+
+  testWidgets('chưa có quyền camera → hộp giải thích; Để sau → không chụp, không báo lỗi', (
+    tester,
+  ) async {
+    cameraPermission = FakeCameraPermission(current: PermissionStatus.denied);
+    await pump(tester, FakeReader(const []));
+    await tester.tap(find.text('Take photo'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('camera_permission_dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('camera_permission_later')));
+    await tester.pumpAndSettle();
+    expect(cameraPermission.requestCalls, 0);
+    expect(picker.sources, isEmpty);
+    expect(find.text('Take photo'), findsOneWidget, reason: 'vẫn ở màn đầu');
+
+    // Chọn ảnh thư viện không cần quyền camera → không hỏi.
+    await tester.tap(find.text('Choose image'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('camera_permission_dialog')), findsNothing);
+    expect(picker.sources, [QrImageSource.gallery]);
+  });
+
+  testWidgets('chưa có quyền camera → Tiếp tục → xin quyền rồi chụp', (
+    tester,
+  ) async {
+    cameraPermission = FakeCameraPermission(current: PermissionStatus.denied);
+    await pump(tester, FakeReader(const []));
+    await tester.tap(find.text('Take photo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('camera_permission_continue')));
+    await tester.pumpAndSettle();
+    expect(cameraPermission.requestCalls, 1);
+    expect(picker.sources, [QrImageSource.camera]);
   });
 
   testWidgets('lịch sử: mở lại một mã và xoá toàn bộ', (tester) async {

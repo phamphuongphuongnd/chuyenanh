@@ -19,7 +19,7 @@ Android: thư mục `Documents/Phiotron PDF` (đổi được trong Cài đặt 
 vẫn mở được. iPhone: ứng dụng **Tệp** → *Trên iPhone* → *Phiotron PDF*.
 
 **Ứng dụng có tải tệp của tôi lên mạng không?**
-Không. Ứng dụng chỉ dùng Internet để tải gói ngôn ngữ dịch từ Google khi bạn chọn tải. Chi tiết ở [chính sách bảo mật](privacy).
+Không. Tệp và chữ của bạn không bao giờ được gửi đi. Internet chỉ dùng để tải gói ngôn ngữ dịch từ Google khi bạn chọn tải, và để Google ML Kit gửi dữ liệu chẩn đoán (không chứa tệp hay chữ của bạn). Chi tiết ở [chính sách bảo mật](privacy).
 
 **Làm sao xoá dữ liệu của ứng dụng?**
 Gỡ ứng dụng sẽ xoá toàn bộ dữ liệu riêng của ứng dụng (cài đặt, lịch sử, chỉ mục tìm kiếm, gói ngôn ngữ). Tệp bạn đã lưu
@@ -45,6 +45,6 @@ No ads, no in-app purchases, no account.
 - **Privacy policy:** [privacy](privacy)
 
 **Where are my files saved?** Android: `Documents/Phiotron PDF` (changeable in Settings). iPhone: Files app → On My iPhone → Phiotron PDF.
-**Does the app upload my files?** No. Internet is used only to download translation language packs from Google when you choose to.
+**Does the app upload my files?** No. Your files and text are never sent. Internet is used to download translation language packs from Google when you choose to, and for Google ML Kit diagnostic data (no file content or text).
 **How do I delete the app's data?** Uninstall the app. Files you saved to `Documents/Phiotron PDF` stay until you delete them.
 **Is translation accurate?** It is **machine translation** (Google ML Kit, on-device) — double-check important content.

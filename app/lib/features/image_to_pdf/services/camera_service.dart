@@ -16,6 +16,7 @@ class ImagePickerCameraService implements CameraService {
   @override
   Future<String?> capture() async {
     // Manifest khai quyền CAMERA nên phải xin lúc chạy, nếu không hệ thống chặn intent chụp.
+    // UI đã giải thích + xin trước (`ensureCameraPermission`) → đây chỉ chốt lại, không hiện hộp nữa.
     final status = await Permission.camera.request();
     if (!status.isGranted) throw const PermissionDenied();
     final file = await ImagePicker().pickImage(

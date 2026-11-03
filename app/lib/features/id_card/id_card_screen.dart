@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/permissions/camera_permission.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/file_paths.dart';
 import '../../core/utils/output_directory.dart';
@@ -143,6 +144,8 @@ class _IdCardScreenState extends ConsumerState<IdCardScreen> {
     } on ScannerUnavailable {
       if (!mounted) return null;
       showToolMessage(context, context.l10n.scan_autoUnavailable);
+      // image_picker tự xin quyền camera → giải thích trước; "Để sau" = huỷ.
+      if (!await ensureCameraPermission(context, ref)) return null;
       final photo = await capture.takePhoto();
       if (photo == null || !mounted) return null;
       final cropped = await Navigator.of(context).push<String>(

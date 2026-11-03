@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/permissions/camera_permission.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/output_directory.dart';
 import '../../core/widgets/widgets.dart';
@@ -305,6 +306,11 @@ class _SignScreenState extends ConsumerState<SignScreen> {
     if (source == null || !mounted) return;
     final Uint8List? bytes;
     try {
+      // image_picker tự xin quyền camera → giải thích trước; "Để sau" thì thôi, không báo lỗi.
+      if (source == SignaturePhotoSource.camera &&
+          (!await ensureCameraPermission(context, ref) || !mounted)) {
+        return;
+      }
       bytes = await ref.read(signaturePhotoPickerProvider).pick(source);
     } catch (e) {
       if (mounted) showEditorError(context, e);

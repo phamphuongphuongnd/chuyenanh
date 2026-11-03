@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../core/errors/app_error.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/permissions/camera_permission.dart';
 import '../../core/platform/app_platform.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../core/utils/link_opener.dart';
@@ -36,6 +37,11 @@ class _QrScanScreenState extends ConsumerState<QrScanScreen> {
     final picker = ref.read(qrImagePickerProvider);
     final reader = ref.read(barcodeReaderProvider);
     try {
+      // Giải thích trước khi xin quyền camera; "Để sau" thì thôi, không báo lỗi.
+      if (source == QrImageSource.camera &&
+          (!await ensureCameraPermission(context, ref) || !mounted)) {
+        return;
+      }
       final path = await picker.pick(source);
       if (path == null || !mounted) return;
       setState(() => _phase = _Phase.scanning);

@@ -332,7 +332,7 @@ void main() {
     test('link cửa hàng / chính sách / hỗ trợ là https hợp lệ', () {
       final play = safeLinkUri(kPlayStoreUrl)!;
       expect(play.host, 'play.google.com');
-      expect(play.queryParameters['id'], 'com.phuong.pdfoffice');
+      expect(play.queryParameters['id'], 'com.phiotron.phiotronpdf');
       for (final url in [kPrivacyPolicyUrl, kSupportUrl]) {
         final uri = safeLinkUri(url);
         expect(uri, isNotNull, reason: url);

@@ -177,7 +177,7 @@
 - **Làm:** màn Cài đặt; Ngôn ngữ (6 + "Theo máy", `localeNativeNames`, đổi tức thì qua `settingsProvider`); Giao diện
   sáng/tối/theo máy; Thư mục lưu (`file_picker` chọn thư mục, kiểm quyền ghi, nút về mặc định); Khổ giấy mặc định;
   Giới thiệu (phiên bản, giấy phép mã nguồn mở `showLicensePage`, ghi chú Syncfusion Community). Logo + launcher icon
-  vẽ vector (adaptive icon Android: nền đỏ `#E5393B`, biểu tượng trang giấy gập góc + mũi tên).
+  vẽ vector (adaptive icon Android: nền đỏ `#E5393B`, biểu tượng trang giấy gập góc + mũi tên — *logo cũ, đã thay bằng logo chữ P "Xấp định dạng" từ 30/10–03/11/2026, xem `lmm-wiki/modules/giao-dien-phiotron.md`*).
 - **Lưu ý:** `app_smoke_test.dart` yêu cầu mọi route là `GoRoute` cấp cao nhất — đừng lồng route con.
 - **Test:** đổi locale/theme cập nhật `AppSettings`, kiểm thư mục không ghi được thì báo lỗi.
 - **Ước lượng:** S–M (1 ngày).

@@ -248,7 +248,7 @@ LayoutPage _extractPage(sf.PdfDocument doc, sf.PdfTextExtractor ex, int i) {
   // Chỉ lỗi từ thư viện Syncfusion (dữ liệu PDF hỏng) mới thành CorruptFile.
   try {
     final size = doc.pages[i].size;
-    final lines = ex.extractTextLines(startPageIndex: i, endPageIndex: i);
+    final lines = extractPageTextLines(doc, ex, i);
     return LayoutPage(
       index: i,
       width: size.width,

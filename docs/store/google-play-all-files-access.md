@@ -1,7 +1,7 @@
 # Tờ khai "Truy cập tất cả tệp" (All files access) — Google Play
 
 App đang giữ quyền `MANAGE_EXTERNAL_STORAGE` trên Android 11+ để **tìm và liệt kê mọi tài liệu PDF / Word / Excel /
-PowerPoint / TXT trên máy** (trang chủ Tài liệu). Google Play coi đây là quyền nhạy cảm: phải khai trong
+PowerPoint / TXT trên máy** (tab **Tập tin**, thanh dưới cùng). Google Play coi đây là quyền nhạy cảm: phải khai trong
 **Play Console → Nội dung ứng dụng (App content) → Quyền nhạy cảm → All files access** trước khi phát hành. Google
 **có thể từ chối**; khi đó phải bỏ quyền (cách làm đã có sẵn trong lịch sử git, commit `6352ec7`).
 
@@ -11,7 +11,7 @@ Nhóm được Google chấp nhận gần nhất: **Document management / File m
 
 **Core functionality that requires All files access**
 
-> Phiotron PDF is an offline document reader and manager. Its main screen (Documents) shows every PDF, Word (DOC/DOCX),
+> Phiotron PDF is an offline document reader and manager. Its Files tab (bottom navigation) shows every PDF, Word (DOC/DOCX),
 > Excel (XLS/XLSX), PowerPoint (PPT/PPTX) and TXT file stored on the device, grouped by type, with search, sort,
 > favorites and recent files, so users can open, rename, delete, share, convert and edit their documents in one place.
 > Building this library requires reading the whole shared storage: on Android 11+ documents created or downloaded by
@@ -23,12 +23,12 @@ Nhóm được Google chấp nhận gần nhất: **Document management / File m
 
 > We already use the system file picker and "Open with / Share to" for single files, and the system Photo Picker for
 > images. These cover one-off actions but cannot discover documents the user has not opened yet, which is the core
-> purpose of the app's Documents screen (a document manager). Without the permission the app still works in a reduced
+> purpose of the app's Files tab (a document manager). Without the permission the app still works in a reduced
 > mode where users pick files manually.
 
 ## Video minh hoạ (Google yêu cầu, quay màn hình 30–60 giây, đăng YouTube "Không công khai")
 
-1. Mở app lần đầu → màn **Tài liệu** hiện thông báo giải thích ("Phiotron PDF cần quyền truy cập tất cả file để tìm
+1. Mở app lần đầu → bấm tab **Tập tin** (thanh dưới) → hiện hộp giải thích ("Phiotron PDF cần quyền truy cập tất cả file để tìm
    tài liệu trên thiết bị") + nút **Chọn tệp** dự phòng.
 2. Bấm cấp quyền → trang Cài đặt hệ thống "Truy cập tất cả tệp" → bật → quay lại app.
 3. Danh sách hiện tài liệu ở nhiều thư mục (Download, Zalo/Messenger, Documents…), lọc theo tab PDF/Word/Excel.

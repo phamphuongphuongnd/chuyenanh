@@ -1,8 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Logo PDF Office (tu ve). Cung hinh hoc voi adaptive icon Android va AppLogo trong Flutter. -->
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
-  <rect width="108" height="108" rx="24" fill="#E5393B"/>
-  <path d="M35,28 L59,28 L73,42 L73,80 L35,80 Z" fill="#FFFFFF"/>
-  <path d="M59,28 L59,42 L73,42 Z" fill="#F6C4C5"/>
-  <path d="M51,48 L57,48 L57,60 L65,60 L54,73 L43,60 L51,60 Z" fill="#E5393B"/>
-</svg>
+<!-- Logo Phiotron PDF (phuong an "Xap dinh dang", giong adaptive icon Android). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="116" fill="#F4EEE6"></rect><g transform="translate(26 -6)"><rect x="156" y="130" width="200" height="264" rx="30" fill="#1E88E5" transform="rotate(-24 256 400)"></rect><rect x="156" y="130" width="200" height="264" rx="30" fill="#43A047" transform="rotate(-16 256 400)"></rect><rect x="156" y="130" width="200" height="264" rx="30" fill="#F4511E" transform="rotate(-8 256 400)"></rect></g><g transform="translate(26 -6)"><rect x="156" y="130" width="200" height="264" rx="30" fill="#E5393B" transform="rotate(0 256 400)"></rect><path d="M212 336V196H260A44 44 0 0 1 260 284H212" fill="none" stroke="#F4EEE6" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>

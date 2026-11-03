@@ -49,3 +49,4 @@ type: log
 - 2026-11-03 09:40 — PPT→PDF 41 s → 2 s (nén JPEG bằng Android, ImageCodecChannel), hết gạch vàng dưới dấu đầu dòng (bọc Material); thử A13: nén, PDF→PPT chữ sửa được, OCR release đều ổn; 4087 test app + 4 gói xanh → [[tinh-nang-offline]]
 - 2026-11-03 10:40 — tạo khoá upload (người dùng tự làm), build AAB 1.0.0+1 ký đúng, .so đã strip + căn 16 KB; gotcha thiếu cmdline-tools → [[phat-hanh-apk]]
 - 2026-11-03 10:55 — tạo repo public phiotron-pdf + bật Pages cho trang Hỗ trợ/Chính sách; sửa câu sai về quyền file ở bản tiếng Anh → [[0005-len-store-mien-phi]] [[phat-hanh-apk]]
+- 2026-11-03 11:30 — chuẩn bị Play: hộp giải thích quyền camera, sửa PDF MuPDF bị báo hỏng (CMap 5 chữ số), đổi tên gói com.phiotron.phiotronpdf + AAB mới, ảnh store, bản soạn Data safety, sửa chính sách bảo mật; tái hiện được lớp phủ xám 1 lần (chưa ra nguyên nhân); 4109 test xanh → [[tinh-nang-offline]] [[phat-hanh-apk]]

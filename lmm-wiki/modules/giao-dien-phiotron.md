@@ -65,3 +65,6 @@ một nhóm file riêng, cấm chạy flutter (chỉ `dart analyze` file của m
 test (đường dẫn tương đối trong PowerShell) rồi tự `git restore` — **luôn xem `git diff` sau khi agent sửa test**. Xem [[build-song-song-agent]].
 
 Liên quan: [[ui-app-goc]], [[documents]], [[phat-hanh-apk]], [[ios]], [[kiem-thu-flutter]], [[preferences]].
+
+## Cập nhật 03/11/2026 — bỏ hẳn logo cũ
+- `app/assets/branding/logo.{png,svg}` và `design-mobile/screens/assets/logo.png` trước vẫn là logo cũ (trang giấy + mũi tên) dù app đã dùng logo chữ P (`AppLogoPainter`, adaptive icon, AppIcon iOS) — từng làm ảnh bìa store bị lấy nhầm. Đã thay bằng `logo-3-color.svg` (bỏ khối metadata c2pa) + PNG 512 có alpha. Ảnh store ở `docs/store/graphics/`.

@@ -36,7 +36,7 @@ sources:
   dễ tưởng không sao. Sửa: `-keep class com.google.mlkit.** { *; }` + `-keep class * implements ...ComponentRegistrar { <init>(); }`
   trong `proguard-rules.pro`. Sau sửa log sạch và hiện đúng màn Google "Chụp thủ công / Tự động chụp"
   (`com.google.android.gms.mlkit.docscan.ui.DocumentScanningActivity`).
-  **Cách kiểm sau mỗi lần build release:** `adb logcat -d --pid=$(pidof com.phuong.pdfoffice) | grep ComponentDiscovery` phải rỗng; bấm
+  **Cách kiểm sau mỗi lần build release:** `adb logcat -d --pid=$(pidof com.phiotron.phiotronpdf) | grep ComponentDiscovery` phải rỗng; bấm
   Quét tài liệu phải thấy `DocumentScanningActivity` của Google, không phải `...fallback.DocumentScannerActivity`.
 - **Quyết định 28/10: TẮT R8 cho bản release** (`isMinifyEnabled = false`, `isShrinkResources = false` trong `build.gradle.kts`).
   Giữ ML Kit bằng keep rule chưa đủ: khởi tạo được nhưng Google báo `GmsDocScanDelAct: Failed to handle result` sau khi chụp
@@ -73,3 +73,5 @@ Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].
 - Bản trước (99.280.203 byte) lưu ở `dist/backup/PDFOffice-2026-11-02-1559.apk`.
 - **Khoá upload (03/11):** chủ dự án tự tạo `app/android/upload-keystore.jks` (alias `upload`) + `key.properties` (cả hai gitignore; Claude không mở). Từ nay build release ký bằng khoá này ⇒ APK mới **không cài đè** được lên bản cũ ký khoá debug (phải gỡ bản cũ trước — mất dữ liệu app trên máy đó).
 - **AAB:** `flutter build appbundle --release` → `build/app/outputs/bundle/release/app-release.aab` (≈ 145 MiB, gồm arm, arm64, x86_64; Play tách theo ABI). Flutter báo "failed to strip debug symbols" khi máy **thiếu Android SDK Command-line Tools** dù Gradle đã xong — kiểm bằng `llvm-readelf -S` (NDK) thấy không còn `.debug_*`/`.symtab` và LOAD align ≥ 0x4000 là đạt. Bản 1.0.0+1 chép ở `dist/PhiotronPDF-1.0.0-1.aab`.
+
+- **Đổi tên gói (03/11):** `applicationId` = `com.phiotron.phiotronpdf` (iOS bundle id cũng vậy), trước khi tạo app trên Play. `namespace`, package Kotlin `com.phuong.pdfoffice` và tên kênh `com.phuong.pdfoffice/*` giữ nguyên (tên nội bộ). Hệ quả: trên máy đã cài bản cũ, bản mới là **app khác** (cài song song, không mang dữ liệu sang); lệnh adb phải dùng tên gói mới.

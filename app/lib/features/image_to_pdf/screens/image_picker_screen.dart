@@ -8,6 +8,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/permissions/camera_permission.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../image_to_pdf_paths.dart';
@@ -83,6 +84,8 @@ class _ImagePickerScreenState extends ConsumerState<ImagePickerScreen> {
   });
 
   Future<void> _camera() => _run(() async {
+    // Giải thích trước khi xin quyền; "Để sau" thì thôi, không báo lỗi.
+    if (!await ensureCameraPermission(context, ref) || !mounted) return;
     final path = await ref.read(cameraServiceProvider).capture();
     // Ảnh chụp là JPEG sẵn, dùng thẳng.
     if (path != null && mounted) _finish([path]);

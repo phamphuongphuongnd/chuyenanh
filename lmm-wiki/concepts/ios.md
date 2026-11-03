@@ -19,7 +19,7 @@ sources:
 - **Danh sách tài liệu:** không quét toàn máy. `platformScanRootsProvider` → thư mục Documents của app, dùng khi `scanRootsProvider` rỗng (Android không bao giờ rỗng).
 - **Thư mục lưu:** iOS không cho chọn thư mục tuỳ ý → ẩn mục trong Cài đặt; file xuất vào `Documents/PDF Office` (`resolveOutputDirectory` đã có sẵn), hiện trong app Tệp nhờ `UIFileSharingEnabled` + `LSSupportsOpeningDocumentsInPlace`.
 - **Chia sẻ:** iPad bắt buộc có vị trí popover → `defaultShareOrigin()` (null trên Android). Chia sẻ app trên iOS không kèm link APK (`appShareMessage(withLink: false)`).
-- **Cấu hình:** deployment target 15.5 (ML Kit), `CFBundleDocumentTypes` PDF/Office/TXT, icon sinh từ `assets/branding/logo.png` (nền trắng, không alpha).
+- **Cấu hình:** deployment target 15.5 (ML Kit), `CFBundleDocumentTypes` PDF/Office/TXT, icon `AppIcon` đã là logo chữ P (`Icon-App-1024x1024@1x.png`, nền kem, không alpha); `assets/branding/logo.png` cũng đã đổi sang logo chữ P từ 03/11.
 
 ## Build (không có Mac)
 Windows không build được iOS. Dùng `.github/workflows/ios-build.yml` (macOS runner): chạy tay (Actions → ios-build → Run workflow, chỉ hiện khi file đã có trên `master`) hoặc đẩy tag `ios-*` (`git tag ios-testN; git push origin ios-testN`). Ra `PDFOffice-ios.ipa` không ký, đăng lên Release `ios-latest`. **Đã chạy thành công** trên tag `ios-test2` (28/10).

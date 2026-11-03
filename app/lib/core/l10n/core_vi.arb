@@ -64,5 +64,10 @@
   "core_toolPdfToPpt": "PDF sang PowerPoint",
   "core_toolCompress": "Nén PDF",
   "core_toolPageNumbers": "Đánh số trang",
-  "core_toolInsertPages": "Chèn trang"
+  "core_toolInsertPages": "Chèn trang",
+  "core_cameraPermissionTitle": "Cho phép dùng máy ảnh",
+  "core_cameraPermissionWhy": "Phiotron PDF cần dùng máy ảnh để chụp, quét tài liệu và đọc mã QR.",
+  "core_cameraPermissionLocal": "Ảnh chỉ được xử lý trên máy, không gửi đi đâu.",
+  "core_cameraPermissionContinue": "Tiếp tục",
+  "core_cameraPermissionLater": "Để sau"
 }

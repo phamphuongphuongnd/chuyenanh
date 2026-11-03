@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../core/errors/app_error.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_document.dart';
+import '../../../core/permissions/camera_permission.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../../engines/ocr/ocr_engine.dart';
@@ -63,6 +64,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     } on ScannerUnavailable {
       if (!mounted) return null;
       _toast(context.l10n.scan_autoUnavailable);
+      // image_picker tự xin quyền camera → giải thích trước; "Để sau" = huỷ.
+      if (!await ensureCameraPermission(context, ref)) return null;
       final photo = await capture.takePhoto();
       if (photo == null || !mounted) return null;
       final cropped = await Navigator.of(context).push<String>(

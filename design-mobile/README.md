@@ -262,7 +262,7 @@ Danh sách và thẻ file **không** đổ bóng (nhẹ cho máy yếu, theo bri
 | Logo trong app | `lib/features/settings/app_logo.dart` |
 | Tên app | `android/app/src/main/AndroidManifest.xml` (`android:label`), `ios/Runner/Info.plist` (`CFBundleDisplayName`, `CFBundleName`), chuỗi tên app trong l10n 6 ngôn ngữ, lời nhắn Chia sẻ |
 
-`screens/assets/logo.png` là **logo cũ** (tờ giấy + mũi tên), không dùng nữa. Không đổi package id `com.phuong.pdfoffice`.
+`screens/assets/logo.png` và `app/assets/branding/logo.{png,svg}` là logo chữ P (phương án `logo-3-color.svg`), thay logo cũ tờ giấy + mũi tên từ 03/11/2026. Package id Google Play là `com.phiotron.phiotronpdf` (đổi 03/11/2026); tên kênh native vẫn `com.phuong.pdfoffice/*`.
 
 ### 6.5 Lưu ý khi code
 - Giữ nguyên route `core/router/routes.dart`, CSDL, engine — chỉ đổi giao diện.
