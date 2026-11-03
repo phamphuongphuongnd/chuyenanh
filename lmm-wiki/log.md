@@ -47,3 +47,5 @@ type: log
 - 2026-11-02 16:30 — APK nhẹ 174→94,7MB (bỏ x86_64 + nén .so), Đọc to tự chọn bộ đọc có tiếng Việt (Google TTS), không chép Imported khi đã có quyền, KHÔNG ẩn file; thử A13 ổn; 4039 test xanh, bản mới lên android-latest → [[tinh-nang-offline]] [[phat-hanh-apk]]
 - 2026-11-02 17:40 — chỉ còn vi + en (bỏ ARB zh/ja/ko/id, font CJK, OCR CJK); nén PDF giữ chữ + link, không ra file to hơn; PPT↔PDF giữ chữ, chế độ Chữ sửa được; đọc to một chạm; quyền file có giải thích + dòng trong Cài đặt; Play API 36/16KB đạt → [[tinh-nang-offline]] [[xuat-chu-ra-pdf]] [[phat-hanh-apk]]
 - 2026-11-03 09:40 — PPT→PDF 41 s → 2 s (nén JPEG bằng Android, ImageCodecChannel), hết gạch vàng dưới dấu đầu dòng (bọc Material); thử A13: nén, PDF→PPT chữ sửa được, OCR release đều ổn; 4087 test app + 4 gói xanh → [[tinh-nang-offline]]
+- 2026-11-03 10:40 — tạo khoá upload (người dùng tự làm), build AAB 1.0.0+1 ký đúng, .so đã strip + căn 16 KB; gotcha thiếu cmdline-tools → [[phat-hanh-apk]]
+- 2026-11-03 10:55 — tạo repo public phiotron-pdf + bật Pages cho trang Hỗ trợ/Chính sách; sửa câu sai về quyền file ở bản tiếng Anh → [[0005-len-store-mien-phi]] [[phat-hanh-apk]]

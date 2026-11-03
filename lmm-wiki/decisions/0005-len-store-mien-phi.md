@@ -38,3 +38,8 @@ tiêu chuẩn `D:\Phuong\tieu-chuan-ban-app-toan-cau.md` và muốn lên store m
 viết mô tả/ảnh store khác biệt, chạy TestFlight trước khi nộp. Play tài khoản cá nhân cần closed test ≥ 12 người × 14 ngày.
 
 Liên quan: [[ban-quyen-giay-phep]], [[phat-hanh-apk]], [[ios]], [[documents]].
+
+## Cập nhật 03/11/2026
+- Trang công khai đã lên: repo **public** `phamphuongphuongnd/phiotron-pdf` (GitHub Pages, nhánh `main`, gốc `/`) chứa `index.md`, `privacy.md`, `_config.yml` chép từ `public-site/`. URL khớp `kSupportUrl` / `kPrivacyPolicyUrl`. Sửa `public-site/` ⇒ chép lại sang repo đó và đổi ngày hiệu lực.
+- Đã sửa bản tiếng Anh mục Files (trước ghi sai "Android 11+ không xin quyền rộng" — thực tế có All files access).
+- Khoá upload + AAB 1.0.0+1 đã có — xem [[phat-hanh-apk]]. Còn thiếu: màn giải thích trước khi xin quyền camera, ảnh store (icon 512, bìa 1024×500, ảnh màn hình ≤ 2:1), bản soạn Data safety.

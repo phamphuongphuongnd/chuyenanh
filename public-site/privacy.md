@@ -6,7 +6,7 @@ title: Chính sách bảo mật · Privacy Policy
 
 [English version below](#privacy-policy--phiotron-pdf)
 
-**Ngày hiệu lực:** 30/10/2026
+**Ngày hiệu lực:** 03/11/2026
 
 Chính sách này giải thích ứng dụng **Phiotron PDF** (Android: `com.phuong.pdfoffice`, iOS) xử lý dữ liệu của bạn
 như thế nào. Ứng dụng do cá nhân **Phạm Phương (Phiotron)** phát triển ("chúng tôi"). Liên hệ:
@@ -134,7 +134,7 @@ Phạm Phương (Phiotron) — [phamphuongphuongnd@gmail.com](mailto:phamphuongp
 
 # Privacy Policy — Phiotron PDF
 
-**Effective date:** 30 October 2026
+**Effective date:** 3 November 2026
 
 This policy explains how the **Phiotron PDF** app (Android: `com.phuong.pdfoffice`, iOS) handles your data. The app
 is developed by an individual, **Phạm Phương (Phiotron)** ("we"). Contact:
@@ -171,8 +171,10 @@ None of the data above is sent to us or to anyone else, unless **you** share a f
 - **Camera** — to scan documents and take photos, only when you open a capture / scan feature.
 - **Photos** — chosen through the **system photo picker** (Android Photo Picker / iOS PHPicker). The app only
   receives the photos you pick and never reads your whole library.
-- **Files** — only the files you choose or open with the app. On Android 7–10 the app asks for storage access to
-  save into `Documents/Phiotron PDF`; on Android 11 and later it does not request broad storage access.
+- **Files** — Android: the app asks for storage access (Android 7–10) or **"All files access"** (Android 11 and
+  later) to find, list and open documents on the device, and to save into `Documents/Phiotron PDF`. Files are only
+  read on the device and are never uploaded. If you decline, you can still pick files one by one. iOS: only the
+  files you choose or open with the app.
 - **Biometrics / device PIN** (optional App lock) — the check is done by the operating system (Android
   BiometricPrompt / iOS Face ID, Touch ID). The app only receives "success / failure" and **never receives
   fingerprint or face data**.

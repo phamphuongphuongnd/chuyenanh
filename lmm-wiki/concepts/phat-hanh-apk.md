@@ -71,3 +71,5 @@ Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].
 ## Cập nhật 03/11/2026
 - `android-latest` = bản 74.834.669 byte (71,4 MiB, chỉ vi + en, chỉ còn NotoSans Regular/Bold ≈ 1,6 MB). Mốc "đủ font ≈ 114 MB" ở mục 30/10 đã lỗi thời: nay thiếu font chỉ nhẹ hơn ~1,6 MB, nên kiểm bằng `ls app/assets/fonts/*.ttf` thay vì nhìn dung lượng.
 - Bản trước (99.280.203 byte) lưu ở `dist/backup/PDFOffice-2026-11-02-1559.apk`.
+- **Khoá upload (03/11):** chủ dự án tự tạo `app/android/upload-keystore.jks` (alias `upload`) + `key.properties` (cả hai gitignore; Claude không mở). Từ nay build release ký bằng khoá này ⇒ APK mới **không cài đè** được lên bản cũ ký khoá debug (phải gỡ bản cũ trước — mất dữ liệu app trên máy đó).
+- **AAB:** `flutter build appbundle --release` → `build/app/outputs/bundle/release/app-release.aab` (≈ 145 MiB, gồm arm, arm64, x86_64; Play tách theo ABI). Flutter báo "failed to strip debug symbols" khi máy **thiếu Android SDK Command-line Tools** dù Gradle đã xong — kiểm bằng `llvm-readelf -S` (NDK) thấy không còn `.debug_*`/`.symtab` và LOAD align ≥ 0x4000 là đạt. Bản 1.0.0+1 chép ở `dist/PhiotronPDF-1.0.0-1.aab`.
