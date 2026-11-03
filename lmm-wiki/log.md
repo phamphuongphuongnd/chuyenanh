@@ -50,3 +50,4 @@ type: log
 - 2026-11-03 10:40 — tạo khoá upload (người dùng tự làm), build AAB 1.0.0+1 ký đúng, .so đã strip + căn 16 KB; gotcha thiếu cmdline-tools → [[phat-hanh-apk]]
 - 2026-11-03 10:55 — tạo repo public phiotron-pdf + bật Pages cho trang Hỗ trợ/Chính sách; sửa câu sai về quyền file ở bản tiếng Anh → [[0005-len-store-mien-phi]] [[phat-hanh-apk]]
 - 2026-11-03 11:30 — chuẩn bị Play: hộp giải thích quyền camera, sửa PDF MuPDF bị báo hỏng (CMap 5 chữ số), đổi tên gói com.phiotron.phiotronpdf + AAB mới, ảnh store, bản soạn Data safety, sửa chính sách bảo mật; tái hiện được lớp phủ xám 1 lần (chưa ra nguyên nhân); 4109 test xanh → [[tinh-nang-offline]] [[phat-hanh-apk]]
+- 2026-11-03 13:40 — bản 1.0.1 (2): sửa ANR quét QR ảnh 50 MP (giới hạn kích thước ảnh trước ML Kit), Word căn đều → PDF căn đều, ô số đoạn đọc to; thử máy thật hộp quyền camera + PDF MuPDF → [[tinh-nang-offline]]

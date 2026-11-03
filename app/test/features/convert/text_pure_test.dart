@@ -152,6 +152,66 @@ void main() {
     });
   });
 
+  group('căn đều (justifyLine)', () {
+    List<WrappedLine> wrap(List<StyledSpan> spans, double maxWidth, {double indent = 0}) => wrapTokens(
+          tokenize(spans, _FakeMeasurer(), maxWidth: maxWidth),
+          maxWidth: maxWidth,
+          firstLineIndent: indent,
+        );
+
+    test('phần dư chia đều cho từng dấu cách trong run, mép phải chạm maxWidth', () {
+      // 'aa bb  cc' rộng 75, maxWidth 105 ⇒ dư 30 cho 3 dấu cách ⇒ +10 mỗi dấu cách
+      final j = justifyLine(wrap([const StyledSpan('aa bb  cc')], 1000).single, 105);
+      expect(j.runs.single.text, 'aa bb  cc'); // vẫn một run: trích chữ liền dòng
+      expect(j.wordSpacing, closeTo(10, 1e-9));
+      expect(j.runs.single.width, closeTo(105, 1e-9));
+      expect(j.width, closeTo(105, 1e-9));
+    });
+
+    test('khoảng giữa hai run (khác định dạng) cũng được giãn, run sau dời phải', () {
+      final line = wrap([const StyledSpan('aa bb '), const StyledSpan('cc dd', bold: true)], 1000).single;
+      expect(line.runs.map((r) => r.text), ['aa bb', 'cc dd']);
+      expect(line.runs[1].spacesBefore, 1);
+      // rộng 20+5+20+5+20+5+20 = 95, maxWidth 125 ⇒ dư 30 / 3 dấu cách ⇒ +10
+      final j = justifyLine(line, 125);
+      expect(j.wordSpacing, closeTo(10, 1e-9));
+      expect(j.runs[0].x, 0);
+      expect(j.runs[0].width, closeTo(55, 1e-9));
+      expect(j.runs[1].x, closeTo(50 + 20, 1e-9)); // 50 + 2 dấu cách × 10
+      expect(j.runs[1].x + j.runs[1].width, closeTo(125, 1e-9));
+    });
+
+    test('dòng thụt đầu dòng — vẫn chạm đúng maxWidth', () {
+      final lines = wrap([const StyledSpan('aa bb cc dd')], 95, indent: 20);
+      expect(lines.first.text, 'aa bb cc');
+      final j = justifyLine(lines.first, 95);
+      expect(j.runs.first.x, 20);
+      expect(j.runs.last.x + j.runs.last.width, closeTo(95, 1e-9));
+    });
+
+    test('Latin + CJK trên cùng dòng: hai run, mép phải vẫn chạm', () {
+      final j = justifyLine(wrap([const StyledSpan('Hà nội 河')], 1000).single, 200);
+      expect(j.runs.map((r) => r.face), [ScriptFace.latin, ScriptFace.chinese]);
+      expect(j.runs.last.x + j.runs.last.width, closeTo(200, 1e-9));
+    });
+
+    test('dòng xuống dòng cứng giữ nguyên', () {
+      final lines = wrap([const StyledSpan('aa bb\ncc dd')], 1000);
+      expect(lines, hasLength(2));
+      expect(lines.first.hardBreak, isTrue);
+      expect(lines.last.hardBreak, isFalse);
+      expect(identical(justifyLine(lines.first, 500), lines.first), isTrue);
+    });
+
+    test('một từ / đã đầy ⇒ giữ nguyên', () {
+      final one = wrap([const StyledSpan('aaaa')], 1000).single;
+      expect(identical(justifyLine(one, 500), one), isTrue);
+      final full = wrap([const StyledSpan('aa bb')], 1000).single; // rộng 45
+      expect(identical(justifyLine(full, 45), full), isTrue);
+      expect(full.wordSpacing, 0);
+    });
+  });
+
   group('decodeTextBytes', () {
     test('UTF-8 có và không BOM', () {
       final raw = utf8.encode('Tiếng Việt');

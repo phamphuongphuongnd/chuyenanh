@@ -108,7 +108,8 @@ List<StyledSpan> _docxSpans(office.DocxParagraph p, ToPdfOptions o, {List<office
 FlowAlign _align(office.DocxAlign a) => switch (a) {
       office.DocxAlign.center => FlowAlign.center,
       office.DocxAlign.right => FlowAlign.right,
-      _ => FlowAlign.left,
+      office.DocxAlign.justify => FlowAlign.justify,
+      office.DocxAlign.left => FlowAlign.left,
     };
 
 void _docxParagraph(PdfFlowWriter w, office.DocxParagraph p, ToPdfOptions o) {

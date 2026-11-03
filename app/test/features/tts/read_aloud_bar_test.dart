@@ -65,7 +65,8 @@ void main() {
       await _pump(tester, engine, onParagraph: announced.add);
 
       expect(engine.checked, ['vi-VN']);
-      expect(find.text('Paragraph 1 / 3'), findsOneWidget);
+      expect(find.text('1/3'), findsOneWidget);
+      expect(find.bySemanticsLabel('Paragraph 1 / 3'), findsOneWidget);
       expect(tester.getSize(find.byType(ReadAloudBar)).height, 64);
 
       await tester.tap(find.byKey(const ValueKey('tts_play')));
@@ -78,7 +79,8 @@ void main() {
       await tester.pump();
       expect(engine.spoken, ['Một.', 'Hai.']);
       expect(announced, [0, 1]);
-      expect(find.text('Paragraph 2 / 3'), findsOneWidget);
+      expect(find.text('2/3'), findsOneWidget);
+      expect(find.bySemanticsLabel('Paragraph 2 / 3'), findsOneWidget);
 
       // Tạm dừng → engine dừng, nút trở lại Phát.
       await tester.tap(find.byKey(const ValueKey('tts_play')));
@@ -237,7 +239,8 @@ void main() {
       );
       expect(engine.stops, 0);
       expect(engine.spoken, ['Một.']);
-      expect(find.text('Paragraph 1 / 3'), findsOneWidget);
+      expect(find.text('1/3'), findsOneWidget);
+      expect(find.bySemanticsLabel('Paragraph 1 / 3'), findsOneWidget);
       expect(find.byTooltip('Pause'), findsOneWidget);
 
       // Đọc hết phần cũ vẫn tiếp tục sang đoạn mới.
@@ -257,6 +260,7 @@ void main() {
     await _pump(tester, engine, paragraphs: const ['Khác.', 'Hai.', 'Ba.']);
     expect(engine.stops, 1);
     expect(find.byTooltip('Read aloud'), findsOneWidget);
-    expect(find.text('Paragraph 1 / 3'), findsOneWidget);
+    expect(find.text('1/3'), findsOneWidget);
+    expect(find.bySemanticsLabel('Paragraph 1 / 3'), findsOneWidget);
   });
 }

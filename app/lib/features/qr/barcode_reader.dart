@@ -21,6 +21,9 @@ abstract interface class QrImagePicker {
   Future<String?> pick(QrImageSource source);
 }
 
+/// Cạnh dài tối đa (px) của ảnh đưa vào bộ đọc mã — xem ghi chú ANR ở [ImagePickerQrPicker.pick].
+const double kQrMaxImageSide = 2000;
+
 class ImagePickerQrPicker implements QrImagePicker {
   const ImagePickerQrPicker();
 
@@ -36,6 +39,10 @@ class ImagePickerQrPicker implements QrImagePicker {
       source: source == QrImageSource.camera
           ? ImageSource.camera
           : ImageSource.gallery,
+      // Plugin ML Kit giải mã + xoay ảnh trên luồng UI của Android: ảnh camera 50 MP (Galaxy A13)
+      // làm app treo > 10 s (ANR). image_picker thu nhỏ ở luồng nền; QR đọc tốt ở 2000 px.
+      maxWidth: kQrMaxImageSide,
+      maxHeight: kQrMaxImageSide,
       requestFullMetadata: false,
     );
     return file?.path;

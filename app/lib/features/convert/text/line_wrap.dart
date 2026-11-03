@@ -97,6 +97,7 @@ class PlacedRun {
     required this.style,
     required this.x,
     required this.width,
+    this.spacesBefore = 0,
   });
 
   final String text;
@@ -106,14 +107,24 @@ class PlacedRun {
   /// Toạ độ x so với mép trái của đoạn văn (đã gồm thụt dòng đầu), chưa tính căn lề.
   final double x;
   final double width;
+
+  /// Số dấu cách giữa run trước trên cùng dòng và run này (run đầu dòng luôn 0) — chỗ giãn khi căn đều.
+  final int spacesBefore;
 }
 
 class WrappedLine {
-  const WrappedLine(this.runs, this.width);
+  const WrappedLine(this.runs, this.width, {this.hardBreak = false, this.wordSpacing = 0});
   final List<PlacedRun> runs;
 
   /// Toạ độ x cuối của chữ thấy được (không tính dấu cách cuối dòng).
   final double width;
+
+  /// Dòng kết thúc bằng xuống dòng cứng (`\n`, tức `<w:br/>`) — không giãn khi căn đều.
+  final bool hardBreak;
+
+  /// Khoảng cộng thêm cho mỗi dấu cách U+0020 bên trong một run (point) — [justifyLine] đặt, người vẽ
+  /// truyền vào `PdfStringFormat.wordSpacing`. 0 = không giãn.
+  final double wordSpacing;
 
   String get text => runs.map((r) => r.text).join();
 }
@@ -217,8 +228,8 @@ List<WrappedLine> wrapTokens(
   var gap = 0; // số dấu cách sau `prev` (gồm cả token chỉ có dấu cách)
   var gapWidth = 0.0;
 
-  void flush() {
-    lines.add(WrappedLine(runs, end));
+  void flush({bool hard = false}) {
+    lines.add(WrappedLine(runs, end, hardBreak: hard));
     runs = <PlacedRun>[];
     x = 0;
     end = 0;
@@ -239,9 +250,17 @@ List<WrappedLine> wrapTokens(
           style: last.style,
           x: last.x,
           width: last.width + gapWidth + t.width,
+          spacesBefore: last.spacesBefore,
         );
       } else {
-        runs.add(PlacedRun(text: t.text, face: t.face, style: t.style, x: x, width: t.width));
+        runs.add(PlacedRun(
+          text: t.text,
+          face: t.face,
+          style: t.style,
+          x: x,
+          width: t.width,
+          spacesBefore: runs.isEmpty ? 0 : gap,
+        ));
       }
       end = x + t.width;
       x = end + t.trailingSpace;
@@ -253,8 +272,50 @@ List<WrappedLine> wrapTokens(
       gap += t.spaces;
       gapWidth += t.trailingSpace;
     }
-    if (t.forceBreak) flush();
+    if (t.forceBreak) flush(hard: true);
   }
   if (runs.isNotEmpty || lines.isEmpty) flush();
   return lines;
+}
+
+/// Số dấu cách U+0020 trong [text] — chỗ Syncfusion giãn theo `wordSpacing` (run gộp chỉ chứa U+0020).
+int _innerSpaces(String text) {
+  var n = 0;
+  for (final c in text.codeUnits) {
+    if (c == 0x20) n++;
+  }
+  return n;
+}
+
+/// Căn đều một dòng cho chạm [maxWidth]: phần dư chia đều cho mọi dấu cách giữa các từ (như Word giãn
+/// mỗi dấu cách bằng nhau) — cả dấu cách bên trong run (vẽ bằng [WrappedLine.wordSpacing]) lẫn khoảng
+/// giữa hai run (dời `x` của run sau). Dòng xuống dòng cứng, dòng không có dấu cách giữa từ, hoặc đã
+/// đầy/tràn thì giữ nguyên. Người gọi tự bỏ qua dòng cuối của đoạn.
+WrappedLine justifyLine(WrappedLine line, double maxWidth) {
+  if (line.hardBreak || line.runs.isEmpty) return line;
+  var spaces = 0;
+  for (var i = 0; i < line.runs.length; i++) {
+    final r = line.runs[i];
+    spaces += _innerSpaces(r.text) + (i > 0 ? r.spacesBefore : 0);
+  }
+  final extra = maxWidth - line.width;
+  if (spaces == 0 || extra <= 0.01) return line;
+  final per = extra / spaces;
+  var acc = 0; // số dấu cách đã giãn tính tới đầu run hiện tại
+  final runs = <PlacedRun>[];
+  for (var i = 0; i < line.runs.length; i++) {
+    final r = line.runs[i];
+    if (i > 0) acc += r.spacesBefore;
+    final inner = _innerSpaces(r.text);
+    runs.add(PlacedRun(
+      text: r.text,
+      face: r.face,
+      style: r.style,
+      x: r.x + acc * per,
+      width: r.width + inner * per,
+      spacesBefore: r.spacesBefore,
+    ));
+    acc += inner;
+  }
+  return WrappedLine(runs, line.width + extra, hardBreak: line.hardBreak, wordSpacing: per);
 }

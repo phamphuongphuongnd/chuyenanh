@@ -279,6 +279,93 @@ void main() {
     });
   });
 
+  group('DOCX căn đều hai bên (w:jc both) → PDF', () {
+    // A4 595.28 pt, lề mặc định 40 ⇒ lề phải ở 555.28.
+    const right = 595.28 - 40;
+    const para = 'Phiotron converts Word documents into portable files while keeping the layout '
+        'readable on every device, so paragraphs that are justified in the original must stay '
+        'justified after conversion as well, with straight edges on both sides of the text column '
+        'except for the short last line.';
+
+    List<sf.TextLine> lines(String path) {
+      final doc = sf.PdfDocument(inputBytes: File(path).readAsBytesSync());
+      try {
+        return sf.PdfTextExtractor(doc).extractTextLines()..sort((a, b) => a.bounds.top.compareTo(b.bounds.top));
+      } finally {
+        doc.dispose();
+      }
+    }
+
+    Future<String> convert(PdfConvertEngine engine, DocAlign align, String name, [String text = para]) async {
+      final docx = writeDocx([
+        DocParagraph(align: align, spans: [DocSpan(text)]),
+      ]);
+      File(out('$name.docx')).writeAsBytesSync(docx);
+      return engine.docxToPdf(out('$name.docx'), out('$name.pdf'));
+    }
+
+    test('dòng không phải cuối chạm lề phải, dòng cuối không giãn', () async {
+      const engine = PdfConvertEngine(fontSource: NoFontSource());
+      final path = await convert(engine, DocAlign.justify, 'j');
+      final ls = lines(path);
+      expect(ls.length, greaterThanOrEqualTo(3));
+      for (final l in ls.take(ls.length - 1)) {
+        expect(l.bounds.left, closeTo(40, 1.5), reason: l.text);
+        expect(l.bounds.right, closeTo(right, 1.5), reason: l.text);
+      }
+      expect(ls.last.bounds.left, closeTo(40, 1.5));
+      expect(ls.last.bounds.right, lessThan(right - 30));
+      // Chữ trích ra vẫn đủ, đúng thứ tự, có khoảng trắng giữa các từ.
+      final text = _pdfText(path).replaceAll(RegExp(r'\s+'), ' ').trim();
+      expect(text, para);
+    });
+
+    test('đối chứng: cùng đoạn căn trái thì mép phải lởm chởm', () async {
+      const engine = PdfConvertEngine(fontSource: NoFontSource());
+      final ls = lines(await convert(engine, DocAlign.left, 'l'));
+      expect(ls.take(ls.length - 1).any((l) => l.bounds.right < right - 5), isTrue);
+    });
+
+    test('dòng kết thúc bằng <w:br/> không giãn, các dòng sau vẫn căn đều', () {
+      final doc = office.DocxDocument(page: office.DocxPageSetup.a4, blocks: [
+        office.DocxParagraph(align: office.DocxAlign.justify, inlines: const [
+          office.DocxRun(text: 'Short line before break'),
+          office.DocxBreak(),
+          office.DocxRun(text: para),
+        ]),
+      ]);
+      final pdf = buildDocxPdf(doc, const ToPdfOptions(), PdfFontSet(const {})).bytes;
+      final d = sf.PdfDocument(inputBytes: pdf);
+      final ls = sf.PdfTextExtractor(d).extractTextLines()..sort((a, b) => a.bounds.top.compareTo(b.bounds.top));
+      d.dispose();
+      expect(ls.first.text.replaceAll(RegExp(r'\s+'), ' ').trim(), 'Short line before break');
+      expect(ls.first.bounds.right, lessThan(right - 100));
+      expect(ls.length, greaterThanOrEqualTo(4));
+      for (final l in ls.skip(1).take(ls.length - 2)) {
+        expect(l.bounds.right, closeTo(right, 1.5), reason: l.text);
+      }
+      expect(ls.last.bounds.right, lessThan(right - 30));
+    });
+
+    test('chữ Việt (NFD trong file) căn đều, trích ra NFC', skip: _skipNoFonts, () async {
+      const engine = PdfConvertEngine(fontSource: _winFonts);
+      const vi = 'Tiếng Việt có nhiều dấu thanh và dấu mũ, đoạn văn này đủ dài để xuống nhiều dòng '
+          'khi chuyển sang PDF, mỗi dòng trừ dòng cuối phải chạm lề phải giống như trong Word khi chọn '
+          'căn đều hai bên cho đoạn văn bản tiếng Việt có dấu đầy đủ. Hết.';
+      final path = await convert(engine, DocAlign.justify, 'vi', vi);
+      final ls = lines(path);
+      expect(ls.length, greaterThanOrEqualTo(3));
+      for (final l in ls.take(ls.length - 1)) {
+        expect(l.bounds.right, closeTo(right, 1.5), reason: l.text);
+      }
+      expect(ls.last.bounds.right, lessThan(right - 30));
+      // App đọc chữ PDF qua extractTextLines (TextLine.text / wordCollection): đủ từ, có dấu cách, NFC.
+      final text = ls.map((l) => l.text).join(' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+      expect(text, vi.replaceFirst('Tiếng', 'Tiếng'));
+      expect(ls.first.wordCollection.map((w) => w.text).where((w) => w.trim().isNotEmpty).take(2), ['Tiếng', 'Việt']);
+    });
+  });
+
   test('partitionColumns chia dải theo chiều rộng trang', () {
     expect(partitionColumns([100, 100, 100, 100], 250), [
       [0, 1],

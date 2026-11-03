@@ -9,7 +9,7 @@ import 'settings_providers.dart';
 
 /// Phiên bản hiển thị ở màn Giới thiệu. Giữ khớp `version:` trong `pubspec.yaml`
 /// (chưa có gói đọc phiên bản app — xem "Cần MÓNG bổ sung").
-const String kAppVersion = '1.0.0';
+const String kAppVersion = '1.0.1';
 
 /// Địa chỉ nhận phản hồi (người gửi là tài khoản mail đang dùng trên máy bấm nút).
 const String kFeedbackEmail = 'phamphuongphuongnd@gmail.com';

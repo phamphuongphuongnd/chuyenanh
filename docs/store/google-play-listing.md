@@ -111,7 +111,7 @@ RIÊNG TƯ
 • Không quảng cáo, không mua trong ứng dụng
 
 VỀ QUYỀN TRUY CẬP
-Trên Android 11 trở lên, ứng dụng xin quyền "Truy cập tất cả file" để tìm và hiển thị tài liệu trên máy ở màn Tài liệu. Nếu từ chối, bạn vẫn có thể chọn từng tệp để mở. Máy ảnh chỉ được dùng khi bạn quét hoặc chụp.
+Trên Android 11 trở lên, ứng dụng xin quyền "Truy cập tất cả file" để tìm và hiển thị tài liệu trên máy ở tab Tập tin. Nếu từ chối, bạn vẫn có thể chọn từng tệp để mở. Máy ảnh chỉ được dùng khi bạn quét hoặc chụp.
 
 Ứng dụng có giao diện tiếng Việt và tiếng Anh. Góp ý và báo lỗi: phamphuongphuongnd@gmail.com
 
@@ -166,7 +166,7 @@ PRIVACY
 • No ads, no in-app purchases
 
 ABOUT PERMISSIONS
-On Android 11 and later, the app asks for "All files access" to find and show the documents on your device in the Documents screen. If you decline, you can still pick files one by one. The camera is used only when you scan or take a photo.
+On Android 11 and later, the app asks for "All files access" to find and show the documents on your device in the Files tab. If you decline, you can still pick files one by one. The camera is used only when you scan or take a photo.
 
 The app is available in Vietnamese and English. Feedback and bug reports: phamphuongphuongnd@gmail.com
 

@@ -7,7 +7,8 @@ import '../text/line_wrap.dart';
 import '../text/script_runs.dart';
 import 'font_set.dart';
 
-enum FlowAlign { left, center, right }
+/// [justify] = căn đều hai bên: mọi dòng giãn chạm lề phải trừ dòng cuối đoạn và dòng xuống dòng cứng.
+enum FlowAlign { left, center, right, justify }
 
 /// Ô của bảng vẽ bằng [PdfFlowWriter.table].
 class GridCell {
@@ -116,7 +117,13 @@ class PdfFlowWriter {
   }
 
 
-  void _drawRun(PdfGraphics g, PlacedRun r, double x, double top, double lineH) {
+  /// [decoWidth]: bề rộng tô sáng / gạch chân / gạch ngang (mặc định bằng chữ) — căn đều thì kéo qua
+  /// khoảng giãn tới từ kế tiếp cùng định dạng, cho liền nét như khi các từ còn chung một run.
+  /// [wordSpacing]: giãn thêm mỗi dấu cách trong run (căn đều) — Syncfusion vẽ từng từ bằng `Td` trong
+  /// cùng một khối chữ nên trích chữ vẫn liền dòng.
+  void _drawRun(PdfGraphics g, PlacedRun r, double x, double top, double lineH,
+      {double? decoWidth, double wordSpacing = 0}) {
+    final dw = decoWidth ?? r.width;
     final font = fonts.fontFor(r.face, r.style);
     final text = fonts.safeText(r.face, r.style, r.text);
     var ty = top + (lineH - font.height) / 2;
@@ -125,24 +132,30 @@ class PdfFlowWriter {
     if (r.style.highlightArgb != null) {
       g.drawRectangle(
         brush: PdfSolidBrush(_color(r.style.highlightArgb!)),
-        bounds: Rect.fromLTWH(x, top, r.width, lineH),
+        bounds: Rect.fromLTWH(x, top, dw, lineH),
       );
     }
     final brush = PdfSolidBrush(_color(r.style.colorArgb ?? 0xFF000000));
-    g.drawString(text, font, brush: brush, bounds: Rect.fromLTWH(x, ty, 0, 0));
+    g.drawString(
+      text,
+      font,
+      brush: brush,
+      bounds: Rect.fromLTWH(x, ty, 0, 0),
+      format: wordSpacing != 0 ? PdfStringFormat(wordSpacing: wordSpacing) : null,
+    );
     final pen = PdfPen(_color(r.style.colorArgb ?? 0xFF000000), width: 0.6);
     if (r.style.underline) {
       final ly = ty + font.height * 0.92;
-      g.drawLine(pen, Offset(x, ly), Offset(x + r.width, ly));
+      g.drawLine(pen, Offset(x, ly), Offset(x + dw, ly));
     }
     if (r.style.strike) {
       final ly = ty + font.height * 0.55;
-      g.drawLine(pen, Offset(x, ly), Offset(x + r.width, ly));
+      g.drawLine(pen, Offset(x, ly), Offset(x + dw, ly));
     }
   }
 
   double _alignDx(FlowAlign a, double avail, double lineEnd) => switch (a) {
-        FlowAlign.left => 0,
+        FlowAlign.left || FlowAlign.justify => 0,
         FlowAlign.center => (avail - lineEnd) / 2,
         FlowAlign.right => avail - lineEnd,
       };
@@ -164,10 +177,13 @@ class PdfFlowWriter {
     final filled = [for (final s in spans) _fill(s, size)];
     final avail = (contentWidth - indentLeft - indentRight).clamp(20.0, double.infinity);
     final tokens = tokenize(filled, fonts, maxWidth: avail);
+    final justify = align == FlowAlign.justify;
     final lines = wrapTokens(tokens, maxWidth: avail, firstLineIndent: firstLineIndent);
     if (spaceBefore > 0 && _pageHasContent) y += spaceBefore;
     var first = true;
-    for (final line in lines) {
+    for (var li = 0; li < lines.length; li++) {
+      // Căn đều: dòng cuối đoạn giữ căn trái (dòng xuống dòng cứng do justifyLine tự bỏ qua).
+      final line = justify && li < lines.length - 1 ? justifyLine(lines[li], avail) : lines[li];
       final h = _lineHeight(line, size, lineSpacing);
       _ensureSpace(h);
       final g = _page.graphics;
@@ -179,8 +195,15 @@ class PdfFlowWriter {
         final run = PlacedRun(text: marker, face: ScriptFace.latin, style: st, x: 0, width: mw);
         _drawRun(g, run, margin + indentLeft + (firstLineIndent < 0 ? firstLineIndent : -mw - 4), y, h);
       }
-      for (final r in line.runs) {
-        _drawRun(g, r, left + r.x, y, h);
+      final runs = line.runs;
+      for (var i = 0; i < runs.length; i++) {
+        final r = runs[i];
+        double? deco;
+        if (justify && i + 1 < runs.length) {
+          final n = runs[i + 1];
+          if (n.spacesBefore > 0 && n.style.sameStyle(r.style)) deco = n.x - r.x;
+        }
+        _drawRun(g, r, left + r.x, y, h, decoWidth: deco, wordSpacing: line.wordSpacing);
       }
       y += h;
       _pageHasContent = true;

@@ -9,6 +9,9 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../core/errors/app_error.dart';
 
+/// Cạnh dài tối đa (px) của ảnh chụp tay đưa vào OCR — xem ghi chú ANR ở `takePhoto`.
+const double kScanMaxImageSide = 3000;
+
 /// Máy không dùng được trình quét tự động (không có Google Play Services, plugin lỗi…)
 /// → UI chuyển sang chụp ảnh + kéo bốn góc thủ công.
 class ScannerUnavailable implements Exception {
@@ -57,6 +60,10 @@ class PluginDocumentCapture implements DocumentCapture {
     try {
       final x = await ImagePicker().pickImage(
         source: ImageSource.camera,
+        // Ảnh này đi vào OCR (ML Kit giải mã trên luồng UI): ảnh 50 MP gây treo app (ANR) ⇒
+        // image_picker thu nhỏ ở luồng nền; 3000 px vẫn đủ nét cho chữ nhỏ trên khổ A4.
+        maxWidth: kScanMaxImageSide,
+        maxHeight: kScanMaxImageSide,
         requestFullMetadata: false,
       );
       if (x == null) return null;

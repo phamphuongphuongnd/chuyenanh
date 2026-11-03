@@ -227,24 +227,28 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
     final current = ready ? _c.currentParagraph + 1 : 0;
     return Row(
       children: [
-        Flexible(
-          child: Container(
-            key: const ValueKey('tts_progress'),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                l.tts_progress(current, _c.paragraphCount),
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: t.primaryText,
-                ),
+        // Không bọc Flexible: ô số luôn đủ rộng cho "12/137" (Spacer bên dưới co trước).
+        Container(
+          key: const ValueKey('tts_progress'),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: t.primarySoft,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          // Hàng có 6 nút: chữ "Đoạn 2 / 37" bị FittedBox thu nhỏ tới khó đọc trên máy hẹp ⇒ chỉ
+          // hiện "2/37" ở cỡ chữ thật; trình đọc màn hình vẫn đọc đủ câu.
+          child: Semantics(
+            label: l.tts_progress(current, _c.paragraphCount),
+            excludeSemantics: true,
+            child: Text(
+              '$current/${_c.paragraphCount}',
+              maxLines: 1,
+              softWrap: false,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: t.primaryText,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
           ),
