@@ -4,19 +4,6 @@ import 'package:pdf_office/features/translate/translate_languages.dart';
 
 void main() {
   group('guessLanguageCode', () {
-    test('chữ Hán → zh', () {
-      expect(guessLanguageCode('今天天气很好，我们去公园散步吧。'), 'zh');
-    });
-
-    test('Hán + Kana → ja', () {
-      expect(guessLanguageCode('今日はいい天気ですね。公園に行きましょう。'), 'ja');
-      expect(guessLanguageCode('カタカナだけのテキスト'), 'ja');
-    });
-
-    test('Hangul → ko', () {
-      expect(guessLanguageCode('오늘은 날씨가 좋네요. 공원에 갑시다.'), 'ko');
-    });
-
     test('dấu tiếng Việt (dựng sẵn và NFD) → vi', () {
       expect(guessLanguageCode('Hôm nay trời đẹp, chúng ta đi dạo nhé.'), 'vi');
       expect(guessLanguageCode('Xin chào'), 'vi');
@@ -26,24 +13,12 @@ void main() {
 
     test('Latin không dấu tiếng Anh → en', () {
       expect(guessLanguageCode('The weather is nice today.'), 'en');
-      // Câu ngắn không có từ phổ biến nào của tiếng Indonesia → vẫn en (giới hạn đã biết).
+      // Đã bỏ tiếng Indonesia: chữ Latin không dấu luôn → en.
       expect(guessLanguageCode('Selamat pagi, apa kabar?'), 'en');
-    });
-
-    test('Latin có nhiều từ phổ biến tiếng Indonesia → id', () {
       expect(
         guessLanguageCode('Saya tidak tahu apa yang dia lakukan di rumah itu.'),
-        'id',
+        'en',
       );
-      expect(
-        guessLanguageCode('Buku ini untuk anak dan dibuat dengan baik.'),
-        'id',
-      );
-    });
-
-    test('từ Anh nhiều hơn / chỉ một từ Indonesia lẻ → en', () {
-      expect(guessLanguageCode('The book is for the kids di'), 'en');
-      expect(guessLanguageCode('yang'), 'en');
     });
 
     test('vài chữ có dấu lẻ trong văn bản tiếng Anh dài → vẫn en', () {
@@ -56,7 +31,7 @@ void main() {
       );
     });
 
-    test('vài chữ Hán lẻ trong văn bản tiếng Anh dài → vẫn en', () {
+    test('chữ CJK không còn được nhận diện (zh/ja/ko đã bỏ) → en', () {
       expect(
         guessLanguageCode(
           'The word 中 means middle and it appears in many place names '
@@ -64,6 +39,8 @@ void main() {
         ),
         'en',
       );
+      expect(guessLanguageCode('今天天气很好，我们去公园散步吧。'), 'en');
+      expect(guessLanguageCode('오늘은 날씨가 좋네요.'), 'en');
     });
 
     test('rỗng / chỉ số và ký hiệu → en', () {
@@ -73,15 +50,12 @@ void main() {
   });
 
   group('translateLanguageFor', () {
-    test('6 mã app → TranslateLanguage có bcpCode trùng', () {
+    test('2 mã app (vi, en) → TranslateLanguage có bcpCode trùng', () {
       const expected = {
         'vi': TranslateLanguage.vietnamese,
         'en': TranslateLanguage.english,
-        'zh': TranslateLanguage.chinese,
-        'ja': TranslateLanguage.japanese,
-        'ko': TranslateLanguage.korean,
-        'id': TranslateLanguage.indonesian,
       };
+      expect(kTranslateLanguageCodes, ['vi', 'en']);
       expect(kTranslateLanguageCodes.toSet(), expected.keys.toSet());
       for (final MapEntry(:key, :value) in expected.entries) {
         expect(translateLanguageFor(key), value);
@@ -91,11 +65,15 @@ void main() {
 
     test('mã lạ → null', () {
       expect(translateLanguageFor('fr'), isNull);
+      for (final c in ['zh', 'ja', 'ko', 'id']) {
+        expect(translateLanguageFor(c), isNull, reason: c);
+      }
       expect(translateLanguageFor(''), isNull);
     });
 
     test('normalizeLanguageCode bỏ vùng/chữ viết', () {
-      expect(normalizeLanguageCode('zh-Hans'), 'zh');
+      expect(normalizeLanguageCode('vi-VN'), 'vi');
+      expect(normalizeLanguageCode('zh-Hans'), isNull); // đã bỏ
       expect(normalizeLanguageCode('en_US'), 'en');
       expect(normalizeLanguageCode('VI'), 'vi');
       expect(normalizeLanguageCode('fr'), isNull);
@@ -109,12 +87,13 @@ void main() {
     });
 
     test('trùng nguồn → tiếng Anh; nguồn đã là Anh → tiếng Việt', () {
-      expect(defaultTargetCode(appCode: 'ja', sourceCode: 'ja'), 'en');
+      expect(defaultTargetCode(appCode: 'vi', sourceCode: 'vi'), 'en');
       expect(defaultTargetCode(appCode: 'en', sourceCode: 'en'), 'vi');
     });
 
-    test('ngôn ngữ app ngoài 6 ngôn ngữ → en', () {
+    test('ngôn ngữ app ngoài 2 ngôn ngữ (vd. ja đã bỏ) → en', () {
       expect(defaultTargetCode(appCode: 'fr', sourceCode: 'vi'), 'en');
+      expect(defaultTargetCode(appCode: 'ja', sourceCode: 'vi'), 'en');
     });
   });
 

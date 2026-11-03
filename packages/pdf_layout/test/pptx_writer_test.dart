@@ -143,6 +143,133 @@ void main() {
       expect(pic.extension, 'png');
     });
 
+    test('hộp chữ trong suốt: đọc lại thấy chữ đúng chỗ, ảnh vẫn là nền', () {
+      final out = writeImagePptx(
+        [
+          PptxImageSlide(
+            bytes: img1,
+            widthPt: 595,
+            heightPt: 842,
+            textBoxes: const [
+              PptxTextBox(
+                text: 'Xin chào <PDF> & "slide"',
+                left: 59.5,
+                top: 84.2,
+                width: 200,
+                height: 20,
+                fontSizePt: 14,
+              ),
+              PptxTextBox(text: '  ', left: 0, top: 0, width: 10, height: 10),
+              PptxTextBox(text: 'bỏ', left: 0, top: 0, width: 0, height: 10),
+              PptxTextBox(
+                text: 'bỏ',
+                left: double.nan,
+                top: 0,
+                width: 10,
+                height: 10,
+              ),
+            ],
+          ),
+          PptxImageSlide(bytes: img2, widthPt: 842, heightPt: 595),
+        ],
+        slideWidthPt: 595,
+        slideHeightPt: 842,
+      );
+      final deck = readPptx(out);
+      final s0 = deck.slides[0];
+      expect(s0.shapes.whereType<PptxPictureShape>(), hasLength(1));
+      final boxes = s0.shapes.whereType<PptxTextShape>().toList();
+      expect(boxes, hasLength(1)); // dòng rỗng / toạ độ hỏng bị bỏ
+      final b = boxes.single;
+      expect(b.paragraphs.single.text, 'Xin chào <PDF> & "slide"');
+      expect(b.paragraphs.single.runs.single.fontSizePt, 14);
+      expect(b.frame.x, closeTo(59.5 * 12700, 2));
+      expect(b.frame.y, closeTo(84.2 * 12700, 2));
+      expect(b.frame.cx, closeTo(200 * 12700, 2));
+      expect(b.fill, isNull);
+      expect(b.line, isNull);
+      // Chữ ẩn = solidFill + alpha 0% (không còn noFill → không thành "chữ ma").
+      final xml = utf8.decode(
+        ZipDecoder().decodeBytes(out).findFile('ppt/slides/slide1.xml')!.content as List<int>,
+      );
+      expect(xml, contains('<a:alpha val="0"/>'));
+      expect(xml, isNot(contains('<a:rPr lang="en-US" sz="1400" dirty="0"><a:noFill')));
+      expect(b.paragraphs.single.runs.single.colorArgb! >>> 24, 0);
+      // Slide không có hộp chữ: vẫn chỉ có ảnh.
+      expect(deck.slides[1].shapes.whereType<PptxTextShape>(), isEmpty);
+    });
+
+    test('hộp chữ hiển thị: màu, đậm, nghiêng, font; cạnh hộp ẩn vẫn đọc được', () {
+      final out = writeImagePptx([
+        PptxImageSlide(
+          bytes: img1,
+          widthPt: 595,
+          heightPt: 842,
+          textBoxes: const [
+            PptxTextBox(
+              text: 'Sửa được',
+              left: 60,
+              top: 100,
+              width: 120,
+              height: 20,
+              fontSizePt: 16,
+              visible: true,
+              colorRgb: 0x1A2B3C,
+              bold: true,
+              italic: true,
+              fontFamily: 'Noto Sans',
+            ),
+            PptxTextBox(text: 'Ẩn', left: 60, top: 200, width: 50, height: 20),
+          ],
+        ),
+      ]);
+      final boxes = readPptx(out).slides.single.shapes.whereType<PptxTextShape>().toList();
+      expect(boxes, hasLength(2));
+      final vis = boxes.firstWhere((b) => b.paragraphs.single.text == 'Sửa được');
+      final run = vis.paragraphs.single.runs.single;
+      expect(run.colorArgb, 0xFF1A2B3C);
+      expect(run.bold, isTrue);
+      expect(run.italic, isTrue);
+      expect(run.fontFamily, 'Noto Sans');
+      expect(vis.frame.x, closeTo(60 * 12700, 2));
+      expect(vis.frame.y, closeTo(100 * 12700, 2));
+      expect(vis.fill, isNull);
+      final hid = boxes.firstWhere((b) => b.paragraphs.single.text == 'Ẩn');
+      expect(hid.paragraphs.single.runs.single.colorArgb! >>> 24, 0);
+    });
+
+    test('hộp chữ trên ảnh được thu/phóng cùng ảnh (trang ngang trên slide dọc)', () {
+      final out = writeImagePptx(
+        [
+          PptxImageSlide(
+            bytes: img2,
+            widthPt: 842,
+            heightPt: 595,
+            textBoxes: const [
+              PptxTextBox(
+                text: 'a',
+                left: 84.2,
+                top: 59.5,
+                width: 84.2,
+                height: 29.75,
+                fontSizePt: 20,
+              ),
+            ],
+          ),
+        ],
+        slideWidthPt: 595,
+        slideHeightPt: 842,
+      );
+      final slide = readPptx(out).slides.single;
+      final pic = slide.shapes.whereType<PptxPictureShape>().single;
+      final box = slide.shapes.whereType<PptxTextShape>().single;
+      final k = pic.frame.cx / (842 * 12700); // hệ số co của ảnh
+      expect(box.frame.x, closeTo(pic.frame.x + 84.2 * 12700 * k, 3));
+      expect(box.frame.y, closeTo(pic.frame.y + 59.5 * 12700 * k, 3));
+      expect(box.frame.cx, closeTo(84.2 * 12700 * k, 3));
+      expect(box.paragraphs.single.runs.single.fontSizePt, closeTo(20 * k, 0.01));
+    });
+
     test('slide rỗng → ArgumentError', () {
       expect(() => writeImagePptx(const []), throwsArgumentError);
     });

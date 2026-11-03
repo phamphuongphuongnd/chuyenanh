@@ -203,7 +203,8 @@ class _XlsxReader {
     var rowIdx = -1;
     for (final row in data?.childrenNamed('row') ?? const <XmlElement>[]) {
       final r = parseIntOrNull(row.attr('r'));
-      rowIdx = r != null ? r - 1 : rowIdx + 1;
+      // `r` là 1-based; giá trị ≤ 0 (file hỏng) thì coi như hàng kế tiếp, không ra chỉ số âm.
+      rowIdx = r != null && r >= 1 ? r - 1 : rowIdx + 1;
       if (ooxmlBool(row.attr('hidden'), ifMissing: false)) {
         rowHeights[rowIdx] = 0;
       } else {
@@ -267,7 +268,8 @@ class _XlsxReader {
     final colLimit = math.max(maxCol, 1) + 64; // avoid expanding A:XFD
     for (final col
         in root.child('cols')?.childrenNamed('col') ?? const <XmlElement>[]) {
-      final min = (parseIntOrNull(col.attr('min')) ?? 1) - 1;
+      // `min`/`max` là 1-based; giá trị ≤ 0 (file hỏng) kẹp về cột đầu.
+      final min = math.max((parseIntOrNull(col.attr('min')) ?? 1) - 1, 0);
       final max = (parseIntOrNull(col.attr('max')) ?? (min + 1)) - 1;
       final hiddenCol = ooxmlBool(col.attr('hidden'), ifMissing: false);
       final w = parseDoubleOrNull(col.attr('width'));

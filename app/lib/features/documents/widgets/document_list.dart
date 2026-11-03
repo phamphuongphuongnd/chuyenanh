@@ -9,6 +9,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/doc_type.dart';
 import '../../../core/widgets/widgets.dart';
+import '../../../data/settings/settings_providers.dart';
 import '../document_actions.dart';
 import '../documents_logic.dart';
 import '../documents_providers.dart';
@@ -53,6 +54,12 @@ class DocumentList extends ConsumerWidget {
     // Chỉ dựng lại khi trạng thái quét đổi; số file đã tìm (đổi liên tục) do _ScanningView tự theo dõi.
     final (isScanning, needsPermission) = ref.watch(
       scanControllerProvider.select((s) => (s.isScanning, s.needsPermission)),
+    );
+    final bannerSnoozed = ref.watch(
+      settingsProvider.select(
+        (s) =>
+            isStorageBannerSnoozed(s.storageBannerDismissedAt, DateTime.now()),
+      ),
     );
     final docs = ref.watch(categoryDocumentsProvider(category));
 
@@ -108,7 +115,7 @@ class DocumentList extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  if (needsPermission) ...[
+                                  if (needsPermission && !bannerSnoozed) ...[
                                     const PermissionBanner(),
                                     SizedBox(height: sp.gap),
                                   ],

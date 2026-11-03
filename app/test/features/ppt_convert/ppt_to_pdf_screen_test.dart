@@ -144,7 +144,7 @@ void main() {
     expect(find.text('PowerPoint to PDF'), findsOneWidget);
     expect(find.textContaining('3 slides'), findsOneWidget);
     expect(find.byType(NoteBanner), findsOneWidget);
-    expect(find.textContaining('cannot be selected'), findsOneWidget);
+    expect(find.textContaining('can be selected, searched and copied'), findsOneWidget);
     // Mặc định bỏ slide ẩn → 2 trang.
     expect(find.text('2 PDF pages will be created'), findsOneWidget);
     expect(find.text('This presentation has 1 hidden slide'), findsOneWidget);

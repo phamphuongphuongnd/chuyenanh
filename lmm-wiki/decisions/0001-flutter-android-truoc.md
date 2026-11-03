@@ -18,7 +18,7 @@ giao diện, logo, icon và tài nguyên do dự án tự thiết kế) — xem 
 - **Dùng cá nhân, cài sideload, không lên store**, miễn phí hoàn toàn: không quảng cáo, không mua trong app, không mạng.
   → được dùng `MANAGE_EXTERNAL_STORAGE` (quét toàn máy) mà không lo Google Play duyệt.
 - Tên **PDF Office**, gói `com.phuong.pdfoffice`, code ở `app/`.
-- 6 ngôn ngữ UI: vi, en, zh, ja, ko, id.
+- ~~6 ngôn ngữ UI: vi, en, zh, ja, ko, id.~~ Từ 02/11/2026 chỉ còn **vi, en** (chủ dự án chốt; bỏ zh/ja/ko/id cả UI, Dịch, OCR, font xuất PDF).
 - Thiết bị test thật: **Samsung Galaxy A13** qua cáp USB (Android SDK dạng dòng lệnh ở `C:\Android\sdk`, không cần emulator).
 
 **Hệ quả:** iOS cần Mac/CI khi muốn làm. Thương hiệu (logo, icon) do dự án tự thiết kế.

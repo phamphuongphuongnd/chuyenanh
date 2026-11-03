@@ -185,8 +185,8 @@ void main() {
       final prog = <double>[];
       final res = await conv(_deck(), out, r, token: CancelToken(), onProgress: prog.add);
       expect(r.slides, [0, 2, 3]);
-      expect(prog.where((v) => v <= 0.8 + 1e-9).length, greaterThanOrEqualTo(3));
-      expect(prog.any((v) => v > 0.8), isTrue); // U6 onPage chạy
+      expect(prog.where((v) => v <= 0.7 + 1e-9).length, greaterThanOrEqualTo(3));
+      expect(prog.any((v) => v > 0.7), isTrue); // U6 onPage chạy
       expect(prog.last, closeTo(1, 1e-9));
       expect(res, out);
       expect(pdfPages(out), 3);
@@ -301,7 +301,7 @@ void main() {
       final token = CancelToken();
       final r = _Raster();
       final res = await conv(_deck(), out, r, token: token, onProgress: (v) {
-        if ((v - 0.8).abs() < 1e-9) token.cancel();
+        if ((v - 0.7).abs() < 1e-9) token.cancel();
       });
       expect(r.slides, [0, 2, 3]);
       expect(res, isA<Cancelled>());
@@ -312,7 +312,7 @@ void main() {
       final out = p.join(dir.path, 'm.pdf');
       final token = CancelToken();
       final res = await conv(_deck(), out, _Raster(), token: token, onProgress: (v) {
-        if ((v - 0.8).abs() < 1e-9) Timer.run(token.cancel);
+        if ((v - 0.7).abs() < 1e-9) Timer.run(token.cancel);
       });
       expect(res, isA<Cancelled>());
       // Chờ isolate bị kill hẳn rồi mới kiểm file.
@@ -325,7 +325,7 @@ void main() {
       final out = p.join(dir.path, 'n.pdf');
       final token = CancelToken();
       final res = await conv(_deck(), out, _Raster(), token: token, onProgress: (v) {
-        if (v > 0.8 + 1e-9) token.cancel();
+        if (v > 0.7 + 1e-9) token.cancel();
       });
       expect(res, isA<Cancelled>());
       await Future<void>.delayed(const Duration(milliseconds: 300));

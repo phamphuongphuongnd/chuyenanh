@@ -29,14 +29,23 @@ TextScript dominantScript(String text) {
   return TextScript.latin;
 }
 
-/// Đường dẫn asset font (theo thứ tự thử) cho [text]. Font Noto tải sau
-/// (`assets/fonts/`, xem hợp đồng mục 5); thiếu file thì engine rơi về Helvetica.
-List<String> fontAssetCandidates(String text) => switch (dominantScript(text)) {
-  TextScript.hangul => const ['assets/fonts/NotoSansKR-Regular.ttf'],
-  TextScript.kana => const ['assets/fonts/NotoSansJP-Regular.ttf'],
-  TextScript.han => const ['assets/fonts/NotoSansSC-Regular.ttf'],
-  TextScript.latin => const [
-    'assets/fonts/NotoSans-Regular.ttf',
-    'assets/fonts/NotoSans-Regular.otf',
-  ],
-};
+/// Ký tự Hán/kana/Hangul (kể cả dấu câu CJK) — app không đóng gói font CJK nên không vẽ được.
+bool isCjkChar(int c) =>
+    _isHangul(c) || _isKana(c) || _isHan(c) || (c >= 0x3000 && c <= 0x303F) || (c >= 0xFF00 && c <= 0xFFEF);
+
+/// Thay mỗi ký tự CJK bằng `?` (người dùng biết có chữ bị mất); Việt/Anh giữ nguyên.
+String replaceCjk(String text) {
+  if (!text.runes.any(isCjkChar)) return text;
+  final b = StringBuffer();
+  for (final c in text.runes) {
+    b.write(isCjkChar(c) ? '?' : String.fromCharCode(c));
+  }
+  return b.toString();
+}
+
+/// Đường dẫn asset font (theo thứ tự thử) cho [text]. Chỉ có Noto Sans (Latin/Việt); không còn
+/// font CJK, chữ Hán/Nhật/Hàn khi vẽ được đổi thành `?` qua [replaceCjk].
+List<String> fontAssetCandidates(String text) => const [
+  'assets/fonts/NotoSans-Regular.ttf',
+  'assets/fonts/NotoSans-Regular.otf',
+];

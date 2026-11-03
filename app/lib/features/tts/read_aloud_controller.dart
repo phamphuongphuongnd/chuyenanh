@@ -47,6 +47,12 @@ class ReadAloudController extends ChangeNotifier {
   int? _announced;
   bool _disposed = false;
 
+  /// Còn đoạn sắp được nối thêm ([appendParagraphs]): đọc hết phần có thì chờ thay vì dừng.
+  bool _moreComing = false;
+
+  /// Đang "phát" nhưng đã đọc hết phần có và chờ đoạn nối thêm.
+  bool _stalled = false;
+
   ReadAloudStatus _status = ReadAloudStatus.checking;
   ReadAloudStatus get status => _status;
 
@@ -95,9 +101,41 @@ class ReadAloudController extends ChangeNotifier {
     _announced = null;
   }
 
+  /// Nối thêm [more] vào cuối danh sách đoạn mà KHÔNG làm gián đoạn việc đang đọc (vị trí, trạng thái
+  /// giữ nguyên). Đang chờ ở cuối ([setMoreComing]) thì đọc tiếp sang đoạn mới.
+  void appendParagraphs(List<String> more) {
+    if (more.isEmpty) return;
+    final base = _paragraphCount;
+    final added = [
+      for (var i = 0; i < more.length; i++)
+        for (final part in splitForTts(more[i])) TtsSegment(base + i, part),
+    ];
+    _queue = [..._queue, ...added];
+    _paragraphCount += more.length;
+    if (_stalled && added.isNotEmpty) {
+      _stalled = false;
+      _seg++;
+      _notify();
+      _speakCurrent();
+      return;
+    }
+    _notify();
+  }
+
+  /// [value] = còn đoạn sắp nối thêm. Đặt lại false khi đang chờ ở cuối thì kết thúc như đọc hết.
+  void setMoreComing(bool value) {
+    if (_moreComing == value) return;
+    _moreComing = value;
+    if (!value && _stalled) {
+      _stalled = false;
+      _finishReading();
+    }
+  }
+
   /// Danh sách đoạn đổi → dừng và về đầu.
   Future<void> setParagraphs(List<String> paragraphs) async {
     final wasActive = isPlaying;
+    _stalled = false;
     _setQueue(paragraphs);
     if (isReady) _status = ReadAloudStatus.idle;
     _notify();
@@ -166,6 +204,7 @@ class ReadAloudController extends ChangeNotifier {
   /// Tạm dừng; [play] đọc tiếp từ từ đang đọc (nếu engine báo tiến độ) hoặc đầu phần.
   Future<void> pause() async {
     if (!isPlaying) return;
+    _stalled = false;
     _status = ReadAloudStatus.paused;
     _notify();
     await engine.stop();
@@ -177,6 +216,7 @@ class ReadAloudController extends ChangeNotifier {
   Future<void> stop() async {
     if (!isReady) return;
     final wasPlaying = isPlaying;
+    _stalled = false;
     _seg = _firstSegOf(currentParagraph);
     _offset = 0;
     _announced = null;
@@ -215,12 +255,13 @@ class ReadAloudController extends ChangeNotifier {
 
   /// Engine chỉ áp tốc độ/giọng cho lần đọc sau → đọc lại từ từ đang đọc.
   Future<void> _restartIfPlaying() async {
-    if (!isPlaying) return;
+    if (!isPlaying || _stalled) return;
     await engine.stop();
     if (isPlaying) await _speakCurrent();
   }
 
   Future<void> _jumpTo(int seg) async {
+    _stalled = false;
     _seg = seg;
     _offset = 0;
     _announce();
@@ -276,11 +317,11 @@ class ReadAloudController extends ChangeNotifier {
     if (!isPlaying || _disposed) return;
     _offset = 0;
     if (_seg + 1 >= _queue.length) {
-      // Đọc hết: về đầu, chờ.
-      _seg = 0;
-      _announced = null;
-      _status = ReadAloudStatus.idle;
-      _notify();
+      if (_moreComing) {
+        _stalled = true; // chờ đoạn nối thêm, vẫn ở trạng thái đang đọc
+        return;
+      }
+      _finishReading();
       return;
     }
     _seg++;
@@ -288,9 +329,19 @@ class ReadAloudController extends ChangeNotifier {
     _speakCurrent();
   }
 
+  /// Đọc hết: về đầu, chờ.
+  void _finishReading() {
+    _seg = 0;
+    _offset = 0;
+    _announced = null;
+    _status = ReadAloudStatus.idle;
+    _notify();
+  }
+
   void _handleError(String message) {
     if (_disposed) return;
     _error = message;
+    _stalled = false;
     if (isPlaying) _status = ReadAloudStatus.paused;
     _notify();
   }

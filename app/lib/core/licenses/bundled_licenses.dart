@@ -12,7 +12,7 @@ void registerBundledLicenses() {
       await rootBundle.loadString('assets/ui_fonts/OFL.txt'),
     );
     yield LicenseEntryWithLineBreaks(
-      const ['Noto Sans', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR'],
+      const ['Noto Sans'],
       await rootBundle.loadString('assets/fonts/OFL-Noto.txt'),
     );
     yield const LicenseEntryWithLineBreaks(

@@ -15,7 +15,7 @@
   "pptpdf_pagesToExport": "{count, plural, other{Sẽ tạo {count} trang PDF}}",
   "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
   "pptpdf_noSlides": "Không có slide nào để xuất",
-  "pptpdf_note": "Mỗi slide thành một trang ảnh nên chữ trong PDF không chọn hay tìm được. Slide hiển thị giống trình xem PowerPoint của app, có thể khác PowerPoint đôi chút (phông chữ, hiệu ứng, biểu đồ).",
+  "pptpdf_note": "Mỗi slide thành một trang ảnh; chữ của slide được thêm thành lớp vô hình nên chọn, tìm và sao chép được (vị trí và chỗ xuống dòng chỉ gần đúng). Chữ không sửa được trong PDF. Slide hiển thị giống trình xem PowerPoint của app, có thể khác PowerPoint đôi chút (phông chữ, hiệu ứng, biểu đồ).",
   "pptpdf_convert": "Chuyển sang PDF",
   "pptpdf_converting": "Đang chuyển các slide…"
 }

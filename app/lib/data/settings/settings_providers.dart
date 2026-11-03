@@ -54,4 +54,10 @@ class SettingsNotifier extends Notifier<AppSettings> {
     state = state.copyWith(appLock: enabled);
     await _repo.setAppLock(enabled);
   }
+
+  /// Tắt biểu ngữ xin quyền "Truy cập tất cả file"; [at] `null` = hiện lại.
+  Future<void> setStorageBannerDismissedAt(DateTime? at) async {
+    state = state.copyWith(storageBannerDismissedAt: () => at);
+    await _repo.setStorageBannerDismissedAt(at);
+  }
 }

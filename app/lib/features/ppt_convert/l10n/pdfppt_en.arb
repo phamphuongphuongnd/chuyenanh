@@ -6,7 +6,11 @@
   "pdfppt_slidesToCreate": "{count, plural, =1{1 slide will be created} other{{count} slides will be created}}",
   "@pdfppt_slidesToCreate": {"placeholders": {"count": {"type": "int"}}},
   "pdfppt_sizeInfo": "Slide size follows page 1. Pages of a different size are fitted and centered on a white background.",
-  "pdfppt_note": "Each page becomes a picture slide, so text cannot be edited in PowerPoint.",
+  "pdfppt_note": "Each page becomes a picture slide. The text can be found and selected in PowerPoint, but it is not editable because the slide itself is an image (choose \"Editable text\" if you need to edit it).",
+  "pdfppt_modeLabel": "Conversion mode",
+  "pdfppt_modeKeepImage": "Keep appearance",
+  "pdfppt_modeEditable": "Editable text",
+  "pdfppt_modeEditableNote": "Text is separated from the background picture into real text boxes you can edit in PowerPoint (Noto Sans font). Complex backgrounds (photos, gradients) may leave traces of the old text; rotated pages or pages without extractable text stay as pictures.",
   "pdfppt_convert": "Convert to PowerPoint",
   "pdfppt_converting": "Converting pages…"
 }

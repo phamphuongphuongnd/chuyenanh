@@ -175,7 +175,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final out = p.join(tmp.path, 'a_c.pdf');
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 1);
@@ -191,7 +191,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final out = p.join(tmp.path, 'a_c.pdf');
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, cancelToken: CancelToken())
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, hasLength(1));
@@ -203,7 +203,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final out = p.join(tmp.path, 'a_c.pdf');
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, cancelToken: CancelToken()..cancel())
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 0);
@@ -213,7 +213,7 @@ void main() {
 
     test('U4-4 / U6-2 file nguồn không tồn tại ⇒ CorruptFile, không mở render', () async {
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(p.join(tmp.path, 'missing.pdf'), p.join(tmp.path, 'o.pdf'), CompressLevel.medium)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 0);
@@ -223,7 +223,7 @@ void main() {
     test('U4-5 mật khẩu rỗng ⇒ coi như không mật khẩu', () async {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, p.join(tmp.path, 'o.pdf'), CompressLevel.medium, password: '')
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 1);
@@ -234,7 +234,7 @@ void main() {
     test('U4-6 có mật khẩu ⇒ truyền mật khẩu cho bộ render', () async {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, p.join(tmp.path, 'o.pdf'), CompressLevel.medium, password: 'pw')
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.openedPassword, 'pw');
@@ -246,7 +246,7 @@ void main() {
       final before = File(src).readAsBytesSync();
       final out = p.join(tmp.path, 'a_c.pdf');
       final render = _FakeRender(const []);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.light, password: 'pw')
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 0); // không đi nhánh render lại
@@ -265,7 +265,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1, password: 'pw');
       final out = p.join(tmp.path, 'a_c.pdf');
       final render = _FakeRender(const []);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.light, password: 'nope')
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 0);
@@ -278,7 +278,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const [_a4], openError: const WrongPassword());
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, password: 'x')
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.opened, 1);
@@ -293,7 +293,7 @@ void main() {
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const [_a4]);
       var deleted = false;
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(
             src,
             out,
@@ -314,7 +314,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 2);
       final before = File(src).readAsBytesSync();
       final render = _FakeRender(const []);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, src, CompressLevel.light)
           .then<Object?>((v) => v, onError: (Object e) => e);
       printOnFailure('kết quả: $r');
@@ -328,7 +328,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 2);
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const [_a4, PdfPageSize(842, 595)]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.strong)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, hasLength(2));
@@ -349,7 +349,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const [_a4]);
-      final r = await PdfCompressEngine(render: render)
+      final r = await PdfCompressEngine(requireSaving: false, render: render)
           .compress(src, out, CompressLevel.medium)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, hasLength(1));
@@ -362,7 +362,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 1);
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const []);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, isEmpty);
@@ -376,7 +376,7 @@ void main() {
       final src = await _makePdf(tmp.path, 'a.pdf', 2);
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const [_a4, _a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, cancelToken: CancelToken())
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, hasLength(2));
@@ -389,7 +389,7 @@ void main() {
       final out = p.join(tmp.path, 'o.pdf');
       final token = CancelToken();
       final render = _FakeRender(const [_a4, _a4, _a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(
             src,
             out,
@@ -410,7 +410,7 @@ void main() {
       final out = p.join(tmp.path, 'o.pdf');
       final render = _FakeRender(const [_a4, _a4]);
       final progress = <double>[];
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, onProgress: progress.add)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(r, isA<CompressResult>());
@@ -428,7 +428,7 @@ void main() {
       final render = _FakeRender(const [_a4, _a4, _a4], onRender: (i) {
         if (i == 1) token.cancel();
       });
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, cancelToken: token)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, hasLength(1));
@@ -446,7 +446,7 @@ void main() {
         throwOnCancel: false,
         onRender: (i) => token.cancel(),
       );
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(src, out, CompressLevel.medium, cancelToken: token)
           .then<Object?>((v) => v, onError: (Object e) => e);
       expect(render.renders, hasLength(1));
@@ -460,7 +460,7 @@ void main() {
       final out = p.join(tmp.path, 'o.pdf');
       final token = CancelToken();
       final render = _FakeRender(const [_a4, _a4]);
-      final r = await PdfCompressEngine(render: render, tempRoot: work)
+      final r = await PdfCompressEngine(requireSaving: false, render: render, tempRoot: work)
           .compress(
             src,
             out,
@@ -507,7 +507,7 @@ void main() {
     test('U8-1 1 ảnh khổ 595×842 ⇒ 1 trang dọc đúng khổ', () async {
       final out = p.join(tmp.path, 'o.pdf');
       final r = await run([await jpgFile('a.jpg', 60, 84)], [595.0], [842.0], out);
-      expect(r, out);
+      expect(r, 0); // job trả số chú thích không dựng lại được (không có chú thích → 0)
       final d = sf.PdfDocument(inputBytes: File(out).readAsBytesSync());
       expect(d.pages.count, 1);
       expect(d.pages[0].size.width, closeTo(595, 1));
@@ -539,7 +539,7 @@ void main() {
     test('U8-6 khổ rộng 0 ⇒ vẫn dựng được trang khổ dương', () async {
       final out = p.join(tmp.path, 'o.pdf');
       final r = await run([await jpgFile('a.jpg', 6, 8)], [0.0], [842.0], out);
-      expect(r, out);
+      expect(r, 0); // job trả số chú thích không dựng lại được (không có chú thích → 0)
       final d = sf.PdfDocument(inputBytes: File(out).readAsBytesSync());
       expect(d.pages.count, 1);
       expect(d.pages[0].size.width, greaterThan(0));
@@ -549,7 +549,7 @@ void main() {
     test('U8-7 khổ cao 0 ⇒ vẫn dựng được trang khổ dương', () async {
       final out = p.join(tmp.path, 'o.pdf');
       final r = await run([await jpgFile('a.jpg', 6, 8)], [595.0], [0.0], out);
-      expect(r, out);
+      expect(r, 0); // job trả số chú thích không dựng lại được (không có chú thích → 0)
       final d = sf.PdfDocument(inputBytes: File(out).readAsBytesSync());
       expect(d.pages.count, 1);
       expect(d.pages[0].size.height, greaterThan(0));
@@ -559,7 +559,7 @@ void main() {
     test('U8-8 khổ ngang 842×595 ⇒ trang ngang đúng khổ', () async {
       final out = p.join(tmp.path, 'o.pdf');
       final r = await run([await jpgFile('a.jpg', 84, 60)], [842.0], [595.0], out);
-      expect(r, out);
+      expect(r, 0); // job trả số chú thích không dựng lại được (không có chú thích → 0)
       final d = sf.PdfDocument(inputBytes: File(out).readAsBytesSync());
       expect(d.pages[0].size.width, closeTo(842, 1));
       expect(d.pages[0].size.height, closeTo(595, 1));

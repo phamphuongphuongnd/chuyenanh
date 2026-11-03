@@ -151,9 +151,27 @@ bool _allBold(List<DocSpan> spans) {
 ReflowDocument buildReflowDocument(List<DocBlock> blocks) {
   if (blocks.isEmpty) return const ReflowDocument.empty();
   final pageCount = 1 + blocks.whereType<DocPageBreak>().length;
+  final items = buildReflowItems(blocks);
+  if (!items.any((i) => i.hasText)) {
+    return ReflowDocument.empty(pageCount: pageCount);
+  }
+  return ReflowDocument(items: items, pageCount: pageCount);
+}
+
+/// Như [buildReflowDocument] nhưng chỉ trả các dòng, cho dàn từng lô trang: [blocks] là các trang
+/// bắt đầu từ trang [firstPage] (0-based) của tài liệu [totalPages] trang (mặc định: đếm theo [blocks]).
+/// Ngăn trang và dòng "trang ảnh" tính theo [totalPages] nên các lô nối lại đúng như dàn một lần.
+List<ReflowItem> buildReflowItems(
+  List<DocBlock> blocks, {
+  int firstPage = 0,
+  int? totalPages,
+}) {
+  if (blocks.isEmpty && totalPages == null) return const [];
+  final pageCount =
+      totalPages ?? firstPage + 1 + blocks.whereType<DocPageBreak>().length;
   final multiPage = pageCount > 1;
   final items = <ReflowItem>[];
-  var page = 0;
+  var page = firstPage;
   var pageHasText = false;
 
   void startPage() {
@@ -230,10 +248,7 @@ ReflowDocument buildReflowDocument(List<DocBlock> blocks) {
     }
   }
   endPage();
-  if (!items.any((i) => i.hasText)) {
-    return ReflowDocument.empty(pageCount: pageCount);
-  }
-  return ReflowDocument(items: items, pageCount: pageCount);
+  return items;
 }
 
 /// Danh sách đoạn chữ (cho đọc to / dịch) của các khối [blocks]: tiêu đề, đoạn văn, mục danh sách,

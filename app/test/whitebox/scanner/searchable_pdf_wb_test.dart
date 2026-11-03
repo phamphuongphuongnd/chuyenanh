@@ -14,9 +14,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 const _fontFiles = {
   FontSlot.regular: 'assets/fonts/NotoSans-Regular.ttf',
-  FontSlot.chinese: 'assets/fonts/NotoSansSC-Regular.ttf',
-  FontSlot.japanese: 'assets/fonts/NotoSansJP-Regular.ttf',
-  FontSlot.korean: 'assets/fonts/NotoSansKR-Regular.ttf',
 };
 
 Map<FontSlot, Uint8List> _fonts() =>
@@ -166,8 +163,8 @@ void main() {
     test('U4-B2 không có chữ ⇒ null', () {
       expect(drawInvisibleTextLayer(_pdf(1), [OcrResult.empty], _fonts()), isNull);
     });
-    test('U4-B4 thiếu font hệ chữ ⇒ null', () {
-      final f = _fonts()..remove(FontSlot.korean);
+    test('U4-B4 thiếu font regular (đổi: trước bỏ font Hàn) ⇒ null', () {
+      final f = _fonts()..remove(FontSlot.regular);
       expect(
           drawInvisibleTextLayer(_pdf(1), [_r([('하노이', const Rect.fromLTWH(10, 10, 400, 40))])], f),
           isNull);
@@ -196,13 +193,15 @@ void main() {
       expect(drawnText.contains('​'), isFalse, reason: 'w0 <= 0 ⇒ không drawString');
       expect(out, isNull);
     });
-    test('U7-B2 đoạn có dấu cách cuối (Latin + Hán) ⇒ cả hai đoạn đều vẽ và trích lại được', () {
+    test('U7-B2 đoạn có dấu cách cuối (Latin + Hán) ⇒ cả hai đoạn đều vẽ; Hán thành dấu hỏi', () {
       final out = drawInvisibleTextLayer(
           _pdf(1), [_r([('Hà Nội 河内', const Rect.fromLTWH(10, 10, 600, 40))])], _fonts());
       expect(out, isNotNull);
       final t = _text(out!);
       expect(t, contains('Hà Nội'));
-      expect(t, contains('河内'));
+      // Đổi (bỏ font CJK): trước expect contains('河内'); nay đoạn Hán thành '??', đoạn Việt vẫn đúng.
+      expect(t, isNot(contains('河')));
+      expect(t, contains('?'));
     });
   });
 

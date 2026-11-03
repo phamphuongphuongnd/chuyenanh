@@ -51,5 +51,8 @@
   "settings_appLockLocked": "Phiotron PDF is locked",
   "settings_appLockLockedHint": "Use your fingerprint, face or device PIN to continue.",
   "settings_appLockUnlock": "Unlock",
-  "settings_appLockRetry": "Try again"
+  "settings_appLockRetry": "Try again",
+  "settings_storageAccess": "File access",
+  "settings_storageAccessSubtitle": "Let the app find and list documents on this device (read on-device only, never uploaded)",
+  "settings_storageAccessGranted": "File access is already granted"
 }

@@ -44,5 +44,8 @@
   "settings_appLockLocked": "Phiotron PDF đã khoá",
   "settings_appLockLockedHint": "Dùng vân tay, khuôn mặt hoặc mã PIN của máy để tiếp tục.",
   "settings_appLockUnlock": "Mở khoá",
-  "settings_appLockRetry": "Thử lại"
+  "settings_appLockRetry": "Thử lại",
+  "settings_storageAccess": "Quyền truy cập file",
+  "settings_storageAccessSubtitle": "Cho app tìm và liệt kê tài liệu trên máy (chỉ đọc trên máy, không tải lên)",
+  "settings_storageAccessGranted": "Đã cấp quyền truy cập file"
 }

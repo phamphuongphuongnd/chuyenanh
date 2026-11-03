@@ -202,7 +202,8 @@ _Section _parseSection(String sec) {
       final end = sec.indexOf(']', i);
       final e = end < 0 ? sec.length - 1 : end;
       final full = sec.substring(i, e + 1);
-      final inner = sec.substring(i + 1, e);
+      // `[` ở cuối, không có `]` đóng: khối rỗng (trước đây ném RangeError, làm hỏng cả workbook).
+      final inner = i + 1 <= e ? sec.substring(i + 1, e) : '';
       final cm = _condRe.firstMatch(full);
       if (cm != null) {
         condOp = cm.group(1);
@@ -270,7 +271,8 @@ _Section _parseSection(String sec) {
           toks.add(const _Tok(_K.at, '@'));
         case 'E' || 'e':
           if (i + 1 < sec.length && (sec[i + 1] == '+' || sec[i + 1] == '-')) {
-            toks.add(_Tok(_K.exp, 'E${sec[i + 1]}'));
+            // Giữ đúng chữ hoa/thường người dùng gõ (`e+` hiện `e+`, như Excel).
+            toks.add(_Tok(_K.exp, '$c${sec[i + 1]}'));
             i++;
           } else {
             toks.add(_Tok(_K.lit, c));
@@ -626,7 +628,8 @@ String _scientific(double a, List<_Tok> toks) {
       ? 0
       : mant.skip(dot + 1).where((t) => t.k == _K.digit).length;
   final expDigits = toks.skip(ei + 1).where((t) => t.k == _K.digit).length;
-  final plus = toks[ei].s == 'E+';
+  final plus = toks[ei].s.endsWith('+');
+  final eChar = toks[ei].s[0];
 
   var exp = 0;
   var m = a;
@@ -646,7 +649,7 @@ String _scientific(double a, List<_Tok> toks) {
   final es = exp.abs().toString().padLeft(math.max(1, expDigits), '0');
   final sign = exp < 0 ? '-' : (plus ? '+' : '');
   final (pre, suf) = _prefixSuffix(toks);
-  return '$pre${ms}E$sign$es$suf';
+  return '$pre$ms$eChar$sign$es$suf';
 }
 
 String _fraction(double a, List<_Tok> toks) {

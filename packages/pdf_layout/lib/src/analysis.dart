@@ -237,8 +237,18 @@ class PageAnalysis {
 }
 
 /// Runs the whole analysis for every page.
-List<PageAnalysis> analyzePages(List<LayoutPage> pages, RebuildOptions o) {
-  final running = findRunningLines(pages, o);
+///
+/// [context] are pages read earlier (when a document is processed in batches):
+/// they take part in the running header / footer detection only.
+List<PageAnalysis> analyzePages(
+  List<LayoutPage> pages,
+  RebuildOptions o, {
+  List<LayoutPage> context = const [],
+}) {
+  final running = findRunningLines(
+    context.isEmpty ? pages : [...context, ...pages],
+    o,
+  );
   return [
     for (final page in pages)
       PageAnalysis(page, _analyzePage(page, running, o)),
@@ -466,20 +476,79 @@ List<_TableHit> _findTables(List<Row> rows, RebuildOptions o) {
       continue;
     }
     var j = i;
-    while (j + 1 < rows.length &&
-        rows[j + 1].segs.length >= 2 &&
-        rows[j + 1].top > rows[j].top &&
-        rows[j + 1].top - rows[j].bottom <=
-            o.tableMaxRowGapFactor * rows[j].height) {
-      j++;
+    var multi = 1; // rows with >= 2 runs; single-run rows are wrapped cells
+    while (j + 1 < rows.length) {
+      final next = rows[j + 1];
+      if (next.top <= rows[j].top ||
+          next.top - rows[j].bottom >
+              o.tableMaxRowGapFactor * rows[j].height) {
+        break;
+      }
+      if (next.segs.length >= 2) {
+        multi++;
+        j++;
+      } else if (_isWrappedCell(rows, j, o)) {
+        j += 1; // the wrapped line stays in the table, merged in _analyzeRun
+      } else {
+        break;
+      }
     }
-    if (j - i + 1 >= o.tableMinRows) {
+    if (multi >= o.tableMinRows) {
       final hit = _analyzeRun(rows, i, j, o);
       if (hit != null) hits.add(hit);
     }
     i = j + 1;
   }
   return hits;
+}
+
+/// Is `rows[j + 1]` (one run) the second line of a wrapped cell of the table
+/// row above it? It must sit close under that row and start at one of its cell
+/// edges. In the middle of a table it must be followed by another multi-run
+/// row; after the last row only [_isTrailingWrappedCell] decides (so a caption
+/// or a normal paragraph after the table is left alone).
+bool _isWrappedCell(List<Row> rows, int j, RebuildOptions o) {
+  if (j + 1 >= rows.length) return false;
+  final prev = rows[j], cont = rows[j + 1];
+  if (j + 2 >= rows.length ||
+      rows[j + 2].segs.length < 2 ||
+      rows[j + 2].top <= cont.top) {
+    return _isTrailingWrappedCell(prev, cont, o);
+  }
+  if (cont.top - prev.bottom > 0.8 * prev.height) return false;
+  final tol = o.columnToleranceFactor * prev.fontSize;
+  return prev.segs.any((s) => (s.left - cont.left).abs() <= tol);
+}
+
+final _captionStart = RegExp(
+  r'^\s*(\*|†|‡|ghi chú|nguồn|chú thích|lưu ý|note|source)',
+  caseSensitive: false,
+);
+
+/// Geometric test for a wrapped cell in the LAST row of a table: the line sits
+/// right under its cell (gap well below one line), starts exactly at that
+/// cell's left edge, is short, does not reach the next column or run wider
+/// than its own cell, and is not a footnote ("*", "Ghi chú", "Nguồn" ...).
+/// A footnote is typically wider than one column, spaced further down or
+/// starts with such a marker, so it stays a separate paragraph.
+bool _isTrailingWrappedCell(Row prev, Row cont, RebuildOptions o) {
+  if (prev.segs.length < 2 || cont.segs.length != 1) return false;
+  if (cont.top <= prev.top) return false;
+  if (cont.top - prev.bottom > 0.5 * prev.height) return false;
+  final seg = cont.segs.first;
+  if (_captionStart.hasMatch(seg.text)) return false;
+  if (seg.text.runes.length > 40) return false;
+  final tol = o.columnToleranceFactor * prev.fontSize;
+  final cells = prev.segs;
+  for (var a = 0; a < cells.length; a++) {
+    final cell = cells[a];
+    if ((cell.left - seg.left).abs() > tol) continue;
+    final limit = a + 1 < cells.length
+        ? cells[a + 1].left - tol
+        : cell.right + tol;
+    return seg.right <= limit && seg.width <= cell.width + tol;
+  }
+  return false;
 }
 
 _TableHit? _analyzeRun(List<Row> rows, int first, int last, RebuildOptions o) {
@@ -489,10 +558,12 @@ _TableHit? _analyzeRun(List<Row> rows, int first, int last, RebuildOptions o) {
       .toList()
       .sorted((a, b) => a.compareTo(b))[run.length ~/ 2];
   final tol = o.columnToleranceFactor * fs;
+  final multiRows = run.where((r) => r.segs.length >= 2).length;
 
   final entries = <(double, int)>[
     for (var r = 0; r < run.length; r++)
-      for (final s in run[r].segs) (s.left, r),
+      if (run[r].segs.length >= 2)
+        for (final s in run[r].segs) (s.left, r),
   ]..sort((a, b) => a.$1.compareTo(b.$1));
 
   final clusters = <_Cluster>[];
@@ -504,14 +575,18 @@ _TableHit? _analyzeRun(List<Row> rows, int first, int last, RebuildOptions o) {
     }
   }
   final anchors = clusters
-      .where((c) => c.rows.length >= o.columnMinRowRatio * run.length - 1e-9)
+      .where((c) => c.rows.length >= o.columnMinRowRatio * multiRows - 1e-9)
       .map((c) => c.mean)
       .toList();
   if (anchors.length < o.tableMinColumns) return null;
 
   final cells = <List<String>>[];
   for (final row in run) {
-    final cellRow = List<String>.filled(anchors.length, '');
+    // A single-run row inside the run is the wrapped line of a cell above.
+    final wrapped = row.segs.length < 2 && cells.isNotEmpty;
+    final cellRow = wrapped
+        ? cells.last
+        : List<String>.filled(anchors.length, '');
     for (final s in row.segs) {
       var k = 0;
       for (var a = 1; a < anchors.length; a++) {
@@ -520,7 +595,7 @@ _TableHit? _analyzeRun(List<Row> rows, int first, int last, RebuildOptions o) {
       final t = s.text;
       cellRow[k] = cellRow[k].isEmpty ? t : '${cellRow[k]} $t';
     }
-    cells.add(cellRow);
+    if (!wrapped) cells.add(cellRow);
   }
   // A list with a tab after the marker is not a table.
   if (anchors.length == 2 &&

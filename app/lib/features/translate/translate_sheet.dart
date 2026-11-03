@@ -113,7 +113,7 @@ class _TranslatePanelState extends ConsumerState<TranslatePanel> {
     required bool sourceAuto,
     String? target,
   }) {
-    if (_running) return;
+    if (_running || !mounted) return;
     setState(() {
       _source = sourceAuto ? null : (source ?? _source);
       // Đích chưa chọn tay thì vẫn tính lại theo nguồn mới (ngôn ngữ app, trùng thì sang en/vi).
@@ -241,7 +241,7 @@ class _TranslatePanelState extends ConsumerState<TranslatePanel> {
 
   void _stop() {
     _cancel?.cancel();
-    setState(() => _cancel = null);
+    if (mounted) setState(() => _cancel = null);
   }
 
   String _allTranslations() => [

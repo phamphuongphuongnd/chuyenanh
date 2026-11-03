@@ -30,11 +30,14 @@ void main() {
       expect(dominantScript('기밀 CONFIDENTIAL'), TextScript.hangul);
       expect(dominantScript(''), TextScript.latin);
     });
-    test('đường dẫn font theo hệ chữ', () {
+    test('đường dẫn font: luôn Noto Sans (đổi: không còn font CJK)', () {
       expect(fontAssetCandidates('abc').first, endsWith('NotoSans-Regular.ttf'));
-      expect(fontAssetCandidates('机密').single, endsWith('NotoSansSC-Regular.ttf'));
-      expect(fontAssetCandidates('ひ').single, endsWith('NotoSansJP-Regular.ttf'));
-      expect(fontAssetCandidates('기').single, endsWith('NotoSansKR-Regular.ttf'));
+      expect(fontAssetCandidates('机密').first, endsWith('NotoSans-Regular.ttf'));
+      expect(fontAssetCandidates('ひ').first, endsWith('NotoSans-Regular.ttf'));
+      expect(fontAssetCandidates('기').first, endsWith('NotoSans-Regular.ttf'));
+    });
+    test('replaceCjk: CJK thành ?, Việt/Anh giữ nguyên', () {
+      expect(replaceCjk('Xin chào 你好 こんにちは 안녕 hello'), 'Xin chào ?? ????? ?? hello');
     });
   });
 }

@@ -1,3 +1,4 @@
+// ignore_for_file: unnecessary_type_check
 // Kiểm thử hộp trắng A19 — lib/src/xml_utils.dart (mã bộ X*, xem
 // test-output/whitebox/pptx-reader/xml_utils/buoc-5-du-lieu-thu.md).
 // Hàm thuần, không mock: nhánh đã đi được khẳng định qua giá trị phân biệt theo nhánh.

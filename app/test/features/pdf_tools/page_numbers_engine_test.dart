@@ -149,8 +149,8 @@ void main() {
     d.dispose();
   });
 
-  test('chữ CJK dùng font Noto nạp qua fontLoader', () async {
-    final font = File('assets/fonts/NotoSansSC-Regular.ttf');
+  test('chữ CJK không có font ⇒ thành dấu hỏi, số trang vẫn đúng (đổi: trước vẽ được 页)', () async {
+    final font = File('assets/fonts/NotoSans-Regular.ttf');
     final asked = <String>[];
     final cjk = SyncfusionPageNumbers(
       fontLoader: (text) {
@@ -170,10 +170,11 @@ void main() {
     );
     expect(asked, ['第 1 页']);
     final d = _open(out);
-    expect(_textOf(d, 2), contains('页'));
+    expect(_textOf(d, 2), isNot(contains('页')));
+    expect(_textOf(d, 2), contains('?'));
     expect(_textOf(d, 2), contains('3'));
     d.dispose();
-  }, skip: !File('assets/fonts/NotoSansSC-Regular.ttf').existsSync());
+  }, skip: !File('assets/fonts/NotoSans-Regular.ttf').existsSync());
 
   test('nhãn Latin-1 không nạp font', () async {
     final asked = <String>[];

@@ -49,9 +49,8 @@ void main() {
 
   group('U1 mlKitScriptFor', () {
     test('U1-B1 latin', () => expect(mlKitScriptFor(OcrScript.latin), mlkit.TextRecognitionScript.latin));
-    test('U1-B2 chinese', () => expect(mlKitScriptFor(OcrScript.chinese), mlkit.TextRecognitionScript.chinese));
-    test('U1-B3 japanese', () => expect(mlKitScriptFor(OcrScript.japanese), mlkit.TextRecognitionScript.japanese));
-    test('U1-B4 korean', () => expect(mlKitScriptFor(OcrScript.korean), mlkit.TextRecognitionScript.korean));
+    // Đổi (chỉ Anh/Việt): U1-B2..B4 (chinese/japanese/korean) đã xoá cùng giá trị enum.
+    test('U1-B2 enum chỉ còn latin', () => expect(OcrScript.values, [OcrScript.latin]));
   });
 
   group('U2 ocrResultFromMlKit', () {
@@ -100,13 +99,13 @@ void main() {
       final e = MlKitOcrEngine();
       final r1 = await e.recognize(good, OcrScript.latin);
       await e.recognize(good, OcrScript.latin);
-      await e.recognize(good, OcrScript.korean);
+      await e.recognize(good, OcrScript.latin);
       expect(log.where((c) => c.method == 'vision#startTextRecognizer'), hasLength(3));
       expect(r1.text, 'Độc lập');
       expect(r1.imageWidth, 40);
       await e.dispose();
-      expect(log.where((c) => c.method == 'vision#closeTextRecognizer'), hasLength(2),
-          reason: 'mỗi hệ chữ giữ 1 recognizer');
+      expect(log.where((c) => c.method == 'vision#closeTextRecognizer'), hasLength(1),
+          reason: 'mỗi hệ chữ giữ 1 recognizer (nay chỉ latin)');
     });
     test('U5-B2 chưa tạo recognizer nào ⇒ dispose không gọi plugin', () async {
       final log = <MethodCall>[];
@@ -127,7 +126,7 @@ void main() {
     test('U4-B1 ảnh tốt ⇒ OcrResult kèm kích thước ảnh', () async {
       final calls = <int>[];
       final r = await engine(() async => mlkit.RecognizedText(text: '', blocks: [_block('abc')]), calls)
-          .recognize(good, OcrScript.japanese);
+          .recognize(good, OcrScript.latin);
       expect(calls, hasLength(1));
       expect(r.imageWidth, 40);
       expect(r.imageHeight, 30);

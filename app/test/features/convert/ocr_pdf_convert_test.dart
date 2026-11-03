@@ -185,13 +185,13 @@ void main() {
       ]);
       final render = renderFor(2);
       final progress = <double>[];
-      final out = await make(ocr, render, script: OcrScript.korean)
+      final out = await make(ocr, render, script: OcrScript.latin)
           .pdfToText(input, p.join(tmp.path, 'o.txt'), onProgress: progress.add);
       final text = File(out).readAsStringSync();
       expect(text, contains('Real text page'));
       expect(text, contains('Tiếng Việt quét'));
       expect(ocr.calls.length, 1);
-      expect(ocr.scripts.single, OcrScript.korean);
+      expect(ocr.scripts.single, OcrScript.latin);
       expect(ocr.existedWhenCalled, isTrue);
       expect(render.doc.rendered.single.$1, 1);
       expect(render.doc.rendered.single.$2, closeTo(200, 1e-9));

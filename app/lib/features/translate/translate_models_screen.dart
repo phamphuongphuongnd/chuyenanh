@@ -15,7 +15,7 @@ Future<void> openTranslateModelsScreen(BuildContext context) => Navigator.of(
   rootNavigator: true,
 ).push(MaterialPageRoute<void>(builder: (_) => const TranslateModelsScreen()));
 
-/// Màn quản lý gói dịch: 6 ngôn ngữ, trạng thái đã tải / chưa tải; tải hoặc xoá từng gói.
+/// Màn quản lý gói dịch: 2 ngôn ngữ, trạng thái đã tải / chưa tải; tải hoặc xoá từng gói.
 /// Gói tiếng Anh có sẵn trong ML Kit, không xoá được.
 class TranslateModelsScreen extends ConsumerStatefulWidget {
   const TranslateModelsScreen({super.key});

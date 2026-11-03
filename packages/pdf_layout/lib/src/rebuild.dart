@@ -11,11 +11,15 @@ import 'text_utils.dart';
 /// Rebuilds headings, paragraphs, lists and tables from extracted lines.
 ///
 /// Pure and synchronous; safe to run inside `Isolate.run`.
+///
+/// Batch use: pass the pages read so far as [context] (only used to spot
+/// running headers / footers); no page break is emitted before the first page.
 List<DocBlock> rebuildDocument(
   List<LayoutPage> pages, {
   RebuildOptions options = const RebuildOptions(),
+  List<LayoutPage> context = const [],
 }) {
-  final analysis = analyzePages(pages, options);
+  final analysis = analyzePages(pages, options, context: context);
   final metrics = _Metrics.of(analysis, options);
   final blocks = <DocBlock>[];
   for (var p = 0; p < analysis.length; p++) {

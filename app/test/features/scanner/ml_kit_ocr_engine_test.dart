@@ -29,30 +29,9 @@ mlkit.TextBlock _block(List<mlkit.TextLine> lines) => mlkit.TextBlock(
 );
 
 void main() {
-  test('mlKitScriptFor ánh xạ đủ 4 hệ chữ', () {
+  test('mlKitScriptFor chỉ còn hệ chữ Latin (đủ cho tiếng Việt và tiếng Anh)', () {
+    expect(OcrScript.values, [OcrScript.latin]);
     expect(mlKitScriptFor(OcrScript.latin), mlkit.TextRecognitionScript.latin);
-    expect(
-      mlKitScriptFor(OcrScript.chinese),
-      mlkit.TextRecognitionScript.chinese,
-    );
-    expect(
-      mlKitScriptFor(OcrScript.japanese),
-      mlkit.TextRecognitionScript.japanese,
-    );
-    expect(
-      mlKitScriptFor(OcrScript.korean),
-      mlkit.TextRecognitionScript.korean,
-    );
-  });
-
-  test('ocrScriptForLanguage: vi/id/en → latin, zh/ja/ko đúng, ngôn ngữ khác → latin', () {
-    expect(ocrScriptForLanguage('vi'), OcrScript.latin);
-    expect(ocrScriptForLanguage('id'), OcrScript.latin);
-    expect(ocrScriptForLanguage('en'), OcrScript.latin);
-    expect(ocrScriptForLanguage('th'), OcrScript.latin);
-    expect(ocrScriptForLanguage('zh'), OcrScript.chinese);
-    expect(ocrScriptForLanguage('ja'), OcrScript.japanese);
-    expect(ocrScriptForLanguage('ko'), OcrScript.korean);
   });
 
   group('ocrResultFromMlKit', () {
@@ -105,8 +84,8 @@ void main() {
           );
         },
       );
-      final r = await engine.recognize(path, OcrScript.korean);
-      expect(seen, mlkit.TextRecognitionScript.korean);
+      final r = await engine.recognize(path, OcrScript.latin);
+      expect(seen, mlkit.TextRecognitionScript.latin);
       expect(r.text, 'Xin chào');
       expect(r.imageWidth, 64);
       expect(r.imageHeight, 32);

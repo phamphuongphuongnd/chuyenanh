@@ -468,7 +468,7 @@ class _Reader {
   }
 
   static XmlElement? _xfrmOf(XmlElement shape) =>
-      shape.name.local == 'graphicFrame'
+      const {'graphicFrame', 'contentPart'}.contains(shape.name.local)
       ? shape.child('xfrm')
       : shape.child('spPr')?.child('xfrm');
 
@@ -484,7 +484,14 @@ class _Reader {
       }
       return;
     }
-    if (!const {'sp', 'cxnSp', 'pic', 'graphicFrame', 'grpSp'}.contains(kind)) {
+    if (!const {
+      'sp',
+      'cxnSp',
+      'pic',
+      'graphicFrame',
+      'grpSp',
+      'contentPart',
+    }.contains(kind)) {
       return;
     }
     final cNvPr = _nvPr(e)?.child('cNvPr');
@@ -522,6 +529,17 @@ class _Reader {
         out.add(_pic(e, g, ctx));
       case 'graphicFrame':
         out.add(_graphicFrame(e, g, ctx));
+      case 'contentPart': // ink: placeholder frame only (see README)
+        out.add(
+          PptxTextShape(
+            frame: g.frame,
+            rotationDeg: g.rot,
+            flipH: g.flipH,
+            flipV: g.flipV,
+            name: g.name,
+            unsupportedKind: 'ink',
+          ),
+        );
     }
   }
 
@@ -1029,18 +1047,16 @@ class _Reader {
             if (spec) fill = v;
           }
           final fr = tcStyle?.child('fillRef');
-          if (fr != null) {
-            final col = cc.colorIn(fr);
-            fill = (fr.intAttr('idx') ?? 0) > 0 && col != null
-                ? PptxFill.solid(col)
-                : null;
-          }
+          if (fr != null) fill = _refFill(fr, cc, theme);
           final bdr = tcStyle?.child('tcBdr');
           if (bdr != null) {
-            final leftEdge = rowRegion || c == 0;
-            final rightEdge = rowRegion || c == nCols - 1;
-            final topEdge = colRegion || r == 0;
-            final bottomEdge = colRegion || r == nRows - 1;
+            // A row region (firstRow/lastRow/band H) spans one row, so its
+            // top and bottom are outer edges; a column region likewise for
+            // left and right.
+            final leftEdge = colRegion || c == 0;
+            final rightEdge = colRegion || c == nCols - 1;
+            final topEdge = rowRegion || r == 0;
+            final bottomEdge = rowRegion || r == nRows - 1;
             PptxLine? side(bool edge, String outer, String inner) =>
                 styleBorder(bdr.child(edge ? outer : inner));
             bl = side(leftEdge, 'left', 'insideV') ?? bl;

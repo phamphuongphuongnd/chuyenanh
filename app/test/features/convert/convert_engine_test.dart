@@ -22,9 +22,6 @@ final _skipNoFonts = _hasFonts ? null : r'cần font ở C:\Windows\Fonts (chỉ
 const _winFonts = FileFontSource({
   FontSlot.regular: '${_fontDir}arial.ttf',
   FontSlot.bold: '${_fontDir}arialbd.ttf',
-  FontSlot.chinese: '${_fontDir}msyh.ttc',
-  FontSlot.japanese: '${_fontDir}msyh.ttc',
-  FontSlot.korean: '${_fontDir}malgun.ttf',
 });
 
 String _pdfText(String path) {
@@ -312,6 +309,38 @@ void main() {
       expect(File(path).lengthSync(), lessThan(1500000)); // font được subset
       final t = _pdfText(path);
       expect(t, contains('Hà Nội'));
+      // Đổi (bỏ font CJK): chữ Hán/Hangul không vẽ được → '?', không ném lỗi.
+      expect(t, isNot(contains('河')));
+      expect(t, contains('?'));
+    });
+  });
+
+  // Mới (bỏ font CJK khỏi app): chỉ có Noto Sans (Latin/Việt) đóng gói.
+  group('bỏ font CJK: tài liệu trộn Việt/Anh/CJK xuất không lỗi', () {
+    const noto = FileFontSource({
+      FontSlot.regular: 'assets/fonts/NotoSans-Regular.ttf',
+      FontSlot.bold: 'assets/fonts/NotoSans-Bold.ttf',
+    });
+    const engine = PdfConvertEngine(fontSource: noto);
+    const mixed = 'Xin chào 你好 こんにちは 안녕 hello';
+
+    test('textToPdf: không ném lỗi, trích lại được "Xin chào" và "hello", CJK thành ?', () async {
+      final path = await engine.textToPdf(mixed, out('cjk_mix.pdf'));
+      final t = _pdfText(path);
+      expect(t, contains('Xin chào'));
+      expect(t, contains('hello'));
+      expect(t, contains('?'));
+      expect(t, isNot(contains('你')));
+      expect(t, isNot(contains('안')));
+    });
+
+    test('pdfToDocx từ PDF trộn: không ném lỗi, còn "Xin chào" và "hello"', () async {
+      final pdf = await engine.textToPdf(mixed, out('cjk_mix2.pdf'));
+      final docx = await engine.pdfToDocx(pdf, out('cjk_mix.docx'));
+      final doc = office.readDocx(File(docx).readAsBytesSync());
+      final text = doc.blocks.whereType<office.DocxParagraph>().map((e) => e.plainText).join(' ');
+      expect(text, contains('Xin chào'));
+      expect(text, contains('hello'));
     });
   });
 }

@@ -38,7 +38,7 @@ Future<void> showLanguageSheet(BuildContext context, WidgetRef ref) {
   );
 }
 
-/// Màn chọn ngôn ngữ (route `/settings/language`): "Theo máy" + 6 ngôn ngữ (tên bản địa).
+/// Màn chọn ngôn ngữ (route `/settings/language`): "Theo máy" + 2 ngôn ngữ (tên bản địa).
 /// Chọn là đổi tức thì.
 class LanguageScreen extends ConsumerWidget {
   const LanguageScreen({super.key});

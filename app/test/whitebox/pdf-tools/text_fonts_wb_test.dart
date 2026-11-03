@@ -80,14 +80,16 @@ void main() {
   });
 
   group('U5 fontAssetCandidates', () {
-    test('U5.1 Hàn ⇒ KR', () {
-      expect(fontAssetCandidates('기밀'), ['assets/fonts/NotoSansKR-Regular.ttf']);
+    // Đổi (bỏ font CJK): U5.1-U5.3 trước trả KR/JP/SC; nay đều trả Noto Sans Latin.
+    const latinCandidates = ['assets/fonts/NotoSans-Regular.ttf', 'assets/fonts/NotoSans-Regular.otf'];
+    test('U5.1 Hàn ⇒ NotoSans', () {
+      expect(fontAssetCandidates('기밀'), latinCandidates);
     });
-    test('U5.2 kana ⇒ JP', () {
-      expect(fontAssetCandidates('ひみつ'), ['assets/fonts/NotoSansJP-Regular.ttf']);
+    test('U5.2 kana ⇒ NotoSans', () {
+      expect(fontAssetCandidates('ひみつ'), latinCandidates);
     });
-    test('U5.3 Hán ⇒ SC', () {
-      expect(fontAssetCandidates('机密'), ['assets/fonts/NotoSansSC-Regular.ttf']);
+    test('U5.3 Hán ⇒ NotoSans', () {
+      expect(fontAssetCandidates('机密'), latinCandidates);
     });
     test('U5.4 Latin/Việt ⇒ NotoSans .ttf đầu tiên', () {
       expect(fontAssetCandidates('Hà Nội').first, 'assets/fonts/NotoSans-Regular.ttf');

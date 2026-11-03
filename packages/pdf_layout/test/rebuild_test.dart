@@ -464,5 +464,133 @@ void main() {
         ['New York', '7', '3.25'],
       ]);
     });
+
+    test('wrapped cell line is merged into the cell above it', () {
+      final page = mkPage([
+        mkRow([('STT', 72), ('Nganh', 130), ('Ho ten', 300)], 100),
+        mkRow([('30', 72), ('Cong nghe', 130), ('Le Van An', 300)], 114),
+        mkRow([('31', 72), ('Cong nghe', 130), ('Nguyen Tran Cong', 300)], 128),
+        mkLine('Cuong', 300, 138),
+        mkRow([('32', 72), ('Cong nghe', 130), ('Pham Thi B', 300)], 152),
+        mkRow([('33', 72), ('Cong nghe', 130), ('Do Minh C', 300)], 166),
+        mkLine('Prices include tax.', marginL, 200),
+      ]);
+      final blocks = rebuildDocument([page]);
+      expect(blocks.map((b) => b.runtimeType).toList(), [
+        DocTable,
+        DocParagraph,
+      ]);
+      expect((blocks[0] as DocTable).cells, [
+        ['STT', 'Nganh', 'Ho ten'],
+        ['30', 'Cong nghe', 'Le Van An'],
+        ['31', 'Cong nghe', 'Nguyen Tran Cong Cuong'],
+        ['32', 'Cong nghe', 'Pham Thi B'],
+        ['33', 'Cong nghe', 'Do Minh C'],
+      ]);
+    });
+
+    test('wrapped cell line in the LAST table row is merged', () {
+      final page = mkPage([
+        mkRow([('STT', 72), ('Nganh', 130), ('Ho ten', 300)], 100),
+        mkRow([('30', 72), ('Cong nghe', 130), ('Le Van An', 300)], 114),
+        mkRow([('31', 72), ('Cong nghe', 130), ('Nguyen Tran Cong', 300)], 128),
+        mkLine('Cuong', 300, 138),
+        mkLine('Prices include tax.', marginL, 170),
+      ]);
+      final blocks = rebuildDocument([page]);
+      expect(blocks.map((b) => b.runtimeType).toList(), [
+        DocTable,
+        DocParagraph,
+      ]);
+      expect((blocks[0] as DocTable).cells.last, [
+        '31',
+        'Cong nghe',
+        'Nguyen Tran Cong Cuong',
+      ]);
+    });
+
+    test('footnote right under the table is NOT merged into the last row', () {
+      // Returns the plain text of the block after the table (paragraph or list item).
+      String footnoteAfterTable(String note, double x, double y) {
+        final page = mkPage([
+          mkRow([('A', 72), ('B', 250), ('C', 400)], 100),
+          mkRow([('1', 72), ('2', 250), ('3', 400)], 114),
+          mkRow([('4', 72), ('5', 250), ('6', 400)], 128),
+          mkLine(note, x, y),
+        ]);
+        final blocks = rebuildDocument([page]);
+        expect(blocks, hasLength(2));
+        expect(blocks[0], isA<DocTable>());
+        expect((blocks[0] as DocTable).cells.last, ['4', '5', '6']);
+        return (blocks[1] as dynamic).text as String;
+      }
+
+      // Wider than the first column, aligned with the table's left edge.
+      expect(
+        footnoteAfterTable('Prices include tax and shipping.', 72, 138),
+        'Prices include tax and shipping.',
+      );
+      // Short but starts with a footnote marker.
+      expect(footnoteAfterTable('* Estimated', 72, 138), 'Estimated');
+      expect(footnoteAfterTable('Nguon: GSO', 250, 138), 'Nguon: GSO');
+      expect(footnoteAfterTable('Source: GSO', 250, 138), 'Source: GSO');
+      // Short and aligned with a column but spaced like a separate paragraph.
+      expect(footnoteAfterTable('Draft', 72, 146), 'Draft');
+    });
+
+    test('single line right after the last table row stays a paragraph', () {
+      final page = mkPage([
+        mkRow([('A', 72), ('B', 250), ('C', 400)], 100),
+        mkRow([('1', 72), ('2', 250), ('3', 400)], 114),
+        mkRow([('4', 72), ('5', 250), ('6', 400)], 128),
+        mkLine('Note', 72, 140),
+      ]);
+      final blocks = rebuildDocument([page]);
+      expect(blocks.map((b) => b.runtimeType).toList(), [
+        DocTable,
+        DocParagraph,
+      ]);
+      expect((blocks[0] as DocTable).cells, hasLength(3));
+    });
+  });
+
+  group('batch use (context pages)', () {
+    List<LayoutPage> pagesWithHeader(int n) => [
+      for (var i = 0; i < n; i++)
+        LayoutPage(
+          index: i,
+          width: pageW,
+          height: pageH,
+          lines: [
+            mkLine('Company confidential report', marginL, 20, page: i),
+            mkLine('Body text of page ${String.fromCharCode(65 + i)}.', marginL, 200, page: i),
+          ],
+        ),
+    ];
+
+    String texts(List<DocBlock> blocks) =>
+        blocks.whereType<DocParagraph>().map((p) => p.text).join('|');
+
+    test('page 1 alone keeps its header; later pages are cleaned using the earlier ones', () {
+      final pages = pagesWithHeader(3);
+      final first = rebuildDocument([pages[0]]);
+      expect(texts(first), contains('Company confidential report'));
+
+      final second = rebuildDocument([pages[1]], context: [pages[0]]);
+      expect(texts(second), isNot(contains('Company confidential report')));
+      expect(texts(second), contains('Body text of page B.'));
+      expect(second.whereType<DocPageBreak>(), isEmpty);
+    });
+
+    test('whole document and batches agree from page 2 on', () {
+      final pages = pagesWithHeader(4);
+      final whole = rebuildDocument(pages);
+      final b = [
+        ...rebuildDocument([pages[0]]),
+        ...rebuildDocument(pages.sublist(1, 3), context: [pages[0]]),
+        ...rebuildDocument([pages[3]], context: pages.sublist(0, 3)),
+      ];
+      expect(texts(b).split('|').skip(1), texts(whole).split('|'));
+    });
   });
 }

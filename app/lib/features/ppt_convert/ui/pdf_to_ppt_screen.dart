@@ -30,6 +30,7 @@ class PdfToPptScreen extends ConsumerStatefulWidget {
 class _PdfToPptScreenState extends ConsumerState<PdfToPptScreen>
     with SinglePdfToolState<PdfToPptScreen> {
   int _dpi = kPdfToPptDefaultDpi;
+  PdfToPptMode _mode = PdfToPptMode.keepImage;
 
   @override
   String? get initialPath => widget.path;
@@ -47,6 +48,7 @@ class _PdfToPptScreenState extends ConsumerState<PdfToPptScreen>
     if (!mounted) return;
     final converter = ref.read(pdfToPptConverterProvider);
     final dpi = _dpi;
+    final mode = _mode;
     final saved = await runToolJob<String>(
       context,
       title: l.pdfppt_converting,
@@ -55,6 +57,7 @@ class _PdfToPptScreenState extends ConsumerState<PdfToPptScreen>
         outputPath: out,
         password: src.password,
         dpi: dpi,
+        mode: mode,
         onProgress: onProgress,
         cancelToken: token,
       ),
@@ -115,6 +118,29 @@ class _PdfToPptScreenState extends ConsumerState<PdfToPptScreen>
                       ),
                   ],
                 ),
+                const SizedBox(height: 14),
+                ToolSectionLabel(l.pdfppt_modeLabel),
+                ToolChipWrap(
+                  children: [
+                    ToolChoiceChip(
+                      key: const Key('pdfppt_mode_keepImage'),
+                      label: l.pdfppt_modeKeepImage,
+                      selected: _mode == PdfToPptMode.keepImage,
+                      onTap: () => setState(() => _mode = PdfToPptMode.keepImage),
+                    ),
+                    ToolChoiceChip(
+                      key: const Key('pdfppt_mode_editable'),
+                      label: l.pdfppt_modeEditable,
+                      selected: _mode == PdfToPptMode.editableText,
+                      onTap: () =>
+                          setState(() => _mode = PdfToPptMode.editableText),
+                    ),
+                  ],
+                ),
+                if (_mode == PdfToPptMode.editableText) ...[
+                  const SizedBox(height: 8),
+                  ToolHintText(l.pdfppt_modeEditableNote),
+                ],
                 const SizedBox(height: 14),
                 ToolHintText(l.pdfppt_slidesToCreate(src.pageCount)),
                 const SizedBox(height: 4),

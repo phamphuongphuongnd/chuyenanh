@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +13,9 @@ import 'tool_widgets.dart';
 
 /// Nén PDF (3 mức), lưu thành file mới `<tên>_compressed.pdf`.
 ///
-/// Nhẹ: giữ chữ chọn được. Vừa/Mạnh: mỗi trang thành ảnh JPEG (mất chữ, liên kết, chú thích).
+/// Nhẹ: giữ chữ chọn được. Vừa/Mạnh: mỗi trang thành ảnh JPEG (chữ vẫn chọn được, liên kết /
+/// highlight / ghi chú được dựng lại; ô biểu mẫu, hình vẽ mất và được báo).
+/// Không bao giờ ra file to hơn gốc: không nén được thì báo, không tạo file mới.
 /// File gốc có mật khẩu → file kết quả không có mật khẩu.
 class CompressScreen extends ConsumerStatefulWidget {
   const CompressScreen({super.key, this.path});
@@ -33,8 +33,8 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
   /// Kết quả đã nhận (hiện dòng "Từ X → Y" ở màn kết quả).
   CompressResult? _done;
 
-  /// File mới không nhỏ hơn: chờ người dùng chọn giữ hay xoá.
-  CompressResult? _pending;
+  /// Lần nén gần nhất không nén thêm được (không có file mới): báo ở màn chọn mức.
+  CompressResult? _optimal;
 
   @override
   String? get initialPath => widget.path;
@@ -43,7 +43,7 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
   void onInputReady(PdfInput input) {
     setState(() {
       _done = null;
-      _pending = null;
+      _optimal = null;
     });
   }
 
@@ -67,37 +67,12 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
       ),
     );
     if (res == null || !mounted) return;
-    if (res.isSmaller) {
+    if (res.alreadyOptimal) {
+      setState(() => _optimal = res);
+    } else {
       _done = res;
       await finish([res.outputPath]);
-    } else {
-      setState(() => _pending = res);
     }
-  }
-
-  Future<void> _keepPending() async {
-    final res = _pending;
-    if (res == null) return;
-    setState(() {
-      _pending = null;
-      _done = res;
-    });
-    await finish([res.outputPath]);
-  }
-
-  Future<void> _deletePending() async {
-    final res = _pending;
-    if (res == null) return;
-    try {
-      final f = File(res.outputPath);
-      if (await f.exists()) await f.delete();
-    } catch (e) {
-      if (mounted) showToolError(context, e);
-      return;
-    }
-    if (!mounted) return;
-    setState(() => _pending = null);
-    showToolMessage(context, context.l10n.compress_deleted);
   }
 
   String _size(int bytes) =>
@@ -107,9 +82,7 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
     final l = context.l10n;
     final from = _size(r.originalBytes);
     final to = _size(r.outputBytes);
-    return r.isSmaller
-        ? l.compress_resultSummary(from, to, r.percent)
-        : l.compress_resultNoGain(from, to);
+    return l.compress_resultSummary(from, to, r.percent);
   }
 
   @override
@@ -126,7 +99,24 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
             if (done != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: _SizeSummary(_summary(done)),
+                child: Column(
+                  children: [
+                    _SizeSummary(_summary(done)),
+                    if (done.fellBackToLight) ...[
+                      const SizedBox(height: 12),
+                      NoteBanner(context.l10n.compress_fellBackNote),
+                    ],
+                    if (done.lostAnnotations > 0) ...[
+                      const SizedBox(height: 12),
+                      NoteBanner(
+                        context.l10n.compress_lostAnnotations(
+                          done.lostAnnotations,
+                        ),
+                        warning: true,
+                      ),
+                    ],
+                  ],
+                ),
               ),
             Expanded(
               child: ToolResultView(paths: res, onDone: () => context.pop()),
@@ -135,8 +125,6 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
         ),
       );
     }
-    final pending = _pending;
-    if (pending != null) return _buildNotSmaller(pending);
     final src = input;
     if (src == null) {
       return ToolScaffold(
@@ -152,6 +140,14 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
           PdfInputCard(input: src, onChange: pickNew),
+          if (_optimal != null) ...[
+            const SizedBox(height: 16),
+            NoteBanner(
+              '${l.compress_alreadyOptimizedTitle}\n'
+              '${l.compress_alreadyOptimizedBody(_size(_optimal!.originalBytes))}',
+              warning: true,
+            ),
+          ],
           const SizedBox(height: 16),
           ToolCard(
             child: Column(
@@ -187,48 +183,6 @@ class _CompressScreenState extends ConsumerState<CompressScreen>
         label: l.compress_action,
         icon: Symbols.compress_rounded,
         onPressed: _compress,
-      ),
-    );
-  }
-
-  /// File mới không nhỏ hơn file gốc: báo, cho giữ hoặc xoá.
-  Widget _buildNotSmaller(CompressResult r) {
-    final l = context.l10n;
-    return ToolScaffold(
-      title: l.core_toolCompress,
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        children: [
-          ToolCard(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: ToolFileRow(path: r.outputPath, info: _size(r.outputBytes)),
-          ),
-          const SizedBox(height: 16),
-          NoteBanner(
-            '${l.compress_notSmallerTitle}\n'
-            '${l.compress_notSmallerBody(_size(r.originalBytes), _size(r.outputBytes))}',
-            warning: true,
-          ),
-        ],
-      ),
-      bottom: Row(
-        children: [
-          Expanded(
-            child: SecondaryActionButton(
-              label: l.compress_deleteNew,
-              icon: Symbols.delete_rounded,
-              onPressed: _deletePending,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: PrimaryActionButton(
-              label: l.compress_keep,
-              icon: Symbols.check_rounded,
-              onPressed: _keepPending,
-            ),
-          ),
-        ],
       ),
     );
   }

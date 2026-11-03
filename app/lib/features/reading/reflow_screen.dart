@@ -27,7 +27,8 @@ import 'reflow_args.dart';
 import 'reflow_hooks.dart';
 
 /// Chế độ đọc dàn lại chữ (`Routes.reflow`): trích chữ PDF, dựng lại tiêu đề / đoạn / danh sách / bảng
-/// rồi hiện thành cột chữ chảy theo màn. Đổi cỡ chữ (chụm 2 ngón, A−/A+), nền đọc, giãn dòng; tìm chữ;
+/// rồi hiện thành cột chữ chảy theo màn. Dàn tiến dần theo trang: trang đầu hiện (và đọc to được) ngay,
+/// các trang sau nối thêm vào cuối khi xong (kèm chỉ báo "Đang dàn trang x/n"). Đổi cỡ chữ (chụm 2 ngón, A−/A+), nền đọc, giãn dòng; tìm chữ;
 /// đọc to (`ReadAloudBar`, qua [reflowReadAloudBuilderProvider]); dịch (`showTranslateSheet`, qua
 /// [reflowTranslatorProvider]).
 class ReflowScreen extends ConsumerStatefulWidget {
@@ -35,12 +36,16 @@ class ReflowScreen extends ConsumerStatefulWidget {
     super.key,
     required this.args,
     this.mode = ReflowMode.read,
+    this.autoStartReadAloud = false,
   });
 
   final OpenFileArgs args;
 
   /// [ReflowMode.readAloud] = mở sẵn thanh đọc to; [ReflowMode.translate] = mở bảng dịch trang đang đọc.
   final ReflowMode mode;
+
+  /// Với [ReflowMode.readAloud]: tự đọc ngay khi dàn chữ xong (một chạm từ menu).
+  final bool autoStartReadAloud;
 
   @override
   ConsumerState<ReflowScreen> createState() => _ReflowScreenState();
@@ -50,7 +55,17 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
   ReflowDocument? _doc;
   List<String> _texts = const [];
   AppError? _error;
+
+  /// Chưa có chữ nào để hiện (đang chờ trang đầu).
   bool _loading = true;
+
+  /// Còn trang đang dàn nền (đã có [_doc] một phần).
+  bool _layouting = false;
+  int _pagesDone = 0;
+  StreamSubscription<ReflowProgress>? _sub;
+
+  /// Đã xử lý việc cần làm khi trang mở đầu (`initialPage`) đã có chữ (cuộn tới / mở bảng dịch).
+  bool _initialHandled = false;
 
   final _scroller = IndexedScroller();
   final _listKey = GlobalKey();
@@ -67,6 +82,10 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
 
   late bool _readAloud = widget.mode == ReflowMode.readAloud;
 
+  /// Chỉ lần mở thanh đọc to đầu tiên (từ menu) mới tự phát; bật/tắt tay sau đó thì không.
+  late bool _autoStart =
+      widget.mode == ReflowMode.readAloud && widget.autoStartReadAloud;
+
   /// Dòng đang được đọc to (tô nhẹ); null = không đọc.
   int? _speakingItem;
 
@@ -82,6 +101,7 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
 
   @override
   void dispose() {
+    _sub?.cancel(); // dừng isolate dàn chữ
     _debounce?.cancel();
     _scroller.dispose();
     _searchCtrl.dispose();
@@ -92,27 +112,29 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
 
   void _fail(AppError error) {
     if (!mounted) return;
+    if (_hasText) {
+      // Đã có một phần chữ: giữ nguyên, chỉ báo lỗi cho phần còn lại.
+      setState(() => _layouting = false);
+      ScaffoldMessenger.maybeOf(
+        context,
+      )?.showSnackBar(SnackBar(content: Text(appErrorMessage(context, error))));
+      return;
+    }
     setState(() {
       _error = error;
       _loading = false;
+      _layouting = false;
     });
   }
 
-  /// Trích chữ; cần mật khẩu (chưa có / sai) thì hỏi rồi thử lại, huỷ thì rời màn.
+  /// Trích chữ từng lô trang; cần mật khẩu (chưa có / sai) thì hỏi rồi thử lại, huỷ thì rời màn.
   Future<void> _open() async {
-    final loader = ref.read(reflowLoaderProvider);
+    final loader = ref.read(reflowStreamLoaderProvider);
     String? password = widget.args.password;
     String? errorText;
     while (true) {
       try {
-        final doc = await loader(_path, password: password);
-        if (!mounted) return;
-        setState(() {
-          _doc = doc;
-          _texts = doc.itemTexts;
-          _loading = false;
-        });
-        _afterLoaded(doc);
+        await _consume(loader(_path, password: password));
         return;
       } on PasswordRequired {
         errorText = null;
@@ -140,6 +162,45 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
     }
   }
 
+  /// Nghe [stream] tới hết (lỗi thì ném ra); huỷ khi màn đóng.
+  Future<void> _consume(Stream<ReflowProgress> stream) {
+    final done = Completer<void>();
+    _sub = stream.listen(
+      _onProgress,
+      onError: (Object e, StackTrace st) {
+        if (!done.isCompleted) done.completeError(e, st);
+      },
+      onDone: () {
+        if (mounted && _layouting) setState(() => _layouting = false);
+        if (!done.isCompleted) done.complete();
+      },
+      cancelOnError: true,
+    );
+    return done.future;
+  }
+
+  /// Nhận thêm một phần tài liệu: hiện ngay, nối vào danh sách, cập nhật chỉ báo và kết quả tìm.
+  void _onProgress(ReflowProgress p) {
+    if (!mounted) return;
+    final doc = p.doc;
+    setState(() {
+      _doc = doc;
+      _texts = doc.itemTexts;
+      _pagesDone = p.pagesDone;
+      _layouting = !p.done;
+      _loading = !doc.hasText && !p.done;
+    });
+    if (!_initialHandled && doc.hasText) {
+      final page = widget.args.initialPage ?? 0;
+      if (p.pagesDone > page || p.done) {
+        _initialHandled = true;
+        _afterLoaded(doc);
+      }
+    }
+    final q = _searchCtrl.text;
+    if (_searching && q.trim().isNotEmpty) _onQuery(q, refresh: true);
+  }
+
   /// Cuộn tới trang mở đầu; chế độ dịch thì mở luôn bảng dịch cho trang đó.
   void _afterLoaded(ReflowDocument doc) {
     if (!doc.hasText) return;
@@ -164,28 +225,37 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
 
   // --- Tìm chữ ---------------------------------------------------------------
 
-  void _onQuery(String q) {
+  /// [refresh]: chạy lại trên danh sách dòng vừa dài thêm — giữ kết quả đang chọn, không cuộn.
+  void _onQuery(String q, {bool refresh = false}) {
     _debounce?.cancel();
     final seq = ++_seq;
     final texts = _texts;
     final large = texts.fold<int>(0, (n, t) => n + t.length) > largeTextChars;
     if (!large) {
-      _applyHits(findHitsLimited(texts, q));
+      _applyHits(findHitsLimited(texts, q), refresh: refresh);
       return;
     }
-    _debounce = Timer(const Duration(milliseconds: 350), () async {
-      final r = await Isolate.run(() => findHitsLimited(texts, q));
-      if (!mounted || seq != _seq) return;
-      _applyHits(r);
-    });
+    _debounce = Timer(
+      refresh ? Duration.zero : const Duration(milliseconds: 350),
+      () async {
+        final r = await Isolate.run(() => findHitsLimited(texts, q));
+        if (!mounted || seq != _seq) return;
+        _applyHits(r, refresh: refresh);
+      },
+    );
   }
 
-  void _applyHits(({List<SearchHit> hits, bool truncated}) r) {
+  void _applyHits(
+    ({List<SearchHit> hits, bool truncated}) r, {
+    bool refresh = false,
+  }) {
     setState(() {
       _hits = r.hits;
-      _current = 0;
+      _current = refresh && r.hits.isNotEmpty
+          ? math.min(_current, r.hits.length - 1)
+          : 0;
     });
-    _goToCurrent();
+    if (!refresh) _goToCurrent();
   }
 
   void _step(int delta) {
@@ -292,6 +362,7 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
                 onNext: () => _step(1),
                 onClose: _closeSearch,
               ),
+            if (_layouting && _hasText) _buildLayoutStrip(context, prefs),
             Expanded(child: _buildBody(context, prefs)),
           ],
         ),
@@ -299,6 +370,8 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
             ? ref.watch(reflowReadAloudBuilderProvider)(
                 doc.paragraphs,
                 _onSpeakParagraph,
+                autoStart: _autoStart,
+                moreComing: _layouting,
               )
             : null,
       ),
@@ -370,6 +443,7 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
           onPressed: hasText
               ? () => setState(() {
                   _readAloud = !_readAloud;
+                  _autoStart = false;
                   if (!_readAloud) _speakingItem = null;
                 })
               : null,
@@ -408,6 +482,42 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
     );
   }
 
+  /// Chỉ báo "Đang dàn trang x/n". Đọc cho trình đọc màn hình MỘT lần khi hiện ra (nhãn cố định,
+  /// số trang chỉ để nhìn) nên không đọc lặp mỗi lô trang.
+  Widget _buildLayoutStrip(BuildContext context, ReflowPrefs prefs) {
+    final l = context.l10n;
+    final total = _doc?.pageCount ?? 0;
+    return Semantics(
+      key: const Key('reflow_layoutStrip'),
+      liveRegion: true,
+      label: l.reading_loading,
+      excludeSemantics: true,
+      child: ColoredBox(
+        color: prefs.theme.background,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
+          child: Row(
+            children: [
+              Expanded(
+                child: LinearProgressIndicator(
+                  value: total <= 0 ? null : _pagesDone / total,
+                  minHeight: 3,
+                  color: AppColors.headerForCategory(DocCategory.pdf),
+                  backgroundColor: prefs.theme.muted.withValues(alpha: 0.25),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                l.reading_layoutProgress(_pagesDone, total),
+                style: TextStyle(fontSize: 12.5, color: prefs.theme.muted),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBody(BuildContext context, ReflowPrefs prefs) {
     final l = context.l10n;
     final error = _error;
@@ -430,12 +540,15 @@ class _ReflowScreenState extends ConsumerState<ReflowScreen> {
               color: AppColors.headerForCategory(DocCategory.pdf),
             ),
             const SizedBox(height: 16),
-            Text(
-              l.reading_loading,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: context.tokens.textMuted,
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                _autoStart ? l.reading_preparingRead : l.reading_loading,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: context.tokens.textMuted,
+                ),
               ),
             ),
           ],

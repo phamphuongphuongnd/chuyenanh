@@ -13,10 +13,6 @@ String translateLanguageName(BuildContext context, String code) {
   return switch (code) {
     'vi' => l.translate_langVi,
     'en' => l.translate_langEn,
-    'zh' => l.translate_langZh,
-    'ja' => l.translate_langJa,
-    'ko' => l.translate_langKo,
-    'id' => l.translate_langId,
     _ => code,
   };
 }

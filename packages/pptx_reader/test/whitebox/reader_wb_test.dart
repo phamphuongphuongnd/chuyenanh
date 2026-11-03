@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings, prefer_null_aware_operators
 // Kiểm thử hộp trắng A19 — lib/src/reader.dart (mã bộ R*, xem
 // test-output/whitebox/pptx-reader/reader/buoc-5-du-lieu-thu.md).
 // Mọi hàm reader là private ⇒ đi qua readPptx(bytes). Gói pptx dựng bằng

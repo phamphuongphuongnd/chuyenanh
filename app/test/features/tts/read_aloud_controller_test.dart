@@ -181,4 +181,84 @@ void main() {
     expect(e.stops, 1);
     expect(e.onComplete, isNull);
   });
+
+  group('nối thêm đoạn (dàn trang tiến dần)', () {
+    test('appendParagraphs: giữ vị trí / trạng thái đang đọc, đoạn mới đánh số tiếp', () async {
+      final (c, e, ann) = await _ready(['A.', 'B.']);
+      await c.play();
+      c.appendParagraphs(['C.', 'D.']);
+      expect(c.isPlaying, isTrue);
+      expect(c.paragraphCount, 4);
+      expect(c.currentParagraph, 0);
+      expect(e.stops, 0);
+      for (var i = 0; i < 3; i++) {
+        e.finish();
+        await Future<void>.delayed(Duration.zero);
+      }
+      expect(e.spoken, ['A.', 'B.', 'C.', 'D.']);
+      expect(ann, [0, 1, 2, 3]);
+    });
+
+    test('appendParagraphs rỗng / đoạn rỗng không đổi gì đáng kể', () async {
+      final (c, _, _) = await _ready(['A.']);
+      c.appendParagraphs(const []);
+      expect(c.paragraphCount, 1);
+      c.appendParagraphs(['  ']);
+      expect(c.paragraphCount, 2);
+      expect(c.canNext, isFalse);
+    });
+
+    test('đọc hết phần có khi còn đoạn sắp tới: chờ (vẫn playing), nối thêm thì đọc tiếp', () async {
+      final (c, e, ann) = await _ready(['A.']);
+      c.setMoreComing(true);
+      await c.play();
+      e.finish();
+      expect(c.isPlaying, isTrue);
+      expect(e.spoken, ['A.']);
+
+      c.appendParagraphs(['B.']);
+      expect(e.spoken, ['A.', 'B.']);
+      expect(c.currentParagraph, 1);
+      expect(ann, [0, 1]);
+    });
+
+    test('đang chờ mà hết đoạn sắp tới (setMoreComing false): kết thúc như đọc hết', () async {
+      final (c, e, _) = await _ready(['A.']);
+      c.setMoreComing(true);
+      await c.play();
+      e.finish();
+      expect(c.isPlaying, isTrue);
+      c.setMoreComing(false);
+      expect(c.status, ReadAloudStatus.idle);
+      expect(c.currentParagraph, 0);
+    });
+
+    test('đang chờ rồi nối thêm toàn đoạn rỗng: vẫn chờ, không ném lỗi', () async {
+      final (c, e, _) = await _ready(['A.']);
+      c.setMoreComing(true);
+      await c.play();
+      e.finish();
+      c.appendParagraphs(['   ']);
+      expect(c.isPlaying, isTrue);
+      expect(e.spoken, ['A.']);
+    });
+
+    test('không còn đoạn sắp tới: đọc hết thì về idle như cũ', () async {
+      final (c, e, _) = await _ready(['A.']);
+      await c.play();
+      e.finish();
+      expect(c.status, ReadAloudStatus.idle);
+    });
+
+    test('đang chờ ở cuối mà tạm dừng, rồi nối thêm: không tự đọc', () async {
+      final (c, e, _) = await _ready(['A.']);
+      c.setMoreComing(true);
+      await c.play();
+      e.finish();
+      await c.pause();
+      c.appendParagraphs(['B.']);
+      expect(c.status, ReadAloudStatus.paused);
+      expect(e.spoken, ['A.']);
+    });
+  });
 }

@@ -18,6 +18,8 @@ Future<void> _pump(
   String? languageCode = 'vi',
   String? appLocale,
   ValueChanged<int>? onParagraph,
+  bool autoStart = false,
+  bool moreComing = false,
 }) async {
   SharedPreferences.setMockInitialValues({
     SettingsRepository.kLocale: ?appLocale,
@@ -44,6 +46,8 @@ Future<void> _pump(
             paragraphs: paragraphs,
             languageCode: languageCode,
             onParagraph: onParagraph,
+            autoStart: autoStart,
+            moreComing: moreComing,
           ),
         ),
       ),
@@ -83,6 +87,22 @@ void main() {
       expect(find.byTooltip('Read aloud'), findsOneWidget);
     },
   );
+
+  testWidgets('autoStart: giọng sẵn sàng thì tự đọc đoạn đầu, không cần bấm', (
+    tester,
+  ) async {
+    final engine = FakeTtsEngine();
+    await _pump(tester, engine, autoStart: true);
+    expect(engine.spoken, ['Một.']);
+    expect(find.byTooltip('Pause'), findsOneWidget);
+  });
+
+  testWidgets('không autoStart: chỉ chờ, chưa đọc', (tester) async {
+    final engine = FakeTtsEngine();
+    await _pump(tester, engine);
+    expect(engine.spoken, isEmpty);
+    expect(find.byTooltip('Read aloud'), findsOneWidget);
+  });
 
   testWidgets('đoạn sau / trước và dừng', (tester) async {
     final engine = FakeTtsEngine();
@@ -161,8 +181,8 @@ void main() {
     tester,
   ) async {
     final engine = FakeTtsEngine();
-    await _pump(tester, engine, languageCode: null, appLocale: 'ja');
-    expect(engine.checked, ['ja-JP']);
+    await _pump(tester, engine, languageCode: null, appLocale: 'en');
+    expect(engine.checked, ['en-US']); // đổi: trước 'ja' → ja-JP, ngôn ngữ ja đã bỏ
   });
 
   testWidgets('đoạn dài đọc thành nhiều phần, onParagraph chỉ gọi một lần', (
@@ -198,5 +218,45 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     expect(engine.stops, 1);
     expect(engine.onComplete, isNull);
+  });
+
+  testWidgets(
+    'danh sách đoạn dài thêm về cuối: nối thêm, đang đọc không bị dừng / đọc lại từ đầu',
+    (tester) async {
+      final engine = FakeTtsEngine();
+      await _pump(tester, engine, paragraphs: const ['Một.', 'Hai.'], moreComing: true);
+      await tester.tap(find.byKey(const ValueKey('tts_play')));
+      await tester.pump();
+      expect(engine.spoken, ['Một.']);
+
+      await _pump(
+        tester,
+        engine,
+        paragraphs: const ['Một.', 'Hai.', 'Ba.'],
+        moreComing: true,
+      );
+      expect(engine.stops, 0);
+      expect(engine.spoken, ['Một.']);
+      expect(find.text('Paragraph 1 / 3'), findsOneWidget);
+      expect(find.byTooltip('Pause'), findsOneWidget);
+
+      // Đọc hết phần cũ vẫn tiếp tục sang đoạn mới.
+      engine.finish();
+      await tester.pump();
+      engine.finish();
+      await tester.pump();
+      expect(engine.spoken, ['Một.', 'Hai.', 'Ba.']);
+    },
+  );
+
+  testWidgets('đoạn đầu khác đi → vẫn dừng và về đầu như cũ', (tester) async {
+    final engine = FakeTtsEngine();
+    await _pump(tester, engine, paragraphs: const ['Một.', 'Hai.']);
+    await tester.tap(find.byKey(const ValueKey('tts_play')));
+    await tester.pump();
+    await _pump(tester, engine, paragraphs: const ['Khác.', 'Hai.', 'Ba.']);
+    expect(engine.stops, 1);
+    expect(find.byTooltip('Read aloud'), findsOneWidget);
+    expect(find.text('Paragraph 1 / 3'), findsOneWidget);
   });
 }

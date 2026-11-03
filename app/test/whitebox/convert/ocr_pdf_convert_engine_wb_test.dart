@@ -137,10 +137,10 @@ void main() {
       final ocr = _FakeOcr(_ocr('Chữ quét được'));
       final render = _FakeRender(_FakeDoc(2));
       final progress = <double>[];
-      final r = await _capture(make(ocr, render, script: OcrScript.japanese)
+      final r = await _capture(make(ocr, render, script: OcrScript.latin)
           .pdfToText(_pdf(path('in.pdf')), path('o.txt'), onProgress: progress.add));
       expect(ocr.calls, hasLength(1)); // nhánh: chỉ 1 trang ảnh được OCR
-      expect(ocr.scripts.single, OcrScript.japanese);
+      expect(ocr.scripts.single, OcrScript.latin);
       expect(render.doc.rendered.single.$1, 1);
       expect(render.doc.closed, isTrue);
       expect(workEmpty(), isTrue);

@@ -12,7 +12,11 @@ class FakePptRender implements PdfRenderEngine {
   FakePptRender({
     this.sizes = const [PdfPageSize(595, 842), PdfPageSize(842, 595)],
     this.onRender,
+    this.jpegFor,
   });
+
+  /// Ảnh JPEG trả về cho trang (mặc định: JPEG giả không giải mã được).
+  final Uint8List Function(int page)? jpegFor;
 
   final List<PdfPageSize> sizes;
 
@@ -55,7 +59,7 @@ class _FakeDoc implements PdfRenderDocument {
     cancelToken?.throwIfCancelled();
     owner.renders.add((page: pageIndex, dpi: dpi, format: format));
     owner.onRender?.call(pageIndex);
-    return fakeJpeg(pageIndex + 1);
+    return owner.jpegFor?.call(pageIndex) ?? fakeJpeg(pageIndex + 1);
   }
 
   @override

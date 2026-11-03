@@ -22,7 +22,10 @@ Kết quả spike S1 (26/10/2026), đã **nhìn tận mắt** ảnh render (`spi
   tra (nhận dấu thanh/dấu mũ theo thứ tự bất kỳ, 11 trường hợp test) ở `app/test/spikes/vi_nfc.dart` → **chuyển vào
   `app/lib/core/utils/` khi làm convert**, kèm unit test. Áp cho mọi chuỗi đưa vào PDF (TXT/DOCX/XLSX/chữ gõ/OCR).
 
-## Trung / Nhật / Hàn — không có font nào đủ cả Việt + CJK
+
+> **Cập nhật 02/11/2026:** chủ dự án chốt **chỉ giữ tiếng Việt + tiếng Anh**. Đã bỏ font Noto Sans SC/JP/KR, OCR Trung/Nhật/Hàn và 4 ngôn ngữ giao diện zh/ja/ko/id. Chữ CJK khi xuất PDF thành `?` (không ném lỗi). Phần dưới là lịch sử spike — xem [[tinh-nang-offline]].
+
+## Trung / Nhật / Hàn — không có font nào đủ cả Việt + CJK (lịch sử)
 | Font Windows | Kết quả |
 |---|---|
 | `msyh.ttc`, `simsun.ttc` | Trung + Nhật đúng; **không có Hangul**, **không có chữ Việt có dấu** (ra ô trống) |

@@ -7,14 +7,26 @@
   "compress_levelLightDesc": "Giữ nguyên chữ, liên kết và chú thích; chỉ tối ưu cấu trúc tệp. Giảm ít.",
   "compress_levelMediumDesc": "Chuyển mỗi trang thành ảnh khoảng 150 dpi. Giảm nhiều, vẫn đọc rõ.",
   "compress_levelStrongDesc": "Chuyển mỗi trang thành ảnh khoảng 100 dpi. Tệp nhỏ nhất, chất lượng thấp hơn.",
-  "compress_rasterWarning": "Trang sẽ thành ảnh: chữ không còn chọn hay tìm được, liên kết và chú thích sẽ bị mất.",
+  "compress_rasterWarning": "Trang sẽ thành ảnh nhưng chữ vẫn chọn và tìm được. Liên kết, highlight và ghi chú được giữ; ô biểu mẫu và hình vẽ có thể mất. Trang quét không có chữ giữ nguyên là ảnh.",
   "compress_passwordNote": "Tệp gốc có mật khẩu. Tệp nén sẽ không có mật khẩu.",
   "compress_action": "Nén",
   "compress_resultSummary": "Từ {from} → {to} (giảm {percent}%)",
-  "compress_resultNoGain": "Từ {from} → {to} (không giảm)",
-  "compress_notSmallerTitle": "Tệp nén không nhỏ hơn tệp gốc",
-  "compress_notSmallerBody": "Từ {from} → {to}. Tệp này có thể đã được nén sẵn. Giữ hay xoá tệp mới?",
-  "compress_keep": "Giữ tệp",
-  "compress_deleteNew": "Xoá tệp mới",
-  "compress_deleted": "Đã xoá tệp nén."
+  "compress_alreadyOptimizedTitle": "Tệp đã được tối ưu, không thể nén thêm",
+  "compress_alreadyOptimizedBody": "Không thể giảm ít nhất 5% (dung lượng hiện tại {size}) nên không tạo tệp mới.",
+  "compress_fellBackNote": "Chuyển trang thành ảnh sẽ làm tệp to hơn nên đã dùng mức Nhẹ để giữ chữ sắc nét.",
+  "compress_lostAnnotations": "{count} chú thích (như ô biểu mẫu, hình vẽ) không giữ lại được.",
+  "@compress_alreadyOptimizedBody": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@compress_lostAnnotations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

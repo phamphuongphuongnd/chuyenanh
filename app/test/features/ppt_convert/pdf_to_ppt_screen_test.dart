@@ -80,7 +80,7 @@ void main() {
     expect(find.text('report.pdf'), findsOneWidget);
     expect(find.textContaining('2 pages'), findsOneWidget);
     expect(find.text('2 slides will be created'), findsOneWidget);
-    expect(find.textContaining('cannot be edited in PowerPoint'), findsOneWidget);
+    expect(find.textContaining('not editable because the slide itself is an image'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('pdfppt_dpi_200')));
     await tester.pump();

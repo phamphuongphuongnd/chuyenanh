@@ -13,9 +13,6 @@ import '../../../engines/ocr/ocr_engine.dart';
 mlkit.TextRecognitionScript mlKitScriptFor(OcrScript script) =>
     switch (script) {
       OcrScript.latin => mlkit.TextRecognitionScript.latin,
-      OcrScript.chinese => mlkit.TextRecognitionScript.chinese,
-      OcrScript.japanese => mlkit.TextRecognitionScript.japanese,
-      OcrScript.korean => mlkit.TextRecognitionScript.korean,
     };
 
 /// Đổi kết quả ML Kit sang model của app. Toạ độ giữ nguyên (pixel ảnh gốc).

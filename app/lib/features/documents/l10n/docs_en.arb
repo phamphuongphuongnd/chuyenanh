@@ -22,6 +22,14 @@
   "docs_grantPermission": "Grant access",
   "docs_pickFileInstead": "Choose a file instead",
   "docs_permissionBanner": "Grant file access to find all your documents",
+  "docs_permissionDialogTitle": "Why we ask for file access",
+  "docs_permissionDialogWhy": "To find and list the PDF, Word, Excel, PowerPoint and TXT files on your device.",
+  "docs_permissionDialogLocal": "Files are only read on your device and never uploaded.",
+  "docs_permissionDialogDecline": "You can decline and still open files with the Choose file button.",
+  "docs_permissionContinue": "Continue",
+  "docs_permissionLater": "Not now",
+  "docs_permissionPrivacyLink": "View privacy policy",
+  "docs_permissionDismiss": "Dismiss file access reminder",
   "docs_scanning": "Scanning… {count} files found",
   "@docs_scanning": {
     "placeholders": {

@@ -47,14 +47,10 @@ void main() {
   });
 
   group('danh sách ngôn ngữ', () {
-    test('6 ngôn ngữ, mỗi cái có tên bản địa', () {
+    test('2 ngôn ngữ (vi, en), mỗi cái có tên bản địa', () {
       expect(appLocales.map((l) => l.languageCode), [
         'vi',
         'en',
-        'zh',
-        'ja',
-        'ko',
-        'id',
       ]);
       for (final l in appLocales) {
         expect(localeNativeNames[l.languageCode], isNotNull);
@@ -66,8 +62,8 @@ void main() {
     test('đổi locale cập nhật AppSettings và xoá về null = theo máy', () async {
       final c = await _container();
       final n = c.read(settingsProvider.notifier);
-      await n.setLocale(const Locale('ja'));
-      expect(c.read(settingsProvider).locale, const Locale('ja'));
+      await n.setLocale(const Locale('en'));
+      expect(c.read(settingsProvider).locale, const Locale('en'));
       await n.setLocale(null);
       expect(c.read(settingsProvider).locale, isNull);
     });

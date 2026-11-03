@@ -15,9 +15,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 const _fontFiles = {
   FontSlot.regular: 'assets/fonts/NotoSans-Regular.ttf',
-  FontSlot.chinese: 'assets/fonts/NotoSansSC-Regular.ttf',
-  FontSlot.japanese: 'assets/fonts/NotoSansJP-Regular.ttf',
-  FontSlot.korean: 'assets/fonts/NotoSansKR-Regular.ttf',
 };
 final _hasFonts = _fontFiles.values.every((f) => File(f).existsSync());
 final _skipNoFonts = _hasFonts ? null : 'cần chạy tool/fetch_fonts.sh (thiếu app/assets/fonts/*.ttf)';
@@ -165,9 +162,11 @@ void main() {
       expect(out, isNotNull);
       final t = _text(out!);
       expect(t, contains('Hà Nội'));
-      expect(t, contains('河内'));
-      expect(t, contains('하노이'));
-      expect(t, contains('ハノイ'));
+      // Đổi (bỏ font CJK): trước khẳng định 河内/하노이/ハノイ trích lại được; nay thành '?', không ném lỗi.
+      expect(t, isNot(contains('河')));
+      expect(t, isNot(contains('하')));
+      expect(t, isNot(contains('ハ')));
+      expect(t, contains('?'));
     });
   });
 

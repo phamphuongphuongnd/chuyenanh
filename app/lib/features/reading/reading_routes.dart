@@ -13,7 +13,11 @@ final List<RouteBase> readingRoutes = [
     builder: (_, state) {
       final extra = state.extra;
       return switch (extra) {
-        ReflowArgs() => ReflowScreen(args: extra.file, mode: extra.mode),
+        ReflowArgs() => ReflowScreen(
+          args: extra.file,
+          mode: extra.mode,
+          autoStartReadAloud: extra.autoStartReadAloud,
+        ),
         OpenFileArgs() => ReflowScreen(args: extra),
         _ => const ReflowScreen(args: OpenFileArgs('')),
       };

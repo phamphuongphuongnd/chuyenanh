@@ -15,7 +15,7 @@
   "pptpdf_pagesToExport": "{count, plural, =1{1 PDF page will be created} other{{count} PDF pages will be created}}",
   "@pptpdf_pagesToExport": {"placeholders": {"count": {"type": "int"}}},
   "pptpdf_noSlides": "There are no slides to export",
-  "pptpdf_note": "Each slide becomes an image page, so text in the PDF cannot be selected or searched. Slides look the same as in the app's PowerPoint viewer and may differ slightly from PowerPoint (fonts, effects, charts).",
+  "pptpdf_note": "Each slide becomes an image page; the slide's text is added as an invisible layer, so it can be selected, searched and copied (its position and line breaks are approximate). Text cannot be edited in the PDF. Slides look the same as in the app's PowerPoint viewer and may differ slightly from PowerPoint (fonts, effects, charts).",
   "pptpdf_convert": "Convert to PDF",
   "pptpdf_converting": "Converting slides…"
 }

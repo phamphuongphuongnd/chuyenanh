@@ -17,9 +17,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 const _fontFiles = {
   FontSlot.regular: 'assets/fonts/NotoSans-Regular.ttf',
-  FontSlot.chinese: 'assets/fonts/NotoSansSC-Regular.ttf',
-  FontSlot.japanese: 'assets/fonts/NotoSansJP-Regular.ttf',
-  FontSlot.korean: 'assets/fonts/NotoSansKR-Regular.ttf',
 };
 
 Uint8List _imageOnlyPdf(int pages) {

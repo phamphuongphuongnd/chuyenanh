@@ -1,11 +1,15 @@
-// Chụp slide PPTX thành PNG bằng chính widget `SlideView` của trình xem (nên PDF trông giống
+// Chụp slide PPTX thành ảnh JPEG bằng chính widget `SlideView` của trình xem (nên PDF trông giống
 // hệt màn xem). Slide được dựng tạm trong Overlay, đặt ngoài vùng nhìn thấy, chờ ảnh giải mã
 // xong rồi `RenderRepaintBoundary.toImage`.
-import 'dart:typed_data';
+import 'dart:isolate';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show Material, MaterialType;
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image/image.dart' as img;
 import 'package:pptx_reader/pptx_reader.dart';
 
 import '../../../core/errors/app_error.dart';
@@ -47,7 +51,12 @@ class OverlaySlideRasterizer implements SlideRasterizer {
                   .copyWith(textScaler: TextScaler.noScaling),
               child: RepaintBoundary(
                 key: boundaryKey,
-                child: SlideView(deck: deck, slide: slide, renderScale: ratio),
+                // Overlay gốc nằm ngoài Scaffold: thiếu Material thì chữ số/dấu đầu dòng bị
+                // gạch chân vàng (kiểu chữ báo lỗi của Flutter) ngay trong ảnh slide.
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: SlideView(deck: deck, slide: slide, renderScale: ratio),
+                ),
               ),
             ),
           ),
@@ -75,20 +84,26 @@ class OverlaySlideRasterizer implements SlideRasterizer {
           precacheImage(pvd, ctx, onError: (_, _) {}),
       ];
       if (pending.isNotEmpty) await Future.wait(pending);
-      // Ảnh xong → `Image` setState → cần thêm khung hình để vẽ ảnh vào lớp.
+      // Ảnh xong → `Image` setState → cần thêm khung hình để vẽ ảnh vào lớp. Slide không có
+      // ảnh thì không có gì phải chờ (khung đầu đã layout + paint xong).
       if (!ctx.mounted) throw const Cancelled();
       final boundary = ctx.findRenderObject()! as RenderRepaintBoundary;
-      for (var i = 0; i < _maxSettleFrames; i++) {
-        await _nextFrame();
-        if (i >= 1 && !_needsPaint(boundary)) break;
+      if (providers.isNotEmpty) {
+        for (var i = 0; i < _maxSettleFrames; i++) {
+          await _nextFrame();
+          // Bản release không có `debugNeedsPaint` → 1 khung là đủ.
+          if (!_needsPaint(boundary)) break;
+        }
       }
       if (!overlay.mounted) throw const Cancelled();
 
       final image = await boundary.toImage(pixelRatio: ratio);
       try {
-        final data = await image.toByteData(format: ui.ImageByteFormat.png);
+        // Lấy điểm ảnh thô (rất nhanh) rồi nén JPEG trong isolate: không chặn luồng giao diện
+        // và PDF nhúng thẳng JPEG, khỏi bị Syncfusion giải mã PNG bằng Dart ở bước ghép.
+        final data = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
         if (data == null) throw const CorruptFile('slide encode failed');
-        return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        return await _encodeJpeg(data, image.width, image.height);
       } finally {
         image.dispose();
       }
@@ -117,4 +132,58 @@ bool _needsPaint(RenderObject r) {
     return true;
   }());
   return needs;
+}
+
+/// Chất lượng JPEG của ảnh slide (90 giữ chữ nhỏ còn nét ở 150 dpi).
+const int kSlideJpegQuality = 90;
+
+/// Bộ nén JPEG của Android (libjpeg-turbo) — xem `ImageCodecChannel.kt`.
+const MethodChannel _codecChannel = MethodChannel('com.phuong.pdfoffice/image_codec');
+
+/// Kênh native không có (iOS, test) → nhớ lại để khỏi gọi thử mỗi slide.
+bool _nativeCodecMissing = false;
+
+/// Nén điểm ảnh RGBA thành JPEG, nền trong suốt (slide không có nền) trộn lên trắng như lúc hiển
+/// thị. Ưu tiên bộ nén của Android; gói `image` Dart thuần chậm hơn nhiều lần trên máy 32-bit
+/// (≈ 8 s/slide trên Galaxy A13) nên chỉ là đường dự phòng.
+Future<Uint8List> _encodeJpeg(ByteData rgba, int width, int height) async {
+  final bytes = rgba.buffer.asUint8List(rgba.offsetInBytes, rgba.lengthInBytes);
+  if (!_nativeCodecMissing && defaultTargetPlatform == TargetPlatform.android) {
+    try {
+      final out = await _codecChannel.invokeMethod<Uint8List>('encodeJpeg', {
+        'rgba': bytes,
+        'width': width,
+        'height': height,
+        'quality': kSlideJpegQuality,
+      });
+      if (out != null && out.isNotEmpty) return out;
+    } on MissingPluginException {
+      _nativeCodecMissing = true;
+    } on PlatformException {
+      // Thiếu RAM / lỗi nén native: thử lại bằng Dart.
+    }
+  }
+  return _encodeJpegDart(bytes, width, height);
+}
+
+Future<Uint8List> _encodeJpegDart(Uint8List rgba, int width, int height) {
+  final transfer = TransferableTypedData.fromList([rgba]);
+  return Isolate.run(() {
+    final raw = transfer.materialize().asUint8List();
+    // Trộn lên trắng bằng tay (alpha nhân sẵn: c + 255 − a) — nhanh hơn `compositeImage`.
+    final rgb = Uint8List(width * height * 3);
+    for (var i = 0, j = 0; j < rgb.length; i += 4, j += 3) {
+      final inv = 255 - raw[i + 3];
+      rgb[j] = raw[i] + inv;
+      rgb[j + 1] = raw[i + 1] + inv;
+      rgb[j + 2] = raw[i + 2] + inv;
+    }
+    final flat = img.Image.fromBytes(
+      width: width,
+      height: height,
+      bytes: rgb.buffer,
+      numChannels: 3,
+    );
+    return img.encodeJpg(flat, quality: kSlideJpegQuality);
+  });
 }

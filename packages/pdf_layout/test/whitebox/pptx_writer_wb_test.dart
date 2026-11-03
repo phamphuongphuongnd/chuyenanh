@@ -174,4 +174,47 @@ void main() {
     expect(rels['rId2'], 'slides/slide1.xml');
     expect(rels['rId3'], 'slides/slide2.xml');
   });
+
+  // Bổ sung sau khi đổi chữ ẩn noFill → solidFill alpha 0% và thêm hộp chữ hiển thị.
+  test('U8-P1 hộp ẩn ⇒ rPr solidFill 000000 + alpha 0, không noFill; không a:latin', () {
+    final z = _zip(writeImagePptx([
+      PptxImageSlide(
+        bytes: _img(1),
+        widthPt: 720,
+        heightPt: 405,
+        textBoxes: const [PptxTextBox(text: 'a', left: 0, top: 0, width: 10, height: 10)],
+      ),
+    ]));
+    final rPr = _part(z, 'ppt/slides/slide1.xml').findAllElements('a:rPr').single;
+    expect(rPr.findElements('a:noFill'), isEmpty);
+    final clr = rPr.findElements('a:solidFill').single.findElements('a:srgbClr').single;
+    expect(clr.getAttribute('val'), '000000');
+    expect(clr.findElements('a:alpha').single.getAttribute('val'), '0');
+    expect(rPr.findElements('a:latin'), isEmpty);
+  });
+
+  test('U8-P2 hộp hiển thị ⇒ màu, b/i, latin; không alpha; màu null ⇒ đen', () {
+    final z = _zip(writeImagePptx([
+      PptxImageSlide(
+        bytes: _img(1),
+        widthPt: 720,
+        heightPt: 405,
+        textBoxes: const [
+          PptxTextBox(
+            text: 'a', left: 0, top: 0, width: 10, height: 10,
+            visible: true, colorRgb: 0xAB12EF, bold: true, italic: true, fontFamily: 'Noto Sans',
+          ),
+          PptxTextBox(text: 'b', left: 0, top: 20, width: 10, height: 10, visible: true),
+        ],
+      ),
+    ]));
+    final rs = _part(z, 'ppt/slides/slide1.xml').findAllElements('a:rPr').toList();
+    expect(rs[0].getAttribute('b'), '1');
+    expect(rs[0].getAttribute('i'), '1');
+    expect(rs[0].findAllElements('a:srgbClr').single.getAttribute('val'), 'AB12EF');
+    expect(rs[0].findAllElements('a:alpha'), isEmpty);
+    expect(rs[0].findElements('a:latin').single.getAttribute('typeface'), 'Noto Sans');
+    expect(rs[1].findAllElements('a:srgbClr').single.getAttribute('val'), '000000');
+    expect(rs[1].getAttribute('b'), isNull);
+  });
 }

@@ -36,9 +36,5 @@
   "translate_continue": "Dịch tiếp",
   "translate_continueButton": "Dịch tiếp {count} đoạn",
   "translate_langVi": "Tiếng Việt",
-  "translate_langEn": "Tiếng Anh",
-  "translate_langZh": "Tiếng Trung",
-  "translate_langJa": "Tiếng Nhật",
-  "translate_langKo": "Tiếng Hàn",
-  "translate_langId": "Tiếng Indonesia"
+  "translate_langEn": "Tiếng Anh"
 }

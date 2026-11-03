@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/l10n/l10n.dart' show appLocales;
 import '../../core/utils/page_size.dart';
 
 /// Cài đặt app (bất biến).
@@ -12,6 +13,7 @@ class AppSettings {
     this.defaultPageSize = PageSizeOption.a4,
     this.outputDir,
     this.appLock = false,
+    this.storageBannerDismissedAt,
   });
 
   /// `null` = theo ngôn ngữ máy.
@@ -25,18 +27,25 @@ class AppSettings {
   /// Khoá app bằng vân tay / khuôn mặt / PIN của máy (mặc định tắt).
   final bool appLock;
 
+  /// Lúc người dùng tắt biểu ngữ xin quyền "Truy cập tất cả file" (`null` = chưa tắt).
+  final DateTime? storageBannerDismissedAt;
+
   AppSettings copyWith({
     Locale? Function()? locale,
     ThemeMode? themeMode,
     PageSizeOption? defaultPageSize,
     String? Function()? outputDir,
     bool? appLock,
+    DateTime? Function()? storageBannerDismissedAt,
   }) => AppSettings(
     locale: locale != null ? locale() : this.locale,
     themeMode: themeMode ?? this.themeMode,
     defaultPageSize: defaultPageSize ?? this.defaultPageSize,
     outputDir: outputDir != null ? outputDir() : this.outputDir,
     appLock: appLock ?? this.appLock,
+    storageBannerDismissedAt: storageBannerDismissedAt != null
+        ? storageBannerDismissedAt()
+        : this.storageBannerDismissedAt,
   );
 
   @override
@@ -46,11 +55,19 @@ class AppSettings {
       other.themeMode == themeMode &&
       other.defaultPageSize == defaultPageSize &&
       other.outputDir == outputDir &&
-      other.appLock == appLock;
+      other.appLock == appLock &&
+      other.storageBannerDismissedAt == storageBannerDismissedAt;
 
   @override
   int get hashCode =>
-      Object.hash(locale, themeMode, defaultPageSize, outputDir, appLock);
+      Object.hash(
+    locale,
+    themeMode,
+    defaultPageSize,
+    outputDir,
+    appLock,
+    storageBannerDismissedAt,
+  );
 }
 
 /// Đọc/ghi [AppSettings] bằng shared_preferences.
@@ -64,11 +81,16 @@ class SettingsRepository {
   static const kDefaultPageSize = 'settings.defaultPageSize';
   static const kOutputDir = 'settings.outputDir';
   static const kAppLock = 'settings.appLock';
+  static const kStorageBannerDismissedAt = 'settings.storageBannerDismissedAt';
 
   AppSettings load() {
     final code = _prefs.getString(kLocale);
+    // Ngôn ngữ đã bỏ (zh, ja, ko, id…) → null = theo máy (rơi về vi/en).
+    final supported = code == null
+        ? null
+        : appLocales.where((l) => l.languageCode == code).firstOrNull;
     return AppSettings(
-      locale: code == null || code.isEmpty ? null : Locale(code),
+      locale: supported,
       themeMode: ThemeMode.values.firstWhere(
         (e) => e.name == _prefs.getString(kThemeMode),
         orElse: () => ThemeMode.system,
@@ -78,6 +100,10 @@ class SettingsRepository {
       ),
       outputDir: _prefs.getString(kOutputDir),
       appLock: _prefs.getBool(kAppLock) ?? false,
+      storageBannerDismissedAt: switch (_prefs.getInt(kStorageBannerDismissedAt)) {
+        final ms? => DateTime.fromMillisecondsSinceEpoch(ms),
+        null => null,
+      },
     );
   }
 
@@ -96,4 +122,8 @@ class SettingsRepository {
       : _prefs.setString(kOutputDir, dir);
 
   Future<void> setAppLock(bool enabled) => _prefs.setBool(kAppLock, enabled);
+
+  Future<void> setStorageBannerDismissedAt(DateTime? at) => at == null
+      ? _prefs.remove(kStorageBannerDismissedAt)
+      : _prefs.setInt(kStorageBannerDismissedAt, at.millisecondsSinceEpoch);
 }

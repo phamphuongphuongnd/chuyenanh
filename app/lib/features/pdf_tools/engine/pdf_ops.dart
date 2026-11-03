@@ -11,6 +11,7 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_paths.dart';
 import '../../../engines/pdf/pdf_tools_engine.dart';
 import 'isolate_job.dart';
+import '../logic/text_fonts.dart' show replaceCjk;
 import '../logic/vi_nfc.dart';
 import 'page_ranges.dart';
 import 'watermark_layout.dart';
@@ -342,6 +343,7 @@ sf.PdfFont makeFont(
 /// gặp ký tự nó không có thì Syncfusion ném `ArgumentError` → thay ký tự đó bằng `?`.
 /// Font nhúng (TTF) giữ nguyên chữ.
 String drawableText(String text, sf.PdfFont font) {
+  text = replaceCjk(text); // không có font CJK trong app → `?`
   if (font is! sf.PdfStandardFont || isLatin1(text)) return text;
   final out = StringBuffer();
   for (final r in text.runes) {

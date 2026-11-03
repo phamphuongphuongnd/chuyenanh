@@ -21,9 +21,14 @@ import 'tool_test_harness.dart'
 
 /// Engine nén giả: ghi file kết quả [outputSize] byte, ghi lại lời gọi.
 class _FakeCompress implements CompressEngine {
-  _FakeCompress({required this.outputSize});
+  _FakeCompress({required this.outputSize, this.optimal = false, this.lost = 0, this.fellBack = false});
 
   int outputSize;
+
+  /// Giả lập "không nén thêm được": không ghi file, `alreadyOptimal`.
+  final bool optimal;
+  final int lost;
+  final bool fellBack;
   final List<({String input, String output, CompressLevel level, String? password})>
   calls = [];
 
@@ -43,12 +48,23 @@ class _FakeCompress implements CompressEngine {
       password: password,
     ));
     onProgress?.call(0.5);
+    if (optimal) {
+      final orig = File(inputPath).lengthSync();
+      return CompressResult(
+        outputPath: outputPath,
+        originalBytes: orig,
+        outputBytes: orig,
+        alreadyOptimal: true,
+      );
+    }
     File(outputPath).writeAsBytesSync(List.filled(outputSize, 1));
     onProgress?.call(1);
     return CompressResult(
       outputPath: outputPath,
       originalBytes: File(inputPath).lengthSync(),
       outputBytes: outputSize,
+      lostAnnotations: lost,
+      fellBackToLight: fellBack,
     );
   }
 }
@@ -85,7 +101,7 @@ Future<void> _pump(
 }
 
 const _rasterWarning =
-    'Pages become images: text can no longer be selected or searched, and links and annotations will be lost.';
+    'Pages become images, but text stays selectable and searchable. Links, highlights and notes are kept; form fields and drawings may be lost. Scanned pages without text stay plain images.';
 const _passwordNote =
     'The original file is password protected. The compressed file will not have a password.';
 
@@ -123,7 +139,7 @@ void main() {
     expect(find.text('Strong'), findsOneWidget);
     expect(find.text(_passwordNote), findsNothing);
 
-    // Mức Nhẹ: không cảnh báo mất chữ.
+    // Mức Nhẹ: không cảnh báo.
     await tester.tap(find.text('Light'));
     await tester.pump();
     expect(find.text(_rasterWarning), findsNothing);
@@ -148,8 +164,8 @@ void main() {
     expect(find.text('From 1000 B → 400 B (60% smaller)'), findsOneWidget);
   });
 
-  testWidgets('file không nhỏ hơn: báo, xoá được; nén lại rồi giữ', (tester) async {
-    final compress = _FakeCompress(outputSize: 1200);
+  testWidgets('không nén thêm được: báo "đã tối ưu", không có file mới, nén lại được', (tester) async {
+    final compress = _FakeCompress(outputSize: 0, optimal: true);
     await _pump(
       tester,
       CompressScreen(path: src.path),
@@ -160,29 +176,31 @@ void main() {
     await settle(tester);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Compress'));
-    await settleUntilFound(tester, find.text('Delete new file'));
-    expect(find.textContaining('The compressed file is not smaller'), findsOneWidget);
-    expect(find.textContaining('From 1000 B → 1.17 KB'), findsOneWidget);
-    final first = compress.calls.single.output;
-    expect(File(first).existsSync(), isTrue);
-
-    await tester.tap(find.text('Delete new file'));
-    await settleUntilFound(tester, find.text('The compressed file was deleted.'));
-    expect(File(first).existsSync(), isFalse);
+    await settleUntilFound(tester, find.textContaining('This file is already optimized'));
+    expect(find.textContaining('current size 1000 B'), findsOneWidget);
+    expect(find.text('All done!'), findsNothing);
+    expect(File(compress.calls.single.output).existsSync(), isFalse);
+    // Vẫn ở màn chọn mức để thử mức khác.
     expect(find.widgetWithText(FilledButton, 'Compress'), findsOneWidget);
-    // Bỏ SnackBar để không che nút.
-    ScaffoldMessenger.of(
-      tester.element(find.byType(CompressScreen)),
-    ).removeCurrentSnackBar();
-    await tester.pumpAndSettle();
+    expect(src.lengthSync(), 1000);
+  });
+
+  testWidgets('kết quả: báo dùng mức Nhẹ thay thế và số chú thích không giữ được', (tester) async {
+    final compress = _FakeCompress(outputSize: 800, lost: 3, fellBack: true);
+    await _pump(
+      tester,
+      CompressScreen(path: src.path),
+      engine: FakeToolsEngine(pageCounts: {src.path: 1}),
+      compress: compress,
+      outDir: out,
+    );
+    await settle(tester);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Compress'));
-    await settleUntilFound(tester, find.text('Keep file'));
-    await tester.tap(find.text('Keep file'));
     await settleUntilFound(tester, find.text('All done!'));
-    expect(compress.calls, hasLength(2));
-    expect(File(compress.calls.last.output).existsSync(), isTrue);
-    expect(find.text('From 1000 B → 1.17 KB (no reduction)'), findsOneWidget);
+    expect(find.text('From 1000 B → 800 B (20% smaller)'), findsOneWidget);
+    expect(find.textContaining('the Light level was used'), findsOneWidget);
+    expect(find.textContaining('3 annotations'), findsOneWidget);
   });
 
   testWidgets('file có mật khẩu: hỏi mật khẩu, ghi chú bỏ mật khẩu, truyền mật khẩu cho engine', (
@@ -206,7 +224,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_passwordNote), findsOneWidget);
-    // Mặc định mức Vừa → có cảnh báo mất chữ.
+    // Mặc định mức Vừa → có cảnh báo (chữ vẫn chọn được; mất liên kết/chú thích).
     expect(find.text(_rasterWarning), findsOneWidget);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Compress'));

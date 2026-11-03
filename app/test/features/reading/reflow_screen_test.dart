@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,28 +36,53 @@ class _Harness {
   final passwords = <String?>[];
   final translated = <List<String>>[];
   List<String>? barParagraphs;
+  bool? barAutoStart;
+  bool? barMoreComing;
   ValueChanged<int>? onParagraph;
 
+  /// Nguồn một lần: [load] trả cả tài liệu một phát (như đệm / dàn xong ngay).
   Widget build(
     Future<ReflowDocument> Function() load, {
     OpenFileArgs args = const OpenFileArgs('/docs/bao-cao.pdf'),
     ReflowMode mode = ReflowMode.read,
+    bool autoStartReadAloud = false,
+  }) => buildStream(
+    () => Stream.fromFuture(load()).map(
+      (d) => ReflowProgress(doc: d, pagesDone: d.pageCount, done: true),
+    ),
+    args: args,
+    mode: mode,
+    autoStartReadAloud: autoStartReadAloud,
+  );
+
+  /// Nguồn tiến dần: [load] trả luồng các [ReflowProgress].
+  Widget buildStream(
+    Stream<ReflowProgress> Function() load, {
+    OpenFileArgs args = const OpenFileArgs('/docs/bao-cao.pdf'),
+    ReflowMode mode = ReflowMode.read,
+    bool autoStartReadAloud = false,
   }) => ProviderScope(
     overrides: [
-      reflowLoaderProvider.overrideWithValue((path, {password}) {
+      reflowStreamLoaderProvider.overrideWithValue((path, {password}) {
         passwords.add(password);
         return load();
       }),
       reflowTranslatorProvider.overrideWithValue((context, paragraphs) async {
         translated.add(paragraphs);
       }),
-      reflowReadAloudBuilderProvider.overrideWithValue((paragraphs, cb) {
+      reflowReadAloudBuilderProvider.overrideWithValue((paragraphs, cb, {autoStart = false, moreComing = false}) {
         barParagraphs = paragraphs;
+        barAutoStart = autoStart;
+        barMoreComing = moreComing;
         onParagraph = cb;
         return const SizedBox(key: Key('fakeReadAloudBar'), height: 40);
       }),
     ],
-    child: testApp(ReflowScreen(args: args, mode: mode)),
+    child: testApp(ReflowScreen(
+        args: args,
+        mode: mode,
+        autoStartReadAloud: autoStartReadAloud,
+      ),),
   );
 }
 
@@ -190,6 +216,47 @@ void main() {
     expect(find.byKey(const Key('reflow_speaking')), findsNothing);
   });
 
+  testWidgets('Đọc to một chạm: báo "đang chuẩn bị", xong thì thanh đọc tự phát', (
+    tester,
+  ) async {
+    final h = _Harness();
+    final doc = sampleDoc();
+    final completer = Completer<ReflowDocument>();
+    await tester.pumpWidget(
+      h.build(
+        () => completer.future,
+        mode: ReflowMode.readAloud,
+        autoStartReadAloud: true,
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Preparing to read aloud…'), findsOneWidget);
+    expect(find.text('Reflowing text…'), findsNothing);
+
+    completer.complete(doc);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('fakeReadAloudBar')), findsOneWidget);
+    expect(h.barAutoStart, isTrue);
+
+    // Tắt rồi bật lại bằng tay: không tự phát nữa.
+    await tester.tap(find.byKey(const Key('reflow_readAloudButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('reflow_readAloudButton')));
+    await tester.pumpAndSettle();
+    expect(h.barAutoStart, isFalse);
+  });
+
+  testWidgets('Đọc to không cờ autoStart: thanh đọc không tự phát', (
+    tester,
+  ) async {
+    final h = _Harness();
+    await tester.pumpWidget(
+      h.build(() async => sampleDoc(), mode: ReflowMode.readAloud),
+    );
+    await tester.pumpAndSettle();
+    expect(h.barAutoStart, isFalse);
+  });
+
   testWidgets('nút Dịch → dịch cả tài liệu', (tester) async {
     final h = _Harness();
     final doc = sampleDoc();
@@ -251,5 +318,227 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Tiêu đề trang 7').hitTestable(), findsOneWidget);
     expect(find.text('Tiêu đề trang 1').hitTestable(), findsNothing);
+  });
+
+  group('dàn tiến dần theo trang', () {
+    /// Tài liệu 3 trang, mỗi trang một tiêu đề + một đoạn; trả các dòng của trang [i].
+    List<ReflowItem> pageItems(int i) => buildReflowItems([
+      DocHeading(level: 2, spans: [DocSpan('Tiêu đề ${i + 1}')]),
+      para('Nội dung trang ${i + 1} dài vừa đủ.'),
+    ], firstPage: i, totalPages: 3);
+
+    ReflowProgress upTo(int pages) => ReflowProgress(
+      doc: ReflowDocument(
+        items: [for (var i = 0; i < pages; i++) ...pageItems(i)],
+        pageCount: 3,
+      ),
+      pagesDone: pages,
+      done: pages >= 3,
+    );
+
+    testWidgets('hiện trang đầu ngay + chỉ báo x/n, nối thêm khi có, hết thì ẩn chỉ báo', (
+      tester,
+    ) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      await tester.pump();
+      // Chưa có gì: vòng chờ như cũ.
+      expect(find.text('Reflowing text…'), findsOneWidget);
+      expect(find.byKey(const Key('reflow_layoutStrip')), findsNothing);
+
+      ctrl.add(upTo(1));
+      await tester.pump();
+      expect(find.text('Tiêu đề 1'), findsOneWidget);
+      expect(find.text('Tiêu đề 2'), findsNothing);
+      expect(find.text('Reflowing page 1/3'), findsOneWidget);
+
+      ctrl.add(upTo(2));
+      await tester.pump();
+      expect(find.text('Tiêu đề 2'), findsOneWidget);
+      expect(find.text('Reflowing page 2/3'), findsOneWidget);
+
+      ctrl.add(upTo(3));
+      unawaited(ctrl.close());
+      await tester.pumpAndSettle();
+      expect(find.text('Tiêu đề 3'), findsOneWidget);
+      expect(find.byKey(const Key('reflow_layoutStrip')), findsNothing);
+    });
+
+    testWidgets('chỉ báo là liveRegion với nhãn cố định (không đọc lặp mỗi lô)', (
+      tester,
+    ) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      ctrl.add(upTo(1));
+      await tester.pump();
+      final strip = find.byKey(const Key('reflow_layoutStrip'));
+      final label1 = tester.getSemantics(strip).label;
+      ctrl.add(upTo(2));
+      await tester.pump();
+      expect(tester.getSemantics(strip).label, label1);
+      expect(label1, 'Reflowing text…');
+      handle.dispose();
+    });
+
+    testWidgets('thanh đọc to: có từ đoạn đầu, được nối thêm, moreComing tắt khi dàn xong', (
+      tester,
+    ) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(
+        h.buildStream(
+          () => ctrl.stream,
+          mode: ReflowMode.readAloud,
+          autoStartReadAloud: true,
+        ),
+      );
+      ctrl.add(upTo(1));
+      await tester.pump();
+      expect(find.byKey(const Key('fakeReadAloudBar')), findsOneWidget);
+      expect(h.barAutoStart, isTrue);
+      expect(h.barMoreComing, isTrue);
+      expect(h.barParagraphs, upTo(1).doc.paragraphs);
+
+      ctrl.add(upTo(3));
+      unawaited(ctrl.close());
+      await tester.pumpAndSettle();
+      expect(h.barParagraphs, upTo(3).doc.paragraphs);
+      expect(h.barParagraphs!.length, 6);
+      expect(h.barMoreComing, isFalse);
+    });
+
+    testWidgets('tìm chữ: kết quả cập nhật khi có thêm trang', (tester) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      ctrl.add(upTo(1));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('reflow_searchButton')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'nội dung');
+      await tester.pump();
+      expect(find.text('1/1'), findsOneWidget);
+
+      ctrl.add(upTo(3));
+      unawaited(ctrl.close());
+      await tester.pumpAndSettle();
+      expect(find.text('1/3'), findsOneWidget);
+    });
+
+    testWidgets('dịch cả tài liệu khi đang dàn: chỉ phần đã có', (tester) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      ctrl.add(upTo(2));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('reflow_translateButton')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Translate whole document'));
+      await tester.pumpAndSettle();
+      expect(h.translated, [upTo(2).doc.paragraphs]);
+      expect(h.translated.single, hasLength(4));
+    });
+
+    testWidgets('initialPage chưa tới: chờ tới khi trang đó có rồi mới mở bảng dịch', (
+      tester,
+    ) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(
+        h.buildStream(
+          () => ctrl.stream,
+          args: const OpenFileArgs('/a.pdf', initialPage: 2),
+          mode: ReflowMode.translate,
+        ),
+      );
+      ctrl.add(upTo(1));
+      await tester.pumpAndSettle();
+      expect(h.translated, isEmpty);
+      ctrl.add(upTo(2));
+      await tester.pumpAndSettle();
+      expect(h.translated, isEmpty);
+      ctrl.add(upTo(3));
+      unawaited(ctrl.close());
+      await tester.pumpAndSettle();
+      expect(h.translated, [upTo(3).doc.paragraphsOfPage(2)]);
+    });
+
+    testWidgets('trang đầu là ảnh quét: vẫn chờ (vòng chờ), có chữ ở lô sau thì hiện', (
+      tester,
+    ) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      final imageOnly = buildReflowItems(const [], firstPage: 0, totalPages: 2);
+      ctrl.add(
+        ReflowProgress(
+          doc: ReflowDocument(items: imageOnly, pageCount: 2),
+          pagesDone: 1,
+          done: false,
+        ),
+      );
+      await tester.pump();
+      expect(find.byKey(const Key('reflow_noText')), findsNothing);
+      expect(find.text('Reflowing text…'), findsOneWidget);
+
+      final withText = buildReflowItems(
+        [para('Có chữ rồi.')],
+        firstPage: 1,
+        totalPages: 2,
+      );
+      ctrl.add(
+        ReflowProgress(
+          doc: ReflowDocument(items: [...imageOnly, ...withText], pageCount: 2),
+          pagesDone: 2,
+          done: true,
+        ),
+      );
+      unawaited(ctrl.close());
+      await tester.pumpAndSettle();
+      expect(find.text('Có chữ rồi.'), findsOneWidget);
+    });
+
+    testWidgets('lỗi sau khi đã có trang đầu: giữ chữ đã có, báo lỗi, tắt chỉ báo', (
+      tester,
+    ) async {
+      final h = _Harness();
+      final ctrl = StreamController<ReflowProgress>();
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      ctrl.add(upTo(1));
+      await tester.pump();
+      ctrl.addError(const CorruptFile('trang 2 hỏng'));
+      await tester.pumpAndSettle();
+      expect(find.text('Tiêu đề 1'), findsOneWidget);
+      expect(find.byIcon(Symbols.error_rounded), findsNothing);
+      expect(find.byKey(const Key('reflow_layoutStrip')), findsNothing);
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+
+    testWidgets('đóng màn giữa chừng: huỷ đăng ký luồng (dừng isolate)', (
+      tester,
+    ) async {
+      final h = _Harness();
+      var cancelled = false;
+      final ctrl = StreamController<ReflowProgress>(
+        onCancel: () => cancelled = true,
+      );
+      addTearDown(() { ctrl.close(); }); // không chờ Future của close()
+      await tester.pumpWidget(h.buildStream(() => ctrl.stream));
+      ctrl.add(upTo(1));
+      await tester.pump();
+      await tester.pumpWidget(const SizedBox());
+      expect(cancelled, isTrue);
+    });
   });
 }

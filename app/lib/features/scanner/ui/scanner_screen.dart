@@ -8,7 +8,6 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/navigation/open_document.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/widgets.dart';
-import '../../../data/settings/settings_providers.dart';
 import '../../../engines/ocr/ocr_engine.dart';
 import '../capture/document_capture.dart';
 import '../export/scan_export_providers.dart';
@@ -126,16 +125,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   }
 
   Future<void> _export() async {
-    final defaultScript = ocrScriptForLanguage(
-      (ref.read(settingsProvider).locale ?? Localizations.localeOf(context))
-          .languageCode,
-    );
     final choice =
-        await showModalBottomSheet<({_ExportKind kind, OcrScript script, bool searchable})>(
+        await showModalBottomSheet<({_ExportKind kind, bool searchable})>(
           context: context,
           showDragHandle: true,
           isScrollControlled: true,
-          builder: (_) => _ExportSheet(initialScript: defaultScript),
+          builder: (_) => const _ExportSheet(),
         );
     if (choice == null || !mounted) return;
 
@@ -153,19 +148,18 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
         _ExportKind.pdf => await exporter.exportPdf(
           pages,
           searchable: choice.searchable,
-          script: choice.script,
           onProgress: ctrl.update,
           cancelToken: ctrl.cancelToken,
         ),
         _ExportKind.txt => await exporter.exportTxt(
           pages,
-          choice.script,
+          OcrScript.latin,
           onProgress: ctrl.update,
           cancelToken: ctrl.cancelToken,
         ),
         _ExportKind.docx => await exporter.exportDocx(
           pages,
-          choice.script,
+          OcrScript.latin,
           onProgress: ctrl.update,
           cancelToken: ctrl.cancelToken,
         ),
@@ -424,29 +418,17 @@ class _FilterPill extends StatelessWidget {
 }
 
 class _ExportSheet extends StatefulWidget {
-  const _ExportSheet({required this.initialScript});
-  final OcrScript initialScript;
+  const _ExportSheet();
 
   @override
   State<_ExportSheet> createState() => _ExportSheetState();
 }
 
 class _ExportSheetState extends State<_ExportSheet> {
-  late OcrScript _script = widget.initialScript;
   bool _searchable = true;
 
-  String _scriptName(OcrScript s) {
-    final l = context.l10n;
-    return switch (s) {
-      OcrScript.latin => l.scan_scriptLatin,
-      OcrScript.chinese => l.scan_scriptChinese,
-      OcrScript.japanese => l.scan_scriptJapanese,
-      OcrScript.korean => l.scan_scriptKorean,
-    };
-  }
-
   void _pick(_ExportKind k) =>
-      Navigator.of(context).pop((kind: k, script: _script, searchable: _searchable));
+      Navigator.of(context).pop((kind: k, searchable: _searchable));
 
   @override
   Widget build(BuildContext context) {
@@ -511,56 +493,6 @@ class _ExportSheetState extends State<_ExportSheet> {
               icon: Symbols.text_snippet_rounded,
               label: l.scan_exportTxt,
               onTap: () => _pick(_ExportKind.txt),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Text(
-                l.scan_ocrLanguage,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: t.textMuted,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Dropdown ngôn ngữ OCR: ô bo 14 nền `input`.
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: t.input,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<OcrScript>(
-                  value: _script,
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(14),
-                  dropdownColor: t.surface,
-                  icon: Icon(
-                    Symbols.expand_more_rounded,
-                    color: t.textMuted,
-                  ),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: t.text,
-                  ),
-                  items: [
-                    for (final s in OcrScript.values)
-                      DropdownMenuItem(
-                        value: s,
-                        child: Text(
-                          _scriptName(s),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                  onChanged: (s) => setState(() => _script = s ?? _script),
-                ),
-              ),
             ),
           ],
         ),

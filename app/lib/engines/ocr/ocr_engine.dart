@@ -1,15 +1,7 @@
 import 'dart:ui';
 
-/// Hệ chữ cho OCR (ML Kit). latin gồm cả tiếng Việt, Indonesia, Anh.
-enum OcrScript { latin, chinese, japanese, korean }
-
-/// Hệ chữ mặc định theo mã ngôn ngữ app (`vi`, `zh`…). Hàm thuần.
-OcrScript ocrScriptForLanguage(String languageCode) => switch (languageCode) {
-  'zh' => OcrScript.chinese,
-  'ja' => OcrScript.japanese,
-  'ko' => OcrScript.korean,
-  _ => OcrScript.latin,
-};
+/// Hệ chữ cho OCR (ML Kit). App chỉ hỗ trợ tiếng Việt và tiếng Anh nên chỉ có latin.
+enum OcrScript { latin }
 
 class OcrLine {
   const OcrLine(this.text, this.bounds);

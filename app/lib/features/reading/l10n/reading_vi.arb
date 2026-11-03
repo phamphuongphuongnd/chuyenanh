@@ -8,6 +8,14 @@
   "reading_noTextMessage": "Hãy dùng PDF sang văn bản (có OCR) để nhận dạng chữ.",
   "reading_openPdfToText": "Mở PDF sang văn bản",
   "reading_loading": "Đang dàn lại chữ…",
+  "reading_layoutProgress": "Đang dàn trang {done}/{total}",
+  "@reading_layoutProgress": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "reading_preparingRead": "Đang chuẩn bị đọc…",
   "reading_display": "Hiển thị",
   "reading_fontSize": "Cỡ chữ",
   "reading_fontSmaller": "Giảm cỡ chữ",

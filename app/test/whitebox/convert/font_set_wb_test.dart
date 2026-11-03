@@ -46,9 +46,10 @@ void main() {
 
   group('U1 FontSlot.forFace', () {
     test('U1-P1 latin ⇒ regular', () => expect(FontSlot.forFace(ScriptFace.latin), FontSlot.regular));
-    test('U1-P2 chinese ⇒ chinese', () => expect(FontSlot.forFace(ScriptFace.chinese), FontSlot.chinese));
-    test('U1-P3 japanese ⇒ japanese', () => expect(FontSlot.forFace(ScriptFace.japanese), FontSlot.japanese));
-    test('U1-P4 korean ⇒ korean', () => expect(FontSlot.forFace(ScriptFace.korean), FontSlot.korean));
+    // Đổi (bỏ font CJK): trước là chinese/japanese/korean ⇒ slot CJK riêng; nay mọi face ⇒ regular.
+    test('U1-P2 chinese ⇒ regular', () => expect(FontSlot.forFace(ScriptFace.chinese), FontSlot.regular));
+    test('U1-P3 japanese ⇒ regular', () => expect(FontSlot.forFace(ScriptFace.japanese), FontSlot.regular));
+    test('U1-P4 korean ⇒ regular', () => expect(FontSlot.forFace(ScriptFace.korean), FontSlot.regular));
   });
 
   group('U2 AssetFontSource.load', () {
@@ -63,8 +64,8 @@ void main() {
       final m = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       m.setMockMessageHandler('flutter/assets', (_) async => null);
       try {
-        final b = await const AssetFontSource().load(FontSlot.korean);
-        expect(logs.join('\n'), contains('NotoSansKR-Regular.ttf'));
+        final b = await const AssetFontSource().load(FontSlot.bold);
+        expect(logs.join('\n'), contains('NotoSans-Bold.ttf'));
         expect(b, isNull);
       } finally {
         m.setMockMessageHandler('flutter/assets', null);
@@ -103,17 +104,17 @@ void main() {
       final r = await loadFontBytes(const NoFontSource(), {ScriptFace.latin, ScriptFace.chinese});
       expect(r, isEmpty);
     });
-    test('U4-P1b chữ Trung + Hàn ⇒ hỏi thêm đúng 2 font CJK đó', () async {
+    test('U4-P1b chữ Trung + Hàn ⇒ chỉ hỏi regular (đổi: không còn font CJK)', () async {
       final src = _Src({});
       await loadFontBytes(src, {ScriptFace.chinese, ScriptFace.korean}, needBold: false);
-      expect(src.asked.toSet(), {FontSlot.regular, FontSlot.chinese, FontSlot.korean});
+      expect(src.asked.toSet(), {FontSlot.regular});
     });
   });
 
   group('U5 _effectiveSlot (qua usesStandard)', () {
     test('U5-P1 slot có byte ⇒ dùng chính nó (không font chuẩn), không log', () {
-      final s = PdfFontSet({FontSlot.chinese: _regular});
-      expect(s.usesStandard(FontSlot.chinese), isFalse);
+      final s = PdfFontSet({FontSlot.bold: _regular});
+      expect(s.usesStandard(FontSlot.bold), isFalse);
       expect(logs, isEmpty);
     });
     test('U5-P2 thiếu bold ⇒ dùng regular, không cảnh báo', () {
@@ -121,21 +122,12 @@ void main() {
       expect(s.usesStandard(FontSlot.bold), isFalse);
       expect(logs, isEmpty);
     });
-    test('U5-P3 thiếu CJK, có regular ⇒ dùng regular + cảnh báo 1 lần', () {
-      final s = PdfFontSet({FontSlot.regular: _regular});
-      expect(s.usesStandard(FontSlot.japanese), isFalse);
-      expect(logs.where((l) => l.contains('NotoSansJP')), hasLength(1));
-    });
-    test('U5-P4 gọi lại cùng slot thiếu ⇒ không cảnh báo lần 2', () {
-      final s = PdfFontSet({FontSlot.regular: _regular});
-      s.usesStandard(FontSlot.japanese);
-      s.usesStandard(FontSlot.japanese);
-      expect(logs.where((l) => l.contains('NotoSansJP')), hasLength(1));
-    });
     test('U5-P5 không có font nào ⇒ font chuẩn', () {
       final s = PdfFontSet(const {});
-      expect(s.usesStandard(FontSlot.korean), isTrue);
+      expect(s.usesStandard(FontSlot.regular), isTrue);
+      expect(s.usesStandard(FontSlot.bold), isTrue);
     });
+    // Đã bỏ U5-P3/U5-P4 (cảnh báo thiếu font CJK 1 lần): không còn slot CJK.
   });
 
   group('U6 fontFor / U7 _create', () {
@@ -150,12 +142,12 @@ void main() {
       final f = PdfFontSet({FontSlot.regular: _regular}).fontFor(ScriptFace.latin, const StyledSpan('a'));
       expect(f.size, 12);
     });
-    test('U6-P3 chữ Trung, có font Trung ⇒ TrueType riêng (khác font Latin)', () {
-      final s = PdfFontSet({FontSlot.regular: _regular, FontSlot.chinese: _bold});
+    test('U6-P3 chữ Trung ⇒ dùng chung font regular với Latin (đổi: không còn font Trung riêng)', () {
+      final s = PdfFontSet({FontSlot.regular: _regular});
       final zh = s.fontFor(ScriptFace.chinese, const StyledSpan('汉'));
       final la = s.fontFor(ScriptFace.latin, const StyledSpan('a'));
       expect(zh, isA<PdfTrueTypeFont>());
-      expect(identical(zh, la), isFalse);
+      expect(identical(zh, la), isTrue);
     });
     test('U6-P4 Latin đậm, có file bold ⇒ dùng file bold, không giả lập đậm', () {
       final s = PdfFontSet({FontSlot.regular: _regular, FontSlot.bold: _bold});
@@ -169,8 +161,8 @@ void main() {
       expect(f, isA<PdfTrueTypeFont>());
       expect(_isBold(f), isTrue);
     });
-    test('U6-P6 CJK đậm ⇒ giả lập đậm (CJK không có bản Bold)', () {
-      final f = PdfFontSet({FontSlot.regular: _regular, FontSlot.korean: _regular})
+    test('U6-P6 CJK đậm ⇒ giả lập đậm (face CJK luôn dùng regular)', () {
+      final f = PdfFontSet({FontSlot.regular: _regular, FontSlot.bold: _bold})
           .fontFor(ScriptFace.korean, const StyledSpan('한', bold: true));
       expect(_isBold(f), isTrue);
     });
@@ -209,8 +201,14 @@ void main() {
       expect(PdfFontSet({FontSlot.regular: _regular}).safeText(ScriptFace.latin, const StyledSpan(''), 'Tiếng Việt'),
           'Tiếng Việt');
     });
-    test('U8-P2 CJK thiếu font riêng, có regular ⇒ giữ nguyên (vẽ bằng regular)', () {
-      expect(PdfFontSet({FontSlot.regular: _regular}).safeText(ScriptFace.chinese, const StyledSpan(''), '汉字'), '汉字');
+    test('U8-P2 CJK, có regular ⇒ mỗi ký tự CJK thành "?" (đổi: trước giữ nguyên 汉字)', () {
+      expect(PdfFontSet({FontSlot.regular: _regular}).safeText(ScriptFace.chinese, const StyledSpan(''), '汉字'), '??');
+    });
+    test('U8-P6 trộn Việt/Anh/CJK, có regular ⇒ chỉ CJK thành "?"', () {
+      expect(
+          PdfFontSet({FontSlot.regular: _regular})
+              .safeText(ScriptFace.latin, const StyledSpan(''), 'Xin chào 你好 こんにちは 안녕 hello'),
+          'Xin chào ?? ????? ?? hello');
     });
     test('U8-P3 không font nào ⇒ ký tự ngoài Latin-1 thành "?", giữ Latin-1', () {
       expect(PdfFontSet(const {}).safeText(ScriptFace.latin, const StyledSpan(''), 'Hà ở 河'), 'Hà ? ?');

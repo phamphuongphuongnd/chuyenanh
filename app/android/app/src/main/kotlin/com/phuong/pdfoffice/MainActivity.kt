@@ -8,6 +8,7 @@ import io.flutter.embedding.engine.FlutterEngine
 class MainActivity : FlutterFragmentActivity() {
     private var shortcutChannel: ShortcutChannel? = null
     private var incomingFilesChannel: IncomingFilesChannel? = null
+    private var imageCodecChannel: ImageCodecChannel? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -18,6 +19,7 @@ class MainActivity : FlutterFragmentActivity() {
             .also { it.handleLaunchIntent(intent) }
         shortcutChannel = ShortcutChannel(applicationContext, messenger)
             .also { it.handleLaunchIntent(intent) }
+        imageCodecChannel = ImageCodecChannel(messenger)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -32,6 +34,8 @@ class MainActivity : FlutterFragmentActivity() {
         shortcutChannel = null
         incomingFilesChannel?.dispose()
         incomingFilesChannel = null
+        imageCodecChannel?.dispose()
+        imageCodecChannel = null
         super.cleanUpFlutterEngine(flutterEngine)
     }
 }

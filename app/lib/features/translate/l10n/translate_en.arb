@@ -90,9 +90,5 @@
     }
   },
   "translate_langVi": "Vietnamese",
-  "translate_langEn": "English",
-  "translate_langZh": "Chinese",
-  "translate_langJa": "Japanese",
-  "translate_langKo": "Korean",
-  "translate_langId": "Indonesian"
+  "translate_langEn": "English"
 }

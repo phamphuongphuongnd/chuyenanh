@@ -113,4 +113,48 @@ void main() {
       expect(doc.items, isEmpty);
     });
   });
+
+  group('buildReflowItems (dàn từng lô trang)', () {
+    test('các lô nối lại giống dàn một lần (ngăn trang, trang ảnh, chỉ số trang)', () {
+      final p0 = <DocBlock>[para('Trang một.')];
+      final p1 = <DocBlock>[]; // trang không chữ
+      final p2 = <DocBlock>[para('Trang ba.'), para('Hết.')];
+      final whole = buildReflowDocument([
+        ...p0,
+        const DocPageBreak(),
+        ...p1,
+        const DocPageBreak(),
+        ...p2,
+      ]);
+      final batched = [
+        ...buildReflowItems(p0, firstPage: 0, totalPages: 3),
+        ...buildReflowItems(p1, firstPage: 1, totalPages: 3), // một trang trống
+        ...buildReflowItems(p2, firstPage: 2, totalPages: 3),
+      ];
+      String sig(ReflowItem i) => '${i.kind.name}|${i.page}|${i.text}';
+      expect(batched.map(sig).toList(), whole.items.map(sig).toList());
+      expect(batched[2].kind, ReflowKind.pageMarker);
+      expect(batched.any((i) => i.kind == ReflowKind.imagePage && i.page == 1), isTrue);
+    });
+
+    test('lô nhiều trang bắt đầu từ trang 3: chỉ số trang tính từ firstPage', () {
+      final items = buildReflowItems(
+        [para('A.'), const DocPageBreak(), para('B.')],
+        firstPage: 3,
+        totalPages: 6,
+      );
+      expect(items.where((i) => i.hasText).map((i) => i.page).toList(), [3, 4]);
+      expect(items.first.kind, ReflowKind.pageMarker);
+      expect(items.first.page, 3);
+    });
+
+    test('tài liệu một trang không có ngăn trang dù dàn bằng lô', () {
+      final items = buildReflowItems([para('Chỉ một trang.')], totalPages: 1);
+      expect(items.map((i) => i.kind), [ReflowKind.paragraph]);
+    });
+
+    test('không có totalPages và không có khối ⇒ rỗng (như trước)', () {
+      expect(buildReflowItems(const []), isEmpty);
+    });
+  });
 }

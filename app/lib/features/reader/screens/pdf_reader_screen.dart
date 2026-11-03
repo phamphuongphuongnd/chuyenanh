@@ -334,6 +334,7 @@ class _PdfReaderScreenState extends ConsumerState<PdfReaderScreen> {
     extra: ReflowArgs(
       OpenFileArgs(_path, password: _password, initialPage: _page - 1),
       mode: mode,
+      autoStartReadAloud: mode == ReflowMode.readAloud,
     ),
   );
 

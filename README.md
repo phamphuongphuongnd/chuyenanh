@@ -31,7 +31,7 @@ mô tả việc ban đầu: [`docs/superpowers/plans/2026-10-26-feature-tasks.md
 - **Chuyển đổi:** Text / Word / Excel → PDF; PDF → Text / Word / Excel.
 - **Máy quét + OCR** (Google ML Kit).
 - **Cài đặt:** ngôn ngữ, giao diện sáng / tối, thư mục lưu, giới thiệu.
-- **6 ngôn ngữ:** vi, en, zh, ja, ko, id.
+- **2 ngôn ngữ:** tiếng Việt (vi) và tiếng Anh (en).
 
 ## 3. Công nghệ
 
@@ -69,8 +69,8 @@ Quy ước chính:
 - Không ghi đè file gốc: dùng `uniqueOutputPath` + `writeAtomically`; thư mục lưu lấy từ `outputDirectoryProvider`.
 - Lỗi ném / bắt bằng `AppError`, hiện bằng `appErrorMessage(context, e)`.
 - Chuỗi giao diện: key bắt đầu bằng prefix của feature (`docs_`, `img2pdf_`, `reader_`, `tools_`, `edit_`, `conv_`,
-  `office_`, `pptx_`, `scan_`, `settings_`), **đủ 6 ngôn ngữ**.
-- Chữ Việt khi xuất PDF phải chuẩn hoá NFC, CJK phải fallback font theo hệ chữ (xem `lmm-wiki/concepts/xuat-chu-ra-pdf.md`).
+  `office_`, `pptx_`, `scan_`, `settings_`), **đủ 2 ngôn ngữ (vi, en)**.
+- Chữ Việt khi xuất PDF phải chuẩn hoá NFC (xem `lmm-wiki/concepts/xuat-chu-ra-pdf.md`); app không hỗ trợ chữ Trung/Nhật/Hàn, khi xuất thành `?`.
 
 ## 5. Chuẩn bị môi trường
 
@@ -90,7 +90,7 @@ Lấy mã và thư viện (**code nằm ở nhánh `feat/pdf-office`, không ph�
 git clone -b feat/pdf-office https://github.com/phamphuongphuongnd/chuyenanh.git
 cd chuyenanh/app
 flutter pub get
-bash tool/fetch_fonts.sh                               # font Noto ~39 MB, KHÔNG nằm trong git (cần cho chữ Việt/CJK khi xuất PDF)
+bash tool/fetch_fonts.sh                               # font Noto Sans ~1,7 MB, KHÔNG nằm trong git (cần cho chữ Việt khi xuất PDF)
 dart run tool/merge_arb.dart && flutter gen-l10n       # lib/l10n/ bị gitignore, phải sinh trên máy mới
 ```
 
@@ -178,11 +178,11 @@ Checklist kiểm từng tính năng: `lmm-wiki/modules/tinh-nang-t1-t10.md`. Đ�
 ## 10. Giới hạn đã biết
 
 - **Chưa chạy trên điện thoại thật** (xem [mục 1](#1-trạng-thái-hiện-tại)); nhiều test dùng camera / viewer / ổ đĩa giả.
-- Font Noto **không nằm trong git** — chạy `bash app/tool/fetch_fonts.sh`; thiếu font thì PDF xuất ra lỗi chữ Việt có dấu và CJK. Ba font CJK là bản biến thiên nên nét hơi mảnh.
+- Font Noto **không nằm trong git** — chạy `bash app/tool/fetch_fonts.sh`; thiếu font thì PDF xuất ra lỗi chữ Việt có dấu.
 - Gộp / tách PDF mất annotation, form, link ở file kết quả (Syncfusion không có API gộp). PDF → Word / Excel không giữ nguyên bố cục.
 - `pptx_reader`: hình preset (mũi tên…) chưa vẽ đúng, gradient chỉ lấy màu đầu, SmartArt / media / WordArt chưa thử.
 - `office_reader`: định dạng ngày kiểu Mỹ bị đảo, rich text trong ô Excel và `vAlign` bảng Word chưa xử lý; chữ Excel chưa tràn sang ô bên cạnh.
-- OCR dùng Google ML Kit (Latin gồm tiếng Việt, Trung, Nhật, Hàn); độ chính xác tiếng Việt dấu chồng chưa đo.
+- OCR dùng Google ML Kit, chỉ bộ chữ Latin (tiếng Việt, tiếng Anh); độ chính xác tiếng Việt dấu chồng chưa đo.
 - PDF từ máy quét có lớp chữ trong suốt để tìm kiếm / bôi chọn — chưa thử trên trình đọc ngoài.
 - Ghi chú build Android thay đổi theo bản AGP / plugin — đọc `lmm-wiki/concepts/build-android.md` trước khi nâng cấp hoặc thêm plugin.
 

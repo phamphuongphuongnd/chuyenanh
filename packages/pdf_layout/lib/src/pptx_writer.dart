@@ -8,7 +8,8 @@ import 'package:xml/xml.dart';
 import 'docx_writer.dart' show cleanXmlText;
 
 // Ghi PresentationML (.pptx) tối thiểu: mỗi slide là MỘT ảnh phủ vừa khít giữa slide
-// (dùng cho "PDF → PowerPoint": mỗi trang PDF render thành một slide ảnh).
+// (dùng cho "PDF → PowerPoint": mỗi trang PDF render thành một slide ảnh), kèm tuỳ chọn các
+// hộp chữ trong suốt đặt đúng chỗ chữ trên ảnh để PowerPoint tìm / chọn được chữ.
 
 const _nsA = 'http://schemas.openxmlformats.org/drawingml/2006/main';
 const _nsR =
@@ -44,6 +45,43 @@ enum PptxImageFormat {
   final String contentType;
 }
 
+/// Một dòng chữ vô hình đặt trên slide ảnh. Toạ độ theo cùng hệ với cỡ nội dung của
+/// [PptxImageSlide] (`widthPt` × `heightPt`, gốc trên-trái): writer tự quy đổi sang slide.
+class PptxTextBox {
+  const PptxTextBox({
+    required this.text,
+    required this.left,
+    required this.top,
+    required this.width,
+    required this.height,
+    this.fontSizePt = 12,
+    this.visible = false,
+    this.colorRgb,
+    this.bold = false,
+    this.italic = false,
+    this.fontFamily,
+  });
+
+  final String text;
+  final double left;
+  final double top;
+  final double width;
+  final double height;
+  final double fontSizePt;
+
+  /// `false` (mặc định): chữ vô hình (alpha 0%) chỉ để chọn / tìm. `true`: chữ hiển thị,
+  /// sửa được trong PowerPoint (dùng khi ảnh nền đã được xoá chữ).
+  final bool visible;
+
+  /// Màu chữ 0xRRGGBB khi [visible]; null = đen.
+  final int? colorRgb;
+  final bool bold;
+  final bool italic;
+
+  /// Tên font khi [visible] (vd. 'Noto Sans'); null = để PowerPoint mặc định.
+  final String? fontFamily;
+}
+
 /// Một slide ảnh: [bytes] là ảnh đã mã hoá ([format]); [widthPt] × [heightPt] là cỡ "tự nhiên"
 /// của nội dung (vd. cỡ trang PDF) — chỉ dùng tỉ lệ để đặt ảnh vừa khít giữa slide.
 class PptxImageSlide {
@@ -52,7 +90,11 @@ class PptxImageSlide {
     required this.widthPt,
     required this.heightPt,
     this.format = PptxImageFormat.jpeg,
+    this.textBoxes = const [],
   });
+
+  /// Hộp chữ trong suốt (chọn / tìm được trong PowerPoint); rỗng = slide chỉ có ảnh.
+  final List<PptxTextBox> textBoxes;
 
   final Uint8List bytes;
   final double widthPt;
@@ -435,6 +477,7 @@ String _slide(int n, PptxImageSlide s, int slideCx, int slideCy) {
                 );
               },
             );
+            _textBoxes(b, s, x, y, cx, cy);
           },
         ),
       );
@@ -442,6 +485,125 @@ String _slide(int n, PptxImageSlide s, int slideCx, int slideCy) {
     },
   );
   return _build(b);
+}
+
+/// Hộp chữ cho từng dòng của [s], đặt lên
+/// khung ảnh (x, y, cx, cy). Hộp ẩn: không nền, không viền, chữ `solidFill` + `alpha 0%`
+/// (đáng tin hơn `noFill`, không thành "chữ ma" ở LibreOffice / Google Slides); hộp hiển thị
+/// ([PptxTextBox.visible]): chữ có màu, sửa được. Dòng rỗng hoặc có toạ độ/cỡ không hợp lệ thì bỏ.
+void _textBoxes(XmlBuilder b, PptxImageSlide s, int x, int y, int cx, int cy) {
+  if (s.textBoxes.isEmpty) return;
+  if (!(s.widthPt.isFinite && s.widthPt > 0 && s.heightPt.isFinite && s.heightPt > 0)) {
+    return;
+  }
+  final sx = cx / s.widthPt; // EMU trên mỗi point nội dung
+  final sy = cy / s.heightPt;
+  var id = 3; // 1 = nhóm gốc, 2 = ảnh
+  for (final t in s.textBoxes) {
+    final text = cleanXmlText(t.text.replaceAll(RegExp(r'[\r\n\t]+'), ' ')).trim();
+    final vals = [t.left, t.top, t.width, t.height, t.fontSizePt];
+    if (text.isEmpty || vals.any((v) => !v.isFinite) || t.width <= 0 || t.height <= 0) {
+      continue;
+    }
+    final bx = (x + t.left * sx).round();
+    final by = (y + t.top * sy).round();
+    final bw = math.max(1, (t.width * sx).round());
+    final bh = math.max(1, (t.height * sy).round());
+    // Cỡ chữ theo cỡ slide, đơn vị 1/100 pt (PowerPoint nhận 1–4000 pt).
+    final sz = (t.fontSizePt * sx / emuPerPt * 100).round().clamp(100, 400000);
+    b.element(
+      'p:sp',
+      nest: () {
+        b.element(
+          'p:nvSpPr',
+          nest: () {
+            _el(b, 'p:cNvPr', {'id': '${id++}', 'name': 'Text'});
+            _el(b, 'p:cNvSpPr', {'txBox': '1'});
+            _el(b, 'p:nvPr');
+          },
+        );
+        b.element(
+          'p:spPr',
+          nest: () {
+            b.element(
+              'a:xfrm',
+              nest: () {
+                _el(b, 'a:off', {'x': '$bx', 'y': '$by'});
+                _el(b, 'a:ext', {'cx': '$bw', 'cy': '$bh'});
+              },
+            );
+            b.element(
+              'a:prstGeom',
+              attributes: {'prst': 'rect'},
+              nest: () => _el(b, 'a:avLst'),
+            );
+            _el(b, 'a:noFill');
+            b.element('a:ln', nest: () => _el(b, 'a:noFill'));
+          },
+        );
+        b.element(
+          'p:txBody',
+          nest: () {
+            b.element(
+              'a:bodyPr',
+              attributes: {
+                'wrap': 'none',
+                'lIns': '0',
+                'tIns': '0',
+                'rIns': '0',
+                'bIns': '0',
+                'anchor': 'ctr',
+              },
+              nest: () => _el(b, 'a:noAutofit'),
+            );
+            _el(b, 'a:lstStyle');
+            b.element(
+              'a:p',
+              nest: () => b.element(
+                'a:r',
+                nest: () {
+                  b.element(
+                    'a:rPr',
+                    attributes: {
+                      'lang': 'en-US',
+                      'sz': '$sz',
+                      if (t.bold) 'b': '1',
+                      if (t.italic) 'i': '1',
+                      'dirty': '0',
+                    },
+                    nest: () {
+                      final rgb = t.visible
+                          ? (t.colorRgb ?? 0).clamp(0, 0xFFFFFF)
+                          : 0;
+                      b.element(
+                        'a:solidFill',
+                        nest: () => b.element(
+                          'a:srgbClr',
+                          attributes: {
+                            'val': rgb.toRadixString(16).padLeft(6, '0').toUpperCase(),
+                          },
+                          nest: () {
+                            if (!t.visible) _el(b, 'a:alpha', {'val': '0'});
+                          },
+                        ),
+                      );
+                      final face = t.fontFamily;
+                      if (t.visible && face != null && face.isNotEmpty) {
+                        _el(b, 'a:latin', {'typeface': face});
+                        _el(b, 'a:ea', {'typeface': face});
+                        _el(b, 'a:cs', {'typeface': face});
+                      }
+                    },
+                  );
+                  b.element('a:t', nest: text);
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }
 
 // --- static parts ----------------------------------------------------------

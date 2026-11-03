@@ -13,6 +13,14 @@
   "reading_noTextMessage": "Use PDF to text (with OCR) to recognise the text.",
   "reading_openPdfToText": "Open PDF to text",
   "reading_loading": "Reflowing text…",
+  "reading_layoutProgress": "Reflowing page {done}/{total}",
+  "@reading_layoutProgress": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "reading_preparingRead": "Preparing to read aloud…",
   "reading_display": "Display",
   "reading_fontSize": "Text size",
   "reading_fontSmaller": "Smaller text",

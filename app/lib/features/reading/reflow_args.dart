@@ -17,15 +17,24 @@ enum ReflowMode {
 /// `extra` của `Routes.reflow`: file cần mở + chế độ. Route vẫn nhận [OpenFileArgs] trơn (= [ReflowMode.read]).
 @immutable
 class ReflowArgs {
-  const ReflowArgs(this.file, {this.mode = ReflowMode.read});
+  const ReflowArgs(
+    this.file, {
+    this.mode = ReflowMode.read,
+    this.autoStartReadAloud = false,
+  });
 
   final OpenFileArgs file;
   final ReflowMode mode;
 
-  @override
-  bool operator ==(Object other) =>
-      other is ReflowArgs && other.file == file && other.mode == mode;
+  /// Chỉ có nghĩa với [ReflowMode.readAloud]: dàn chữ xong thì tự bắt đầu đọc (một chạm từ menu).
+  final bool autoStartReadAloud;
 
   @override
-  int get hashCode => Object.hash(file, mode);
+  bool operator ==(Object other) =>
+      other is ReflowArgs && other.file == file &&
+      other.mode == mode &&
+      other.autoStartReadAloud == autoStartReadAloud;
+
+  @override
+  int get hashCode => Object.hash(file, mode, autoStartReadAloud);
 }

@@ -12,6 +12,8 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/link_opener.dart';
 import '../../core/widgets/widgets.dart';
 import '../../data/settings/settings_providers.dart';
+import '../documents/documents_providers.dart';
+import '../documents/widgets/permission_views.dart';
 import '../system/app_authenticator.dart';
 import 'language_screen.dart';
 import 'output_dir_screen.dart';
@@ -107,6 +109,16 @@ class SettingsScreen extends ConsumerWidget {
           onChanged: (v) => toggleAppLock(context, ref, enable: v),
         ),
       ),
+      // Chỗ cố định để cấp quyền sau khi đã tắt biểu ngữ ở tab Tập tin (iOS không có quyền này).
+      if (!isIos)
+        _SettingsRow(
+          key: const ValueKey('settings_storageAccess'),
+          icon: Symbols.folder_managed_rounded,
+          title: l.settings_storageAccess,
+          subtitle: l.settings_storageAccessSubtitle,
+          subtitleMaxLines: 2,
+          onTap: () => _requestStorageAccess(context, ref),
+        ),
     ];
 
     final about = <Widget>[
@@ -265,6 +277,21 @@ Future<void> toggleAppLock(
     case AppAuthResult.failed:
       break;
   }
+}
+
+/// Cấp quyền "Truy cập tất cả file" từ Cài đặt: đã có quyền thì chỉ báo; chưa có thì giải thích
+/// (cùng hộp thoại với tab Tập tin) rồi mới xin và quét lại.
+Future<void> _requestStorageAccess(BuildContext context, WidgetRef ref) async {
+  final l = context.l10n;
+  final messenger = ScaffoldMessenger.of(context);
+  if (await ref.read(storagePermissionProvider).isGranted()) {
+    messenger.showSnackBar(
+      SnackBar(content: Text(l.settings_storageAccessGranted)),
+    );
+    return;
+  }
+  if (!context.mounted || !await showStoragePermissionDialog(context)) return;
+  await ref.read(scanControllerProvider.notifier).requestPermissionAndScan();
 }
 
 /// Một dòng cài đặt: ô icon đỏ nhạt 38 · tiêu đề (+ phụ đề) · mũi tên › (hoặc [trailing],

@@ -58,14 +58,14 @@ Future<OverlayState> _app(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('U1.P1 slide có ảnh nền ⇒ PNG 200×100 ở 144 dpi, gỡ entry sau khi chụp', (tester) async {
+  testWidgets('U1.P1 slide có ảnh nền ⇒ JPEG 200×100 ở 144 dpi, gỡ entry sau khi chụp', (tester) async {
     final overlay = await _app(tester);
     final s = _slide(bg: PptxFill.picture(_pngBytes(200), 'png'));
     final run = _start(OverlaySlideRasterizer(overlay), _deck(s), s, 144);
     await _drive(tester, run);
     expect(run.done, isTrue);
     expect(run.error, isNull);
-    final png = img.decodePng(run.png!)!;
+    final png = img.decodeJpg(run.png!)!;
     expect((png.width, png.height), (200, 100));
     expect(find.byType(SlideView), findsNothing);
   });
@@ -90,17 +90,19 @@ void main() {
     expect(run.error, isA<Cancelled>());
   });
 
-  testWidgets('U1.P5 slide không ảnh ⇒ bỏ chờ ảnh, PNG 100×50 ở 72 dpi', (tester) async {
+  testWidgets('U1.P5 slide không ảnh ⇒ bỏ chờ ảnh, JPEG 100×50 ở 72 dpi', (tester) async {
     final overlay = await _app(tester);
     final s = _slide(bg: const PptxFill.solid(0xFF3366CC));
     final run = _start(OverlaySlideRasterizer(overlay), _deck(s), s, 72);
     await _drive(tester, run);
     expect(run.error, isNull);
-    final png = img.decodePng(run.png!)!;
+    final png = img.decodeJpg(run.png!)!;
     expect((png.width, png.height), (100, 50));
     // Màu nền slide được vẽ vào ảnh.
     final px = png.getPixel(50, 25);
-    expect((px.r, px.g, px.b), (0x33, 0x66, 0xCC));
+    expect(px.r, closeTo(0x33, 6)); // JPEG nén có mất mát nhẹ
+    expect(px.g, closeTo(0x66, 6));
+    expect(px.b, closeTo(0xCC, 6));
   });
 
   testWidgets('U1.P6 gỡ overlay trong lúc chờ ảnh giải mã ⇒ Cancelled', (tester) async {

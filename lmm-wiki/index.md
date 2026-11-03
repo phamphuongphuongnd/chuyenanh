@@ -48,7 +48,7 @@ updated: 2026-10-30
 
 ## Concepts (pattern dùng lại được)
 - [[build-song-song-agent]] — chia việc cho nhiều agent song song bằng hợp đồng + worktree, không dẫm chân nhau.
-- [[xuat-chu-ra-pdf]] — kết quả spike: chữ Việt phải chuẩn hoá NFC, CJK phải fallback font theo script, lỗi mật khẩu PDF.
+- [[xuat-chu-ra-pdf]] — kết quả spike: chữ Việt phải chuẩn hoá NFC, lỗi mật khẩu PDF (CJK đã bỏ từ 02/11 — app chỉ vi + en).
 - [[kiem-thu-flutter]] — dựng Flutter trên máy mới, cạm bẫy test widget (pumpAndSettle, drift timer, override provider).
 - [[build-android]] — môi trường build (Flutter/SDK/JDK ở đâu), build đầu lâu, các lỗi Gradle đã gặp và cách sửa.
 - [[trinh-xem-dong-bo]] — 5 định dạng cùng thanh tìm kiếm + zoom, tô vàng chữ tìm, Khoá/Mở khoá chọn PDF trong app, giảm dựng lại danh sách.

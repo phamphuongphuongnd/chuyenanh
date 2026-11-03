@@ -27,6 +27,8 @@ class ReadAloudBar extends ConsumerStatefulWidget {
     required this.paragraphs,
     this.languageCode,
     this.onParagraph,
+    this.autoStart = false,
+    this.moreComing = false,
   });
 
   final List<String> paragraphs;
@@ -34,6 +36,13 @@ class ReadAloudBar extends ConsumerStatefulWidget {
   /// Mã ngôn ngữ (vi, en, zh, ja, ko, id); null = ngôn ngữ app.
   final String? languageCode;
   final ValueChanged<int>? onParagraph;
+
+  /// Tự phát một lần ngay khi giọng đọc sẵn sàng (không có giọng thì thôi, vẫn báo như thường).
+  final bool autoStart;
+
+  /// [paragraphs] còn được nối thêm về cuối (vd. đang dàn các trang sau): đọc hết phần có thì chờ,
+  /// không dừng. Danh sách mới mà bắt đầu bằng đúng danh sách cũ thì chỉ nối thêm, không đọc lại từ đầu.
+  final bool moreComing;
 
   @override
   ConsumerState<ReadAloudBar> createState() => _ReadAloudBarState();
@@ -43,6 +52,7 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
   late final ReadAloudController _c;
   String? _requestedLocale;
   String _languageCode = 'en';
+  late bool _autoStartPending = widget.autoStart;
 
   @override
   void initState() {
@@ -52,6 +62,7 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
       paragraphs: widget.paragraphs,
       onParagraph: widget.onParagraph,
     )..addListener(_onControllerChanged);
+    _c.setMoreComing(widget.moreComing);
   }
 
   @override
@@ -70,9 +81,16 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
   void didUpdateWidget(ReadAloudBar old) {
     super.didUpdateWidget(old);
     _c.onParagraph = widget.onParagraph;
-    if (!listEquals(old.paragraphs, widget.paragraphs)) {
-      _c.setParagraphs(widget.paragraphs);
+    final oldList = old.paragraphs, newList = widget.paragraphs;
+    if (!listEquals(oldList, newList)) {
+      if (newList.length > oldList.length &&
+          listEquals(oldList, newList.sublist(0, oldList.length))) {
+        _c.appendParagraphs(newList.sublist(oldList.length));
+      } else {
+        _c.setParagraphs(newList);
+      }
     }
+    _c.setMoreComing(widget.moreComing);
   }
 
   @override
@@ -84,6 +102,14 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
   }
 
   void _onControllerChanged() {
+    if (_autoStartPending && mounted) {
+      if (_c.status == ReadAloudStatus.idle && _c.hasContent) {
+        _autoStartPending = false;
+        _c.play();
+      } else if (_c.status == ReadAloudStatus.unavailable) {
+        _autoStartPending = false;
+      }
+    }
     final err = _c.error;
     if (err == null || !mounted) return;
     _c.clearError();
@@ -151,11 +177,14 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(
-            context.l10n.tts_checking,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 14, color: t.textMuted),
+          child: Semantics(
+            liveRegion: true,
+            child: Text(
+              context.l10n.tts_checking,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 14, color: t.textMuted),
+            ),
           ),
         ),
       ],
@@ -235,8 +264,8 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
           style: IconButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
-            fixedSize: const Size.square(44),
-            minimumSize: const Size.square(44),
+            fixedSize: const Size.square(48),
+            minimumSize: const Size.square(48),
           ),
           icon: Icon(
             _c.isPlaying ? Symbols.pause_rounded : Symbols.play_arrow_rounded,
@@ -263,7 +292,7 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
           key: const ValueKey('tts_speed'),
           onPressed: _showSpeedSheet,
           style: TextButton.styleFrom(
-            minimumSize: const Size(44, 40),
+            minimumSize: const Size(48, 48),
             padding: const EdgeInsets.symmetric(horizontal: 6),
             foregroundColor: t.text,
           ),
@@ -294,7 +323,7 @@ class _ReadAloudBarState extends ConsumerState<ReadAloudBar> {
     onPressed: onPressed,
     icon: Icon(icon, size: 24),
     color: context.tokens.text,
-    constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+    constraints: const BoxConstraints.tightFor(width: 48, height: 48),
     padding: EdgeInsets.zero,
   );
 

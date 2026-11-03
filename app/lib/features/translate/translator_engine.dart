@@ -21,7 +21,7 @@ abstract class TranslatorSession {
   Future<void> close();
 }
 
-/// Bộ dịch trên máy + quản lý gói ngôn ngữ. Mã ngôn ngữ là mã app (vi, en, zh, ja, ko, id).
+/// Bộ dịch trên máy + quản lý gói ngôn ngữ. Mã ngôn ngữ là mã app (vi, en).
 /// Test thay bằng bản giả qua `translatorEngineProvider`.
 abstract class TranslatorEngine {
   Future<bool> isModelDownloaded(String code);

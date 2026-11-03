@@ -160,7 +160,7 @@ void main() {
     expect(pages[1].filter.name, 'original');
   });
 
-  testWidgets('menu Xuất có PDF, DOCX, TXT và chọn ngôn ngữ OCR (vi → Latin)', (
+  testWidgets('menu Xuất có PDF, DOCX, TXT và không còn chọn ngôn ngữ OCR', (
     tester,
   ) async {
     final c = await pump(tester, FakeCapture(), locale: 'vi');
@@ -171,7 +171,8 @@ void main() {
     expect(find.text('PDF'), findsOneWidget);
     expect(find.textContaining('DOCX'), findsOneWidget);
     expect(find.textContaining('TXT'), findsOneWidget);
-    expect(find.textContaining('Latin'), findsOneWidget);
+    expect(find.textContaining('Latin'), findsNothing); // đổi: bỏ ô chọn ngôn ngữ OCR (chỉ Latin)
+    expect(find.byType(DropdownButton<Object?>), findsNothing);
   });
 
   testWidgets('thoát khi đã có trang → hỏi xác nhận bỏ', (tester) async {

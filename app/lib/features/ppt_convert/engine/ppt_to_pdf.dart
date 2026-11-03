@@ -1,5 +1,7 @@
-// PowerPoint (.pptx) → PDF: mỗi slide chụp thành ảnh PNG (bằng widget `SlideView` của trình
+// PowerPoint (.pptx) → PDF: mỗi slide chụp thành ảnh (bằng widget `SlideView` của trình
 // xem PPTX) rồi ghép thành PDF trong isolate, mỗi slide một trang đúng tỉ lệ slide.
+// Mỗi trang có thêm lớp chữ vô hình lấy từ chữ thật của slide (`ppt_text_layer.dart`) để chọn /
+// tìm / sao chép được.
 //
 // Phần chụp slide cần cây widget thật nên tách sau [SlideRasterizer] (impl ở
 // `slide_rasterizer.dart`) để test thay bằng bản giả. Các hàm thuần ở đầu file có unit test.
@@ -16,8 +18,10 @@ import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 import '../../../core/errors/app_error.dart';
 import '../../../core/utils/cancel_token.dart';
 import '../../../core/utils/file_paths.dart';
+import '../../convert/engine/font_set.dart';
 import '../../office_pptx/pptx_engine_impl.dart';
 import '../../office_pptx/pptx_layout.dart';
+import 'ppt_text_layer.dart';
 
 // ---------------------------------------------------------------- tuỳ chọn + hàm thuần
 
@@ -85,7 +89,7 @@ void ensurePptxPath(String path) {
 
 // ---------------------------------------------------------------- interface
 
-/// Chụp một slide thành ảnh PNG có kích thước `pdfPageSizeOf(deck) × dpi / 72` px.
+/// Chụp một slide thành ảnh (JPEG hoặc PNG; Syncfusion nhận cả hai) có kích thước `pdfPageSizeOf(deck) × dpi / 72` px.
 abstract interface class SlideRasterizer {
   Future<Uint8List> renderSlide(
     PptxDeck deck,
@@ -115,10 +119,18 @@ abstract interface class PptToPdfEngine {
 // ---------------------------------------------------------------- impl
 
 /// Phần tiến độ dành cho bước chụp slide (phần còn lại là ghép PDF trong isolate).
-const double _renderShare = 0.8;
+const double _renderShare = 0.7;
+const double _pagesShare = 0.95;
 
 class DefaultPptToPdfEngine implements PptToPdfEngine {
-  const DefaultPptToPdfEngine({this.loader = loadPptxDeckFromFile});
+  const DefaultPptToPdfEngine({
+    this.loader = loadPptxDeckFromFile,
+    this.fontSource = const AssetFontSource(),
+  });
+
+  /// Nguồn font Noto cho lớp chữ vô hình. Thiếu font → font chuẩn (chữ ngoài Latin-1 thành
+  /// `?` trong lớp chữ; ảnh slide không đổi).
+  final FontSource fontSource;
 
   /// Hàm parse file → deck (mặc định pptx_reader trong isolate).
   final Future<PptxDeck> Function(String path) loader;
@@ -144,31 +156,48 @@ class DefaultPptToPdfEngine implements PptToPdfEngine {
 
     final page = pdfPageSizeOf(deck);
     final dpi = options.quality.dpi;
-    // Ảnh PNG từng slide ghi ra thư mục tạm để không giữ cả bộ trong RAM.
+    // Chữ thật của từng slide (đọc từ model, rẻ) + font cho lớp chữ vô hình.
+    final textBoxes = <List<PptTextBox>>[
+      for (final i in indexes) collectTextBoxes(deck.slides[i]),
+    ];
+    final scripts = scriptsInBoxes(textBoxes);
+    final fontBytes = scripts.isEmpty
+        ? const <FontSlot, Uint8List>{}
+        : await loadFontBytes(fontSource, scripts, needBold: _anyBold(textBoxes));
+    cancelToken?.throwIfCancelled();
+    // Ảnh từng slide ghi ra thư mục tạm để không giữ cả bộ trong RAM.
     Directory? tmp;
     try {
       tmp = await Directory.systemTemp.createTemp('pptpdf_');
       final pngPaths = <String>[];
       for (var k = 0; k < indexes.length; k++) {
         cancelToken?.throwIfCancelled();
-        final png = await rasterizer.renderSlide(
+        final image = await rasterizer.renderSlide(
           deck,
           deck.slides[indexes[k]],
           dpi: dpi,
         );
         cancelToken?.throwIfCancelled();
-        final file = File(p.join(tmp.path, 'slide_$k.png'));
-        await file.writeAsBytes(png, flush: false);
+        final file = File(p.join(tmp.path, 'slide_$k.img'));
+        await file.writeAsBytes(image, flush: false);
         pngPaths.add(file.path);
         onProgress?.call((k + 1) / indexes.length * _renderShare);
       }
       await _buildPdfInIsolate(
-        _PdfArgs(pngPaths, page.width, page.height, outputPath),
+        _PdfArgs(
+          pngPaths,
+          page.width,
+          page.height,
+          outputPath,
+          textBoxes,
+          fontBytes,
+        ),
         onPage: (done) => onProgress?.call(
-          _renderShare + (1 - _renderShare) * done / pngPaths.length,
+          _renderShare + (_pagesShare - _renderShare) * done / pngPaths.length,
         ),
         cancelToken: cancelToken,
       );
+      onProgress?.call(1);
       return outputPath;
     } on AppError {
       rethrow;
@@ -186,12 +215,29 @@ class DefaultPptToPdfEngine implements PptToPdfEngine {
 
 // ---------------------------------------------------------------- dựng PDF (isolate)
 
+bool _anyBold(List<List<PptTextBox>> boxes) => boxes.any(
+  (page) => page.any((b) => b.paragraphs.any((p) => p.runs.any((r) => r.bold))),
+);
+
 class _PdfArgs {
-  const _PdfArgs(this.pngPaths, this.pageWidth, this.pageHeight, this.outPath);
+  const _PdfArgs(
+    this.pngPaths,
+    this.pageWidth,
+    this.pageHeight,
+    this.outPath,
+    this.textBoxes,
+    this.fontBytes,
+  );
+
+  /// Đường dẫn ảnh từng slide (PNG hoặc JPEG).
   final List<String> pngPaths;
   final double pageWidth;
   final double pageHeight;
   final String outPath;
+
+  /// Khung chữ của từng slide (cùng thứ tự [pngPaths]) và font cho lớp chữ vô hình.
+  final List<List<PptTextBox>> textBoxes;
+  final Map<FontSlot, Uint8List> fontBytes;
 }
 
 /// Tin nhắn từ isolate dựng PDF: `int` = số trang đã thêm, `'done'` = đã ghi file,
@@ -279,11 +325,20 @@ Future<void> _pdfIsolateMain((SendPort, _PdfArgs) message) async {
         : sf.PdfPageOrientation.portrait;
     section.pageSettings.size = Size(a.pageWidth, a.pageHeight);
     final rect = Rect.fromLTWH(0, 0, a.pageWidth, a.pageHeight);
+    final fonts = PdfFontSet(a.fontBytes);
     for (var i = 0; i < a.pngPaths.length; i++) {
       final bytes = File(a.pngPaths[i]).readAsBytesSync();
       final page = section.pages.add();
       page.graphics.drawImage(sf.PdfBitmap(bytes), rect);
+      if (i < a.textBoxes.length && a.textBoxes[i].isNotEmpty) {
+        try {
+          drawSlideTextLayer(page, a.textBoxes[i], fonts);
+        } catch (_) {
+          // Lớp chữ chỉ là phần thêm: lỗi ở đây không được làm hỏng PDF ảnh.
+        }
+      }
       send.send(i + 1);
+
     }
     final out = await doc.save();
     await writeAtomically(a.outPath, out);

@@ -99,6 +99,8 @@ void main() {
         ReflowArgs(
           const OpenFileArgs('/khong-co/tai-lieu.pdf', initialPage: 2),
           mode: mode,
+          // Đọc to là một chạm: dàn chữ xong tự đọc.
+          autoStartReadAloud: mode == ReflowMode.readAloud,
         ),
       );
     });

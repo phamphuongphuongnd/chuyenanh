@@ -91,6 +91,13 @@ void main() {
       final s = (await repo({SettingsRepository.kLocale: ''})).load();
       expect(s.locale, isNull);
     });
+    test('U3.3b locale cũ đã bỏ (zh/ja/ko/id) hoặc lạ (fr) ⇒ null (theo máy, rơi về vi/en)', () async {
+      for (final code in ['zh', 'ja', 'ko', 'id', 'fr']) {
+        final s = (await repo({SettingsRepository.kLocale: code})).load();
+        expect(s.locale, isNull, reason: code);
+      }
+      expect((await repo({SettingsRepository.kLocale: 'en'})).load().locale, const Locale('en'));
+    });
     test('U3.4 themeMode "dark" ⇒ dark; tên lạ ⇒ system', () async {
       expect((await repo({SettingsRepository.kThemeMode: 'dark'})).load().themeMode, ThemeMode.dark);
       expect((await repo({SettingsRepository.kThemeMode: 'xyz'})).load().themeMode, ThemeMode.system);
@@ -108,11 +115,11 @@ void main() {
       expect(r.load().locale, isNull);
       expect((await SharedPreferences.getInstance()).containsKey(SettingsRepository.kLocale), isFalse);
     });
-    test('U4.2 locale ja ⇒ lưu mã ngôn ngữ', () async {
+    test('U4.2 locale en-US ⇒ lưu mã ngôn ngữ (đổi: trước dùng ja, nay đã bỏ)', () async {
       final r = await repo({});
-      await r.setLocale(const Locale('ja', 'JP'));
-      expect((await SharedPreferences.getInstance()).getString(SettingsRepository.kLocale), 'ja');
-      expect(r.load().locale, const Locale('ja'));
+      await r.setLocale(const Locale('en', 'US'));
+      expect((await SharedPreferences.getInstance()).getString(SettingsRepository.kLocale), 'en');
+      expect(r.load().locale, const Locale('en'));
     });
   });
 

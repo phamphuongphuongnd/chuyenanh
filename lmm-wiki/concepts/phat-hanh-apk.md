@@ -26,7 +26,7 @@ sources:
 - **Galaxy A13 của người dùng là 32-bit (`armeabi-v7a`)**. APK chỉ có arm64 báo `Could not find 'libflutter.so'`
   và không mở. Phải build cả `android-arm` lẫn `android-arm64`. APK universal 137MB, arm+arm64 108–110MB.
 - R8 (release) báo `Missing class ...mlkit.vision.text.chinese...`: plugin `google_mlkit_text_recognition` khai gói
-  Trung/Nhật/Hàn ở dạng `compileOnly`. Đã thêm `implementation("com.google.mlkit:text-recognition-{chinese,japanese,korean}:16.0.1")`
+  Trung/Nhật/Hàn ở dạng `compileOnly`. (**02/11/2026: đã gỡ 3 gói zh/ja/ko** khi app chỉ còn vi + en; `-dontwarn` vẫn giữ trong `proguard-rules.pro` — phải thử OCR trên bản release để chắc không lỗi R8.) Đã thêm `implementation("com.google.mlkit:text-recognition-{chinese,japanese,korean}:16.0.1")`
   (APK chỉ tăng ~2MB) + `proguard-rules.pro` với `-dontwarn` (cho Devanagari). Không thêm gói thì OCR zh/ja/ko ném
   `NoClassDefFoundError` lúc chạy (bản debug cũng bị).
 - **R8 làm hỏng ML Kit ở bản release (phát hiện 28/10)**: log app ghi `ComponentDiscovery: Could not instantiate
@@ -67,3 +67,7 @@ Liên quan: [[build-android]], [[tinh-nang-t1-t10]], [[documents]].
 - Sắp lên Google Play + App Store ([[0005-len-store-mien-phi]]): Play nhận **`.aab`** (`flutter build appbundle --release`), không phải APK; release phải ký bằng keystore riêng (đang ký khoá debug).
 - Các APK/IPA đã đăng trên Release **thiếu giấy phép font Noto** và còn tên "PDF Office" → thay bằng bản mới hoặc gỡ ([[ban-quyen-giay-phep]]).
 - Khi khoá repo (private) thì link `kAppDownloadUrl` / `kIosDownloadUrl` trong nút Chia sẻ chết với người khác → đổi sang link store trước.
+
+## Cập nhật 03/11/2026
+- `android-latest` = bản 74.834.669 byte (71,4 MiB, chỉ vi + en, chỉ còn NotoSans Regular/Bold ≈ 1,6 MB). Mốc "đủ font ≈ 114 MB" ở mục 30/10 đã lỗi thời: nay thiếu font chỉ nhẹ hơn ~1,6 MB, nên kiểm bằng `ls app/assets/fonts/*.ttf` thay vì nhìn dung lượng.
+- Bản trước (99.280.203 byte) lưu ở `dist/backup/PDFOffice-2026-11-02-1559.apk`.

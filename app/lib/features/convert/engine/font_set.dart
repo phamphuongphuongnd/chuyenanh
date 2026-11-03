@@ -4,26 +4,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+import '../../pdf_tools/logic/text_fonts.dart' show isCjkChar;
 import '../text/line_wrap.dart';
 import '../text/script_runs.dart';
 
 /// Các font Noto đóng gói trong `assets/fonts/` (hợp đồng mục 5).
 enum FontSlot {
   regular('assets/fonts/NotoSans-Regular.ttf'),
-  bold('assets/fonts/NotoSans-Bold.ttf'),
-  chinese('assets/fonts/NotoSansSC-Regular.ttf'),
-  japanese('assets/fonts/NotoSansJP-Regular.ttf'),
-  korean('assets/fonts/NotoSansKR-Regular.ttf');
+  bold('assets/fonts/NotoSans-Bold.ttf');
 
   const FontSlot(this.assetPath);
   final String assetPath;
 
-  static FontSlot forFace(ScriptFace face) => switch (face) {
-        ScriptFace.latin => FontSlot.regular,
-        ScriptFace.chinese => FontSlot.chinese,
-        ScriptFace.japanese => FontSlot.japanese,
-        ScriptFace.korean => FontSlot.korean,
-      };
+  /// App không đóng gói font CJK: mọi [ScriptFace] dùng Noto Sans; chữ CJK bị [PdfFontSet.safeText] đổi thành `?`.
+  static FontSlot forFace(ScriptFace face) => FontSlot.regular;
 }
 
 /// Nguồn byte font. Trả `null` khi không có (code rơi về font chuẩn).
@@ -68,7 +62,7 @@ class NoFontSource implements FontSource {
   Future<Uint8List?> load(FontSlot slot) async => null;
 }
 
-/// Nạp các font cần cho [scripts] (+ bold nếu [needBold]). Font CJK nặng chỉ nạp khi có chữ đó.
+/// Nạp các font cần cho [scripts] (+ bold nếu [needBold]). [scripts] giữ lại cho tương thích (không còn font CJK).
 Future<Map<FontSlot, Uint8List>> loadFontBytes(
   FontSource source,
   Set<ScriptFace> scripts, {
@@ -77,7 +71,7 @@ Future<Map<FontSlot, Uint8List>> loadFontBytes(
   final slots = <FontSlot>{
     FontSlot.regular,
     if (needBold) FontSlot.bold,
-    for (final f in scripts) FontSlot.forFace(f),
+    for (final f in scripts) FontSlot.forFace(f), // luôn là regular
   };
   final out = <FontSlot, Uint8List>{};
   for (final s in slots) {
@@ -94,7 +88,6 @@ class PdfFontSet implements TextMeasurer {
   final Map<FontSlot, Uint8List> bytes;
   final Map<String, PdfFont> _cache = {};
   final Map<String, double> _widthCache = {};
-  final Set<FontSlot> _warned = {};
 
   /// Slot nào đang dùng font chuẩn (không có chữ ngoài Latin-1).
   bool usesStandard(FontSlot slot) => !bytes.containsKey(_effectiveSlot(slot));
@@ -102,11 +95,7 @@ class PdfFontSet implements TextMeasurer {
   FontSlot _effectiveSlot(FontSlot slot) {
     if (bytes.containsKey(slot)) return slot;
     if (slot == FontSlot.bold) return FontSlot.regular;
-    if (!_warned.contains(slot)) {
-      _warned.add(slot);
-      debugPrint('convert: không có font ${slot.assetPath}, dùng font thay thế');
-    }
-    return bytes.containsKey(FontSlot.regular) ? FontSlot.regular : slot;
+    return slot; // thiếu cả regular → font chuẩn
   }
 
   PdfFont fontFor(ScriptFace face, StyledSpan style) {
@@ -138,15 +127,18 @@ class PdfFontSet implements TextMeasurer {
     return PdfTrueTypeFont(data, size, multiStyle: styles.isEmpty ? null : styles);
   }
 
-  /// Chuỗi an toàn để vẽ: font chuẩn chỉ có Latin-1.
+  /// Chuỗi an toàn để vẽ: chữ CJK không có font → `?` từng ký tự (không ném lỗi, giữ chữ Việt/Anh);
+  /// font chuẩn (khi thiếu cả Noto Sans) chỉ có Latin-1.
   String safeText(ScriptFace face, StyledSpan style, String text) {
-    var slot = FontSlot.forFace(face);
-    if (face == ScriptFace.latin && style.bold && bytes.containsKey(FontSlot.bold)) slot = FontSlot.bold; // khớp fontFor
-    final eff = bytes.containsKey(slot) ? slot : (bytes.containsKey(FontSlot.regular) ? FontSlot.regular : slot);
-    if (bytes.containsKey(eff)) return text;
+    final slot = (face == ScriptFace.latin && style.bold && bytes.containsKey(FontSlot.bold))
+        ? FontSlot.bold
+        : FontSlot.regular;
+    final eff = bytes.containsKey(slot) ? slot : FontSlot.regular;
+    final hasFont = bytes.containsKey(eff);
     final b = StringBuffer();
     for (final c in text.runes) {
-      b.write(c <= 0xFF ? String.fromCharCode(c) : '?');
+      final bad = isCjkChar(c) || (!hasFont && c > 0xFF);
+      b.write(bad ? '?' : String.fromCharCode(c));
     }
     return b.toString();
   }

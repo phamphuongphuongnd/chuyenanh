@@ -22,6 +22,14 @@
   "docs_grantPermission": "Cấp quyền",
   "docs_pickFileInstead": "Chọn file thủ công",
   "docs_permissionBanner": "Cấp quyền truy cập file để tìm tất cả tài liệu",
+  "docs_permissionDialogTitle": "Vì sao cần quyền truy cập file",
+  "docs_permissionDialogWhy": "Để tìm và liệt kê các PDF/Word/Excel/PowerPoint/TXT trong máy của bạn.",
+  "docs_permissionDialogLocal": "File chỉ được đọc trên máy, không tải lên.",
+  "docs_permissionDialogDecline": "Bạn có thể từ chối — vẫn mở file bằng nút Chọn file.",
+  "docs_permissionContinue": "Tiếp tục",
+  "docs_permissionLater": "Để sau",
+  "docs_permissionPrivacyLink": "Xem chính sách quyền riêng tư",
+  "docs_permissionDismiss": "Ẩn nhắc cấp quyền truy cập file",
   "docs_scanning": "Đang quét… đã tìm thấy {count} file",
   "@docs_scanning": {
     "placeholders": {

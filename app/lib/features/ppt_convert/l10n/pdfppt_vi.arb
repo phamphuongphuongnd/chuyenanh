@@ -5,7 +5,11 @@
   "pdfppt_qualityHigh": "Cao (200 dpi)",
   "pdfppt_slidesToCreate": "{count, plural, other{Sẽ tạo {count} slide}}",
   "pdfppt_sizeInfo": "Cỡ slide theo trang 1. Trang khác cỡ được thu vừa, đặt giữa slide trên nền trắng.",
-  "pdfppt_note": "Mỗi trang thành một slide dạng ảnh, nên không sửa được chữ trong PowerPoint.",
+  "pdfppt_note": "Mỗi trang thành một slide dạng ảnh. Chữ tìm và chọn được trong PowerPoint, nhưng không sửa trực tiếp được vì slide vẫn là ảnh (chọn \"Chữ sửa được\" nếu cần sửa chữ).",
+  "pdfppt_modeLabel": "Kiểu chuyển",
+  "pdfppt_modeKeepImage": "Giữ nguyên hình",
+  "pdfppt_modeEditable": "Chữ sửa được",
+  "pdfppt_modeEditableNote": "Chữ được tách khỏi ảnh nền thành hộp chữ thật để sửa trong PowerPoint (font Noto Sans). Nền phức tạp (ảnh, chuyển màu) có thể còn vệt chữ cũ; trang xoay hoặc không lấy được chữ vẫn giữ nguyên hình.",
   "pdfppt_convert": "Chuyển sang PowerPoint",
   "pdfppt_converting": "Đang chuyển các trang…"
 }

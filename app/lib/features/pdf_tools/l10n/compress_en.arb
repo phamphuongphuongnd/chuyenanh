@@ -7,7 +7,7 @@
   "compress_levelLightDesc": "Keeps text, links and annotations; only optimizes the file structure. Smaller savings.",
   "compress_levelMediumDesc": "Turns each page into an image at about 150 dpi. Good savings, still easy to read.",
   "compress_levelStrongDesc": "Turns each page into an image at about 100 dpi. Smallest file, lower quality.",
-  "compress_rasterWarning": "Pages become images: text can no longer be selected or searched, and links and annotations will be lost.",
+  "compress_rasterWarning": "Pages become images, but text stays selectable and searchable. Links, highlights and notes are kept; form fields and drawings may be lost. Scanned pages without text stay plain images.",
   "compress_passwordNote": "The original file is password protected. The compressed file will not have a password.",
   "compress_action": "Compress",
   "compress_resultSummary": "From {from} → {to} ({percent}% smaller)",
@@ -24,30 +24,22 @@
       }
     }
   },
-  "compress_resultNoGain": "From {from} → {to} (no reduction)",
-  "@compress_resultNoGain": {
+  "compress_alreadyOptimizedTitle": "This file is already optimized",
+  "compress_alreadyOptimizedBody": "It cannot be made at least 5% smaller (current size {size}), so no new file was created.",
+  "compress_fellBackNote": "Turning pages into images would have made the file larger, so the Light level was used to keep the text sharp.",
+  "compress_lostAnnotations": "{count} annotations (such as form fields or drawings) could not be kept.",
+  "@compress_alreadyOptimizedBody": {
     "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
+      "size": {
         "type": "String"
       }
     }
   },
-  "compress_notSmallerTitle": "The compressed file is not smaller",
-  "compress_notSmallerBody": "From {from} → {to}. This file may already be compressed. Keep or delete the new file?",
-  "@compress_notSmallerBody": {
+  "@compress_lostAnnotations": {
     "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
+      "count": {
+        "type": "int"
       }
     }
-  },
-  "compress_keep": "Keep file",
-  "compress_deleteNew": "Delete new file",
-  "compress_deleted": "The compressed file was deleted."
+  }
 }
